@@ -177,7 +177,21 @@ CGM_AHP_tune <- function(
 
 ##Stability selection for Guo's method conditional on lastar
 ##selected from cross validation
-CGM_AHP_stabsel <- function(X, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
+#' CGM_AHP_stabsel
+#' @description CGM_AHP_stabsel will
+#' @import gdata
+#' @import zoo
+#' @import igraph
+#' @import glasso
+#' @import glmnet
+#' @import corpcor
+#' @import dplyr
+#' @import foreach
+#' @import parallel
+#' @import doParallel
+#' @noRd
+CGM_AHP_stabsel <- function(X, stab.guo, cnt, lastar, eta=0.01, limkappa=1e+6) {
+  seed.base = stab.guo*100+main.seed
   K = 1
   p = ncol(X)
 
@@ -230,14 +244,15 @@ CGM_AHP_stabsel <- function(X, cnt, lastar, seed.base = 100, eta=0.01, limkappa=
 
     count = count + 1
   }
-
   return(list(mat = sel.mat, count = count))
+  # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count))
+  # return(eval(paste0('node',stab.guo)))
 }
 
 ##Stability selection for Guo's method conditional on lastar
 ##selected from cross validation
 ##subsampling
-CGM_AHP_stabsel_subsample <- function(X, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
+CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
   K = 1
   p = ncol(X)
 
@@ -299,8 +314,9 @@ CGM_AHP_stabsel_subsample <- function(X, cnt, lastar, seed.base = 100, eta=0.01,
 
     count = count + 1
   }
-
   return(list(mat = sel.mat, count = count, edge.matrix = edge.mat))
+  # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count, edge.matrix = edge.mat))
+  # return(paste0('node',stab.guo))
 }
 
 ##--------------------------------------------\
@@ -418,7 +434,7 @@ adjDGlasso <- function(
   return(list(Theta=coeff, pvalue=pvals, qvalue = Qmat, qvalue.fdr=Qmat.fdr, statistic=std.statistic, theta.orig= Theta.hat.from.Glasso))
 }
 
-#require(glasso)
+
 adjDGlasso_minimal <- function(
   X, #the n by p data matrix
   weights=1, #the weight for the penalty
@@ -524,4 +540,3 @@ StructDiff <- function(Ahat, Amat, eps = 1e-08){
                    SHD = SHD, Precision = Pr, Recall = Re, F1 = F1, FL = Floss)
   return(dev)
 }
-
