@@ -2,7 +2,7 @@ Package: DNEAdev
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("Christopher", "Patsalis", , "patsalis@umich.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
@@ -11,3 +11,14 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Imports: gdata, zoo, igraph, glasso, glmnet, corpcor, dplyr, foreach, parallel, doParallel, methods, janitor
+Collate: 
+    'DNEAobjectMethods.R'
+    'JSEM.R'
+    'MainFunctions.R'
+    'StabilitySelection.R'
+    'clusteringNet.R'
+    'createDNEAobject.R'
+    'diagnostics.R'
+    'netgsa_complex.R'
+    'preprocess_lib.R'
+    'stabsel_gglasso.R'
