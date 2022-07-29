@@ -51,10 +51,21 @@ createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression =
     colnames(Expression) <- make_clean_names(colnames(Expression))
     Expression <- as.matrix(Expression[,2:ncol(Expression)])
 
+    # temp <- lapply(Expression[,-1], function(x) as.numeric(as.character(x)))
+    # names(temp) <- NULL
+    # Expression <- t(do.call(rbind, temp))#p by n
+    # rownames(Expression)<-Metadata$Samples
+    # colnames(Expression<-Metadata$clean_Feature_Names)
+
   }
   if(!(is.null(NormalExpression))){
     colnames(NormalExpression) <- make_clean_names(colnames(NormalExpression))
     NormalExpression <- as.matrix(NormalExpression[,2:ncol(NormalExpression)])
+    # temp2 <- lapply(NormalExpression[,-1], function(x) as.numeric(as.character(x)))
+    # names(temp2) <- NULL
+    # NormalExpression <- t(do.call(rbind, temp2))
+    # rownames(NormalExpression)<-Metadata$Samples
+    # colnames(NormalExpression<-Metadata$clean_Feature_Names)
   }
   #Check to make sure data is the same
   if(!(is.null(Expression)) & !(is.null(NormalExpression))){

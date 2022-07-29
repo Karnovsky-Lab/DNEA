@@ -2,10 +2,13 @@
 #'
 #'@noRd
 DATAdiagnostics <- function(object) {
-  if(!(is.null(object@Assays$Expression))){
-    dat <- object@Assays$Expression
-  } else{
-    dat <- object@Assays$NormalExpression
+  # if(!(is.null(object@Assays$Expression))){
+  #   dat <- object@Assays$Expression
+  # } else{
+  #   dat <- object@Assays$NormalExpression
+  #   warning("No raw data was provided so Fold change calculation may be skewed")
+  # }
+  if(is.null(object@Assays$Expression)){
     warning("No raw data was provided so Fold change calculation may be skewed")
   }
 
@@ -13,37 +16,53 @@ DATAdiagnostics <- function(object) {
   # if(all(colnames(dat) != object@Metadata$clean_Feature_Names)) stop('Features are out of order.')
   # rownames(dat) <- NULL
   # colnames(dat) <- NULL
+
   num_features <- length(object@Metadata$clean_Feature_Names)
   num_samples <- length(object@Metadata$Samples)
   #Set up output structure
   feature_info <- data.frame('Features' = object@Metadata$Features,
                              'clean_Feature_Names' = object@Metadata$clean_Feature_Names)
 
-  dat <- t(dat)
+  #dat <- t(dat)
 
   separate_cond_key <- unlist(levels(object@Metadata$Condition))
 
-  condition_levels <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
-  names(condition_levels) <- separate_cond_key
-  condition_levels[[separate_cond_key[[1]]]]<-separate_cond_key[[1]]
-  condition_levels[[separate_cond_key[[2]]]]<-separate_cond_key[[2]]
-
-  separated_conditions_data <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
-  names(separated_conditions_data) <- separate_cond_key
-
-  for(cond in separate_cond_key){
-    separated_conditions_data[[cond]] <- dat[,(object@Metadata$Condition == cond)]
+  if(!(is.null(object@Assays$Expression))){
+    separated_conditions_data <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
+    names(separated_conditions_data) <- separate_cond_key
+    for(cond in separate_cond_key){
+      separated_conditions_data[[cond]] <- t(object@Assays$Expression)[,(object@Metadata$Condition == cond)]
+    }
+    if(is.null(object@Assays$NormalExpression))
+      separated_conditions_scaled <- lapply(separated_conditions_data, function(d) t(scale(t(d))))
   }
 
-  if(!(is.null(object@Assays$NormalExpression)) & is.null(object@Assays$Expression)){
+  if(!(is.null(object@Assays$NormalExpression))){
     separated_conditions_scaled <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
     names(separated_conditions_scaled) <- separate_cond_key
     for(cond in separate_cond_key){
       separated_conditions_scaled[[cond]] <- t(object@Assays$NormalExpression)[,(object@Metadata$Condition == cond)]
     }
-  } else{
-    separated_conditions_scaled <- lapply(separated_conditions_data, function(d) t(scale(t(d))))
+    if(is.null(object@Assays$Expression)){
+      separated_conditions_data <-separated_conditions_scaled
+    }
   }
+
+  #create list of conditions in data
+  condition_levels <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
+  names(condition_levels) <- separate_cond_key
+  condition_levels[[separate_cond_key[[1]]]]<-separate_cond_key[[1]]
+  condition_levels[[separate_cond_key[[2]]]]<-separate_cond_key[[2]]
+
+  # if(!(is.null(object@Assays$NormalExpression)) & is.null(object@Assays$Expression)){
+  #   separated_conditions_scaled <- vector(mode = 'list', length = length(levels(object@Metadata$Condition)))
+  #   names(separated_conditions_scaled) <- separate_cond_key
+  #   for(cond in separate_cond_key){
+  #     separated_conditions_scaled[[cond]] <- t(object@Assays$NormalExpression)[,(object@Metadata$Condition == cond)]
+  #   }
+  # } else{
+  #   separated_conditions_scaled <- lapply(separated_conditions_data, function(d) t(scale(t(d))))
+  # }
 
 
   feature_info$foldchange <- rowMeans(separated_conditions_data[[2]]) - rowMeans(separated_conditions_data[[1]])
@@ -80,6 +99,8 @@ DATAdiagnostics <- function(object) {
     cat('Diagnostic tests complete. You can proceed with the analysis!\n')
   }
   return(list(num_samples = num_samples, num_features = num_features,feature_summary = feature_info, Diagnostic_num = Diagnostic_num, condition_levels = condition_levels, separated_conditions = separated_conditions_data, scaled_separated_conditions = separated_conditions_scaled))
+  #return(list(num_samples = num_samples, num_features = num_features,feature_summary = feature_info, Diagnostic_num = Diagnostic_num, condition_levels = condition_levels, separated_conditions = separated_conditions_data))
+
 }
 
 
