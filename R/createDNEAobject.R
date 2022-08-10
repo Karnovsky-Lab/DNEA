@@ -2,16 +2,21 @@
 #'@export
 #'@import janitor
 #'@import methods
-createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression = NULL, control, case, Metadata){
+
+
+restructure_input_data <- function(Expression = NULL, NormalExpression = NULL, control, case){
+
+  #check to make sure data was input
+  if(is.null(Expression) & is.null(NormalExpression)) stop('Expression data must be provided to create DNEAobject')
 
   #Check factor to make sure only 2 groups
   if(!(is.null(NormalExpression))){
     if(class(NormalExpression[,1]) == 'numeric') stop('First column should be sample condition')
     NormalExpression[,1]<- factor(NormalExpression[,1],levels = c(control, case))
-      warning(paste0('Condition for NormalExpression should be of class factor. Converting Now. \n',
-                     'Condition is now a factor with levels:','\n', '1. ', levels(NormalExpression[,1])[1], '\n', '2. ',levels(NormalExpression[,1])[2]))
+    warning(paste0('Condition for NormalExpression should be of class factor. Converting Now. \n',
+                   'Condition is now a factor with levels:','\n', '1. ', levels(NormalExpression[,1])[1], '\n', '2. ',levels(NormalExpression[,1])[2]))
 
-    }
+  }
   if(!(is.null(Expression))){
     if(class(Expression[,1]) == 'numeric') stop('First column should be sample condition')
     if(class(Expression[,1]) != 'factor'){
@@ -46,6 +51,7 @@ createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression =
   Assays_key <- c('Expression','NormalExpression')
   Assays <- vector(mode = 'list', length = length(Assays_key))
   names(Assays) <- Assays_key
+
   #convert data to a matrix
   if(!(is.null(Expression))){
     colnames(Expression) <- make_clean_names(colnames(Expression))
@@ -67,19 +73,32 @@ createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression =
     # rownames(NormalExpression)<-Metadata$Samples
     # colnames(NormalExpression<-Metadata$clean_Feature_Names)
   }
+
   #Check to make sure data is the same
   if(!(is.null(Expression)) & !(is.null(NormalExpression))){
     #check to make sure the normalized and un-normalized input data have identical features and samples in the same order
     if(!(all(colnames(Expression) == colnames(NormalExpression))) | all(!(rownames(Expression) == rownames(NormalExpression)))) stop("Expression matrices must have identical features and samples")
-    }
+  }
+
+  #Normalize data if not provided
+  if(is.null(NormalExpression)){
+    NormalExpression <-scale(Expression)
+    warning('Data has been normalized for further analysis. New data can be found in the NormalExpression Assay!')
+  }
 
   #create matrices from data
   Assays[['Expression']] <- Expression
   Assays[['NormalExpression']] <- NormalExpression
 
-  #Initialize the DNEAobject
-  object <- new("DNEAobject", Project.Name = Project.Name, Assays =  Assays, Metadata = Metadata)
+  return(list(Assays, Metadata))
 
+}
+createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression = NULL, control, case){
+
+  restructured_data <- restructure_input_data(Expression = Expression, NormalExpression = NormalExpression, control = control, case = case)
+
+  #Initialize the DNEAobject
+  object <- new("DNEAobject", Project.Name = Project.Name, Assays =  restructured_data[[1]], Metadata = restructured_data[[2]])
   #Perform diagnostics on the dataset
   object@Dataset_summary <- DATAdiagnostics(object)
   return(object)
