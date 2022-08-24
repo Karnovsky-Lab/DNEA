@@ -435,14 +435,15 @@ adjDGlasso <- function(
 }
 
 
+
 adjDGlasso_minimal <- function(
-  X, #the n by p data matrix
-  weights=1, #the weight for the penalty
-  theta_star=NULL, #true precision matrix
-  lambda = NULL,
-  quiet=FALSE,
-  zero.edge=NULL # indices of entries of inverse covariance
-                   #to be constrained to be zero (to be passed to glasso)
+    X, #the n by p data matrix
+    weights=1, #the weight for the penalty
+    theta_star=NULL, #true precision matrix
+    lambda = NULL,
+    quiet=FALSE,
+    zero.edge=NULL # indices of entries of inverse covariance
+    #to be constrained to be zero (to be passed to glasso)
 ){
   n <- nrow(X)
   p <- ncol(X)
@@ -455,17 +456,15 @@ adjDGlasso_minimal <- function(
   if (!quiet){print('fit glasso')}
 
   if (!is.null(zero.edge)){
-	Theta.hat.from.Glasso <- glasso(s=empcov,
-									rho=lambda*weights,
-									approx=TRUE,
-									penalize.diagonal=FALSE,
-									zero=as.matrix(zero.edge))$wi
+    Theta.hat.from.Glasso <- glasso(s=empcov,
+                                    rho=lambda*weights,
+                                    penalize.diagonal=FALSE,
+                                    zero=as.matrix(zero.edge))$wi
   } else {
-	Theta.hat.from.Glasso <- glasso(s=empcov,
-									rho=lambda*weights,
-									approx=TRUE,
-									penalize.diagonal=FALSE)$wi
-	}
+    Theta.hat.from.Glasso <- glasso(s=empcov,
+                                    rho=lambda*weights,
+                                    penalize.diagonal=FALSE)$wi
+  }
   Theta.hat.from.Glasso <- (Theta.hat.from.Glasso + t(Theta.hat.from.Glasso))/2
 
   if (!quiet){print('done')}
@@ -474,7 +473,6 @@ adjDGlasso_minimal <- function(
 
   return(list(Theta.glasso=coeff))
 }
-
 ##-----------------------------------\
 ##    StructDiff.full.R
 ##-----------------------------------\
