@@ -23,10 +23,11 @@ ReduceFeatures <- function(object,
   control <- object@Dataset_summary$condition_levels[[1]]
   case <- object@Dataset_summary$condition_levels[[2]]
 
-  uncollapsed_data <- vector('list', 3)
+  uncollapsed_data <- list()
   uncollapsed_data[['Assays']] <- object@Assays
   uncollapsed_data[['Metadata']] <- object@Metadata
   uncollapsed_data[['Dataset_summary']] <- object@Dataset_summary
+  uncollapsed_data[['Nodes']] <- object@Nodes
 
   object@Assays[['Expression']] <- NULL
   object@Assays[['NormalExpression']] <- NULL
@@ -37,7 +38,8 @@ ReduceFeatures <- function(object,
   object@Metadata[['clean_Feature_Names']] <- NULL
   object@Metadata[['condition']] <- NULL
 
-  object@Dataset_summary<-list()
+  object@Nodes <- data.frame()
+  object@Dataset_summary <- list()
 
   if (method == "correlation") {
     res <- collapseNodes_cor(dat = dat,
@@ -63,7 +65,10 @@ ReduceFeatures <- function(object,
   object@Metadata <-restructured_data[[2]]
 
   #Perform diagnostics on collapsed dataset
-  object@Dataset_summary <- DATAdiagnostics(object)
+  diagnostic_values <- dataDiagnostics(object)
+  object@Dataset_summary <- diagnostic_values[[1]]
+  object@Nodes <- diagnostic_values[[2]]
+
 
   return(object)
 
