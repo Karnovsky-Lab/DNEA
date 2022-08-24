@@ -20,7 +20,7 @@ restructure_input_data <- function(Expression = NULL, NormalExpression = NULL, c
   if(!(is.null(Expression))){
     if(class(Expression[,1]) == 'numeric') stop('First column should be sample condition')
     if(class(Expression[,1]) != 'factor'){
-      Expression[,1]<- factor(Expression[,1])
+      Expression[,1]<- factor(Expression[,1], levels = c(control, case))
       warning(paste0('Condition for Expression should be of class factor. Converting Now. \n',
                      'Condition is now a factor with levels:','\n', '1. ', levels(Expression[,1])[1], '\n', '2. ',levels(Expression[,1])[2]))
 
@@ -100,6 +100,8 @@ createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression =
   #Initialize the DNEAobject
   object <- new("DNEAobject", Project.Name = Project.Name, Assays =  restructured_data[[1]], Metadata = restructured_data[[2]])
   #Perform diagnostics on the dataset
-  object@Dataset_summary <- DATAdiagnostics(object)
+  diagnostic_values <- dataDiagnostics(object)
+  object@Dataset_summary <- diagnostic_values[[1]]
+  object@Nodes <- diagnostic_values[[2]]
   return(object)
 }
