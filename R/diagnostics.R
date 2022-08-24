@@ -1,7 +1,7 @@
 #'Datadiagnostics
 #'
 #'@noRd
-DATAdiagnostics <- function(object) {
+dataDiagnostics <- function(object) {
 
   num_features <- length(featureNames(object))
   num_samples <- length(sampleNames(object))
@@ -104,7 +104,7 @@ DATAdiagnostics <- function(object) {
   } else{
     cat('Diagnostic tests complete. You can proceed with the analysis!\n')
   }
-  return(list(num_samples = num_samples, num_features = num_features,feature_summary = feature_info, Diagnostic_num = Diagnostic_num, condition_levels = condition_levels, separated_conditions = separated_conditions_data, scaled_separated_conditions = separated_conditions_scaled))
+  return(list(list(num_samples = num_samples, num_features = num_features, Diagnostic_num = Diagnostic_num, condition_levels = condition_levels, separated_conditions = separated_conditions_data, scaled_separated_conditions = separated_conditions_scaled),feature_info))
   #return(list(num_samples = num_samples, num_features = num_features,feature_summary = feature_info, Diagnostic_num = Diagnostic_num, condition_levels = condition_levels, separated_conditions = separated_conditions_data))
 
 }
