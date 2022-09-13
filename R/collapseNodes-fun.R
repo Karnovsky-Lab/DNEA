@@ -11,9 +11,13 @@ ReduceFeatures <- function(object,
                           corr.threshold = 0.9,
                           metabolite.groups = NULL){
 
+  #Check to see if there is raw expression data provided - Feature reduction must be done on raw expression data
+  if(is.null(Expression(object))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
+                                              'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
+
   feature_mean_expression <- apply(Expression(object),2,mean)
   feature_sd_expression <- apply(Expression(object), 2, sd)
-  if(all(feature_mean_expression < 1 & feature_mean_expression > -1) |
+  if(all(feature_mean_expression < 0.05 & feature_mean_expression > -0.05) |
          all(feature_sd_expression < 1.05 & feature_sd_expression > 0.95)) warning("Data in Expression Assay looks to be normalized. Feature reduction must be done on raw data!")
   if(is.null(Expression(object))) stop("Feature reduction must be done on raw data")
 
@@ -52,10 +56,10 @@ ReduceFeatures <- function(object,
                          metabolite.groups = metabolite.groups,
                          corr.threshold = corr.threshold)
   }
-  if(!(is.null(NormalExpression(object)))) warning('The un-normalized data from the Expression Assay was used for feature reduction.\n
-                                                   The data in the NormalExpression Assay was replaced with log Normalized collapsed data. \n
-                                                   If you prefer another normalization method replace this data prior to proceeding!')
-
+  if(!(is.null(NormalExpression(object)))) warning(paste0('The un-normalized data from the Expression Assay was used for feature reduction.','\n',
+                                                          'The data in the NormalExpression Assay was replaced with log-scaled collapsed data.', '\n',
+                                                          'If you prefer another normalization method replace this data prior to proceeding!', '\n\n',
+                                                          '(orginal data can be accessed with unCollapsedData function)', '\n'))
   res[['new.data']] <-cbind.data.frame(res[['new.data']][,2],apply(res[['new.data']][,-c(1,2)], 2, as.numeric))
   rownames(res[['new.data']]) <- uncollapsed_data[["Metadata"]][["Samples"]]
   restructured_data <- restructure_input_data(Expression = res[['new.data']], control = control, case = case)
