@@ -14,9 +14,7 @@ NULL
 #' @import glmnet
 #' @import corpcor
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
 
 
 BICtune <- function(object, nCores = 4, main.seed = 101){
@@ -40,7 +38,7 @@ BICtune <- function(object, nCores = 4, main.seed = 101){
 
   #initialize parallel process
   cl <- parallel::makeCluster(nCores)
-  registerDoParallel(cl)
+  #registerDoParallel(cl)
   bic.guo <- vector(mode = "list", length = length(lambda.guo))
   parallel::clusterExport(cl = cl, varlist = c("lambda.guo", "trainX","trainY", "main.seed"), envir = environment())
   parallel::clusterEvalQ(cl = cl, c(library("MASS"),library("glasso"), set.seed(main.seed)))
@@ -70,15 +68,12 @@ BICtune <- function(object, nCores = 4, main.seed = 101){
 #' @import glmnet
 #' @import corpcor
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
+#' @import progress
 StabilitySelection <- function(object, UnevenGroups = FALSE, nreps = 50, nCores = 4, main.seed = 101){
 
   ##make sure all bic values are finite and remove those that are not
-  print('start')
   tmp = sapply(object@BIC$bic.guo, function(a) a$BIC)
-  print('tmp passed')
   if (max(is.infinite(tmp))==1){
     bic.guo <- object@BIC$bic.guo[is.finite(tmp)]
     lambda.guo <- object@BIC$Lambda[is.finite(tmp)]
@@ -93,37 +88,69 @@ StabilitySelection <- function(object, UnevenGroups = FALSE, nreps = 50, nCores 
     lastar.guo <- object@BIC$Lambda[which.min(sapply(object@BIC$bic.guo, function(a) a$BIC))]
   }
 
-  print("move to list")
   ##stability selection, which requires lastar.guo from the previous step
   listX = lapply(as.list(object@Dataset_summary$scaled_separated_conditions),
                  function(d) scale(t(d)))
-  print('test1')
+
   #stab.guo <- vector(mode = "list", length = length(nCores))
-  cl <- makeCluster(nCores)
-  registerDoParallel(cl)
+
+  #create independent processes to run reps in parallel
+  cl <- makeCluster(nCores, outfile = "")
+  #registerDoParallel(cl)
+
   stab.guo <- as.list(1:nCores)
+  #create progress bar
+  #p <- progressr::progressor(along = stab.guo)
 
   parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train","CGM_AHP_stabsel_subsample","CGM_AHP_stabsel", "matTr"))
-  parallel::clusterExport(cl = cl, varlist = c("stab.guo", "lastar.guo","nreps","main.seed", "UnevenGroups"), envir = environment())
-  parallel::clusterEvalQ(cl = cl, c(library("MASS"),library("glasso"), set.seed(main.seed)))
+  parallel::clusterExport(cl = cl, varlist = c("stab.guo", "listX", "lastar.guo","nreps","main.seed", "UnevenGroups"), envir = environment())
+  parallel::clusterEvalQ(cl = cl, c(library("MASS"),library("glasso"),library("progress"), set.seed(main.seed)))
   #Use multiple nCores to run the function my.iter()
   # So in total we get nreps*nCores subsampling for stability selection.
   if (UnevenGroups){
     cat("Stability selection with additional subsampling ... \n")
     cat("Stability selection with Guo et al ... \n")
-    stab.guo <- parallel::clusterMap(cl = cl,
-                                     fun = 'CGM_AHP_stabsel_subsample',
-                                     stab.guo = stab.guo,
-                                     MoreArgs = list(X = listX, cnt = nreps, lastar = lastar.guo))
+    # stab.guo <- parallel::clusterMap(cl = cl,
+    #                                  fun = 'CGM_AHP_stabsel_subsample',
+    #                                  stab.guo = stab.guo,
+    #                                  MoreArgs = list(X = listX, cnt = nreps, lastar = lastar.guo))
+    stab.guo <- parallel::parLapply(cl = cl,
+                                    fun ="CGM_AHP_stabsel_subsample",
+                                    X = stab.guo,
+                                    listX = listX,
+                                    cnt = nreps,
+                                    lastar = lastar.guo)
     object@Stable.Networks <- stab.guo
   } else {
     cat("Stability selection without additional subsampling ... \n")
     cat("Stability selection with Guo et al ... \n")
-    stab.guo <- parallel::clusterMap(cl = cl,
-                                     fun = 'CGM_AHP_stabsel',
-                                     stab.guo = stab.guo,
-                                     MoreArgs = list(X = listX, cnt = nreps, lastar = object@BIC$MinLambda))
+    # stab.guo <- parallel::clusterMap(cl = cl,
+    #                                  fun = 'CGM_AHP_stabsel',
+    #                                  stab.guo = stab.guo,
+    #                                  MoreArgs = list(X = listX, cnt = nreps, lastar = object@BIC$MinLambda))
+    stab.guo <- parallel::parLapply(cl = cl,
+                                   fun ="CGM_AHP_stabsel",
+                                   X = stab.guo,
+                                   listX = listX,
+                                   cnt = nreps,
+                                   lastar = lastar.guo)
   }
+  # if (UnevenGroups){
+  #   cat("Stability selection with additional subsampling ... \n")
+  #   cat("Stability selection with Guo et al ... \n")
+  #   stab.guo <- pbmapply(cl = cl,
+  #                       FUN = CGM_AHP_stabsel_subsample,
+  #                       X = 1:nCores,
+  #                       MoreArgs = list(listX = listX, cnt = nreps, lastar = lastar.guo))
+  #   object@Stable.Networks <- stab.guo
+  # } else {
+  #   cat("Stability selection without additional subsampling ... \n")
+  #   cat("Stability selection with Guo et al ... \n")
+  #   stab.guo <- pbMapply(cl = cl,
+  #                       FUN = CGM_AHP_stabsel,
+  #                       X = 1:nCores,
+  #                       MoreArgs = list(listX = listX, cnt = nreps, lastar = lastar.guo))
+  # }
   on.exit(stopCluster(cl))
   object@Stable.Networks <- stab.guo
   return(object)
@@ -284,7 +311,7 @@ runNetGSA <- function(object){
   object@Nodes$mean1 <- out.netgsa$beta[[1]]
   object@Nodes$mean2 <- out.netgsa$beta[[2]]
   object@Nodes$meanchange <- out.netgsa$beta[[2]] - out.netgsa$beta[[1]]
-  object@Nodes$mc.notes <- paste(object@Dataset_summary$condition_levels[[2]], 'over', object@Dataset_summary$condition_levels[[1]] )
+  object@Nodes$mc.notes <- paste(object@Dataset_summary$condition_levels[[2]], 'over', object@Dataset_summary$condition_levels[[1]])
 
   res <- data.frame(object@NetGSA[['summary']],
                     "NetGSA-pval"=out.netgsa$p.value,

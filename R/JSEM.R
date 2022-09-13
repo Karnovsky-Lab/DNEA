@@ -27,9 +27,7 @@ matTr <- function(z) sum(diag(z))
 #' @import glmnet
 #' @import corpcor
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
 #' @noRd
 CGM_AHP_train <- function(
   trainX,
@@ -121,9 +119,7 @@ CGM_AHP_train <- function(
 #' @import glmnet
 #' @import corpcor
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
 #' @noRd
 CGM_AHP_tune <- function(
   trainX,   # training data
@@ -186,22 +182,21 @@ CGM_AHP_tune <- function(
 #' @import glmnet
 #' @import corpcor
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
+#' @import progress
 #' @noRd
-CGM_AHP_stabsel <- function(X, stab.guo, cnt, lastar, eta=0.01, limkappa=1e+6) {
-  seed.base = stab.guo*100+main.seed
+CGM_AHP_stabsel <- function(listX, X, cnt, lastar, eta=0.01, limkappa=1e+6) {
+  seed.base = X*100+main.seed
   K = 1
-  p = ncol(X)
+  p = ncol(listX)
 
-  if (is.null(dim(X))) {
-    K = length(X)
-    p = ncol(X[[1]])
+  if (is.null(dim(listX))) {
+    K = length(listX)
+    p = ncol(listX[[1]])
   }
 
-  n = lapply(X, nrow)
-
+  n = lapply(listX, nrow)
+  X
   X1 = vector("list", K)
   X2 = vector("list", K)
   sel.mat = vector("list", K)
@@ -209,17 +204,27 @@ CGM_AHP_stabsel <- function(X, stab.guo, cnt, lastar, eta=0.01, limkappa=1e+6) {
     sel.mat[[k]] = matrix(0, p, p)
   }
   count = 0
+  #create new progress bar
+  pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+                         total = cnt,
+                         clear = FALSE,    # If TRUE, clears the bar when finish
+                         force = TRUE,
+                         width = 100)
 
   for (i in 1:cnt) {
     set.seed(i+seed.base)
-    cat("count is:", i, "\n")
+    #cat("count is:", i, "\n")
+
+    #tick on progress bar
+    pb$tick()
+
     model.1 = NULL
     model.2 = NULL
     for (k in 1:K){
       ind.1 = sample(seq(1, n[[k]]), n[[k]]/2, F)
       ind.2 = seq(1, n[[k]])[match(seq(1, n[[k]]), ind.1, 0) == 0]
-      X1[[k]] = X[[k]][ind.1, ]
-      X2[[k]] = X[[k]][ind.2, ]
+      X1[[k]] = listX[[k]][ind.1, ]
+      X2[[k]] = listX[[k]][ind.2, ]
       model.1 = c(model.1, rep(k, length(ind.1)))
       model.2 = c(model.2, rep(k, length(ind.2)))
     }
@@ -248,20 +253,108 @@ CGM_AHP_stabsel <- function(X, stab.guo, cnt, lastar, eta=0.01, limkappa=1e+6) {
   # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count))
   # return(eval(paste0('node',stab.guo)))
 }
+# CGM_AHP_stabsel <- function(X, stab.guo, cnt, lastar, eta=0.01, limkappa=1e+6) {
+#   seed.base = stab.guo*100+main.seed
+#   K = 1
+#   p = ncol(X)
+#
+#   if (is.null(dim(X))) {
+#     K = length(X)
+#     p = ncol(X[[1]])
+#   }
+#
+#   n = lapply(X, nrow)
+#
+#   X1 = vector("list", K)
+#   X2 = vector("list", K)
+#   sel.mat = vector("list", K)
+#   for (k in 1:K){
+#     sel.mat[[k]] = matrix(0, p, p)
+#   }
+#   count = 0
+#   #create new progress bar
+#   pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+#                          total = cnt,
+#                          clear = FALSE,    # If TRUE, clears the bar when finish
+#                          force = TRUE,
+#                          width = 100)
+#
+#   # pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+#   #                      max = cnt, # Maximum value of the progress bar
+#   #                      style = 3,    # Progress bar style (also available style = 1 and style = 2)
+#   #                      char = "=")   # Character used to create the bar
+#   #p <- progressr::progressor(along = cnt)
+#
+#   for (i in 1:cnt) {
+#     set.seed(i+seed.base)
+#     #cat("count is:", i, "\n")
+#
+#     #tick on progress bar
+#     #p(message = paste0('completed rep: ',i, ' of: ',cnt))
+#     pb$tick()
+#     # setTxtProgressBar(pb, i)
+#
+#     model.1 = NULL
+#     model.2 = NULL
+#     for (k in 1:K){
+#       ind.1 = sample(seq(1, n[[k]]), n[[k]]/2, F)
+#       ind.2 = seq(1, n[[k]])[match(seq(1, n[[k]]), ind.1, 0) == 0]
+#       X1[[k]] = X[[k]][ind.1, ]
+#       X2[[k]] = X[[k]][ind.2, ]
+#       model.1 = c(model.1, rep(k, length(ind.1)))
+#       model.2 = c(model.2, rep(k, length(ind.2)))
+#     }
+#
+#     tmp.1 = try(CGM_AHP_train(trainX=do.call(rbind, X1), trainY=model.1, lambda_value=lastar, limkappa = limkappa, eta=eta))
+#     tmp.2 = try(CGM_AHP_train(trainX=do.call(rbind, X2), trainY=model.2, lambda_value=lastar, limkappa = limkappa, eta=eta))
+#
+#     if (inherits(tmp.1, "try-error") || inherits(tmp.2, "try-error")){
+#       warning("There might be some error!")
+#       next;
+#     }
+#
+#     for (k in 1:K){
+#       mat1 = tmp.1$OMEGA[[k]]
+#       mat1[which(abs(mat1)>1e-5)] = 1
+#       diag(mat1) = 0
+#       mat2 = tmp.2$OMEGA[[k]]
+#       mat2[which(abs(mat2)>1e-5)] = 1
+#       diag(mat2) = 0
+#       sel.mat[[k]] = sel.mat[[k]] + mat1 + mat2
+#     }
+#
+#     count = count + 1
+#   }
+#   return(list(mat = sel.mat, count = count))
+#   # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count))
+#   # return(eval(paste0('node',stab.guo)))
+# }
 
-##Stability selection for Guo's method conditional on lastar
+
+##Stability selection for Guo's method conditional on lastar WITH subsampling
 ##selected from cross validation
-##subsampling
-CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
+#' CGM_AHP_stabsel_subsample
+#' @description CGM_AHP_stabsel_subsample will
+#' @import gdata
+#' @import zoo
+#' @import igraph
+#' @import glasso
+#' @import glmnet
+#' @import corpcor
+#' @import dplyr
+#' @import parallel
+#' @import progress
+#' @noRd
+CGM_AHP_stabsel_subsample <- function(listX, X, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
   K = 1
-  p = ncol(X)
+  p = ncol(listX)
 
-  if (is.null(dim(X))) {
-    K = length(X)
-    p = ncol(X[[1]])
+  if (is.null(dim(listX))) {
+    K = length(listX)
+    p = ncol(listX[[1]])
   }
 
-  n = lapply(X, nrow)
+  n = lapply(listX, nrow)
   n_min = min(as.numeric(n))
 
   sel.mat = vector("list", K)
@@ -269,34 +362,45 @@ CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100,
 
   for (k in 1:K){
     sel.mat[[k]] = matrix(0, p, p)
-	edge.mat[[k]] = matrix(0, p*(p-1)/2, cnt)
+    edge.mat[[k]] = matrix(0, p*(p-1)/2, cnt)
   }
   count = 0
+
+  #create new progress bar
+  # pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+  #                        total = cnt,
+  #                        clear = FALSE,    # If TRUE, clears the bar when finish
+  #                        force = TRUE
+  #                        )
+  #p <- progressr::progressor(along = cnt)
 
   for (i in 1:cnt) {
     set.seed(i+seed.base)
     cat("count is:", i, "\n")
 
-	modelY = NULL
-	new_X = vector("list", K)
+    #tick on progress bar
+    #p(message = paste0('completed rep: ',i, ' of: ',cnt))
 
-	###subsampling
-	new_X[[which.max(as.numeric(n))]] = dplyr::sample_n(as.data.frame(X[[which.max(as.numeric(n))]]), 1.3*n_min, replace = FALSE)
+    modelY = NULL
+    new_X = vector("list", K)
 
-	temp90 = dplyr::sample_n(as.data.frame(X[[which.min(as.numeric(n))]]), 0.9*n_min, replace = FALSE)
-	temp10 = dplyr::sample_n(temp90, 0.1*n_min, replace = FALSE)
+    ###subsampling
+    new_X[[which.max(as.numeric(n))]] = dplyr::sample_n(as.data.frame(listX[[which.max(as.numeric(n))]]), 1.3*n_min, replace = FALSE)
 
-	new_X[[which.min(as.numeric(n))]] = rbind.data.frame(temp90, temp10)
+    temp90 = dplyr::sample_n(as.data.frame(listX[[which.min(as.numeric(n))]]), 0.9*n_min, replace = FALSE)
+    temp10 = dplyr::sample_n(temp90, 0.1*n_min, replace = FALSE)
 
-	#should we add a scaling step here?#
+    new_X[[which.min(as.numeric(n))]] = rbind.data.frame(temp90, temp10)
 
-	new_n = lapply(new_X, nrow)
+    #should we add a scaling step here?#
 
-     for (k in 1:K){
-	  modelY = c(modelY, rep(k, new_n[[k]]))
-     }
+    new_n = lapply(new_X, nrow)
 
-	tmp.model = try(CGM_AHP_train(trainX=scale(do.call(rbind, new_X)), trainY=modelY, lambda_value=lastar, limkappa = limkappa, eta=eta))
+    for (k in 1:K){
+      modelY = c(modelY, rep(k, new_n[[k]]))
+    }
+
+    tmp.model = try(CGM_AHP_train(trainX=scale(do.call(rbind, new_X)), trainY=modelY, lambda_value=lastar, limkappa = limkappa, eta=eta))
 
 
     if (inherits(tmp.model, "try-error")){
@@ -309,7 +413,7 @@ CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100,
       tmp.mat[which(abs(tmp.mat)>1e-5)] = 1
       diag(tmp.mat) = 0
       sel.mat[[k]] = sel.mat[[k]] + tmp.mat
-	  edge.mat[[k]][,i] = t(tmp.mat)[lower.tri(tmp.mat,diag=F)]
+      edge.mat[[k]][,i] = t(tmp.mat)[lower.tri(tmp.mat,diag=F)]
     }
 
     count = count + 1
@@ -318,6 +422,83 @@ CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100,
   # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count, edge.matrix = edge.mat))
   # return(paste0('node',stab.guo))
 }
+# CGM_AHP_stabsel_subsample <- function(X, stab.guo, cnt, lastar, seed.base = 100, eta=0.01, limkappa=1e+6) {
+#   K = 1
+#   p = ncol(X)
+#
+#   if (is.null(dim(X))) {
+#     K = length(X)
+#     p = ncol(X[[1]])
+#   }
+#
+#   n = lapply(X, nrow)
+#   n_min = min(as.numeric(n))
+#
+#   sel.mat = vector("list", K)
+#   edge.mat = vector("list", K)
+#
+#   for (k in 1:K){
+#     sel.mat[[k]] = matrix(0, p, p)
+# 	edge.mat[[k]] = matrix(0, p*(p-1)/2, cnt)
+#   }
+#   count = 0
+#
+#   #create new progress bar
+#   # pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+#   #                        total = cnt,
+#   #                        clear = FALSE,    # If TRUE, clears the bar when finish
+#   #                        force = TRUE
+#   #                        )
+#   #p <- progressr::progressor(along = cnt)
+#
+#   for (i in 1:cnt) {
+#     set.seed(i+seed.base)
+#     cat("count is:", i, "\n")
+#
+#     #tick on progress bar
+#     #p(message = paste0('completed rep: ',i, ' of: ',cnt))
+#
+#     modelY = NULL
+#     new_X = vector("list", K)
+#
+#     ###subsampling
+#     new_X[[which.max(as.numeric(n))]] = dplyr::sample_n(as.data.frame(X[[which.max(as.numeric(n))]]), 1.3*n_min, replace = FALSE)
+#
+#     temp90 = dplyr::sample_n(as.data.frame(X[[which.min(as.numeric(n))]]), 0.9*n_min, replace = FALSE)
+#     temp10 = dplyr::sample_n(temp90, 0.1*n_min, replace = FALSE)
+#
+#     new_X[[which.min(as.numeric(n))]] = rbind.data.frame(temp90, temp10)
+#
+#     #should we add a scaling step here?#
+#
+#     new_n = lapply(new_X, nrow)
+#
+#        for (k in 1:K){
+#       modelY = c(modelY, rep(k, new_n[[k]]))
+#        }
+#
+#     tmp.model = try(CGM_AHP_train(trainX=scale(do.call(rbind, new_X)), trainY=modelY, lambda_value=lastar, limkappa = limkappa, eta=eta))
+#
+#
+#       if (inherits(tmp.model, "try-error")){
+#         warning("There might be some error!")
+#         next;
+#       }
+#
+#       for (k in 1:K){
+#         tmp.mat = tmp.model$OMEGA[[k]]
+#         tmp.mat[which(abs(tmp.mat)>1e-5)] = 1
+#         diag(tmp.mat) = 0
+#         sel.mat[[k]] = sel.mat[[k]] + tmp.mat
+#       edge.mat[[k]][,i] = t(tmp.mat)[lower.tri(tmp.mat,diag=F)]
+#       }
+#
+#   count = count + 1
+#   }
+#   return(list(mat = sel.mat, count = count, edge.matrix = edge.mat))
+#   # assign(paste0('node',stab.guo),list(mat = sel.mat, count = count, edge.matrix = edge.mat))
+#   # return(paste0('node',stab.guo))
+# }
 
 ##--------------------------------------------\
 # Tuning parameter selection:
@@ -354,7 +535,7 @@ glasso_tune <- function(
   return(out)
 }
 
-require(glasso)
+
 adjDGlasso <- function(
   X, #the n by p data matrix
   weights=1, #the weight for the penalty
