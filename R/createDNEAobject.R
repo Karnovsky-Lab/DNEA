@@ -13,16 +13,16 @@ restructure_input_data <- function(Expression = NULL, NormalExpression = NULL, c
   if(!(is.null(NormalExpression))){
     if(class(NormalExpression[,1]) == 'numeric') stop('First column should be sample condition')
     NormalExpression[,1]<- factor(NormalExpression[,1],levels = c(control, case))
-    warning(paste0('Condition for NormalExpression should be of class factor. Converting Now. \n',
-                   'Condition is now a factor with levels:','\n', '1. ', levels(NormalExpression[,1])[1], '\n', '2. ',levels(NormalExpression[,1])[2]))
+    cat(paste0('Condition for NormalExpression should be of class factor. Converting Now. \n',
+                   'Condition is now a factor with levels:','\n', '1. ', levels(NormalExpression[,1])[1], '\n', '2. ',levels(NormalExpression[,1])[2],'\n\n'))
 
   }
   if(!(is.null(Expression))){
     if(class(Expression[,1]) == 'numeric') stop('First column should be sample condition')
     if(class(Expression[,1]) != 'factor'){
       Expression[,1]<- factor(Expression[,1], levels = c(control, case))
-      warning(paste0('Condition for Expression should be of class factor. Converting Now. \n',
-                     'Condition is now a factor with levels:','\n', '1. ', levels(Expression[,1])[1], '\n', '2. ',levels(Expression[,1])[2]))
+      cat(paste0('Condition for Expression should be of class factor. Converting Now. \n',
+                     'Condition is now a factor with levels:','\n', '1. ', levels(Expression[,1])[1], '\n', '2. ',levels(Expression[,1])[2],'\n\n'))
 
     }
   }
@@ -98,7 +98,7 @@ createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression =
   restructured_data <- restructure_input_data(Expression = Expression, NormalExpression = NormalExpression, control = control, case = case)
 
   #Initialize the DNEAobject
-  object <- new("DNEAobject", Project.Name = Project.Name, Assays =  restructured_data[[1]], Metadata = restructured_data[[2]])
+  object <- new("DNEAobject", Project.Name = Project.Name, Assays =  restructured_data[[1]], Metadata = restructured_data[[2]], Joint.Graph = make_empty_graph(n = ncol(restructured_data[[1]][[1]]), directed = TRUE))
   #Perform diagnostics on the dataset
   diagnostic_values <- dataDiagnostics(object)
   object@Dataset_summary <- diagnostic_values[[1]]
