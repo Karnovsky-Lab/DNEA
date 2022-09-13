@@ -66,7 +66,8 @@ dataDiagnostics <- function(object) {
   if(is.null(Expression(object))){
     cond_data <- separated_conditions_scaled
     separated_conditions_data <- NULL
-    warning("No raw data was provided so Fold change calculation may be skewed")
+    cat(paste0("No raw data was provided so Fold Change calculation may be skewed - Analyze with caution!", "\n",
+    "We suggest using T-statistic for DE intenstiy visualizion.",'\n\n'))
   } else{
     cond_data <- separated_conditions_data
   }
