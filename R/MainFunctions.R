@@ -68,6 +68,9 @@ BICtune <- function(object,
 
   message("BIC using Guo et al ...", appendLF = TRUE)
 
+  #set progress bar
+  pbapply::pboptions(type = "timer", char = c('='), style = 5)
+
   #If more cores available than lambda values tested, will set one worker
   #per lambda value to improve efficiency
   if(nCores > 1){
@@ -84,9 +87,6 @@ BICtune <- function(object,
     #initialize parallel process
     cl <- parallel::makeCluster(nCores)
     on.exit(stopCluster(cl))
-
-    #set progress bar
-    pbapply::pboptions(type = "timer", char = c('='), style = 5)
 
     #pass necessary objects to workers
     parallel::clusterExport(cl = cl,
@@ -124,6 +124,9 @@ BICtune <- function(object,
                         eta = eta_value)
 
   }
+
+  #add empty line after progress bar
+  message("", appendLF = TRUE)
 
   ##make sure all bic values are finite and remove those that are not
   tmp = unlist(sapply(bic_guo, function(a) a$BIC))
@@ -298,6 +301,8 @@ stabilitySelection <- function(object,
     }
   }
 
+  #add empty line after progress bar
+  message("", appendLF = TRUE)
   #####################################
   #**Concatenate results for output **#
   #####################################
