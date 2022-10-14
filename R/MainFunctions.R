@@ -13,14 +13,14 @@ NULL
 #'  in parallel. The main.seed parameter is for reproducibility and can be left as default.
 #'
 #' @param object A DNEA object
+#' @param lambda_values An optional list of lambda values to fit a model and calculate the BIC score.
+#'        If not provided, a set of lambda values are chosen based on the size of the dataset.
+#' @param runParallel A boolean indicating if stability selection should be run in parallel
 #' @param nCores The number of cores available for parallel processing. If more cores than lambda values
-#'        tested is specified, will default to one worker per lambda value.If set to 1, the analysis is not
-#'        run in parallel.
-#'@param lambda_values An optional list of lambda values to fit a model and calculate the BIC score.
-#'       If not provided, a set of lambda values are chosen based on the size of the dataset.
-#'@param eps_cutoff A significance cut-off for thresholding network interactions.
-#'       The default value is 1e-06.
-#'@param eta_value default parameter ??. Default is 0.1
+#'        tested is specified, will default to one worker per lambda value.
+#' @param eps_cutoff A significance cut-off for thresholding network interactions.
+#'        The default value is 1e-06.
+#' @param eta_value default parameter ??. Default is 0.1
 #'
 #' @return A DNEAobject containing the BIC and liklihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
@@ -33,8 +33,9 @@ NULL
 #' @import parallel
 #' @import pbapply
 BICtune <- function(object,
-                    nCores = 1,
                     lambda_values,
+                    runParallel = FALSE,
+                    nCores = 1,
                     eps_cutoff = 1e-06,
                     eta_value = 0.1){
 
@@ -73,15 +74,16 @@ BICtune <- function(object,
 
   #If more cores available than lambda values tested, will set one worker
   #per lambda value to improve efficiency
-  if(nCores > 1){
+  if(runParallel){
 
     message("Lambda parameter will be optimized in parallel.\n", appendLF = TRUE)
 
     if(nCores > length(lambda_values)){
 
       nCores <- length(lambda_values)
-      message("More cores available than lambda values being tested.")
-      message("Resource utilization is being adjusted for efficiency", appendLF = TRUE)
+      message("More cores available than lambda values being tested.", appendLF = TRUE)
+      message("Resource utilization is being adjusted for efficiency.", appendLF = TRUE)
+      message(paste0(nCores, 'independent processes will be used in parallelization.'), appendLF = TRUE)
     }
 
     #initialize parallel process
