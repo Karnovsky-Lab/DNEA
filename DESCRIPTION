@@ -1,5 +1,5 @@
 Package: DNEAdev
-Title: What the Package Does (One Line, Title Case)
+Title: Differential Network Expression Analysis
 Version: 0.0.0.9000
 Authors@R: 
     person("Christopher", "Patsalis", , "patsalis@umich.edu", role = c("aut", "cre"),
@@ -9,10 +9,23 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
-Imports: gdata, zoo, igraph, glasso, glmnet, corpcor, dplyr, foreach, parallel, doParallel, methods, janitor
+RoxygenNote: 7.2.1
+Imports: zoo,
+        igraph,
+        gdata,
+        glasso,
+        glmnet,
+        corpcor,
+        dplyr,
+        foreach,
+        parallel,
+        doParallel,
+        methods,
+        janitor,
+        pbapply,
+        furrr,
+        stringr
 Collate: 
-    'DNEAobjectMethods.R'
     'JSEM.R'
     'MainFunctions.R'
     'clusteringNet.R'
@@ -21,5 +34,4 @@ Collate:
     'diagnostics.R'
     'netgsa_complex.R'
     'preprocess_lib.R'
-    'stabsel_gglasso.R'
     'utilities.R'
