@@ -6,3 +6,5 @@ devtools::load_all()
 available('DNEA')
 #use_devtools()
 devtools::document()
+devtools::check()
+
