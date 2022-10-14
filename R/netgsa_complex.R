@@ -611,7 +611,6 @@ normalizeAdj <-
     return(list(normA = normA, Lmat = Lmat, LapMat = LapMat, InfMat = InfMat))
   }
 
-matTr <- function(z) sum(diag(z))
 
 profile.newton.se <-
   function(x0, D, r, control = NULL) {
