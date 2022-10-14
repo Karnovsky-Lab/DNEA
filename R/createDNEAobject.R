@@ -1,107 +1,209 @@
-#'createDNEAobject
-#'@export
-#'@import janitor
-#'@import methods
+#'Structure input data for initialization of DNEAobject
+#'
+#'Manipulates input data and creates metadata for initialization of DNEAobject
+#'
+#'@param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
+#'       and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
+#'       the numeric expression data
+#' @param scaled_expression_data A matrix or dataframe similar to expression_data but for scaled data
+#' @param control A string corresponding to the name of condition 1 in column one of the data matrix
+#' @param case A string corresponding to the name of condition 2 in column one of the data matrix
+#'
+#' @return A list containing two lists. The first list, named assays, contains the uns-scaled data (if provided)
+#'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
+#'         from the input data.
+#'
+#' @import janitor
+#' @import methods
+#'
+#' @noRd
+restructure_input_data <- function(expression_data, scaled_expression_data, control, case){
 
-
-restructure_input_data <- function(Expression = NULL, NormalExpression = NULL, control, case){
-
-  #check to make sure data was input
-  if(is.null(Expression) & is.null(NormalExpression)) stop('Expression data must be provided to create DNEAobject')
-
-  #Check factor to make sure only 2 groups
-  if(!(is.null(NormalExpression))){
-    if(class(NormalExpression[,1]) == 'numeric') stop('First column should be sample condition')
-    NormalExpression[,1]<- factor(NormalExpression[,1],levels = c(control, case))
-    cat(paste0('Condition for NormalExpression should be of class factor. Converting Now. \n',
-                   'Condition is now a factor with levels:','\n', '1. ', levels(NormalExpression[,1])[1], '\n', '2. ',levels(NormalExpression[,1])[2],'\n\n'))
-
-  }
-  if(!(is.null(Expression))){
-    if(class(Expression[,1]) == 'numeric') stop('First column should be sample condition')
-    if(class(Expression[,1]) != 'factor'){
-      Expression[,1]<- factor(Expression[,1], levels = c(control, case))
-      cat(paste0('Condition for Expression should be of class factor. Converting Now. \n',
-                     'Condition is now a factor with levels:','\n', '1. ', levels(Expression[,1])[1], '\n', '2. ',levels(Expression[,1])[2],'\n\n'))
-
-    }
-  }
-
-
-  #set object to use for metadata
-  if(!(is.null(Expression))){
-    meta <- Expression
-  } else{
-    meta <- NormalExpression
-  }
-
+  ######################
+  #**INITIALIZE LISTS**#
+  #*####################
 
   #create metadata list and add names
-  Meta_key<-c("Samples", "Features", "clean_Feature_Names","Condition")
-  Metadata<-vector(mode = 'list', length = length(Meta_key))
-  names(Metadata) <- Meta_key
+  meta_key<-c("samples", "features", "clean_feature_names","condition_values")
+  metadata<-vector(mode = 'list', length = length(meta_key))
+  names(metadata) <- meta_key
+
+  #create assays list of expression data
+  assays_key <- c('expression_data','scaled_expression_data')
+  assays <- vector(mode = 'list', length = length(assays_key))
+  names(assays) <- assays_key
+
+
+  ############################################################
+  #**CHECK FOR PROPER CONDITIONS AND CONVERT DATA TO MATRIX**#
+  ############################################################
+
+  #un-scaled data
+  if(missing(expression_data) == FALSE){
+
+    #check proper data structure
+    if(class(expression_data[,1]) == 'numeric') stop('First column should be sample condition')
+
+    #turn condition into factor
+    if(class(expression_data[,1]) != 'factor'){
+      expression_data[,1]<- factor(expression_data[,1], levels = c(control, case))
+      cat(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
+                 'Condition is now a factor with levels:',
+                 '\n', '1. ',
+                 levels(expression_data[,1])[1],
+                 '\n', '2. ',
+                 levels(expression_data[,1])[2],'\n\n'))
+    }
+
+    #clean column names and convert data to matrix
+    unscaled_feature_names <- colnames(expression_data[,-1])
+    unscaled_sample_names <- rownames(expression_data)
+    unscaled_condition_values <- expression_data[,1]
+    colnames(expression_data) <- make_clean_names(colnames(expression_data))
+    expression_data <- as.matrix(expression_data[,-1])
+
+    #add to assays list
+    assays[['expression_data']] <- expression_data
+  }
+
+  #scaled data
+  if(missing(scaled_expression_data) == FALSE){
+
+    #check proper data structure
+    if(class(scaled_expression_data[,1]) == 'numeric') stop('First column should be sample condition')
+
+    #turn condition into a factor
+    if(class(scaled_expression_data[,1]) != 'factor'){
+      scaled_expression_data[,1]<- factor(scaled_expression_data[,1],levels = c(control, case))
+      cat(paste0('Condition for scaled_expression_data should be of class factor. Converting Now. \n',
+                 'Condition is now a factor with levels:',
+                 '\n', '1. ',
+                 levels(scaled_expression_data[,1])[1],
+                 '\n', '2. ',
+                 levels(scaled_expression_data[,1])[2],'\n\n'))
+    }
+
+    #clean column names and convert data to matrix
+    scaled_feature_names <- colnames(scaled_expression_data[,-1])
+    scaled_sample_names <- rownames(scaled_expression_data)
+    scaled_condition_values <- scaled_expression_data[,1]
+    colnames(scaled_expression_data) <- make_clean_names(colnames(scaled_expression_data))
+    scaled_expression_data <- as.matrix(scaled_expression_data[,-1])
+  } else {
+
+    #if no scaled data is provided, split by condition and scale the data
+    scaled_expression_data <- rbind(lapply(split_by_condition(dat = expression_data,
+                                                              condition_levels = levels(unscaled_condition_values),
+                                                              condition_by_sample = unscaled_condition_values),
+                                           function(x) scale(x)))
+
+    warning('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!')
+    scaled_feature_names <- unscaled_feature_names
+    scaled_sample_names <- unscaled_sample_names
+    scaled_condition_values <- unscaled_condition_values
+  }
+
+  ##############################################
+  #**add data to initialized lists for output**#
+  ##############################################
+
+  #add scaled data to assays list
+  assays[['scaled_expression_data']] <- scaled_expression_data
 
   #Add features, samples, condition to metadata
-  Metadata[["Samples"]] <- rownames(meta)
-  Metadata[["Features"]] <- colnames(meta)[2:ncol(meta)]
-  Metadata[["clean_Feature_Names"]] <- make_clean_names(colnames(meta)[2:ncol(meta)])
-  Metadata[["Condition"]] <- meta[,1]
+  metadata[["samples"]] <- scaled_sample_names
+  metadata[["features"]] <- scaled_feature_names
+  metadata[["clean_feature_names"]] <- make_clean_names(colnames(scaled_expression_data))
+  metadata[["condition_values"]] <- scaled_condition_values
 
-  #create Assays list of expression data
-  Assays_key <- c('Expression','NormalExpression')
-  Assays <- vector(mode = 'list', length = length(Assays_key))
-  names(Assays) <- Assays_key
-
-  #convert data to a matrix
-  if(!(is.null(Expression))){
-    colnames(Expression) <- make_clean_names(colnames(Expression))
-    Expression <- as.matrix(Expression[,2:ncol(Expression)])
-
-    # temp <- lapply(Expression[,-1], function(x) as.numeric(as.character(x)))
-    # names(temp) <- NULL
-    # Expression <- t(do.call(rbind, temp))#p by n
-    # rownames(Expression)<-Metadata$Samples
-    # colnames(Expression<-Metadata$clean_Feature_Names)
-
-  }
-  if(!(is.null(NormalExpression))){
-    colnames(NormalExpression) <- make_clean_names(colnames(NormalExpression))
-    NormalExpression <- as.matrix(NormalExpression[,2:ncol(NormalExpression)])
-    # temp2 <- lapply(NormalExpression[,-1], function(x) as.numeric(as.character(x)))
-    # names(temp2) <- NULL
-    # NormalExpression <- t(do.call(rbind, temp2))
-    # rownames(NormalExpression)<-Metadata$Samples
-    # colnames(NormalExpression<-Metadata$clean_Feature_Names)
-  }
-
-  #Check to make sure data is the same
-  if(!(is.null(Expression)) & !(is.null(NormalExpression))){
-    #check to make sure the normalized and un-normalized input data have identical features and samples in the same order
-    if(!(all(colnames(Expression) == colnames(NormalExpression))) | all(!(rownames(Expression) == rownames(NormalExpression)))) stop("Expression matrices must have identical features and samples")
-  }
-
-  #Normalize data if not provided
-  if(is.null(NormalExpression)){
-    NormalExpression <-scale(Expression)
-    warning('Data has been normalized for further analysis. New data can be found in the NormalExpression Assay!')
-  }
-
-  #create matrices from data
-  Assays[['Expression']] <- Expression
-  Assays[['NormalExpression']] <- NormalExpression
-
-  return(list(Assays, Metadata))
+  return(list(assays, metadata))
 
 }
-createDNEAobject <- function(Project.Name, Expression = NULL, NormalExpression = NULL, control, case){
 
-  restructured_data <- restructure_input_data(Expression = Expression, NormalExpression = NormalExpression, control = control, case = case)
+#'Initializs the DNEAobject
+#'
+#'Takes the input data and restructures it to create the DNEAobject and expression_data is scaled if
+#' scaled_exprssion_data is not provided. Diagnostics are performed on the scaled data and the minimum
+#' eigen value and condition number are calculated for the whole dataset and each condition, specified by the
+#' control and case inputs, separated.The output will inform the user if Feature Reduction should be performed prior
+#' to continuing the analysis.
+#'
+#' @param project_name A string containing an identifying name for the analysis
+#' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
+#'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
+#'        the numeric expression data
+#' @param scaled_expression_data A matrix or dataframe similar to expression_data but for scaled data
+#' @param control A string corresponding to the name of condition 1 in column one of the data matrix
+#' @param case A string corresponding to the name of condition 2 in column one of the data matrix
+#'
+#' @return DNEAobject containing the scaled and un-scaled (if provided) data in assays, as well as sample number,
+#' feature number, sample names, feature names, and condition number in metadata
+#'
+#' @export
+createDNEAobject <- function(project_name, expression_data, scaled_expression_data, control, case){
 
-  #Initialize the DNEAobject
-  object <- new("DNEAobject", Project.Name = Project.Name, Assays =  restructured_data[[1]], Metadata = restructured_data[[2]], Joint.Graph = make_empty_graph(n = ncol(restructured_data[[1]][[1]]), directed = TRUE))
-  #Perform diagnostics on the dataset
+  ######################
+  #**Check input data**#
+  ######################
+
+  #check to make sure data was input
+  if(missing(expression_data) & missing(scaled_expression_data))
+    stop('Expression data must be provided to create DNEAobject')
+
+  #check to make sure date input is identical
+  if(missing(expression_data) == FALSE & missing(scaled_expression_data) == FALSE){
+    if(all(colnames(expression_data[,-1]) != colnames(scaled_expression_data[,-1])) |
+       all(rownames(expression_data[,-1]) != rownames(scaled_expression_data[,-1])) |
+       all(expression_data[,1] != scaled_expression_data[,1])) stop("Data matrices must have identical features, samples, and condition values")
+  }
+
+  #########################################
+  #**feed data to restructure_input_data**#
+  #########################################
+
+  if(missing(expression_data)){
+
+    #create data structures to initialize DNEAobject with scaled data
+    restructured_data <- restructure_input_data(scaled_expression_data = scaled_expression_data,
+                                                control = control,
+                                                case = case)
+  }
+  if(missing(scaled_expression_data)){
+
+    #create data structures to initialize DNEAobject with un-scaled data
+    restructured_data <- restructure_input_data(expression_data = expression_data,
+                                                control = control,
+                                                case = case)
+  }
+  if(missing(scaled_expression_data) == FALSE & missing(expression_data) == FALSE){
+
+    #create data structures to initialize DNEAobject with scaled and un-scaled data
+    restructured_data <- restructure_input_data(expression_data = expression_data,
+                                                scaled_expression_data = scaled_expression_data,
+                                                control = control,
+                                                case = case)
+  }
+
+
+  ###########################
+  #**Initialize DNEAobject**#
+  ###########################
+
+  object <- new("DNEAobject",
+                project_name = project_name,
+                assays =  restructured_data[[1]],
+                metadata = restructured_data[[2]],
+                joint_graph = make_empty_graph(n = ncol(restructured_data[[1]][['scaled_expression_data']]),
+                                               directed = TRUE),
+                hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL))
+
+  #########################
+  #**Perform diagnostics**#
+  #########################
+
   diagnostic_values <- dataDiagnostics(object)
-  object@Dataset_summary <- diagnostic_values[[1]]
-  object@Nodes <- diagnostic_values[[2]]
+  object@dataset_summary <- diagnostic_values[[1]]
+  object@node_list <- diagnostic_values[[2]]
+
   return(object)
 }
