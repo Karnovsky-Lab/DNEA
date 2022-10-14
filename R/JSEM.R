@@ -141,8 +141,7 @@ tune_init <- function(
   init_param[['num_samples_by_cond']] <- num_samples_by_cond
   return(init_param)
 }
-#to select the optimal tuning parameter for Guo et al.
-##--------------------------------------------\
+
 #' CGM_AHP_tune optimizes the tuning parameter for Guo et al. (2011) method in CGM_AHP_train
 #'
 #' This function takes the data and corresponding condition, as well as a list of lambda values
