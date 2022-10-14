@@ -1,9 +1,10 @@
 # wrapper function
-#'ReduceFeatures
-#'@export
-#'@import igraph
-#'@import dplyr
-#'@import stringr
+#' ReduceFeatures
+#' @import igraph
+#' @import dplyr
+#' @import stringr
+#'
+#' @export
 ReduceFeatures <- function(object,
                           method = c("correlation",
                                      "knowledge",
