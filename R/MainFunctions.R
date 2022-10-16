@@ -317,9 +317,6 @@ stabilitySelection <- function(object,
   selection_probabilities <- vector("list", length(object@dataset_summary$condition_levels))
   names(selection_probabilities) <- object@dataset_summary$condition_levels
 
-  #initiate output list
-  output_stabsel <- vector("list", length = 2)
-  names(output_stabsel) <- c("selectionResults","selectionProbabilites")
 
   #reduce results to one matrix and calculate selection probabilities
   for (k in 1:length(object@dataset_summary$condition_levels)){
@@ -334,10 +331,9 @@ stabilitySelection <- function(object,
     }
   }
 
-  output_stabsel[["selectionResults"]] <- selection_results
-  output_stabsel[["selectionProbabilites"]] <- selection_probabilities
+  object@stable_networks[["selection_results"]] <- selection_results
+  object@stable_networks[["selection_probabilities"]] <- selection_probabilities
 
-  object@stable_networks <- output_stabsel
   return(object)
 }
 
@@ -386,7 +382,7 @@ getNeworks <- function(object, eps = 1e-06){
 
     for (k in 1:length(object@dataset_summary$condition_levels)){
       message(paste0('Estimating model for ', object@dataset_summary$condition_levels[k], ' ...'), appendLF = TRUE)
-      fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]), weights=1/(1e-04 + object@stable_networks$selectionProbabilites[[k]]))
+      fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]), weights=1/(1e-04 + object@stable_networks$selection_probabilities[[k]]))
       weights_adjusted[[k]] <- fit$Theta.glasso
     }
 

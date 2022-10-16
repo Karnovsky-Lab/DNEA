@@ -195,7 +195,8 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
                 metadata = restructured_data[[2]],
                 joint_graph = make_empty_graph(n = ncol(restructured_data[[1]][['scaled_expression_data']]),
                                                directed = TRUE),
-                hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL))
+                hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
+                stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
   #########################
   #**Perform diagnostics**#
