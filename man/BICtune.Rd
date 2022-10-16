@@ -4,17 +4,25 @@
 \alias{BICtune}
 \title{Optimize the Lambda parameter for glasso}
 \usage{
-BICtune(object, nCores = 1, lambda_values, eps_cutoff = 1e-06, eta_value = 0.1)
+BICtune(
+  object,
+  lambda_values,
+  runParallel = FALSE,
+  nCores = 1,
+  eps_cutoff = 1e-06,
+  eta_value = 0.1
+)
 }
 \arguments{
 \item{object}{A DNEA object}
 
-\item{nCores}{The number of cores available for parallel processing. If more cores than lambda values
-tested is specified, will default to one worker per lambda value.If set to 1, the analysis is not
-run in parallel.}
-
 \item{lambda_values}{An optional list of lambda values to fit a model and calculate the BIC score.
 If not provided, a set of lambda values are chosen based on the size of the dataset.}
+
+\item{runParallel}{A boolean indicating if stability selection should be run in parallel}
+
+\item{nCores}{The number of cores available for parallel processing. If more cores than lambda values
+tested is specified, will default to one worker per lambda value.}
 
 \item{eps_cutoff}{A significance cut-off for thresholding network interactions.
 The default value is 1e-06.}
