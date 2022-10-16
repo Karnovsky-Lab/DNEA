@@ -91,12 +91,6 @@ BICtune <- function(object,
     on.exit(stopCluster(cl))
 
     #pass necessary objects to workers
-    parallel::clusterExport(cl = cl,
-                            varlist = c("lambda_values",
-                                        "trainX",
-                                        "trainY",
-                                        "eta_value"),
-                            envir = environment())
     parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
     parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
 
@@ -197,9 +191,17 @@ stabilitySelection <- function(object,
   #**Prepare data and initialize parameters**#
   ############################################
 
-  #stability selection requires lambda hyper-parameter. Will use optimal_lambda if
+  #stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
   #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
-
+  #
+  # choosing lambda follows the following algorithm:
+  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+  #    for analysis
+  # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
+  #    @hyperparamater[['optimized_lambda']]
+  # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+  #    for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
   if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
     if(missing(optimal_lambda) == FALSE){
 
@@ -256,9 +258,12 @@ stabilitySelection <- function(object,
     on.exit(stopCluster(cl))
 
     #pass necessary objects to independent workers
-    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train","CGM_AHP_stabsel_subsample","CGM_AHP_stabsel", "matTr"))
-    parallel::clusterExport(cl = cl, varlist = c("data_split_by_condition", "optimized_lambda","nreps","main.seed","stabsel_init_param"), envir = environment())
-    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso"), set.seed(main.seed)))
+    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
+                                                 "CGM_AHP_train",
+                                                 "CGM_AHP_stabsel_subsample",
+                                                 "CGM_AHP_stabsel",
+                                                 "matTr"))
+    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
 
 
     if (subSample){
@@ -305,6 +310,7 @@ stabilitySelection <- function(object,
 
   #add empty line after progress bar
   message("", appendLF = TRUE)
+
   #####################################
   #**Concatenate results for output **#
   #####################################
@@ -357,7 +363,7 @@ stabilitySelection <- function(object,
 #' @import corpcor
 #' @import dplyr
 #' @export
-getNeworks <- function(object, eps = 1e-06){
+getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
   ############################################
   #**Prepare data and initialize parameters**#
@@ -376,13 +382,68 @@ getNeworks <- function(object, eps = 1e-06){
                                                     condition_levels = object@dataset_summary$condition_levels,
                                                     condition_by_sample = object@metadata$condition_values)
 
+    # #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
+    # #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+    # #
+    # # choosing lambda follows the following algorithm:
+    # # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+    # #    for analysis
+    # # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
+    # #    @hyperparamater[['optimized_lambda']]
+    # # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+    # #    for analysis
+    # # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
+    # if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
+    #   if(missing(optimal_lambda) == FALSE){
+    #
+    #     optimized_lambda <- optimal_lambda
+    #     warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
+    #           already exists - optimal_lambda will be used in analysis')
+    #
+    #   } else{
+    #
+    #     optimized_lambda <- object@hyperparameter[["optimized_lambda"]]
+    #   }
+    # } else{
+    #   if(missing(optimal_lambda) == FALSE){
+    #
+    #     optimized_lambda <- optimal_lambda
+    #     object@hyperparameter[["optimized_lambda"]] <- optimal_lambda
+    #     message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda')
+    #
+    #   } else{
+    #
+    #     stop('No lambda value was supplied for the model. Please run BICtune() or provide a lambda
+    #      value using the optimal_lambda parameter.')
+    #   }
+    # }
+    #
+    # #print lambda used
+    # message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+
+    #model will used selection weights based on stability selection if provided
+    if (is.null(object@stable_networks[['selection_probabilities']]) == FALSE){
+
+      model_weight_values <- lapply(object@stable_networks[['selection_probabilities']],
+                                    function(x) 1/(1e-04 + x))
+      message('selection_probabilites from stability selection will be used in glasso model!')
+
+    } else{
+
+      model_weight_values <- 1
+      message('No selection_probabilities were found. We recommend running
+              stabilitySelection() prior to estimating the glasso model!')
+
+    }
+
     #############################################
     #**Estimate the partial correlation matrix**#
     #############################################
-
+    #add in lambda parameter?
     for (k in 1:length(object@dataset_summary$condition_levels)){
       message(paste0('Estimating model for ', object@dataset_summary$condition_levels[k], ' ...'), appendLF = TRUE)
-      fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]), weights=1/(1e-04 + object@stable_networks$selection_probabilities[[k]]))
+      fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
+                                weights= model_weight_values[[k]])
       weights_adjusted[[k]] <- fit$Theta.glasso
     }
 
