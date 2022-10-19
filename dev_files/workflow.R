@@ -1,19 +1,25 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAdev/data/TEDDYplasmaIA.csv')
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv')
+#dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/LIPID/TEDDY_POS_IA_LIPID_full_adjusted_V2.csv')
 rownames(dat) <- dat$sample
 dat<- dat[,-1]
 
 object<-createDNEAobject(project_name = 'testing', scaled_expression_data = dat, case = 'IA:case', control = 'IA:control')
-object <- BICtune(object = object, nCores = 4)
+object <- BICtune(object = object,runParallel = TRUE, nCores = 4)
 object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 4, nCores = 4)
 object <- getNeworks(object = object)
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
 
 
-
-
-
+separated_conditions_scaled <- split_by_condition(dat = dat[,-1],
+                                                  condition_levels = unique(dat[,1]),
+                                                  condition_by_sample = dat[,1])
+dat2<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/LIPID/TEDDY_POS_DM_LIPID_full_adjusted.csv')
+rownames(dat2) <- dat2$sample
+dat2<- dat2[,-1]
+object2<- createDNEAobject(project_name = 'testing', expression_data = dat2, case = 'DM:case', control = 'DM:control')
+test<-reduceFeatures(object2, method = 'correlation', correlation_threshold = 0.3)
 #scale TEDDY
 dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 rownames(dat) <- dat$sample
