@@ -25,11 +25,10 @@ matTr <- function(z){
 #' @returns The ouput of a glasso model
 #'
 #' @import zoo
-#' @import stats
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
+#' @importFrom stats cov
 #' @noRd
 CGM_AHP_train <- function(
   trainX,
@@ -118,6 +117,7 @@ CGM_AHP_train <- function(
 #' the training_data: number of features (p), number of conditions (K), number of lambda
 #' values being tested (N), an a vector containing the number of samples per condition (n),
 #' an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
+#'
 #' @noRd
 tune_init <- function(
     trainX, #training data
@@ -163,10 +163,9 @@ tune_init <- function(
 #'@returns A list containing the BIC and liklihood score for each lambda parameter evaluated.
 #'
 #' @import zoo
-#' @import stats
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
+#' @importFrom stats cov
 #' @noRd
 CGM_AHP_tune <- function(
     trainX,   # training data
@@ -198,7 +197,7 @@ CGM_AHP_tune <- function(
     data <- testX[which(model == k), ]
     empcov <- cov(data)
     if (kappa(empcov) > limkappa){
-      empcov = empcov + eta * diag(p)
+      empcov = empcov + eta * diag(num_features)
     }
     likelihood = likelihood + matTr(empcov %*% Omega.hat[[k]]) - log(det(Omega.hat[[k]]))
   }
@@ -300,7 +299,6 @@ stabsel_init <- function(
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
 #' @noRd
 CGM_AHP_stabsel <- function(listX,
                             X,
@@ -393,7 +391,6 @@ CGM_AHP_stabsel <- function(listX,
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
 #' @noRd
 CGM_AHP_stabsel_subsample <- function(listX,
                                       X,
@@ -478,6 +475,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #' @return An adjacency matrix for the data network estimated by the glasso model
 #'
 #' @import glasso
+#' @importFrom stats cov2cor
 #' @noRd
 adjDGlasso_minimal <- function(
     X,

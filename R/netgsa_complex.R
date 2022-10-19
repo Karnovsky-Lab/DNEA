@@ -102,6 +102,14 @@ NetGSA <-
     return(output)
   }
 
+#' call.netgsa does this
+#'
+#' more info here
+#'
+#'
+#' @return what it returns
+#'
+#' @importFrom stats sd
 call.netgsa <-
   function(
     D,    	            #Influence matrices in a list
@@ -215,7 +223,14 @@ adj2inf <-
       return(DD)
     }
   }
-
+#' edgelist2adj does this
+#'
+#' more info
+#'
+#' @return returns this
+#'
+#' @importFrom utils read.table
+#' @noRd
 edgelist2adj <-
   function(file, vertex.names, mode=c("directed", "undirected")) {
     this.call <- match.call()
@@ -254,7 +269,15 @@ graphlaplacian <-
     return(list(Lunnorm = Lunnorm, Lnorm = Lnorm))
   }
 
-
+#' glmnet.soft does this
+#'
+#' more info
+#'
+#' @return returns this
+#'
+#' @importFrom stats lm
+#'
+#' @noRd
 glmnet.soft <- function(x, y, lambda){
   require(glmnet)
 
@@ -292,6 +315,22 @@ glmnet.soft <- function(x, y, lambda){
 ##			are used in this function. For this reason, it is important that both of these matrices
 ##			are also ordered according to the causal order of the nodes in X.
 ##------------------------------------------------- /
+#' netEST.dir selects the covariance matrix based on external information about 0's and 1's
+#'
+#' @param X The data matrix of n by p
+#' @param zero The given external information about 0's
+#' @param one The given external information about 1's
+#' @param lambda The tuning parameter in lasso regression, only accept one at a time
+#' @param eps The minimum threshold value for determining edges. By default, it's 1e-8.
+#' @param verbose Whether to display intermediate outputs.
+#'
+#' @return The covariance matrix
+#'
+#' @importFrom stats lm
+#' @importFrom stats coef
+#' @importFrom stats residuals
+#'
+#'@noRd
 netEst.dir <- function(X, zero=NULL, one=NULL, lambda, verbose=FALSE, eps=1e-08) {
   n = dim(X)[1]
   p = dim(X)[2]
@@ -400,7 +439,19 @@ get.contrast <- function(InfMat, b){
   }
   return(LC)
 }
-
+#' netgsa.ftest does this
+#'
+#' more info
+#'
+#'
+#' @return returns this
+#'
+#' @importFrom stats pf
+#' @importFrom stats pt
+#' @importFrom Matrix rankMatrix
+#' @importFrom Matrix bdiag
+#'
+#' @noRd
 
 netgsa.ftest <- function(s2g, s2e, D, DtD, DDInv, n_vec, B, beta_hat){
   ncond = length(D)
@@ -751,8 +802,15 @@ profile.newton.se <-
     return(list(s2e = se, s2g = sg, tau = tau))
   }
 
-
-
+#' approxVarEst does something
+#'
+#' more info here
+#'
+#'
+#' @return what it returns
+#'
+#' @importFrom stats cov
+#' @noRd
 approxVarEst <-  function(se0, sg0, D, r, n_vec, control=NULL){
     #D and r are both lists.
     if (is.null(control)) {
