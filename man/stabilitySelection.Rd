@@ -30,10 +30,10 @@ gets smaller, more reps should be run; For datasets under 200 samples, we sugges
 to begin with ~10 reps per core. However, you may need to run one rep per core for optimal
 performance with some datasets.}
 
-\item{main.seed}{Sets the seed for random number generation. This ensures reproducibility.}
-
-\item{optimized_lambda}{The optimal lambda value to be used in the model. This parameter is only
+\item{optimal_lambda}{The optimal lambda value to be used in the model. This parameter is only
 necessary if BICtune() is not performed}
+
+\item{main.seed}{Sets the seed for random number generation. This ensures reproducibility.}
 }
 \value{
 DNEAobject containing the stable networks for analysis.
