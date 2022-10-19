@@ -13,9 +13,8 @@
 #'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
 #'         from the input data.
 #'
-#' @import janitor
 #' @import methods
-#'
+#' @importFrom janitor make_clean_names
 #' @noRd
 restructure_input_data <- function(expression_data, scaled_expression_data, control, case){
 
@@ -92,12 +91,20 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   } else {
 
     #if no scaled data is provided, split by condition and scale the data
-    scaled_expression_data <- rbind(lapply(split_by_condition(dat = expression_data,
+    scaled_expression_data <- lapply(split_by_condition(dat = expression_data,
                                                               condition_levels = levels(unscaled_condition_values),
                                                               condition_by_sample = unscaled_condition_values),
-                                           function(x) scale(x)))
+                                           function(x) scale(t(x)))
+
+    #combine scaled data into one matrix
+    scaled_expression_data <- rbind(scaled_expression_data[[1]],scaled_expression_data[[2]])
+
+    #order samples to be same as un-scaled
+    scaled_expression_data <- scaled_expression_data[rownames(expression_data),]
 
     warning('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!')
+
+    #set the metadata equal to un-scaled counterpart
     scaled_feature_names <- unscaled_feature_names
     scaled_sample_names <- unscaled_sample_names
     scaled_condition_values <- unscaled_condition_values
@@ -146,10 +153,6 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
   #**Check input data**#
   ######################
 
-  #check to make sure data was input
-  if(missing(expression_data) & missing(scaled_expression_data))
-    stop('Expression data must be provided to create DNEAobject')
-
   #check to make sure date input is identical
   if(missing(expression_data) == FALSE & missing(scaled_expression_data) == FALSE){
     if(all(colnames(expression_data[,-1]) != colnames(scaled_expression_data[,-1])) |
@@ -160,21 +163,6 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
   #########################################
   #**feed data to restructure_input_data**#
   #########################################
-
-  if(missing(expression_data)){
-
-    #create data structures to initialize DNEAobject with scaled data
-    restructured_data <- restructure_input_data(scaled_expression_data = scaled_expression_data,
-                                                control = control,
-                                                case = case)
-  }
-  if(missing(scaled_expression_data)){
-
-    #create data structures to initialize DNEAobject with un-scaled data
-    restructured_data <- restructure_input_data(expression_data = expression_data,
-                                                control = control,
-                                                case = case)
-  }
   if(missing(scaled_expression_data) == FALSE & missing(expression_data) == FALSE){
 
     #create data structures to initialize DNEAobject with scaled and un-scaled data
@@ -182,8 +170,31 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
                                                 scaled_expression_data = scaled_expression_data,
                                                 control = control,
                                                 case = case)
-  }
+  } else{
 
+    if(missing(expression_data) == FALSE){
+
+      #create data structures to initialize DNEAobject with un-scaled data
+      restructured_data <- restructure_input_data(expression_data = expression_data,
+                                                  control = control,
+                                                  case = case)
+    } else {
+
+      if(missing(scaled_expression_data) == FALSE){
+
+        #create data structures to initialize DNEAobject with scaled data
+        restructured_data <- restructure_input_data(scaled_expression_data = scaled_expression_data,
+                                                    control = control,
+                                                    case = case)
+
+      } else{
+
+        #no data was provided - throw error
+        stop('Expression data must be provided to create DNEAobject')
+      }
+    }
+
+  }
 
   ###########################
   #**Initialize DNEAobject**#
