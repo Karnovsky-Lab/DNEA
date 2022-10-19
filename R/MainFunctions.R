@@ -1,8 +1,6 @@
-#' @include JSEM.R
 #'
-NULL
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Functions
+# Exported Functions
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' Optimize the Lambda parameter for glasso
@@ -29,7 +27,6 @@ NULL
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
 #' @import parallel
 #' @import pbapply
 BICtune <- function(object,
@@ -164,7 +161,7 @@ BICtune <- function(object,
 #' @param nCores The number of cores available for parallel processing. It is generally optimal
 #'        to begin with ~10 reps per core. However, you may need to run one rep per core for optimal
 #'        performance with some datasets.
-#' @param optimized_lambda The optimal lambda value to be used in the model. This parameter is only
+#' @param optimal_lambda The optimal lambda value to be used in the model. This parameter is only
 #'        necessary if BICtune() is not performed
 #' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
 #'
@@ -172,11 +169,9 @@ BICtune <- function(object,
 #'
 #' @export
 #' @import zoo
-#' @import stats
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
 #' @import parallel
 #' @import pbapply
 stabilitySelection <- function(object,
@@ -357,13 +352,13 @@ stabilitySelection <- function(object,
 #'          determined by the glasso model
 #'
 #' @import zoo
-#' @import gdata
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import dplyr
+#' @importFrom gdata lowerTriangle
+#' @importFrom utils combn
 #' @export
-getNeworks <- function(object, optimal_lambda, eps = 1e-06){
+getNeworks <- function(object, eps = 1e-06){
 
   ############################################
   #**Prepare data and initialize parameters**#
@@ -382,44 +377,52 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
                                                     condition_levels = object@dataset_summary$condition_levels,
                                                     condition_by_sample = object@metadata$condition_values)
 
-    # #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
-    # #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
-    # #
-    # # choosing lambda follows the following algorithm:
-    # # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-    # #    for analysis
-    # # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
-    # #    @hyperparamater[['optimized_lambda']]
-    # # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-    # #    for analysis
-    # # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
-    # if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
-    #   if(missing(optimal_lambda) == FALSE){
+    #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
+    #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
     #
-    #     optimized_lambda <- optimal_lambda
-    #     warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
-    #           already exists - optimal_lambda will be used in analysis')
-    #
-    #   } else{
-    #
-    #     optimized_lambda <- object@hyperparameter[["optimized_lambda"]]
-    #   }
-    # } else{
-    #   if(missing(optimal_lambda) == FALSE){
-    #
-    #     optimized_lambda <- optimal_lambda
-    #     object@hyperparameter[["optimized_lambda"]] <- optimal_lambda
-    #     message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda')
-    #
-    #   } else{
-    #
-    #     stop('No lambda value was supplied for the model. Please run BICtune() or provide a lambda
-    #      value using the optimal_lambda parameter.')
-    #   }
-    # }
-    #
-    # #print lambda used
-    # message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+    # choosing lambda follows the following algorithm:
+    # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+    #    for analysis
+    # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
+    #    @hyperparamater[['optimized_lambda']]
+    # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+    #    for analysis
+    # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, use.
+    #    optimized_lambda = sqrt(log(# features) / # samples) for analysis.
+    if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
+      if(missing(optimal_lambda) == FALSE){
+
+        optimized_lambda <- optimal_lambda
+        warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
+              already exists - optimal_lambda will be used in analysis')
+
+      } else{
+
+        optimized_lambda <- object@hyperparameter[["optimized_lambda"]]
+      }
+    } else{
+      if(missing(optimal_lambda) == FALSE){
+
+        optimized_lambda <- optimal_lambda
+        object@hyperparameter[["optimized_lambda"]] <- optimal_lambda
+        message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+
+      } else{
+
+        # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
+        # in adjDGlasso_minimal
+        optimized_lambda = NULL
+
+        stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
+        used in the analyis. However, We highly recommend optimizing the lambda parameter by running
+        BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
+             analysis.')
+
+      }
+    }
+
+    #print lambda used
+    message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
 
     #model will used selection weights based on stability selection if provided
     if (is.null(object@stable_networks[['selection_probabilities']]) == FALSE){
@@ -443,7 +446,8 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     for (k in 1:length(object@dataset_summary$condition_levels)){
       message(paste0('Estimating model for ', object@dataset_summary$condition_levels[k], ' ...'), appendLF = TRUE)
       fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
-                                weights= model_weight_values[[k]])
+                                weights= model_weight_values[[k]],
+                                lambda = optimized_lambda)
       weights_adjusted[[k]] <- fit$Theta.glasso
     }
 
@@ -545,8 +549,13 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   E(jointGraph)$lty[is.na(E(jointGraph)$weight_1)] <- 3 #Group_2
   E(jointGraph)$color[is.na(E(jointGraph)$weight_2)] <- "green" #Group_1
   E(jointGraph)$color[is.na(E(jointGraph)$weight_1)] <- "red"   #Group_2
-  V(jointGraph)$color <- ifelse(object@node_list$DEstatus=="TRUE", "purple", "white")
-  V(jointGraph)$DE <- object@node_list$DEstatus
+
+  if(exists('object@node_list$DEstatus')){
+    V(jointGraph)$color <- ifelse(object@node_list$DEstatus=="TRUE", "purple", "white")
+    V(jointGraph)$DE <- object@node_list$DEstatus
+  } else{
+    V(jointGraph)$DE <- rep(NA, numFeatures(object))
+  }
 
   ###########################################################
   #**ensemble community detection with consusus clustering**#
@@ -602,7 +611,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 #'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
 #'          using getNetGSAresults().
 #'
-#'
+#' @importFrom stats p.adjust
 #' @export
 runNetGSA <- function(object){
 
