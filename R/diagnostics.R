@@ -1,5 +1,17 @@
-#'Datadiagnostics
+#' Datadiagnostics will run Differential Expression on Nodes and check data stability prior to analysis
 #'
+#' This function first takes in a DNEAobject and runs diagnostics on the scaled expression data in the
+#' scaled_expression_data value of the assays tab. It will then calculate the minimum eigen value and
+#' condition number for the whole dataset, as well as for each condition and inform the user if they can
+#' proceed with the analysis or collapse the features using the reduceFeatures() function prior.
+#'
+#' @param object A DNEAobject
+#'
+#' @returns A DNEA object containing an initialized node_list. Differential Expression is performed on
+#'          the features if un-scaled data is provided. The min eigen value and condition number is also
+#'          printed for the whole dataset as well as each condition.
+#'
+#' @importFrom stats t.test cor p.adjust
 #'@noRd
 dataDiagnostics <- function(object) {
 
@@ -24,27 +36,29 @@ dataDiagnostics <- function(object) {
   #**Differential Expression Analysis**#
   ######################################
 
-  #use un-scaled data  if available, otherwise fold change is skipped and scaled data is used for DE
-  if(is.null(expressionData(object))){
-    cond_data <- split_by_condition(dat = scaledExpressionData(object),
-                                    condition_levels = condition_levels,
-                                    condition_by_sample = condition(object))
-    cat(paste0("No un-scaled data was provided so Fold Change was not calculated.", "\n",
-    "We suggest using t-statistic for Differential Expression intenstiy & direction visualizion!",'\n\n'))
-  } else{
+  #DE can only be done on un-scaled data because scaling each condition separately results in a mean
+  #of zero for every feature and no difference in calculations.
+  if(is.null(expressionData(object)) == FALSE){
+
+    #split data by condition to perform DE
     cond_data <- split_by_condition(dat = expressionData(object),
                                     condition_levels = condition_levels,
                                     condition_by_sample = condition(object))
+
+    ##fill in DE in node_lsit
     assign(paste0('feature_info$foldchange-',levels(condition(object))[2], '/', levels(condition(object))[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
     feature_info$fcdirection <- sapply(1:num_features, function(i) ifelse(get(paste0('feature_info$foldchange-',levels(condition(object))[2], '/', levels(condition(object))[1]))[i] > 0, "Up", "Down"))
+    feature_info$t_statistic <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic)
+    feature_info$t_statistic_direction <- sapply(1:num_features, function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"))
+    feature_info$pvalue <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value)
+    feature_info$qvalue <- p.adjust(feature_info$pvalue, "BH")
+    feature_info$DEstatus <- sapply(1:num_features, function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE))
 
+  } else{
+
+    cat("No un-scaled data - Differential Expression on features (ie. nodes) could not be performed. \n")
+    cat("Please see the vignette for more information on why this has ocurred. \n\n")
   }
-
-  feature_info$t_statistic <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic)
-  feature_info$t_statistic_direction <- sapply(1:num_features, function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"))
-  feature_info$pvalue <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value)
-  feature_info$qvalue <- p.adjust(feature_info$pvalue, "BH")
-  feature_info$DEstatus <- sapply(1:num_features, function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE))
 
   ######################################
   #**Feature Diagnostics**#
