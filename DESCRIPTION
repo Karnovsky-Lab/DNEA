@@ -16,19 +16,18 @@ Imports: zoo,
         glasso,
         glmnet,
         corpcor,
-        dplyr,
-        foreach,
+        stats,
+        Matrix,
         parallel,
-        doParallel,
-        methods,
         janitor,
+        methods,
         pbapply,
         furrr,
-        stringr
+        stringr,
+        dplyr
 Collate: 
     'JSEM.R'
     'MainFunctions.R'
-    'clusteringNet.R'
     'collapseNodes-fun.R'
     'createDNEAobject.R'
     'diagnostics.R'
