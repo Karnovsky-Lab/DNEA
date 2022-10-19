@@ -346,6 +346,8 @@ stabilitySelection <- function(object,
 #' thresholded adjacency matrix, determiend by the eps value, is output.
 #'
 #' @param object A DNEAobject
+#' @param optimal_lambda Lambda hyperparameter to be used in analysis. Not necessary if BICtune()
+#'        or stabilitySelection() were already run.
 #' @param eps A significance cut-off for thresholding the adjacency matrix. This can be left as default
 #'
 #' @return A DNEA object containing an adjacency matrix for the data network,
@@ -358,7 +360,7 @@ stabilitySelection <- function(object,
 #' @importFrom gdata lowerTriangle
 #' @importFrom utils combn
 #' @export
-getNeworks <- function(object, eps = 1e-06){
+getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
   ############################################
   #**Prepare data and initialize parameters**#
