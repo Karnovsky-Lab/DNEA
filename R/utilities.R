@@ -68,14 +68,17 @@ setValidity("DNEAobject", function(object){
 #'@noRd
 setMethod("show", "DNEAobject", function(object) {
   cat(is(object)[[1]], "\n",
-      "  Project Name:  ", object@project_name, "\n",
-      "  Un-scaled data: ", class(object@assays$Expression), "\n",
-      "  Scaled data:  ", class(object@assays$NormalExpression), "\n",
-      "  Samples:  ", paste0('There are ',length(object@metadata$Samples), ' samples.'), "\n",
-      "  Features:  ", paste0('There are ',length(object@metadata$Features), 'Features.'), "\n",
-      "  Conditions:  ", object@metadata$Conditions, "\n",
-      "  Optimized Lambda: ", object@BIC[["optimizedLambda"]],
-      "  Sub-clusters: ", unique(object@node_list$membership),
+      "  Project Name -  ", object@project_name, "\n",
+      "  Un-scaled data - ", class(object@assays[["expression_data"]])[[1]], "\n",
+      "  Scaled data -  ", class(object@assays[["scaled_expression_data"]])[[1]], "\n",
+      "  Samples -  ", paste0('There are ',length(object@metadata[["samples"]]), ' samples.'), "\n",
+      "  Features -  ", paste0('There are ',length(object@metadata[["features"]]), ' Features.'), "\n",
+      "  Conditions -  ", paste0("control: ", object@dataset_summary[["condition_levels"]][[1]],
+                                " case: ", object@dataset_summary[["condition_levels"]][[1]]), "\n",
+      "  Optimized Lambda - ", paste0("lambda: ",object@hyperparameter[["optimizedLambda"]],
+                                      " will be used in analysis."), "\n",
+      "  Sub-clusters: ", paste0("there are ", length(unique(object@node_list[["membership"]])),
+                                 " sub-clusters."),
       sep = ""
   )
 })
@@ -107,9 +110,9 @@ setMethod("expressionData", "DNEAobject", function(x) x@assays[['expression_data
 #'
 #'@noRd
 setGeneric("expressionData<-",
-           function(x, mat) standardGeneric("expressionData<-"))
-setMethod("expressionData<-", "DNEAobject", function(x, mat) {
-  x@assays[['expresion_data']] <- mat
+           function(x, value) standardGeneric("expressionData<-"))
+setMethod("expressionData<-", "DNEAobject", function(x, value) {
+  x@assays[['expresion_data']] <- value
   validObject(x)
   return(x)
 })
@@ -125,9 +128,9 @@ setMethod("scaledExpressionData", "DNEAobject", function(x) x@assays[['scaled_ex
 #'
 #'@noRd
 setGeneric("scaledExpressionData<-",
-           function(x, mat) standardGeneric("scaledExpressionData<-"))
-setMethod("scaledExpressionData<-", "DNEAobject", function(x, mat) {
-  x@assays[['scaled_expression_data']] <- mat
+           function(x, value) standardGeneric("scaledExpressionData<-"))
+setMethod("scaledExpressionData<-", "DNEAobject", function(x, value) {
+  x@assays[['scaled_expression_data']] <- value
   validObject(x)
   return(x)
 })
@@ -143,9 +146,9 @@ setMethod("condition", "DNEAobject", function(x) x@metadata$condition_values)
 #'
 #'@noRd
 setGeneric("condition<-",
-           function(x,cond) standardGeneric("condition<-"))
-setMethod("condition<-","DNEAobject", function(x,cond){
-  x@metadata$condition_values <- cond
+           function(x,value) standardGeneric("condition<-"))
+setMethod("condition<-","DNEAobject", function(x,value){
+  x@metadata$condition_values <- value
   validObject(x)
   return(x)
 })
@@ -161,9 +164,9 @@ setMethod("sampleNames", "DNEAobject", function(x) x@metadata$samples)
 #'
 #'@noRd
 setGeneric("sampleNames<-",
-           function(x,snames) standardGeneric("sampleNames<-"))
-setMethod("sampleNames<-","DNEAobject", function(x,snames){
-  x@metadata$samples <- snames
+           function(x,value) standardGeneric("sampleNames<-"))
+setMethod("sampleNames<-","DNEAobject", function(x,value){
+  x@metadata$samples <- value
   validObject(x)
   return(x)
 })
@@ -183,13 +186,13 @@ setGeneric("cleanFeatureNames",
 setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata$clean_feature_names)
 
 #'setter function for condition
-#'@import janitor
+#'#'@importFrom janitor make_clean_names
 #'@noRd
 setGeneric("featureNames<-",
-           function(x,fnames) standardGeneric("featureNames<-"))
-setMethod("featureNames<-","DNEAobject", function(x,fnames){
-  x@metadata$features <- fnames
-  x@metadata$clean_feature_names <- make_clean_names(fnames)
+           function(x,value) standardGeneric("featureNames<-"))
+setMethod("featureNames<-","DNEAobject", function(x,value){
+  x@metadata$features <- value
+  x@metadata$clean_feature_names <- make_clean_names(value)
   validObject(x)
   return(x)
 })
