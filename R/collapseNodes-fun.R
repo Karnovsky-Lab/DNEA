@@ -1,90 +1,118 @@
 # wrapper function
-#' ReduceFeatures
-#' @import igraph
-#' @import dplyr
-#' @import stringr
+#' reduceFeatures() will perform node-collapsing on the matrix in expression_data
 #'
+#' More info
+#'
+#' @param object A DNEA object
+#' @param method A parameter that dictates the collapsing method to use. The options are
+#'        as follows:
+#'            1. correlation
+#'            2. knowledge
+#'            3. hybrid
+#' @param correlation_threshold A threshold wherein features correlated above correlation_threshold
+#'        will be grouped into one. This parameter is only necessary for the correlation and hybrid
+#'        methods
+#' @param metabolite_groups A dataframe containing group information for the collapsing algorithm
+#'        indicated by the "knowledge" method
+#'
+#' @import igraph
+#' @importFrom dplyr %>% summarise across everything group_by select
+#' @importFrom stringr str_detect
+#' @importFrom stats hclust cutree as.dist
 #' @export
-ReduceFeatures <- function(object,
-                          method = c("correlation",
-                                     "knowledge",
-                                     "hybrid"),
-                          corr.threshold = 0.9,
-                          metabolite.groups = NULL){
+reduceFeatures <- function(object,
+                           method = c("correlation",
+                                      "knowledge",
+                                      "hybrid"),
+                           correlation_threshold = 0.9,
+                           metabolite_groups = NULL){
+
+  ################################################################
+  #**Check that input data is correct and initialize parameters**#
+  ################################################################
+
+  #set method
+  method <- match.arg(method)
 
   #Check to see if there is raw expression data provided - Feature reduction must be done on raw expression data
-  if(is.null(Expression(object))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
-                                              'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
+  if(is.null(expressionData(object))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
+                                                  'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
 
-  feature_mean_expression <- apply(Expression(object),2,mean)
-  feature_sd_expression <- apply(Expression(object), 2, sd)
-  if(all(feature_mean_expression < 0.05 & feature_mean_expression > -0.05) |
-         all(feature_sd_expression < 1.05 & feature_sd_expression > 0.95)) warning("Data in Expression Assay looks to be normalized. Feature reduction must be done on raw data!")
-  if(is.null(Expression(object))) stop("Feature reduction must be done on raw data")
+  #check to see if data looks scaled
+  feature_mean <- colMeans(expressionData(object))
+  if(all(feature_mean < 0.05 & feature_mean > -0.05)) warning(paste0("Data in expression_data assay looks to be scaled...",
+                                                                     " Feature reduction must be done on raw data!"))
 
-  dat <- data.frame(sample = sampleNames(object), group = condition(object))
-  dat <-cbind.data.frame(dat, Expression(object))
-  rownames(dat) <- NULL
-  control <- object@Dataset_summary$condition_levels[[1]]
-  case <- object@Dataset_summary$condition_levels[[2]]
-
-  uncollapsed_data <- list()
-  uncollapsed_data[['Assays']] <- object@Assays
-  uncollapsed_data[['Metadata']] <- object@Metadata
-  uncollapsed_data[['Dataset_summary']] <- object@Dataset_summary
-  uncollapsed_data[['Nodes']] <- object@Nodes
-
-  object@Assays[['Expression']] <- NULL
-  object@Assays[['NormalExpression']] <- NULL
-
-  object@Metadata[['Samples']] <-NULL
-  object@Metadata[['Features']] <- NULL
-  object@Metadata[['Samples']] <- NULL
-  object@Metadata[['clean_Feature_Names']] <- NULL
-  object@Metadata[['condition']] <- NULL
-
-  object@Nodes <- data.frame()
-  object@Dataset_summary <- list()
+  #create dataframe input for node collapsing algorithm
+  collapse_dat <- data.frame(samples = object@metadata[['samples']],
+                             groups = object@metadata[['condition_values']],
+                             expressionData(object))
+  #######################################
+  #**perform node collapsing algorithm**#
+  #######################################
 
   if (method == "correlation") {
-    res <- collapseNodes_cor(dat = dat,
-                      corr.threshold = corr.threshold)
+    res <- collapseNodes_cor(dat = collapse_dat,
+                             corr.threshold = correlation_threshold)
   }else if (method == "knowedge") {
-    res <- collapseNodes_knowledge(dat = dat,
-                            metabolite.groups = metabolite.groups)
+    res <- collapseNodes_knowledge(dat = collapse_dat,
+                                   metabolite.groups = metabolite_groups)
   }else if (method == "hybrid") {
-    res <- collapseNodes_hybrid(dat = dat,
-                         metabolite.groups = metabolite.groups,
-                         corr.threshold = corr.threshold)
+    res <- collapseNodes_hybrid(dat = collapse_dat,
+                                corr.threshold = correlation_threshold,
+                                metabolite.groups = metabolite_groups)
   }
-  if(!(is.null(NormalExpression(object)))) warning(paste0('The un-normalized data from the Expression Assay was used for feature reduction.','\n',
-                                                          'The data in the NormalExpression Assay was replaced with log-scaled collapsed data.', '\n',
-                                                          'If you prefer another normalization method replace this data prior to proceeding!', '\n\n',
-                                                          '(orginal data can be accessed with unCollapsedData function)', '\n'))
-  res[['new.data']] <-cbind.data.frame(res[['new.data']][,2],apply(res[['new.data']][,-c(1,2)], 2, as.numeric))
-  rownames(res[['new.data']]) <- uncollapsed_data[["Metadata"]][["Samples"]]
-  restructured_data <- restructure_input_data(Expression = res[['new.data']], control = control, case = case)
-  restructured_data[[2]][["group_membership"]] <- res[['final.membership']]
-  restructured_data[[2]][["uncollapsed_data"]] <- uncollapsed_data
-  object@Assays <- restructured_data[[1]]
-  object@Metadata <-restructured_data[[2]]
-
-  #Perform diagnostics on collapsed dataset
-  diagnostic_values <- dataDiagnostics(object)
-  object@Dataset_summary <- diagnostic_values[[1]]
-  object@Nodes <- diagnostic_values[[2]]
 
 
-  return(object)
+  message(paste0('The un-normalized data from the Expression Assay was used for feature reduction.','\n',
+                                                              'The data in the NormalExpression Assay was replaced with log-scaled collapsed data.', '\n',
+                                                              'If you prefer another normalization method replace this data prior to proceeding!', '\n\n',
+                                                              '(orginal DNEAobject can be found in the feature_membership slot)', '\n'))
+
+  ###################################################
+  #**use new data to initialize reduced DNEAobject**#
+  ###################################################
+
+  #convert reduced data to numeric
+  res[['reduced_data']] <-cbind.data.frame(res[['reduced_data']][,c(1,2)],apply(res[['reduced_data']][,-c(1,2)], 2, as.numeric))[,-1]
+
+  #add original features as column to feature_membership
+  res[["feature_membership"]]$feature <- rownames(res[["feature_membership"]])
+
+    # create membership dataframe to add to metadata
+  #initialize new DNEAobject
+  reduced_object <- createDNEAobject(project_name = object@project_name,
+                                     expression_data = res[['reduced_data']],
+                                     control = object@dataset_summary[['condition_levels']][[1]],
+                                     case = object@dataset_summary[['condition_levels']][[2]])
+
+#add new feature group info to object
+
+  reduced_object@feature_membership <- list(feature_membership =res[["feature_membership"]],
+                                            uncollapsed_DNEAobject = object)
+
+
+  return(reduced_object)
 
 }
 
-
 ################################################################################
 # main functions #
-
 # correlation-based node-collapsing
+#' collapseNodes_cor will collapse nodes based on correlation
+#'
+#' more info about correlation
+#' @param dat unscaled expression data
+#' @param corr.threshold correlation threshold
+#'
+#' @return collapsed data
+#' @import igraph
+#' @importFrom dplyr %>% summarise across everything group_by select
+#' @importFrom stringr str_detect
+#' @importFrom stats hclust cutree as.dist
 collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
+
+  feature.membership <- NULL
   n <- nrow(dat)
   p <- ncol(dat)-2
   sample.groups <- unique(dat[,2])
@@ -98,7 +126,7 @@ collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
   clust <- list()
   mycl <- list()
   for (a in 1:length(x)) {
-    cor.mat[[a]] <- cor(x[[a]][,-c(1:2)],
+    cor.mat[[a]] <- cor(as.matrix(x[[a]][,-c(1:2)]),
                         use = "pairwise.complete.obs",
                         method = "pearson")
     clust[[a]] <- hclust(as.dist(1-abs(cor.mat[[a]])))
@@ -141,9 +169,10 @@ collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
 
     newdat <- list()
     for (a in 1:length(x)) {
-      newdat[[a]] <- t(x[[a]][,-c(1:2)])
+      newdat[[a]] <- t(as.matrix(x[[a]][,-c(1:2)]))
       newdat[[a]] <- merge(final.membership, newdat[[a]],
                            by.x = "row.names", by.y = "row.names")
+      ##error here!
       newdat[[a]] <- newdat[[a]] %>% group_by(feature.membership) %>%
         summarise(across(everything(), mean))
       rownames(newdat[[a]]) <- newdat[[a]]$feature.membership
@@ -153,16 +182,29 @@ collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
       newdat[[a]] <- cbind.data.frame(x[[a]][,c(1:2)],newdat[[a]])
     }
 
-    return(list(final.membership = final.membership,
-                new.data = do.call("rbind",newdat)))
+    return(list(feature_membership = final.membership,
+                reduced_data = do.call("rbind",newdat)))
   }
 }
 
 
-# node-collapsing based on user-supplied metabolite groups
+#' collapseNodes_knowledge node-collapsing based on user-supplied metabolite groups
+#'
+#' more info about correlation
+#'
+#' @param dat unscaled expression data
+#' @param metabolite.groups metabolite groupings
+#'
+#' @return collapsed data
+#'
+#' @import igraph
+#' @importFrom dplyr %>% summarise across everything group_by select
+#' @importFrom stringr str_detect
+#' @importFrom stats hclust cutree as.dist
 collapseNodes_knowledge <- function (dat,
                                      metabolite.groups) {
 
+  metab_group <- NULL
   colnames(metabolite.groups) <- c("metabolite", "metab_group")
   sample.groups <- unique(dat[,2])
 
@@ -172,7 +214,7 @@ collapseNodes_knowledge <- function (dat,
 
   newdat <- list()
   for (a in 1:length(x)) {
-    newdat[[a]] <- t(x[[a]][,-c(1:2)])
+    newdat[[a]] <- t(as.matrix(x[[a]][,-c(1:2)]))
     newdat[[a]] <- merge(metabolite.groups, newdat[[a]],
                          by.x = "metabolite", by.y = "row.names")
     newdat[[a]] <- newdat[[a]] %>% group_by(metab_group) %>%
@@ -184,12 +226,26 @@ collapseNodes_knowledge <- function (dat,
     newdat[[a]] <- cbind.data.frame(x[[a]][,c(1:2)],newdat[[a]])
   }
 
-  return(new.data = do.call("rbind",newdat))
+  return(list(final.membership=metabolite.groups,
+              new.data = do.call("rbind",newdat)))
 }
 
 
 
-# node-collapsing based on correlations and user-supplied metabolite groups
+
+#' collapseNodes_hybrid node-collapsing based on correlations and user-supplied metabolite groups
+#'
+#' more info about correlation
+#'
+#' @param dat unscaled expression data
+#' @param metabolite.groups metabolite groupings
+#' @param corr.threshold correlation threshold
+#'
+#' @return collapsed data
+#' @import igraph
+#' @importFrom dplyr %>% summarise across everything group_by select
+#' @importFrom stringr str_detect
+#' @importFrom stats hclust cutree as.dist
 collapseNodes_hybrid <- function (dat,
                                   metabolite.groups,
                                   corr.threshold = 0.9) {
