@@ -21,7 +21,8 @@ setClass(Class = "DNEAobject",
            adjacency_matrix = 'list',
            stable_networks = 'list',
            joint_graph = 'igraph',
-           netGSA_results = 'list'
+           netGSA_results = 'list',
+           feature_membership = 'list'
          )
 )
 #'Check Validity of "DNEAobject"
@@ -33,7 +34,7 @@ setValidity("DNEAobject", function(object){
     "@project_name must be a character string"
   }
   for (i in length(object@assays)){
-    if(class(object@assays[[i]]) != 'matrix'){
+    if(class(object@assays[[i]])[[1]] != 'matrix'){
       "@assays must be an expression matrix"
     }
     if(length(colnames(object@assays[[i]])) != length(unique(colnames(object@assays[[i]])))){
@@ -158,7 +159,7 @@ setMethod("condition<-","DNEAobject", function(x,value){
 #'@noRd
 setGeneric("sampleNames",
            function(x) standardGeneric("sampleNames"))
-setMethod("sampleNames", "DNEAobject", function(x) x@metadata$samples)
+setMethod("sampleNames", "DNEAobject", function(x) x@metadata[["samples"]]$samples)
 
 #'setter function for Samples
 #'
@@ -166,7 +167,7 @@ setMethod("sampleNames", "DNEAobject", function(x) x@metadata$samples)
 setGeneric("sampleNames<-",
            function(x,value) standardGeneric("sampleNames<-"))
 setMethod("sampleNames<-","DNEAobject", function(x,value){
-  x@metadata$samples <- value
+  x@metadata[["samples"]]$samples <- value
   validObject(x)
   return(x)
 })
@@ -176,14 +177,14 @@ setMethod("sampleNames<-","DNEAobject", function(x,value){
 #'@noRd
 setGeneric("featureNames",
            function(x) standardGeneric("featureNames"))
-setMethod("featureNames", "DNEAobject", function(x) x@metadata$features)
+setMethod("featureNames", "DNEAobject", function(x) x@metadata[["features"]]$features)
 
 #'getter function for clean Features
 #'
 #'@noRd
 setGeneric("cleanFeatureNames",
            function(x) standardGeneric("cleanFeatureNames"))
-setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata$clean_feature_names)
+setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata[["features"]]$clean_feature_names)
 
 #'setter function for condition
 #'#'@importFrom janitor make_clean_names
@@ -191,8 +192,8 @@ setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata$clean_featur
 setGeneric("featureNames<-",
            function(x,value) standardGeneric("featureNames<-"))
 setMethod("featureNames<-","DNEAobject", function(x,value){
-  x@metadata$features <- value
-  x@metadata$clean_feature_names <- make_clean_names(value)
+  x@metadata[["features"]]$features <- value
+  x@metadata[["features"]]$clean_feature_names <- make_clean_names(value)
   validObject(x)
   return(x)
 })
@@ -230,6 +231,38 @@ setMethod("optimizedLambda<-","DNEAobject", function(x, value){
   validObject(x)
 })
 
+#add info to metadata
+includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
+  type = match.arg(type)
+  if(type == 'sample'){
+    if(all(sampleNames(object) == rownames(metadata))){
+      for(i in 1:length(colnames(metadata))){
+
+        new_metadata_colname <- colnames(metadata)[i]
+        object@metadata[["samples"]] <- data.frame(object@metadata[["samples"]],
+                                                   new_metadata_colname = metadata[,i])
+      }
+    } else{
+
+      stop('new metadata order does not match sample order in DNEAobject')
+
+    }
+  } else{
+    if(all(featureNames(object) == rownames(metadata)) |
+       all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))){
+      for(i in 1:length(colnames(metadata))){
+
+        new_metadata_colname <- colnames(metadata)[i]
+        object@metadata[["features"]] <- data.frame(object@metadata[["features"]],
+                                                    new_metadata_colname = metadata[,i])
+      }
+    } else{
+      stop('new metadata order does not match feature order in DNEAobject')
+    }
+  }
+
+  return(object)
+}
 
 
