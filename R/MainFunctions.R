@@ -377,7 +377,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     #separate the data by condition
     data_split_by_condition <- split_by_condition(dat = scaledExpressionData(object),
                                                     condition_levels = object@dataset_summary$condition_levels,
-                                                    condition_by_sample = object@metadata$condition_values)
+                                                    condition_by_sample = condition(object))
 
     #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
     #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -479,7 +479,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     #######################
 
     #initiate output dataframe
-    pairs <- combn(as.character(object@metadata$features), 2, simplify=FALSE)
+    pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
     df <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                      pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
                      check.names = FALSE)
@@ -536,7 +536,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 
   for (loop_el in 1:length(object@adjacency_matrix[["threshold_matrix"]])) {
     g <- graph_from_adjacency_matrix(object@adjacency_matrix[["weighted_matrix"]][[loop_el]], mode="undirected", weighted = TRUE)
-    V(g)$name <- as.character(object@metadata$features)
+    V(g)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- g
   }
 
@@ -623,7 +623,7 @@ runNetGSA <- function(object){
   #separate the data by condition
   separated_conditions_data <- split_by_condition(dat = scaledExpressionData(object),
                                                   condition_levels = object@dataset_summary$condition_levels,
-                                                  condition_by_sample = object@metadata$condition_values)
+                                                  condition_by_sample = condition(object))
 
   out.netgsa <- NetGSA(object@adjacency_matrix[["weighted_matrix"]],
                        x = cbind(separated_conditions_data[[1]], separated_conditions_data[[2]]),
