@@ -4,7 +4,9 @@ library(available)
 devtools::load_all()
 #devtools::create('DNEAdev')
 available('DNEA')
-#use_devtools()
+
+usethis::use_mit_license('DNEADEV')
+
+
 devtools::document()
 devtools::check()
-

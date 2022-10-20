@@ -18,8 +18,8 @@ separated_conditions_scaled <- split_by_condition(dat = dat[,-1],
 dat2<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/LIPID/TEDDY_POS_DM_LIPID_full_adjusted.csv')
 rownames(dat2) <- dat2$sample
 dat2<- dat2[,-1]
-object2<- createDNEAobject(project_name = 'testing', expression_data = dat2, case = 'DM:case', control = 'DM:control')
-test<-reduceFeatures(object2, method = 'correlation', correlation_threshold = 0.3)
+object<- createDNEAobject(project_name = 'testing', expression_data = dat2, case = 'DM:case', control = 'DM:control')
+object<-reduceFeatures(object, method = 'correlation', correlation_threshold = 0.3)
 #scale TEDDY
 dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 rownames(dat) <- dat$sample
