@@ -105,8 +105,11 @@ NetGSA <-
 #' call.netgsa does this
 #'
 #' more info here
-#'
-#'
+#' @param D stuff
+#' @param x stuff
+#' @param y stuff
+#' @param B stuff
+#' @param varEstCntrl stuff
 #' @return what it returns
 #'
 #' @importFrom stats sd
@@ -279,7 +282,6 @@ graphlaplacian <-
 #'
 #' @noRd
 glmnet.soft <- function(x, y, lambda){
-  require(glmnet)
 
   if(ncol(x) > 1){		## use glmnet
     fit = glmnet(x, y, family="gaussian", alpha=1, lambda=lambda)
