@@ -118,9 +118,10 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   assays[['scaled_expression_data']] <- scaled_expression_data
 
   #Add features, samples, condition to metadata
-  metadata[["samples"]] <- scaled_sample_names
-  metadata[["features"]] <- scaled_feature_names
-  metadata[["clean_feature_names"]] <- make_clean_names(colnames(scaled_expression_data))
+  metadata[["samples"]] <- data.frame(samples = scaled_sample_names, row.names = scaled_sample_names)
+  metadata[["features"]] <- data.frame(features = scaled_feature_names,
+                                       clean_feature_names = make_clean_names(scaled_feature_names),
+                                       row.names = scaled_feature_names)
   metadata[["condition_values"]] <- scaled_condition_values
 
   return(list(assays, metadata))
