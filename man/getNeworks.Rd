@@ -4,10 +4,13 @@
 \alias{getNeworks}
 \title{Creates the network model using glasso}
 \usage{
-getNeworks(object, eps = 1e-06)
+getNeworks(object, optimal_lambda, eps = 1e-06)
 }
 \arguments{
 \item{object}{A DNEAobject}
+
+\item{optimal_lambda}{Lambda hyperparameter to be used in analysis. Not necessary if BICtune()
+or stabilitySelection() were already run.}
 
 \item{eps}{A significance cut-off for thresholding the adjacency matrix. This can be left as default}
 }

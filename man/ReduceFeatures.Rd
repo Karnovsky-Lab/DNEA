@@ -2,7 +2,7 @@
 % Please edit documentation in R/collapseNodes-fun.R
 \name{reduceFeatures}
 \alias{reduceFeatures}
-\title{ReduceFeatures}
+\title{reduceFeatures() will perform node-collapsing on the matrix in expression_data}
 \usage{
 reduceFeatures(
   object,
@@ -11,6 +11,22 @@ reduceFeatures(
   metabolite_groups = NULL
 )
 }
+\arguments{
+\item{object}{A DNEA object}
+
+\item{method}{A parameter that dictates the collapsing method to use. The options are
+as follows:
+1. correlation
+2. knowledge
+3. hybrid}
+
+\item{correlation_threshold}{A threshold wherein features correlated above correlation_threshold
+will be grouped into one. This parameter is only necessary for the correlation and hybrid
+methods}
+
+\item{metabolite_groups}{A dataframe containing group information for the collapsing algorithm
+indicated by the "knowledge" method}
+}
 \description{
-ReduceFeatures
+More info
 }

@@ -6,6 +6,17 @@
 \usage{
 call.netgsa(D, x, y, B, varEstCntrl)
 }
+\arguments{
+\item{D}{stuff}
+
+\item{x}{stuff}
+
+\item{y}{stuff}
+
+\item{B}{stuff}
+
+\item{varEstCntrl}{stuff}
+}
 \value{
 what it returns
 }
