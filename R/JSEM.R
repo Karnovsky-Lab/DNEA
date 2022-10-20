@@ -353,7 +353,6 @@ CGM_AHP_stabsel <- function(listX,
 
   if (inherits(tmp1, "try-error") || inherits(tmp2, "try-error")){
     warning("There might be some error!")
-    next;
   }
 
   for (k in 1:init_param[['num_conditions']]){
@@ -445,7 +444,6 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
   if (inherits(tmp_model, "try-error")){
     warning("There might be some error!")
-    next;
   }
 
   for (k in 1:init_param[['num_conditions']]){
