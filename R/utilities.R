@@ -1,14 +1,15 @@
+
 #' set "igraph" class for consensus cluster
 #'
 #' @import igraph
-#'@noRd
+#' @keywords internal
+#' @noRd
 setOldClass('igraph')
 
 #'Set "DNEAobject" class
 #'
-#'@import methods
-#'@noRd
-#Internal Function to create DNEAobject
+#' @import methods
+#' @noRd
 setClass(Class = "DNEAobject",
          slots = c(
            project_name = 'character',
@@ -27,8 +28,8 @@ setClass(Class = "DNEAobject",
 )
 #'Check Validity of "DNEAobject"
 #'
-#'@import methods
-#'@noRd
+#' @import methods
+#' @noRd
 setValidity("DNEAobject", function(object){
   if(length(object@project_name) > 1){
     "@project_name must be a character string"
@@ -64,9 +65,10 @@ setValidity("DNEAobject", function(object){
   }
 })
 
-#'modify show
-#'
-#'@noRd
+#' Show function will display general information about the data present in the DNEAobject slots
+#' @param object A DNEAobject
+#' @export
+#' @noRd
 setMethod("show", "DNEAobject", function(object) {
   cat(is(object)[[1]], "\n",
       "  Project Name -  ", object@project_name, "\n",
@@ -84,9 +86,17 @@ setMethod("show", "DNEAobject", function(object) {
   )
 })
 
-#'split data by condition
+#' split_by_condition splits the input data by condition
 #'
-#'@noRd
+#' split_by_condition will separate the input expression matrix into a list of matrices. Each matrix
+#' corresponds to the expression data for one condition specified by condition_levels
+#'
+#' @param dat a matrix of expression data wherein the samples are rows and features are columns.
+#' @param condition_levels A list or vector of the unique conditions present in dat
+#' @param condition_by_sample A list or vector of the condition value corresponding to each
+#'        sample.
+#' @return A list of expression matrices
+#' @keywords internal
 split_by_condition <- function(dat, condition_levels, condition_by_sample){
 
   #create key for separating the data by key and running diagnostic tests, feature DE calculations
@@ -100,128 +110,156 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
   return(separated_conditions_data)
 
 }
-#'getter function for Expression data
+#' expressionData retrieves un-scaled expression data from the assays slot.
 #'
-#'@noRd
+#' This function takes in a DNEAobject and return the un-scaled expression matrix located in the
+#' assays slot of the object. You can also use it to input expression data into the DNEAobject
+#'
+#' @param x A DNEAobject
+#' @return the expression matrix
+#' @export
 setGeneric("expressionData",
            function(x) standardGeneric("expressionData"))
 setMethod("expressionData", "DNEAobject", function(x) x@assays[['expression_data']])
 
-#'setter function for Expression data
-#'
-#'@noRd
-setGeneric("expressionData<-",
-           function(x, value) standardGeneric("expressionData<-"))
-setMethod("expressionData<-", "DNEAobject", function(x, value) {
-  x@assays[['expresion_data']] <- value
-  validObject(x)
-  return(x)
-})
 
-#'getter function for NormalExpression data
+# setGeneric("expressionData<-",
+#            function(x, value) standardGeneric("expressionData<-"))
+# setMethod("expressionData<-", "DNEAobject", function(x, value) {
+#   x@assays[['expresion_data']] <- value
+#   validObject(x)
+#   return(x)
+# })
+
+#' scaledExpressionData retrieves the scaled expression data from the assays slot.
 #'
-#'@noRd
+#' This function takes in a DNEAobject and return the scaled expression matrix located in the
+#' assays slot of the object. You can also use it to input scaled expression data into the DNEAobject
+#'
+#' @param x A DNEAobject
+#' @return the scaled expression matrix
+#' @export
 setGeneric("scaledExpressionData",
            function(x) standardGeneric("scaledExpressionData"))
 setMethod("scaledExpressionData", "DNEAobject", function(x) x@assays[['scaled_expression_data']])
 
-#'setter function for NormalExpression data
-#'
-#'@noRd
-setGeneric("scaledExpressionData<-",
-           function(x, value) standardGeneric("scaledExpressionData<-"))
-setMethod("scaledExpressionData<-", "DNEAobject", function(x, value) {
-  x@assays[['scaled_expression_data']] <- value
-  validObject(x)
-  return(x)
-})
+##'setter function for NormalExpression data
+#
+#setGeneric("scaledExpressionData<-",
+#           function(x, value) standardGeneric("scaledExpressionData<-"))
+#setMethod("scaledExpressionData<-", "DNEAobject", function(x, value) {
+#  x@assays[['scaled_expression_data']] <- value
+#  validObject(x)
+#  return(x)
+#})
 
-#'getter function for Condition
+#' condition retrieves the condition values for each sample from the metadata slot.
 #'
-#'@noRd
+#' This function takes in a DNEAobject and return the condition values located in the
+#' metatdata slot of the object. You can also use it to input conditions data into the DNEAobject
+#'
+#' @param x A DNEAobject
+#' @return A vector of the condition values
+#' @export
 setGeneric("condition",
            function(x) standardGeneric("condition"))
 setMethod("condition", "DNEAobject", function(x) x@metadata$condition_values)
 
-#'setter function for condition
-#'
-#'@noRd
-setGeneric("condition<-",
-           function(x,value) standardGeneric("condition<-"))
-setMethod("condition<-","DNEAobject", function(x,value){
-  x@metadata$condition_values <- value
-  validObject(x)
-  return(x)
-})
+##'setter function for condition
 
-#'getter function for Samples
+#setGeneric("condition<-",
+#           function(x,value) standardGeneric("condition<-"))
+#etMethod("condition<-","DNEAobject", function(x,value){
+#  x@metadata$condition_values <- value
+#  validObject(x)
+#  return(x)
+#})
+
+#' sampleNames retrieves the sample names from the metadata slot.
 #'
-#'@noRd
+#' This function takes in a DNEAobject and return the sample names located in the
+#' metadata slot of the object.
+#'
+#' @param x A DNEAobject
+#' @return A vector of sample names
+#' @export
 setGeneric("sampleNames",
            function(x) standardGeneric("sampleNames"))
 setMethod("sampleNames", "DNEAobject", function(x) x@metadata[["samples"]]$samples)
+#
+##'setter function for Samples
+##'
+#setGeneric("sampleNames<-",
+#           function(x,value) standardGeneric("sampleNames<-"))
+#setMethod("sampleNames<-","DNEAobject", function(x,value){
+#  x@metadata[["samples"]]$samples <- value
+#  x@assays[[""]]
+#  validObject(x)
+#  return(x)
+#})
 
-#'setter function for Samples
+#' featureNames retrieves the feature names from the metadata slot.
 #'
-#'@noRd
-setGeneric("sampleNames<-",
-           function(x,value) standardGeneric("sampleNames<-"))
-setMethod("sampleNames<-","DNEAobject", function(x,value){
-  x@metadata[["samples"]]$samples <- value
-  validObject(x)
-  return(x)
-})
-
-#'getter function for Features
+#' This function takes in a DNEAobject and return the feature names located in the
+#' metadata slot of the object.
 #'
-#'@noRd
+#' @param x A DNEAobject
+#' @return A vector of feature names
+#' @export
 setGeneric("featureNames",
            function(x) standardGeneric("featureNames"))
 setMethod("featureNames", "DNEAobject", function(x) x@metadata[["features"]]$features)
 
-#'getter function for clean Features
+#' cleanFeatureNames retrieves the feature names from clean_feature names in the metadata slot.
 #'
-#'@noRd
+#' This function takes in a DNEAobject and return the feature names modified to avoid errors with
+#' native R clashes. The names are located in the metadata slot of the object.
+#'
+#' @param x A DNEAobject
+#' @return A vector of modified feature names
+#' @export
 setGeneric("cleanFeatureNames",
            function(x) standardGeneric("cleanFeatureNames"))
 setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata[["features"]]$clean_feature_names)
 
-#'setter function for condition
-#'#'@importFrom janitor make_clean_names
-#'@noRd
-setGeneric("featureNames<-",
-           function(x,value) standardGeneric("featureNames<-"))
-setMethod("featureNames<-","DNEAobject", function(x,value){
-  x@metadata[["features"]]$features <- value
-  x@metadata[["features"]]$clean_feature_names <- make_clean_names(value)
-  validObject(x)
-  return(x)
-})
 
-#'getter function for number of features
+# setGeneric("featureNames<-",
+#           function(x,value) standardGeneric("featureNames<-"))
+# setMethod("featureNames<-","DNEAobject", function(x,value){
+#  x@metadata[["features"]]$features <- value
+#  x@metadata[["features"]]$clean_feature_names <- make_clean_names(value)
+#  validObject(x)
+#  return(x)
+# })
+
+#' numFeatures finds the total number of features in the dataset
 #'
-#'@noRd
+#' @param x A DNEAobject
+#' @return The number of features in the dataset
+#' @export
 setGeneric("numFeatures",
            function(x) standardGeneric("numFeatures"))
 setMethod("numFeatures", "DNEAobject", function(x) x@dataset_summary$num_features)
 
-#'getter function for number of samples
+#' numSamples finds the total number of samples in the dataset
 #'
-#'@noRd
+#' @param x A DNEAobject
+#' @return The number of samples in the dataset
+#' @export
 setGeneric("numSamples",
            function(x) standardGeneric("numSamples"))
 setMethod("numSamples", "DNEAobject", function(x) x@dataset_summary$num_samples)
 
-#'getter function for optimized lambda value
+#' optimizedLambda returns the lambda value used in analysis.
 #'
-#'@noRd
+#' @param x A DNEAobject
+#' @return The optimized lambda hyperparameter
+#' @export
 setGeneric("optimizedLambda",
            function(x) standardGeneric("optimizedLambda"))
 setMethod("optimizedLambda", "DNEAobject", function(x) x@hyperparameter$optimized_lambda)
 
-#'setter function for optimized lambda value
-#'
-#'@noRd
+
 setGeneric("optimizedLambda<-",
            function(x,value) standardGeneric("optimizedLambda<-"))
 setMethod("optimizedLambda<-","DNEAobject", function(x, value){
@@ -231,7 +269,18 @@ setMethod("optimizedLambda<-","DNEAobject", function(x, value){
   validObject(x)
 })
 
-#add info to metadata
+#' includeMetadata adds info to metadata
+#'
+#' This function will take additional metadata and add it to the corresponding dataframe in the metadata
+#' slot.
+#'
+#' @param object A DNEAobject
+#' @param type sample or feature metadata
+#' @param metadata a dataframe containing metadata to add
+#'
+#' @return A DNEAobject
+#'
+#' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
   type = match.arg(type)
@@ -264,5 +313,25 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
   return(object)
 }
+#' getNetworkFiles will save the node and edge information
+#'
+#' This function will save the node and edge information as .csv files in the working directory.
+#' The files are formatted for input into Cytoscape.
+#'
+#'  @param object A DNEAobject
+#'
+#'  @return The same DNEAobject as input and saves the node and edge information as .csv files in
+#'          the working directory
+#' @importFrom utils write.csv
+#' @export
+getNetworkFiles <- function(object){
 
+  #save node list
+  write.csv(object@node_list, paste0(object@project_name,'_nodelist_',Sys.Date(),'.csv'), row.names = FALSE)
+
+  #save edge list
+  write.csv(object@edge_list, paste0(object@project_name,'_edgelist_',Sys.Date(),'.csv'), row.names = FALSE)
+
+  return(object)
+}
 
