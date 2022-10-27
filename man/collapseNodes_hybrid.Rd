@@ -19,3 +19,4 @@ collapsed data
 \description{
 more info about correlation
 }
+\keyword{internal}

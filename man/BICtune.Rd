@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{BICtune}
 \alias{BICtune}
-\title{Optimize the Lambda parameter for glasso}
+\title{BICtune Optimizes the Lambda parameter for glasso}
 \usage{
 BICtune(
   object,

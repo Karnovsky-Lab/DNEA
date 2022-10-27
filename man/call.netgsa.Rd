@@ -23,3 +23,4 @@ what it returns
 \description{
 more info here
 }
+\keyword{interal}
