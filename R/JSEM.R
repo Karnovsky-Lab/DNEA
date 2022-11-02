@@ -1,7 +1,8 @@
+
 #' maTr computes the trace of the matrix
 #' @param z square numerical matrix
 #' @return trace of the input matrix (scalar)
-#' @noRd
+#' @export
 matTr <- function(z){
 
   res <- sum(diag(z))
@@ -22,14 +23,14 @@ matTr <- function(z){
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'        Default is 1e+6
 #'
-#' @returns The ouput of a glasso model
+#' @return The ouput of a glasso model
 #'
 #' @import zoo
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
 #' @importFrom stats cov
-#' @noRd
+#' @export
 CGM_AHP_train <- function(
   trainX,
   trainY,
@@ -110,15 +111,13 @@ CGM_AHP_train <- function(
 }
 #'initialize static tuning variables to pass to CGM_AHP_tune
 #'
-#'@param trainX a matrix of expression data wherein the samples are rows and features are columns
-#'@param model A list of corresponding conditions for the training_data
-#'
-#'@return a set of variables corresponding to the following variables regarding
-#' the training_data: number of features (p), number of conditions (K), number of lambda
-#' values being tested (N), an a vector containing the number of samples per condition (n),
-#' an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
-#'
-#' @noRd
+#' @param trainX a matrix of expression data wherein the samples are rows and features are columns
+#' @param model A list of corresponding conditions for the training_data
+#' @param lambda a vector of supplied lambda values
+#' @return A set of variables corresponding to the following variables regarding
+#'         the training_data: number of features (p), number of conditions (K), number of lambda
+#'         values being tested (N), an a vector containing the number of samples per condition (n),
+#'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
 tune_init <- function(
     trainX, #training data
     model, #labels for models.
@@ -160,13 +159,13 @@ tune_init <- function(
 #'@param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6
 #'
-#'@returns A list containing the BIC and liklihood score for each lambda parameter evaluated.
+#'@return A list containing the BIC and liklihood score for each lambda parameter evaluated.
 #'
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
 #' @importFrom stats cov
-#' @noRd
+#' @export
 CGM_AHP_tune <- function(
     trainX,   # training data
     testX,    # test data
@@ -230,8 +229,7 @@ CGM_AHP_tune <- function(
 #'         a matrix of stability selection results (selection_matrix), and a matrix containing
 #'         edge selection (edge_matrix)
 #'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
-#'
-#' @noRd
+#' @export
 stabsel_init <- function(
     listX, #The expression data split by condition
     nreps #number of reps performed for stability selection
@@ -246,7 +244,7 @@ stabsel_init <- function(
                          'edge_matrix')
 
   #set static variables for analysis
-  if (class(listX) == 'list') {
+  if (is.list(listX)) {
     num_conditions = length(listX)
     num_features = ncol(listX[[1]])
     num_samples = unlist(lapply(listX, nrow))
@@ -288,6 +286,7 @@ stabsel_init <- function(
 #' @param listX A list containing matrices of the expression data split by condition. The samples
 #'        are in rows and the features are columns.
 #' @param X A vector corresponding to the number of reps to be run in stability selection
+#' @param init_param static variables necessary for CGM_AHP_stabsel functioning
 #' @param lastar the optimized lambda parameter
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
@@ -299,7 +298,7 @@ stabsel_init <- function(
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @noRd
+#' @export
 CGM_AHP_stabsel <- function(listX,
                             X,
                             init_param,
@@ -379,6 +378,7 @@ CGM_AHP_stabsel <- function(listX,
 #' @param listX A list containing matrices of the expression data split by condition. The samples
 #'        are in rows and the features are columns.
 #' @param X A vector corresponding to the number of reps to be run in stability selection
+#' @param init_param static variables necessary for CGM_AHP_stabsel_subsample functioning
 #' @param lastar the optimized lambda parameter
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
@@ -390,12 +390,11 @@ CGM_AHP_stabsel <- function(listX,
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @noRd
+#' @export
 CGM_AHP_stabsel_subsample <- function(listX,
                                       X,
                                       init_param,
                                       lastar,
-                                      seed.base = 100,
                                       eta=0.01,
                                       limkappa=1e+6,
                                       main.seed = 101) {
@@ -474,7 +473,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'
 #' @import glasso
 #' @importFrom stats cov2cor
-#' @noRd
+#' @export
 adjDGlasso_minimal <- function(
     X,
     weights=1,

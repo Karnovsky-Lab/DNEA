@@ -1,14 +1,16 @@
+#'@include JSEM.R
+#'@include utilities.R
+#'@include netgsa_complex.R
+#'@include preprocess_lib.R
 #'
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Exported Functions
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+NULL
 
-#' Optimize the Lambda parameter for glasso
+#' BICtune Optimizes the Lambda parameter for glasso
 #'
 #' This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
-#'  determined by the number of features within the dataset. The lambda value with the lowest (BIC) score is
-#'  chosen for analysis. It takes a DNEAobject as input and has an option that allows the function to be run
-#'  in parallel. The main.seed parameter is for reproducibility and can be left as default.
+#' determined by the number of features within the dataset. The lambda value with the lowest (BIC) score is
+#' chosen for analysis. It takes a DNEAobject as input and has an option that allows the function to be run
+#' in parallel. The main.seed parameter is for reproducibility and can be left as default.
 #'
 #' @param object A DNEA object
 #' @param lambda_values An optional list of lambda values to fit a model and calculate the BIC score.
@@ -22,13 +24,16 @@
 #'
 #' @return A DNEAobject containing the BIC and liklihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
-#' @export
+#'
+#' @include JSEM.R
+#' @include utilities.R
 #' @import zoo
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
 #' @import parallel
 #' @import pbapply
+#' @export
 BICtune <- function(object,
                     lambda_values,
                     runParallel = FALSE,
@@ -84,12 +89,12 @@ BICtune <- function(object,
     }
 
     #initialize parallel process
-    cl <- parallel::makeCluster(nCores)
+    cl <- parallel::makePSOCKcluster(nCores)
     on.exit(stopCluster(cl))
 
-    #pass necessary objects to workers
-    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
-    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
+    # #pass necessary objects to workers
+    # parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
+    # parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
 
     # optimize lambda
     bic_guo <- pblapply(cl = cl,
@@ -167,13 +172,15 @@ BICtune <- function(object,
 #'
 #' @return DNEAobject containing the stable networks for analysis.
 #'
-#' @export
 #' @import zoo
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
 #' @import parallel
 #' @import pbapply
+#' @include JSEM.R
+#' @include utilities.R
+#' @export
 stabilitySelection <- function(object,
                                runParallel = TRUE,
                                subSample = FALSE,
@@ -249,17 +256,16 @@ stabilitySelection <- function(object,
     message('stabilitySelection() will be run in parallel ...', appendLF = TRUE)
 
     #create independent processes to run reps in parallel
-    cl <- makeCluster(nCores)
+    cl <- makePSOCKcluster(nCores)
     on.exit(stopCluster(cl))
 
-    #pass necessary objects to independent workers
-    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
-                                                 "CGM_AHP_train",
-                                                 "CGM_AHP_stabsel_subsample",
-                                                 "CGM_AHP_stabsel",
-                                                 "matTr"))
-    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
-
+    # #pass necessary objects to independent workers
+    # parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
+    #                                              "CGM_AHP_train",
+    #                                              "CGM_AHP_stabsel_subsample",
+    #                                              "CGM_AHP_stabsel",
+    #                                              "matTr"))
+    # parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
 
     if (subSample){
       message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
@@ -359,6 +365,8 @@ stabilitySelection <- function(object,
 #' @import corpcor
 #' @importFrom gdata lowerTriangle
 #' @importFrom utils combn
+#' @include JSEM.R
+#' @include utilities.R
 #' @export
 getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
@@ -524,6 +532,8 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 #'        DNEAobject.
 #'
 #' @import igraph
+#' @include preprocess_lib.R
+#' @include utilities.R
 #' @export
 runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method = "ensemble"){
 
@@ -614,6 +624,10 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 #'          using getNetGSAresults().
 #'
 #' @importFrom stats p.adjust
+#' @import igraph
+#' @import corpcor
+#' @include netgsa_complex.R
+#' @include utilities.R
 #' @export
 runNetGSA <- function(object){
 
