@@ -4,15 +4,16 @@
 \alias{getNetworkFiles}
 \title{getNetworkFiles will save the node and edge information}
 \usage{
-getNetworkFiles(object)
+getNetworkFiles(object, file_path)
+}
+\arguments{
+\item{object}{A DNEAobject}
+}
+\value{
+The same DNEAobject as input and saves the node and edge information as .csv files in
+the working directory
 }
 \description{
 This function will save the node and edge information as .csv files in the working directory.
 The files are formatted for input into Cytoscape.
-}
-\details{
-@param object A DNEAobject
-
-@return The same DNEAobject as input and saves the node and edge information as .csv files in
-the working directory
 }
