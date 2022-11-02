@@ -31,11 +31,11 @@ setClass(Class = "DNEAobject",
 #' @import methods
 #' @noRd
 setValidity("DNEAobject", function(object){
-  if(length(object@project_name) > 1){
+  if(!(is.character(object@project_name))){
     "@project_name must be a character string"
   }
   for (i in length(object@assays)){
-    if(class(object@assays[[i]])[[1]] != 'matrix'){
+    if(!(is.matrix(object@assays[[i]]))){
       "@assays must be an expression matrix"
     }
     if(length(colnames(object@assays[[i]])) != length(unique(colnames(object@assays[[i]])))){
@@ -51,16 +51,16 @@ setValidity("DNEAobject", function(object){
       "Features are out of order"
     }
   }
-  if(class(object@metadata$samples) != 'character'){
+  if(!(is.character(object@metadata$samples))){
     "@metadata$Samples should be of class character"
   }
-  if(class(object@metadata$features) != 'character'){
+  if(!(is.character(object@metadata$features))){
     " @metadata$Features should be of class character"
   }
-  if(class(object@metadata$clean_feature_names) != 'character'){
+  if(!(is.character(object@metadata$clean_feature_names))){
     "@metadata$clean_Feature_Names should be of class character"
   }
-  if(class(object@metadata$condition_values) != 'factor' | length(levels(object@metadata$condition_values)) != 2){
+  if(!(is.factor(object@metadata$condition_values)) | length(levels(object@metadata$condition_values)) != 2){
     "@metadata$Condition should be of class factor with 2 levels"
   }
 })
@@ -313,24 +313,27 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
   return(object)
 }
+
 #' getNetworkFiles will save the node and edge information
 #'
 #' This function will save the node and edge information as .csv files in the working directory.
 #' The files are formatted for input into Cytoscape.
 #'
-#'  @param object A DNEAobject
+#' @param object A DNEAobject
 #'
-#'  @return The same DNEAobject as input and saves the node and edge information as .csv files in
+#' @return The same DNEAobject as input and saves the node and edge information as .csv files in
 #'          the working directory
 #' @importFrom utils write.csv
 #' @export
-getNetworkFiles <- function(object){
+getNetworkFiles <- function(object, file_path){
 
   #save node list
-  write.csv(object@node_list, paste0(object@project_name,'_nodelist_',Sys.Date(),'.csv'), row.names = FALSE)
+  write.csv(object@node_list, paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),
+            row.names = FALSE)
 
   #save edge list
-  write.csv(object@edge_list, paste0(object@project_name,'_edgelist_',Sys.Date(),'.csv'), row.names = FALSE)
+  write.csv(object@edge_list, paste0(file_path, object@project_name,'_edgelist_',Sys.Date(),'.csv'),
+            row.names = FALSE)
 
   return(object)
 }

@@ -1,3 +1,8 @@
+#'@include createDNEAobject.R
+#'
+NULL
+
+
 #'Structure input data for initialization of DNEAobject
 #'
 #'Manipulates input data and creates metadata for initialization of DNEAobject
@@ -15,7 +20,7 @@
 #'
 #' @import methods
 #' @importFrom janitor make_clean_names
-#' @noRd
+#' @keywords internal
 restructure_input_data <- function(expression_data, scaled_expression_data, control, case){
 
   ######################
@@ -41,10 +46,10 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   if(missing(expression_data) == FALSE){
 
     #check proper data structure
-    if(class(expression_data[,1]) == 'numeric') stop('First column should be sample condition')
+    if(is.numeric(expression_data[,1])) stop('First column should be sample condition')
 
     #turn condition into factor
-    if(class(expression_data[,1]) != 'factor'){
+    if(!(is.factor(expression_data[,1]))){
       expression_data[,1]<- factor(expression_data[,1], levels = c(control, case))
       cat(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
                  'Condition is now a factor with levels:',
@@ -69,10 +74,10 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   if(missing(scaled_expression_data) == FALSE){
 
     #check proper data structure
-    if(class(scaled_expression_data[,1]) == 'numeric') stop('First column should be sample condition')
+    if(is.numeric(scaled_expression_data[,1])) stop('First column should be sample condition')
 
     #turn condition into a factor
-    if(class(scaled_expression_data[,1]) != 'factor'){
+    if(!(is.factor(scaled_expression_data[,1]))){
       scaled_expression_data[,1]<- factor(scaled_expression_data[,1],levels = c(control, case))
       cat(paste0('Condition for scaled_expression_data should be of class factor. Converting Now. \n',
                  'Condition is now a factor with levels:',

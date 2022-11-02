@@ -98,6 +98,7 @@ reduceFeatures <- function(object,
 
 ################################################################################
 # main functions #
+
 # correlation-based node-collapsing
 #' collapseNodes_cor will collapse nodes based on correlation
 #'
@@ -110,6 +111,7 @@ reduceFeatures <- function(object,
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
+#' @keywords internal
 collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
 
   feature.membership <- NULL
@@ -201,6 +203,7 @@ collapseNodes_cor <- function(dat, corr.threshold = 0.9) {
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
+#' @keywords internal
 collapseNodes_knowledge <- function (dat,
                                      metabolite.groups) {
 
@@ -246,6 +249,7 @@ collapseNodes_knowledge <- function (dat,
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
+#' @keywords internal
 collapseNodes_hybrid <- function (dat,
                                   metabolite.groups,
                                   corr.threshold = 0.9) {

@@ -5,8 +5,8 @@
 #' the consensus matrix
 #'
 #' @param cl the results from the consensus clustering algorithm
-#'
-#' @noRd
+#' @return The corresponding consensus matrix
+#' @keywords internal
 getConsensusMatrix <- function(cl){
   K <- length(cl)
   p <- length(cl[[1]]$membership)
@@ -53,7 +53,8 @@ getConsensusMatrix <- function(cl){
 #'
 #' @import igraph
 #' @import furrr
-#' @noRd
+#'
+#' @keywords internal
 run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
                                   method="ensemble",
                                   maxIter=5){

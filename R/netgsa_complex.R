@@ -1,9 +1,22 @@
-
-## NetGSA for complex experiments including
-## (1) Estimation for directed and undirected networks
-## (2) Testing for 2 or more conditions
-#library(corpcor)
-
+#' NetGSA the NetGSA algorithm
+#'
+#' Runs the NetGSA algorithm for complicated experiments such as:
+#' 1. Estimation for directed and undirected networks
+#' 2. Testing for 2 or more conditions
+#'
+#' @param A stuff
+#' @param x stuff
+#' @param y stuff
+#' @param B stuff
+#' @param liklMethod stuff
+#' @param directed stuff
+#' @param eta stuff
+#' @param lim4kappa stuff
+#' @return stuff
+#'
+#' @import igraph
+#' @import corpcor
+#' @keywords internal
 NetGSA <-
   function(
     A,  #Adjacency matrix in a list
@@ -113,6 +126,7 @@ NetGSA <-
 #' @return what it returns
 #'
 #' @importFrom stats sd
+#' @keywords interal
 call.netgsa <-
   function(
     D,    	            #Influence matrices in a list
@@ -199,7 +213,8 @@ call.netgsa <-
 
     return(output)
   }
-
+#' does stuff
+#' @keywords internal
 adj2inf <-
   function(AA, isDAG = FALSE, eta=0.1){
     p = dim(AA)[1]
@@ -233,7 +248,7 @@ adj2inf <-
 #' @return returns this
 #'
 #' @importFrom utils read.table
-#' @noRd
+#' @keywords internal
 edgelist2adj <-
   function(file, vertex.names, mode=c("directed", "undirected")) {
     this.call <- match.call()
@@ -257,7 +272,8 @@ edgelist2adj <-
 
     return(Adj)
   }
-
+#' graphlaplacian
+#' @keywords internal
 graphlaplacian <-
   function(A, zeta=0.01){
     if (sum(A != t(A)) > 0){
@@ -279,8 +295,7 @@ graphlaplacian <-
 #' @return returns this
 #'
 #' @importFrom stats lm
-#'
-#' @noRd
+#' @keywords internal
 glmnet.soft <- function(x, y, lambda){
 
   if(ncol(x) > 1){		## use glmnet
@@ -331,8 +346,7 @@ glmnet.soft <- function(x, y, lambda){
 #' @importFrom stats lm
 #' @importFrom stats coef
 #' @importFrom stats residuals
-#'
-#'@noRd
+#' @keywords internal
 netEst.dir <- function(X, zero=NULL, one=NULL, lambda, verbose=FALSE, eps=1e-08) {
   n = dim(X)[1]
   p = dim(X)[2]
@@ -426,7 +440,8 @@ netEst.dir <- function(X, zero=NULL, one=NULL, lambda, verbose=FALSE, eps=1e-08)
   return(list(Adj=Adj, infmat=infmat))
 }
 
-
+#' get.contrast
+#' @keywords internal
 get.contrast <- function(InfMat, b){
   ##InfMat: a list of ncond information matrices
   ##b: the indicator for one pathway (a row vector of 0 and 1's)
@@ -452,9 +467,7 @@ get.contrast <- function(InfMat, b){
 #' @importFrom stats pt
 #' @importFrom Matrix rankMatrix
 #' @importFrom Matrix bdiag
-#'
-#' @noRd
-
+#' @keywords internal
 netgsa.ftest <- function(s2g, s2e, D, DtD, DDInv, n_vec, B, beta_hat){
   ncond = length(D)
   npath = dim(B)[1]
@@ -526,7 +539,8 @@ netgsa.ftest <- function(s2g, s2e, D, DtD, DDInv, n_vec, B, beta_hat){
 
   return(list(teststat = teststat2, df = df2, p.value = pvals))
 }
-
+#' netgsa.ttest
+#' @keywords internal
 netgsa.ttest <- function(s2g, s2e, D, DtD, DDInv, n_vec, B, beta) {
   ncond = length(D)
   npath = dim(B)[1]
@@ -602,7 +616,8 @@ netgsa.ttest <- function(s2g, s2e, D, DtD, DDInv, n_vec, B, beta) {
 
   return(list(teststat = teststat, df = df, p.value = pvals))
 }
-
+#' newton
+#' @keywords internal
 newton <-
   function(x0, lb, ub, f, g, h, alpha = 0.25, beta = 0.5, max.iter = 100, tol = 1e-2){
     count = 0
@@ -634,7 +649,9 @@ newton <-
     return(list(solution = x, iter = count, stepSize = size))
   }
 
-
+#' noramlizedAdj
+#' @include JSEM.R
+#' @keywords internal
 normalizeAdj <-
   function(Amat, alpha = 1) {
     if (is.null(dim(Amat))) {
@@ -664,7 +681,8 @@ normalizeAdj <-
     return(list(normA = normA, Lmat = Lmat, LapMat = LapMat, InfMat = InfMat))
   }
 
-
+#' profile.newton.se
+#' @keywords internal
 profile.newton.se <-
   function(x0, D, r, control = NULL) {
     ##Note D and r are both a list of length K
@@ -812,7 +830,7 @@ profile.newton.se <-
 #' @return what it returns
 #'
 #' @importFrom stats cov
-#' @noRd
+#' @keywords internal
 approxVarEst <-  function(se0, sg0, D, r, n_vec, control=NULL){
     #D and r are both lists.
     if (is.null(control)) {
@@ -897,50 +915,9 @@ approxVarEst <-  function(se0, sg0, D, r, n_vec, control=NULL){
     }
 
     return(list(s2e = se, s2g = sg, tau = tau, finalgap = gap, niter = cnt))
-  }
+}
 
 
-zeroInd <-
-  function(Amat, r){
-    if (sum(t(Amat)!=Amat)>0){
-      stop("This method only works for symmetric matrix!")
-    }
-    p <- dim(Amat)[1]
-    oneMat <- matrix(0, p, p)
-    zeroMat <- matrix(0, p, p)
 
-    one.pos <- which(Amat!=0, arr.ind = TRUE)
-    zero.pos <- which(Amat==0, arr.ind = TRUE)
-
-    zero.pos <- zero.pos[which(zero.pos[,1] > zero.pos[,2]) ,]
-    sel.zero <- sample(seq(1, dim(zero.pos)[1]), r * dim(zero.pos)[1], replace = FALSE)
-    zeroMat[zero.pos[sel.zero, ]] <- 1
-    zeroMat <- zeroMat + t(zeroMat)
-    zeroArr <- zero.pos[sel.zero, ]
-
-    out <- list()
-    out$zeroArr = zeroArr
-    out$zeroMat = zeroMat
-
-    if (dim(one.pos)[1] == 0){
-      warning("The matrix is zero!")
-      out$oneMat = matrix(0, p, p)
-    } else
-    {
-      one.pos <- one.pos[which(one.pos[,1] > one.pos[,2]) ,]
-      if (is.null(dim(one.pos))){
-        one.pos = matrix(one.pos, nrow = 1)
-      }
-
-      sel.one <- sample(seq(1, dim(one.pos)[1]), r * dim(one.pos)[1], replace = FALSE)
-      oneMat[one.pos[sel.one, ]] <- 1
-      oneMat <- oneMat + t(oneMat)
-      diag(oneMat) <- 0
-
-      out$oneMat = oneMat
-    }
-
-    return(out)
-  }
 
 

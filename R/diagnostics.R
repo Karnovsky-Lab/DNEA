@@ -12,7 +12,7 @@
 #'          printed for the whole dataset as well as each condition.
 #'
 #' @importFrom stats t.test cor p.adjust
-#'@noRd
+#' @keywords internal
 dataDiagnostics <- function(object) {
 
   ############################################
