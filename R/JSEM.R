@@ -360,10 +360,12 @@ CGM_AHP_stabsel <- function(listX,
 
   for (k in 1:init_param[['num_conditions']]){
     mat1 = as(tmp1$OMEGA[[k]], "sparseMatrix")
-    mat1[which(abs(mat1)>1e-5)] = 1
+    mat1[abs(mat1) > 1e-5] <- 1
+    #mat1[which(abs(mat1)>1e-5)] = 1
     diag(mat1) = 0
     mat2 = as(tmp2$OMEGA[[k]], "sparseMatrix")
-    mat2[which(abs(mat2)>1e-5)] = 1
+    mat2[abs(mat2) > 1e-5] <- 1
+    #mat2[which(abs(mat2)>1e-5)] = 1
     diag(mat2) = 0
     selection_matrix[[k]] = selection_matrix[[k]] + mat1 + mat2
   }

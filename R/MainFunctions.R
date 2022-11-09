@@ -438,7 +438,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     if (is.null(object@stable_networks[['selection_probabilities']]) == FALSE){
 
       model_weight_values <- lapply(object@stable_networks[['selection_probabilities']],
-                                    function(x) 1/(1e-04 + x))
+                                    function(x) as.matrix(1/(1e-04 + x)))
       message('selection_probabilites from stability selection will be used in glasso model!')
 
     } else{
