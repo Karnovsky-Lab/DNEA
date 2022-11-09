@@ -537,6 +537,14 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 #' @export
 runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method = "ensemble"){
 
+
+  ###########################
+  #**tau must be above 0.5**#
+  ###########################
+
+  if(tau < 0.5) stop(paste('tau must be greater than 0.5!,
+                           Clustering results below this threshold are not reliable -',
+                           'Please see user documentation for more information!'))
   #####################################
   #**Join the two condition networks**#
   #####################################
