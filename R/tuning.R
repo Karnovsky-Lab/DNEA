@@ -2,7 +2,6 @@
 #' maTr computes the trace of the matrix
 #' @param z square numerical matrix
 #' @return trace of the input matrix (scalar)
-#' @export
 matTr <- function(z){
 
   res <- sum(diag(z))
@@ -30,15 +29,14 @@ matTr <- function(z){
 #' @import glmnet
 #' @import corpcor
 #' @importFrom stats cov
-#' @export
 CGM_AHP_train <- function(
-  trainX,
-  trainY,
-  lambda_value,
-  adaptive_weight = array(1, c(length(unique(trainY)), ncol(trainX), ncol(trainX))),
-  eta = 0.01,
-  limkappa = 1e+6
-  ){
+    trainX,
+    trainY,
+    lambda_value,
+    adaptive_weight = array(1, c(length(unique(trainY)), ncol(trainX), ncol(trainX))),
+    eta = 0.01,
+    limkappa = 1e+6
+){
 
   ## Set the general paramters
   K <- length(unique(trainY))
@@ -165,8 +163,6 @@ tune_init <- function(
 #' @import glmnet
 #' @import corpcor
 #' @importFrom stats cov
-#' @importFrom Matrix Matrix
-#' @export
 CGM_AHP_tune <- function(
     trainX,   # training data
     testX,    # test data
@@ -230,9 +226,6 @@ CGM_AHP_tune <- function(
 #'         a matrix of stability selection results (selection_matrix), and a matrix containing
 #'         edge selection (edge_matrix)
 #'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
-#'
-#' @importFrom Matrix Matrix
-#' @export
 stabsel_init <- function(
     listX, #The expression data split by condition
     nreps #number of reps performed for stability selection
@@ -264,8 +257,8 @@ stabsel_init <- function(
   edge_matrix = vector("list", num_conditions)
 
   for (k in 1:num_conditions){
-    selection_matrix[[k]] = Matrix(data = 0, nrow = num_features, ncol = num_features, sparse = TRUE)
-    edge_matrix[[k]] = Matrix(data = 0, nrow = num_features*(num_features-1)/2, ncol = nreps, sparse = TRUE)
+    selection_matrix[[k]] = matrix(0, num_features, num_features)
+    edge_matrix[[k]] = matrix(0, num_features*(num_features-1)/2, nreps)
   }
 
   #set output results
@@ -301,8 +294,6 @@ stabsel_init <- function(
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @importFrom Matrix Matrix
-#' @export
 CGM_AHP_stabsel <- function(listX,
                             X,
                             init_param,
@@ -359,10 +350,10 @@ CGM_AHP_stabsel <- function(listX,
   }
 
   for (k in 1:init_param[['num_conditions']]){
-    mat1 = as(tmp1$OMEGA[[k]], "sparseMatrix")
+    mat1 = tmp1$OMEGA[[k]]
     mat1[which(abs(mat1)>1e-5)] = 1
     diag(mat1) = 0
-    mat2 = as(tmp2$OMEGA[[k]], "sparseMatrix")
+    mat2 = tmp2$OMEGA[[k]]
     mat2[which(abs(mat2)>1e-5)] = 1
     diag(mat2) = 0
     selection_matrix[[k]] = selection_matrix[[k]] + mat1 + mat2
@@ -394,8 +385,6 @@ CGM_AHP_stabsel <- function(listX,
 #' @import zoo
 #' @import glmnet
 #' @import corpcor
-#' @importFrom Matrix Matrix
-#' @export
 CGM_AHP_stabsel_subsample <- function(listX,
                                       X,
                                       init_param,
@@ -451,8 +440,8 @@ CGM_AHP_stabsel_subsample <- function(listX,
   }
 
   for (k in 1:init_param[['num_conditions']]){
-    tmp_mat = as(tmp_model$OMEGA[[k]], "sparseMatrix")
-    tmp_mat[which(abs(tmp_mat) > 1e-5)] = 1
+    tmp_mat = tmp_model$OMEGA[[k]]
+    tmp_mat[which(abs(tmp_mat)>1e-5)] = 1
     diag(tmp_mat) = 0
     selection_matrix[[k]] = selection_matrix[[k]] + tmp_mat
     edge_matrix[[k]][,X] = t(tmp_mat)[lower.tri(tmp_mat,diag=F)]
@@ -478,7 +467,6 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'
 #' @import glasso
 #' @importFrom stats cov2cor
-#' @export
 adjDGlasso_minimal <- function(
     X,
     weights=1,

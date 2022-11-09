@@ -89,7 +89,7 @@ BICtune <- function(object,
     }
 
     #initialize parallel process
-    cl <- parallel::makePSOCKcluster(nCores)
+    cl <- parallel::makeCluster(nCores, type = 'PSOCK')
     on.exit(stopCluster(cl))
 
     # #pass necessary objects to workers
@@ -256,7 +256,7 @@ stabilitySelection <- function(object,
     message('stabilitySelection() will be run in parallel ...', appendLF = TRUE)
 
     #create independent processes to run reps in parallel
-    cl <- makePSOCKcluster(nCores)
+    cl <- parallel::makeCluster(nCores, type = 'PSOCK')
     on.exit(stopCluster(cl))
 
     # #pass necessary objects to independent workers
