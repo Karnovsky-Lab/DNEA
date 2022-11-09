@@ -18,7 +18,6 @@ Collate:
     'collapseNodes-fun.R'
     'createDNEAobject.R'
     'diagnostics.R'
-    'tuning.R'
 Imports: 
     corpcor,
     dplyr,
