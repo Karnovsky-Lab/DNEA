@@ -45,26 +45,24 @@ BICtune <- function(object,
   #**Prepare data and initialize parameters**#
   ############################################
 
-  #split data
-  dat <- split_by_condition(dat = scaledExpressionData(object),
-                            condition_levels = object@dataset_summary[['condition_levels']],
-                            condition_by_sample = condition(object))
+  ##split data by condition
+  dat <- split_by_condition(dat = expressionData(object, type = "normalized"),
+                            condition_levels = conditionLevels(object),
+                            condition_by_sample = conditions(object))
 
-  ## Joint estimation
+  ##create input for model training
   n4cov <- max(sapply(dat, ncol))
+  trainX <- t(do.call(cbind, dat))
+  trainY <- c(rep(1, ncol(dat[[1]])),
+              rep(2, ncol(dat[[2]])))
 
-  #Pre-define a range of lambda to select the tuning parameters if none are provided
+
+  ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
     lambda_values <- seq(0.01, 0.3, 0.02)*sqrt(log(numFeatures(object))/n4cov)
   }else{
     lambda_values <- unlist(lambda_values)
   }
-
-  #This needs to be more informative based on the data.
-  trainX <- t(do.call(cbind, dat))
-  trainY <- c(rep(1, ncol(dat[[1]])),
-              rep(2, ncol(dat[[2]])))
-
   #############################################
   #**Initialize workers and optimize lambda **#
   #############################################
@@ -92,9 +90,9 @@ BICtune <- function(object,
     cl <- parallel::makeCluster(nCores, type = 'PSOCK')
     on.exit(stopCluster(cl))
 
-    # #pass necessary objects to workers
-    # parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
-    # parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
+    #pass necessary objects to workers
+    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
+    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
 
     # optimize lambda
     bic_guo <- pblapply(cl = cl,
@@ -140,9 +138,9 @@ BICtune <- function(object,
   #**update DNEAobject**#
   #######################
 
-  object@hyperparameter[['BIC_scores']] <- bic_guo
-  object@hyperparameter[['optimized_lambda']] <- lastar_guo
-  object@hyperparameter[['tested_lambda_values']] <- lambda_values
+  BICscores(object) <- bic_guo
+  optimizedLambda(object) <- lastar_guo
+  lambdas2Test(object) <- lambda_values
 
   message(paste0('The optimal Lambda hyper-parameter has been set to: ', lastar_guo, '!'))
   return(object)
@@ -259,13 +257,13 @@ stabilitySelection <- function(object,
     cl <- parallel::makeCluster(nCores, type = 'PSOCK')
     on.exit(stopCluster(cl))
 
-    # #pass necessary objects to independent workers
-    # parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
-    #                                              "CGM_AHP_train",
-    #                                              "CGM_AHP_stabsel_subsample",
-    #                                              "CGM_AHP_stabsel",
-    #                                              "matTr"))
-    # parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
+    #pass necessary objects to independent workers
+    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
+                                                 "CGM_AHP_train",
+                                                 "CGM_AHP_stabsel_subsample",
+                                                 "CGM_AHP_stabsel",
+                                                 "matTr"))
+    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso"), library("Matrix")))
 
     if (subSample){
       message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
@@ -542,9 +540,10 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   #**tau must be above 0.5**#
   ###########################
 
-  if(tau < 0.5) stop(paste('tau must be greater than 0.5!,
+  if(tau < 0.5 | tau > 1.0) stop(paste('tau must be greater than 0.5!,
                            Clustering results below this threshold are not reliable -',
                            'Please see user documentation for more information!'))
+
   #####################################
   #**Join the two condition networks**#
   #####################################

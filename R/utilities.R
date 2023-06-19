@@ -6,11 +6,11 @@
 #' @noRd
 setOldClass('igraph')
 
-#'Set "DNEAobject" class
+#'Set generic "pcorNetwork" class
 #'
 #' @import methods
 #' @noRd
-setClass(Class = "DNEAobject",
+setClass(Class = "pcorNetwork",
          slots = c(
            project_name = 'character',
            assays = 'list',
@@ -21,11 +21,32 @@ setClass(Class = "DNEAobject",
            hyperparameter = 'list',
            adjacency_matrix = 'list',
            stable_networks = 'list',
-           joint_graph = 'igraph',
-           netGSA_results = 'list',
-           feature_membership = 'list'
+           joint_graph = 'igraph'
          )
 )
+#'Set "DNEAobject" class
+#'
+#' @import methods
+#' @noRd
+setClass(Class = "DNEAobject",
+         representation(netGSA_results = "list"),
+         contains = "pcorNetwork")
+# setClass(Class = "DNEAobject",
+#          slots = c(
+#            project_name = 'character',
+#            assays = 'list',
+#            metadata = 'list',
+#            dataset_summary = 'list',
+#            node_list = 'data.frame',
+#            edge_list = 'data.frame',
+#            hyperparameter = 'list',
+#            adjacency_matrix = 'list',
+#            stable_networks = 'list',
+#            joint_graph = 'igraph',
+#            netGSA_results = 'list',
+#            feature_membership = 'list'
+#          )
+# )
 #'Check Validity of "DNEAobject"
 #'
 #' @import methods
@@ -51,17 +72,23 @@ setValidity("DNEAobject", function(object){
       "Features are out of order"
     }
   }
-  if(!(is.character(object@metadata$samples))){
-    "@metadata$Samples should be of class character"
+  if(!(is.data.frame(object@metadata$samples))){
+    "@metadata$samples should be of class data.frame"
   }
-  if(!(is.character(object@metadata$features))){
-    " @metadata$Features should be of class character"
+  if(!(is.character(object@metadata$samples$samples))){
+    "@metadata$samples$samples should be of class character"
   }
-  if(!(is.character(object@metadata$clean_feature_names))){
-    "@metadata$clean_Feature_Names should be of class character"
+  if(!(is.factor(object@metadata$samples$conditions))){
+    "@metadata$samples$conditions should be of class factor"
   }
-  if(!(is.factor(object@metadata$condition_values)) | length(levels(object@metadata$condition_values)) != 2){
-    "@metadata$Condition should be of class factor with 2 levels"
+  if(!(is.data.frame(object@metadata$features))){
+    " @metadata$features should be of class data.frame"
+  }
+  if(!(is.character(object@metadata$features$feature_names))){
+    "@metadata$features$feature_names should be of class character"
+  }
+  if(!(is.character(object@metadata$features$clean_feature_names))){
+    "@metadata$features$clean_Feature_Names should be of class character"
   }
 })
 
@@ -116,11 +143,26 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
 #' assays slot of the object. You can also use it to input expression data into the DNEAobject
 #'
 #' @param x A DNEAobject
-#' @return the expression matrix
+#' @param type "input" will return the original data, and "normalized" will return the scaled data
+#' @return The indicated expression expression matrix
 #' @export
-setGeneric("expressionData",
-           function(x) standardGeneric("expressionData"))
-setMethod("expressionData", "DNEAobject", function(x) x@assays[['expression_data']])
+expressionData.pcorNetwork <- function(x, type = c("input", "normalized")){
+
+  ##set data to be pulled
+  type = match.arg(type)
+
+  ##pull data to return
+  if(type == "input"){
+    output <- x@assays$expression_data
+  }else if(type == "normalized"){
+    output <- x@assays$scaled_expression_data
+  }
+
+  return(output)
+}
+#'
+setGeneric("expressionData", function(x, type) standardGeneric("expressionData"))
+setMethod("expressionData",signature(x = "pcorNetwork"), expressionData.pcorNetwork)
 
 
 # setGeneric("expressionData<-",
@@ -131,49 +173,36 @@ setMethod("expressionData", "DNEAobject", function(x) x@assays[['expression_data
 #   return(x)
 # })
 
-#' scaledExpressionData retrieves the scaled expression data from the assays slot.
+#' conditionLevels retrieves the unique condition names for the dataset
 #'
-#' This function takes in a DNEAobject and return the scaled expression matrix located in the
-#' assays slot of the object. You can also use it to input scaled expression data into the DNEAobject
+#' This function takes in a DNEAobject and return the unique condition labels located in the
+#' dataset_summary slot of the object
 #'
 #' @param x A DNEAobject
-#' @return the scaled expression matrix
+#' @return A vector of the unique condition labels
 #' @export
-setGeneric("scaledExpressionData",
-           function(x) standardGeneric("scaledExpressionData"))
-setMethod("scaledExpressionData", "DNEAobject", function(x) x@assays[['scaled_expression_data']])
+conditionLevels.pcorNetwork <- function(x){
+  x@dataset_summary$condition_levels
+}
 
-##'setter function for NormalExpression data
-#
-#setGeneric("scaledExpressionData<-",
-#           function(x, value) standardGeneric("scaledExpressionData<-"))
-#setMethod("scaledExpressionData<-", "DNEAobject", function(x, value) {
-#  x@assays[['scaled_expression_data']] <- value
-#  validObject(x)
-#  return(x)
-#})
+setGeneric("conditionLevels", function(x) standardGeneric("conditionLevels"))
+setMethod("conditionLevels", signature(x = "pcorNetwork"), conditionLevels.pcorNetwork)
 
 #' condition retrieves the condition values for each sample from the metadata slot.
 #'
 #' This function takes in a DNEAobject and return the condition values located in the
-#' metatdata slot of the object. You can also use it to input conditions data into the DNEAobject
+#' metatdata slot of the object
 #'
 #' @param x A DNEAobject
 #' @return A vector of the condition values
 #' @export
-setGeneric("condition",
-           function(x) standardGeneric("condition"))
-setMethod("condition", "DNEAobject", function(x) x@metadata$condition_values)
-
-##'setter function for condition
-
-#setGeneric("condition<-",
-#           function(x,value) standardGeneric("condition<-"))
-#etMethod("condition<-","DNEAobject", function(x,value){
-#  x@metadata$condition_values <- value
-#  validObject(x)
-#  return(x)
-#})
+setGeneric("conditions",
+           function(x) standardGeneric("conditions"))
+setMethod("conditions", signature(x = "pcorNetwork"), function(x) x@metadata$samples$conditions)
+setGeneric("conditions<-", function(x, value) standardGeneric("conditions<-"))
+setMethod("conditions<-", signature(x = "pcorNetwork"), function(x, value){
+  x@metadata$samples$conditions <- x@metadata$samples[[value]]
+})
 
 #' sampleNames retrieves the sample names from the metadata slot.
 #'
@@ -182,21 +211,13 @@ setMethod("condition", "DNEAobject", function(x) x@metadata$condition_values)
 #'
 #' @param x A DNEAobject
 #' @return A vector of sample names
-#' @export
+#' @keywords internal
+sampleNames.pcorNetwork <- function(x){
+  x@metadata[["samples"]]$samples
+}
 setGeneric("sampleNames",
            function(x) standardGeneric("sampleNames"))
-setMethod("sampleNames", "DNEAobject", function(x) x@metadata[["samples"]]$samples)
-#
-##'setter function for Samples
-##'
-#setGeneric("sampleNames<-",
-#           function(x,value) standardGeneric("sampleNames<-"))
-#setMethod("sampleNames<-","DNEAobject", function(x,value){
-#  x@metadata[["samples"]]$samples <- value
-#  x@assays[[""]]
-#  validObject(x)
-#  return(x)
-#})
+setMethod("sampleNames", signature(x = "pcorNetwork"), sampleNames.pcorNetwork)
 
 #' featureNames retrieves the feature names from the metadata slot.
 #'
@@ -205,10 +226,13 @@ setMethod("sampleNames", "DNEAobject", function(x) x@metadata[["samples"]]$sampl
 #'
 #' @param x A DNEAobject
 #' @return A vector of feature names
-#' @export
+#' @keywords internal
+featureNames.pcorNetwork <- function(x){
+  x@metadata[["features"]]$feature_names
+}
 setGeneric("featureNames",
            function(x) standardGeneric("featureNames"))
-setMethod("featureNames", "DNEAobject", function(x) x@metadata[["features"]]$features)
+setMethod("featureNames", signature(x = "pcorNetwork"), featureNames.pcorNetwork)
 
 #' cleanFeatureNames retrieves the feature names from clean_feature names in the metadata slot.
 #'
@@ -217,38 +241,36 @@ setMethod("featureNames", "DNEAobject", function(x) x@metadata[["features"]]$fea
 #'
 #' @param x A DNEAobject
 #' @return A vector of modified feature names
-#' @export
-setGeneric("cleanFeatureNames",
-           function(x) standardGeneric("cleanFeatureNames"))
-setMethod("cleanFeatureNames", "DNEAobject", function(x) x@metadata[["features"]]$clean_feature_names)
-
-
-# setGeneric("featureNames<-",
-#           function(x,value) standardGeneric("featureNames<-"))
-# setMethod("featureNames<-","DNEAobject", function(x,value){
-#  x@metadata[["features"]]$features <- value
-#  x@metadata[["features"]]$clean_feature_names <- make_clean_names(value)
-#  validObject(x)
-#  return(x)
-# })
+#' @keywords internal
+cleanFeatureNames.pcorNetwork <- function(x){
+  x@metadata[["features"]]$clean_feature_names
+}
+setGeneric("cleanFeatureNames", function(x) standardGeneric("cleanFeatureNames"))
+setMethod("cleanFeatureNames", signature(x = "pcorNetwork"), cleanFeatureNames.pcorNetwork)
 
 #' numFeatures finds the total number of features in the dataset
 #'
 #' @param x A DNEAobject
 #' @return The number of features in the dataset
-#' @export
+#' @keywords internal
+numFeatures.pcorNetwork <- function(x){
+  x@dataset_summary$num_features
+}
 setGeneric("numFeatures",
            function(x) standardGeneric("numFeatures"))
-setMethod("numFeatures", "DNEAobject", function(x) x@dataset_summary$num_features)
+setMethod("numFeatures", signature(x = "pcorNetwork"), numFeatures.pcorNetwork)
 
 #' numSamples finds the total number of samples in the dataset
 #'
 #' @param x A DNEAobject
 #' @return The number of samples in the dataset
-#' @export
+#' @keywords internal
+numSamples.pcorNetwork <- function(x){
+  x@dataset_summary$num_samples
+}
 setGeneric("numSamples",
            function(x) standardGeneric("numSamples"))
-setMethod("numSamples", "DNEAobject", function(x) x@dataset_summary$num_samples)
+setMethod("numSamples", signature(x = "pcorNetwork"), function(x) numSamples.pcorNetwork)
 
 #' optimizedLambda returns the lambda value used in analysis.
 #'
@@ -257,17 +279,52 @@ setMethod("numSamples", "DNEAobject", function(x) x@dataset_summary$num_samples)
 #' @export
 setGeneric("optimizedLambda",
            function(x) standardGeneric("optimizedLambda"))
-setMethod("optimizedLambda", "DNEAobject", function(x) x@hyperparameter$optimized_lambda)
-
-
+setMethod("optimizedLambda", signature(x = "pcorNetwork"), function(x) x@hyperparameter$optimized_lambda)
+#' #'
+#' #'
+#' #' @keywords internal
 setGeneric("optimizedLambda<-",
            function(x,value) standardGeneric("optimizedLambda<-"))
-setMethod("optimizedLambda<-","DNEAobject", function(x, value){
+setMethod("optimizedLambda<-",signature(x = "pcorNetwork"), function(x, value){
 
   x@hyperparameter$optimized_lambda <- value
   x
   validObject(x)
 })
+
+#' lambdas2Test returns the lambda value used in analysis.
+#'
+#' @param x A DNEAobject
+#' @return The lambda values to evaluate in optimization
+#' @keywords internal
+lambdas2Test <- function(x){
+  x@hyperparameter$tested_lambda_values
+}
+setGeneric("lambdas2Test",
+           function(x) standardGeneric("lambdas2Test"))
+setMethod("lambdas2Test", signature(x = "pcorNetwork"), function(x) x@hyperparameter$tested_lambda_values)
+#' #'
+#' #'
+setGeneric("lambdas2Test<-",
+           function(x,value) standardGeneric("lambdas2Test<-"))
+setMethod("lambdas2Test<-",signature(x = "pcorNetwork"), function(x, value){
+
+  x@hyperparameter$tested_lambda_values <- value
+  x
+  validObject(x)
+})
+
+#' BICscores returns the BIC scores for each lambda value evaluated
+#'
+#' @param x A DNEAobject
+#' @return The optimized lambda hyperparameter
+#' @keywords internal
+BICscores.pcorNetwork <- function(x){
+  x@hyperparameter$BIC_scores
+}
+setGeneric("BICscores",
+           function(x) standardGeneric("BICscores"))
+setMethod("BICscores", signature(x = "pcorNetwork"), function(x) BICscores.pcorNetwork)
 
 #' includeMetadata adds info to metadata
 #'
@@ -288,9 +345,8 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
     if(all(sampleNames(object) == rownames(metadata))){
       for(i in 1:length(colnames(metadata))){
 
-        new_metadata_colname <- colnames(metadata)[i]
-        object@metadata[["samples"]] <- data.frame(object@metadata[["samples"]],
-                                                   new_metadata_colname = metadata[,i])
+
+        object@metadata[["samples"]][[colnames(metadata)[i]]] <- metadata[, i]
       }
     } else{
 
@@ -303,8 +359,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
       for(i in 1:length(colnames(metadata))){
 
         new_metadata_colname <- colnames(metadata)[i]
-        object@metadata[["features"]] <- data.frame(object@metadata[["features"]],
-                                                    new_metadata_colname = metadata[,i])
+        object@metadata[["features"]][[metadata[, i]]] <- metadata[, i]
       }
     } else{
       stop('new metadata order does not match feature order in DNEAobject')
@@ -327,6 +382,9 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' @export
 getNetworkFiles <- function(object, file_path){
 
+  if(missing(file_path)){
+    file_path <- paste0(getwd(), "/")
+  }
   #save node list
   write.csv(object@node_list, paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),
             row.names = FALSE)

@@ -4,10 +4,14 @@
 \alias{dataDiagnostics}
 \title{Datadiagnostics will run Differential Expression on Nodes and check data stability prior to analysis}
 \usage{
-dataDiagnostics(object)
+dataDiagnostics(mat, condition_values, conditions)
 }
 \arguments{
-\item{object}{A DNEAobject}
+\item{mat}{A matrix of expression data}
+
+\item{condition_values}{A vector of condition names present in the dataset}
+
+\item{conditions}{A vector of condition labels corresponding to the samples in mat}
 }
 \value{
 A DNEA object containing an initialized node_list. Differential Expression is performed on

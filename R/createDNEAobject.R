@@ -1,15 +1,17 @@
-#'@include createDNEAobject.R
 #'
-NULL
-
-
+#'
+#'
+#'
+#'
+#'
+#'
 #'Structure input data for initialization of DNEAobject
 #'
 #'Manipulates input data and creates metadata for initialization of DNEAobject
 #'
-#'@param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
-#'       and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
-#'       the numeric expression data
+#' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
+#'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
+#'        the numeric expression data
 #' @param scaled_expression_data A matrix or dataframe similar to expression_data but for scaled data
 #' @param control A string corresponding to the name of condition 1 in column one of the data matrix
 #' @param case A string corresponding to the name of condition 2 in column one of the data matrix
@@ -51,12 +53,12 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
     #turn condition into factor
     if(!(is.factor(expression_data[,1]))){
       expression_data[,1]<- factor(expression_data[,1], levels = c(control, case))
-      cat(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
-                 'Condition is now a factor with levels:',
-                 '\n', '1. ',
-                 levels(expression_data[,1])[1],
-                 '\n', '2. ',
-                 levels(expression_data[,1])[2],'\n\n'))
+      message(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
+                     'Condition is now a factor with levels:',
+                     '\n', '1. ',
+                     levels(expression_data[,1])[1],
+                     '\n', '2. ',
+                     levels(expression_data[,1])[2]))
     }
 
     #clean column names and convert data to matrix
@@ -107,7 +109,7 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
     #order samples to be same as un-scaled
     scaled_expression_data <- scaled_expression_data[rownames(expression_data),]
 
-    warning('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!')
+    message('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!\n')
 
     #set the metadata equal to un-scaled counterpart
     scaled_feature_names <- unscaled_feature_names
@@ -123,11 +125,12 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   assays[['scaled_expression_data']] <- scaled_expression_data
 
   #Add features, samples, condition to metadata
-  metadata[["samples"]] <- data.frame(samples = scaled_sample_names, row.names = scaled_sample_names)
-  metadata[["features"]] <- data.frame(features = scaled_feature_names,
+  metadata[["samples"]] <- data.frame(samples = scaled_sample_names,
+                                      conditions = scaled_condition_values,
+                                      row.names = scaled_sample_names)
+  metadata[["features"]] <- data.frame(feature_names = scaled_feature_names,
                                        clean_feature_names = make_clean_names(scaled_feature_names),
                                        row.names = scaled_feature_names)
-  metadata[["condition_values"]] <- scaled_condition_values
 
   return(list(assays, metadata))
 
@@ -155,20 +158,14 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
 #' @export
 createDNEAobject <- function(project_name, expression_data, scaled_expression_data, control, case){
 
-  ######################
-  #**Check input data**#
-  ######################
-
-  #check to make sure date input is identical
+  ##check data input to make sure it matches
   if(missing(expression_data) == FALSE & missing(scaled_expression_data) == FALSE){
     if(all(colnames(expression_data[,-1]) != colnames(scaled_expression_data[,-1])) |
        all(rownames(expression_data[,-1]) != rownames(scaled_expression_data[,-1])) |
        all(expression_data[,1] != scaled_expression_data[,1])) stop("Data matrices must have identical features, samples, and condition values")
   }
 
-  #########################################
-  #**feed data to restructure_input_data**#
-  #########################################
+  ##restructure data to initiate object
   if(missing(scaled_expression_data) == FALSE & missing(expression_data) == FALSE){
 
     #create data structures to initialize DNEAobject with scaled and un-scaled data
@@ -202,10 +199,7 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
 
   }
 
-  ###########################
-  #**Initialize DNEAobject**#
-  ###########################
-
+  ##initiate DNEA object
   object <- new("DNEAobject",
                 project_name = project_name,
                 assays =  restructured_data[[1]],
@@ -215,13 +209,19 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
                 hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
-  #########################
-  #**Perform diagnostics**#
-  #########################
 
-  diagnostic_values <- dataDiagnostics(object)
-  object@dataset_summary <- diagnostic_values[[1]]
-  object@node_list <- diagnostic_values[[2]]
+   ##perform diagnostic testing on dataset
+   diagnostic_values <- dataDiagnostics(mat = expressionData(object, type = "normalized"),
+                                        condition_values = levels(conditions(object)),
+                                        conditions = conditions(object))
+   object@dataset_summary <- diagnostic_values
+
+
+   ##perform differential expression on the features
+   DEresults <- metabDE(mat = expressionData(x = object, type = "input"),
+                        condition_values = conditionLevels(object),
+                        conditions = conditions(object))
+   object@node_list <- DEresults
 
   return(object)
 }

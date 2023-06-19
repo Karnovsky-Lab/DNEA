@@ -2,14 +2,18 @@
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 
 #dat <- read.csv('~/Documents/Karnovsky_lab/published_files/adjT1DfullPlasma10262022.csv')
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv')
+start <- Sys.time()
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 rownames(dat) <- dat$sample
 dat<- dat[,-1]
 
-object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'IA:case', control = 'IA:control')
+object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
 object <- BICtune(object = object,runParallel = TRUE, nCores = 4)
-object<- stabilitySelection(object = object, runParallel = TRUE, subSample = TRUE, nreps = 4, nCores = 4)
-object <- getNeworks(object = object)
+object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 4, nCores = 4)
+finish <- Sys.time()
+finish - start
+
+object <- getNeworks(object = object, optimal_lambda = sqrt(log(144)/50))
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
 

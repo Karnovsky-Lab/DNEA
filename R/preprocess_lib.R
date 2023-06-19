@@ -53,8 +53,7 @@ getConsensusMatrix <- function(cl){
 #'
 #' @import igraph
 #' @import furrr
-#'
-#' @keywords internal
+#' @noRd
 run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
                                   method="ensemble",
                                   maxIter=5){
@@ -74,7 +73,7 @@ run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
                                           message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
                                           message('This is a known issue with a dependency and will not affect your results')
                                           return(NA)
-    })
+                                        })
   } else {
     clustering_results <- vector("list", num_iterations)
     for (k in 1:num_iterations){
@@ -110,7 +109,7 @@ run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
                              message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
                              message('This is a known issue with a dependency and will not affect your results')
                              return(NA)
-                             })
+                           })
     } else {
       dcl <- vector("list",num_iterations)
       for (k in 1:num_iterations){

@@ -1,7 +1,7 @@
 library(devtools)
 library(roxygen2)
 library(available)
-devtools::load_all()
+devtools::load_all("~/Documents/Karnovsky_lab/DNEAdev/", reset = TRUE, recompile = TRUE)
 #devtools::create('DNEAdev')
 available('DNEA')
 
