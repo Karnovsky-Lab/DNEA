@@ -7,14 +7,14 @@
 includeMetadata(object, type = c("sample", "feature"), metadata)
 }
 \arguments{
-\item{object}{A DNEAobject}
+\item{object}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
 
 \item{type}{sample or feature metadata}
 
 \item{metadata}{a dataframe containing metadata to add}
 }
 \value{
-A DNEAobject
+The same object as input with specified additions
 }
 \description{
 This function will take additional metadata and add it to the corresponding dataframe in the metadata

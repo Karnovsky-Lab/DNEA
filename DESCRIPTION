@@ -11,6 +11,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Collate: 
     'JSEM.R'
+    'all-classes.R'
+    'all-generics.R'
+    'all-methods.R'
     'preprocess_lib.R'
     'netgsa_complex.R'
     'utilities.R'

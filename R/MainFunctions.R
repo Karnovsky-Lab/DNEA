@@ -1,7 +1,9 @@
-#'@include JSEM.R
-#'@include utilities.R
-#'@include netgsa_complex.R
-#'@include preprocess_lib.R
+#' @include JSEM.R
+#' @include utilities.R
+#' @include netgsa_complex.R
+#' @include preprocess_lib.R
+#' @include all-methods.R
+#' @include all-generics.R
 #'
 NULL
 
