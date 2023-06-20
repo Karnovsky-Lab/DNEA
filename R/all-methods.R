@@ -82,7 +82,7 @@ conditions.DNEAobject <- function(x){
 #'
 #' @rdname conditions
 #' @export
-setMethod("conditions", signature(x = "DNEAobject"), function(x) conditions.DNEAobject)
+setMethod("conditions", signature(x = "DNEAobject"), conditions.DNEAobject)
 
 #' @rdname conditions
 #' @export
@@ -151,7 +151,7 @@ numSamples.pcorNetwork <- function(x){
 #' @return The number of samples in the dataset
 #' @rdname numSamples
 #' @export
-setMethod("numSamples", signature(x = "pcorNetwork"), function(x) numSamples.pcorNetwork)
+setMethod("numSamples", signature(x = "pcorNetwork"), numSamples.pcorNetwork)
 
 optimizedLambda.pcorNetwork <- function(x){
   x@hyperparameter$optimized_lambda
@@ -216,6 +216,78 @@ BICscores.pcorNetwork <- function(x){
 #' @export
 setMethod("BICscores", signature(x = "pcorNetwork"), function(x) BICscores.pcorNetwork)
 
+edgeList.pcorNetwork <- function(x){
+  x@edge_list
+}
+#' edgeList returns the edge list created from DNEA
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
+#'  the edge list created from the getNetworks() function
+#'
+#' @param x a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return a data.frame corresponding to the edge list determined by DNEA
+#'
+#' @rdname edgeList
+#' @export
+setMethod("edgeList", signature(x = "pcorNetwork"), edgeList.pcorNetwork)
+
+#' @rdname edgeList
+#' @keywords internal
+setReplaceMethod("edgeList", signature(x = "pcorNetwork"), function(x, value){
+  x@edge_list <- value
+  validObject(x)
+  x
+})
+
+nodeList.pcorNetwork <- function(x){
+  x@node_list
+}
+#' nodeList returns the node list created from DNEA
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
+#'  the node list created from the getNetworks() function
+#'
+#' @param x a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return a data.frame corresponding to the node list determined by DNEA
+#'
+#' @rdname nodeList
+#' @export
+setMethod("nodeList", signature(x = "pcorNetwork"), nodeList.pcorNetwork)
+
+#' @rdname nodeList
+#' @keywords internal
+setReplaceMethod("nodeList", signature(x = "pcorNetwork"), function(x, value){
+  x@node_list <- value
+  validObject(x)
+  x
+})
+datasetSummary.pcorNetwork <- function(x){
+
+  message(paste0("Number of samples: ", numSamples(object)))
+  message(paste0("Number of features: ", numFeatures(x)))
+  message("Condition levels:")
+  message(paste0("  1. ", conditionLevels(x)[1]))
+  message(paste0("  2. ", conditionLevels(x)[2]))
+  message("The diagnostic values are as follows:")
+  print(as.matrix(x@dataset_summary$diagnostic_values))
+}
+#' datasetSummary allows you to retrieve the dataset summary or input said summary into the
+#'  pcorNetwork, DNEAobject, or DNEAobject_collapsed. For internal use only.
+#'
+#' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return the input object after filling the dataset_summary slot
+#'
+#' @rdname datasetSummary
+#' @keywords internal
+setMethod("datasetSummary", signature(x = "pcorNetwork"), datasetSummary.pcorNetwork)
+
+#' @rdname datasetSummary
+#' @keywords internal
+setReplaceMethod("datasetSummary", signature(x = "pcorNetwork"), function(x, value){
+  x@dataset_summary <- value
+  validObject(x)
+  x
+})
 
 
 

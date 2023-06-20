@@ -54,7 +54,8 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
     cat('Diagnostic tests complete. You can proceed with the analysis!\n')
   }
 
-  return(list(num_samples = num_samples, num_features = num_features, diagnostic_values = diagnostic_values, condition_levels = condition_values))
+  return(list(num_samples = num_samples, num_features = num_features,
+              condition_levels = condition_values, diagnostic_values = diagnostic_values))
 }
 
 

@@ -65,7 +65,31 @@ setGeneric("lambdas2Test<-", function(x, value) standardGeneric("lambdas2Test<-"
 #' @export
 setGeneric("BICscores", function(x) standardGeneric("BICscores"))
 
+#' @rdname nodeList
+#' @export
+setGeneric("nodeList", function(x) standardGeneric("nodeList"))
 
+#' @rdname nodeList
+#' @keywords internal
+setGeneric("nodeList<-", function(x, value) standardGeneric("nodeList<-"))
+
+#' @rdname edgeList
+#' @export
+setGeneric("edgeList", function(x) standardGeneric("edgeList"))
+
+#' @rdname edgeList
+#' @keywords internal
+setGeneric("edgeList<-", function(x, value) standardGeneric("edgeList<-"))
+
+#' @rdname datasetSummary
+#' @keywords internal
+#' @noRd
+setGeneric("datasetSummary", function(x) standardGeneric("datasetSummary"))
+
+#' @rdname datasetSummary
+#' @keywords internal
+#' @noRd
+setGeneric("datasetSummary<-", function(x, value) standardGeneric("datasetSummary<-"))
 
 
 

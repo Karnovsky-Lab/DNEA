@@ -214,14 +214,14 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
    diagnostic_values <- dataDiagnostics(mat = expressionData(object, type = "normalized"),
                                         condition_values = levels(conditions(object)),
                                         conditions = conditions(object))
-   object@dataset_summary <- diagnostic_values
+   datasetSummary(object) <- diagnostic_values
 
 
    ##perform differential expression on the features
    DEresults <- metabDE(mat = expressionData(x = object, type = "input"),
                         condition_values = conditionLevels(object),
                         conditions = conditions(object))
-   object@node_list <- DEresults
+   nodeList(object) <- DEresults
 
   return(object)
 }
