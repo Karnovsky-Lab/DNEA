@@ -1,4 +1,4 @@
-#'
+#'#'#'
 #'
 #'
 #'#' Show function will display general information about the data present in the DNEAobject slots
@@ -216,7 +216,71 @@ BICscores.pcorNetwork <- function(x){
 #' @export
 setMethod("BICscores", signature(x = "pcorNetwork"), function(x) BICscores.pcorNetwork)
 
+#' @rdname BICscores
+#' @keywords internal
+setReplaceMethod("BICscores", signature(x = "pcorNetwork"), function(x, value){
+
+  x@hyperparameter$BIC_scores <- value
+  validObject(x)
+  x
+})
+
+selectionResults.pcorNetwork <- function(x){
+  x@stable_networks$selection_results
+}
+#' selectionResults returns an m x m matrix of the edge selection results from stabilitySelection()
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
+#' an m x m matrix of selection results for every possible network edge calculated through
+#' stabilitySelection()
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return A pcorNetwork, DNEAobject, or DNEAobject_collapsed object after filling the
+#' selection_results section of the stable_networks slot
+#'
+#' @rdname selectionResults
+#' @keywords internal
+setMethod("selectionResults", signature(x = "pcorNetwork"), selectionResults.pcorNetwork)
+
+#'
+#' @rdname selectionResults
+#' @keywords internal
+setReplaceMethod("selectionResults", signature(x = "pcorNetwork"), function(x, value){
+
+  x@stable_networks$selection_results <- value
+  validObject(x)
+  x
+})
+
+selectionProbabilities.pcorNetwork <- function(x){
+  x@stable_networks$selection_probabilities
+}
+#' selectionProbabilities returns an m x m matrix of the edge selection results from stabilitySelection()
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
+#' an m x m matrix of selection Probabilities for every possible network edge calculated through
+#' stabilitySelection()
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return A pcorNetwork, DNEAobject, or DNEAobject_collapsed object after filling the
+#' selection_probabilities section of the stable_networks slot
+#'
+#' @rdname selectionProbabilities
+#' @keywords internal
+setMethod("selectionProbabilities", signature(x = "pcorNetwork"), selectionProbabilities.pcorNetwork)
+
+#'
+#' @rdname selectionProbabilities
+#' @keywords internal
+setReplaceMethod("selectionProbabilities", signature(x = "pcorNetwork"), function(x, value){
+
+  x@stable_networks$selection_probabilities <- value
+  validObject(x)
+  x
+})
+
 edgeList.pcorNetwork <- function(x){
+
   x@edge_list
 }
 #' edgeList returns the edge list created from DNEA
@@ -240,6 +304,7 @@ setReplaceMethod("edgeList", signature(x = "pcorNetwork"), function(x, value){
 })
 
 nodeList.pcorNetwork <- function(x){
+
   x@node_list
 }
 #' nodeList returns the node list created from DNEA
@@ -257,6 +322,7 @@ setMethod("nodeList", signature(x = "pcorNetwork"), nodeList.pcorNetwork)
 #' @rdname nodeList
 #' @keywords internal
 setReplaceMethod("nodeList", signature(x = "pcorNetwork"), function(x, value){
+
   x@node_list <- value
   validObject(x)
   x
@@ -270,12 +336,16 @@ datasetSummary.pcorNetwork <- function(x){
   message(paste0("  2. ", conditionLevels(x)[2]))
   message("The diagnostic values are as follows:")
   print(as.matrix(x@dataset_summary$diagnostic_values))
+
+  return(x@dataset_summary)
 }
-#' datasetSummary allows you to retrieve the dataset summary or input said summary into the
-#'  pcorNetwork, DNEAobject, or DNEAobject_collapsed. For internal use only.
+#' datasetSummary retrieves the dataset summary
+#'
+#' FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' and returns the datasetSummary containing the number of features and samples, and the diagnostic values
 #'
 #' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @return the input object after filling the dataset_summary slot
+#' @return prints the values to console and returns a list of the aforementioned variables
 #'
 #' @rdname datasetSummary
 #' @keywords internal
@@ -284,12 +354,52 @@ setMethod("datasetSummary", signature(x = "pcorNetwork"), datasetSummary.pcorNet
 #' @rdname datasetSummary
 #' @keywords internal
 setReplaceMethod("datasetSummary", signature(x = "pcorNetwork"), function(x, value){
+
   x@dataset_summary <- value
   validObject(x)
   x
 })
 
+AdjacencyMatrix.pcorNetwork <- function(x, weighted = FALSE){
 
+  if(weighted){
+
+    x@adjacency_matrix$weighted_adjacency
+
+  } else if(!weighted){
+
+    x@adjacency_matrix$unweighted_adjacency
+  }
+}
+#' AdjacencyMatrix retrieves the weighted or unweighted adjacency matrix
+#'
+#' FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' and returns the weighted or unweighted adjacency matrix determined via getNetworks(). The matrix can also be
+#' inserted into the object via the setter functionality of the function.
+#'
+#' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return The input object after filling the @@adjacency_matrix slot or a matrix corresponding to the adjacency matrix
+#'
+#' @rdname AdjacencyMatrix
+#' @keywords internal
+setMethod("AdjacencyMatrix", signature(x = "pcorNetwork"), AdjacencyMatrix.pcorNetwork)
+
+#' @rdname AdjacencyMatrix
+#' @keywords internal
+setReplaceMethod("AdjacencyMatrix", signature(x = "pcorNetwork"), function(x, weighted = FALSE, value){
+
+  if(weighted){
+
+    x@adjacency_matrix$weighted_adjacency <- value
+
+  } else if(!weighted){
+
+    x@adjacency_matrix$unweighted_adjacency <- value
+  }
+
+  validObject(x)
+  x
+})
 
 
 

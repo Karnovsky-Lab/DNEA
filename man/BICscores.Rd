@@ -2,12 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{BICscores}
 \alias{BICscores}
+\alias{BICscores<-}
 \alias{BICscores,pcorNetwork-method}
+\alias{BICscores<-,pcorNetwork-method}
 \title{BICscores returns the BIC scores for each lambda value evaluated}
 \usage{
 BICscores(x)
 
+BICscores(x) <- value
+
 \S4method{BICscores}{pcorNetwork}(x)
+
+\S4method{BICscores}{pcorNetwork}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
@@ -19,3 +25,4 @@ The optimized lambda hyperparameter
 The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
 the BIC values for each lambda tested during hyperparameter optimization performed via BICtune().
 }
+\keyword{internal}

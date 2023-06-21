@@ -204,8 +204,8 @@ stabilitySelection <- function(object,
   # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
   #    for analysis
   # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
-  if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
-    if(missing(optimal_lambda) == FALSE){
+  if(!is.null(optimizedLambda(object))){
+    if(!missing(optimal_lambda)){
 
       optimized_lambda <- optimal_lambda
       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
@@ -213,13 +213,13 @@ stabilitySelection <- function(object,
 
     } else{
 
-      optimized_lambda <- object@hyperparameter[["optimized_lambda"]]
+      optimized_lambda <- optimizedLambda(object)
     }
   } else{
     if(missing(optimal_lambda) == FALSE){
 
       optimized_lambda <- optimal_lambda
-      object@hyperparameter[["optimized_lambda"]] <- optimal_lambda
+      optimizedLambda(object) <- optimal_lambda
       message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda')
 
     } else{
@@ -230,9 +230,9 @@ stabilitySelection <- function(object,
   }
 
   #split data by condition
-  data_split_by_condition = lapply(split_by_condition(dat = scaledExpressionData(object),
-                                    condition_levels = object@dataset_summary[['condition_levels']],
-                                    condition_by_sample = condition(object)), function(d) t(d))
+  data_split_by_condition = lapply(split_by_condition(dat = expressionData(object, type = "normalized"),
+                                    condition_levels = conditionLevels(object),
+                                    condition_by_sample = conditions(object)), function(d) t(d))
 
 
   # pbapply requires a vector of length nreps
@@ -317,29 +317,30 @@ stabilitySelection <- function(object,
   #####################################
 
   #initiate list for stability selection raw results
-  selection_results <- vector("list", length(object@dataset_summary$condition_levels))
-  names(selection_results) <- object@dataset_summary$condition_levels
+  selection_results <- vector("list", length(conditionLevels(object)))
+  names(selection_results) <- conditionLevels(object)
 
   #initiate list for stability selection results converted to probabilities
-  selection_probabilities <- vector("list", length(object@dataset_summary$condition_levels))
-  names(selection_probabilities) <- object@dataset_summary$condition_levels
+  selection_probabilities <- vector("list", length(conditionLevels(object)))
+  names(selection_probabilities) <- conditionLevels(object)
 
 
   #reduce results to one matrix and calculate selection probabilities
-  for (k in 1:length(object@dataset_summary$condition_levels)){
+  for (k in 1:length(selection_results)){
     selection_results[[k]] <- lapply(stab_sel, function(r) r$mat[[k]])
     selection_results[[k]] <- Reduce("+", selection_results[[k]])
+
     if (subSample){
-      message(paste0("Calculating selection probabilities WITH subsampling for...",object@dataset_summary$condition_levels[[k]],"..."), appendLF = TRUE)
+      message(paste0("Calculating selection probabilities WITH subsampling for...", names(selection_results)[[k]],"..."), appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(nreps)
     } else {
-      message(paste0("Calculating selection probabilities WITHOUT subsampling for...",object@dataset_summary$condition_levels[[k]],"..."), appendLF = TRUE)
+      message(paste0("Calculating selection probabilities WITHOUT subsampling for...",names(selection_results)[[k]],"..."), appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
 
-  object@stable_networks[["selection_results"]] <- selection_results
-  object@stable_networks[["selection_probabilities"]] <- selection_probabilities
+  selectionResults(object) <- selection_results
+  selectionProbabilities(object) <- selection_probabilities
 
   return(object)
 }
@@ -374,97 +375,106 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
   #**Prepare data and initialize parameters**#
   ############################################
 
-    num_samples <- nrow(scaledExpressionData(object))
-    num_features <- ncol(scaledExpressionData(object))
+  num_samples <- numSamples(object)
+  num_features <- numFeatures(object)
 
-    Ip <- diag(rep(1,num_features))
+  Ip <- diag(rep(1,num_features))
 
-    ## Model selection is done via adjusted DGlasso, where the inverse frequency weighted graphical lasso is applied.
-    weights_adjusted <- vector("list", length(object@dataset_summary$condition_levels))
+  ##set up output to save the weighted and unweighted adjacency matrices from each model
+  #weighted
+  weighted_adjacency_matrices <- vector("list", length(conditionLevels(object)))
+  names(weighted_adjacency_matrices) <- conditionLevels(object)
 
-    #separate the data by condition
-    data_split_by_condition <- split_by_condition(dat = scaledExpressionData(object),
-                                                    condition_levels = object@dataset_summary$condition_levels,
-                                                    condition_by_sample = condition(object))
+  #unweighted
+  unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
+  names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+  #separate the data by condition
+  data_split_by_condition <- split_by_condition(dat = expressionData(object, type = "normalized"),
+                                                condition_levels = conditionLevels(object),
+                                                condition_by_sample = conditions(object))
 
-    #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
-    #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
-    #
-    # choosing lambda follows the following algorithm:
-    # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-    #    for analysis
-    # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
-    #    @hyperparamater[['optimized_lambda']]
-    # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-    #    for analysis
-    # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, use.
-    #    optimized_lambda = sqrt(log(# features) / # samples) for analysis.
-    if(is.null(object@hyperparameter[['optimized_lambda']]) == FALSE){
-      if(missing(optimal_lambda) == FALSE){
+  #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
+  #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+  #
+  # choosing lambda follows the following algorithm:
+  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+  #    for analysis
+  # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
+  #    @hyperparamater[['optimized_lambda']]
+  # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
+  #    for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, use.
+  #    optimized_lambda = sqrt(log(# features) / # samples) for analysis.
+  if(!is.null(optimizedLambda(object))){
+    if(missing(optimal_lambda) == FALSE){
 
-        optimized_lambda <- optimal_lambda
-        warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
-              already exists - optimal_lambda will be used in analysis')
-
-      } else{
-
-        optimized_lambda <- object@hyperparameter[["optimized_lambda"]]
-      }
-    } else{
-      if(missing(optimal_lambda) == FALSE){
-
-        optimized_lambda <- optimal_lambda
-        object@hyperparameter[["optimized_lambda"]] <- optimal_lambda
-        message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
-
-      } else{
-
-        # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
-        # in adjDGlasso_minimal
-        optimized_lambda = NULL
-
-        stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
-        used in the analyis. However, We highly recommend optimizing the lambda parameter by running
-        BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
-             analysis.')
-
-      }
-    }
-
-    #print lambda used
-    message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
-
-    #model will used selection weights based on stability selection if provided
-    if (is.null(object@stable_networks[['selection_probabilities']]) == FALSE){
-
-      model_weight_values <- lapply(object@stable_networks[['selection_probabilities']],
-                                    function(x) as.matrix(1/(1e-04 + x)))
-      message('selection_probabilites from stability selection will be used in glasso model!')
+      optimized_lambda <- optimal_lambda
+      warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
+            already exists - optimal_lambda will be used in analysis')
 
     } else{
 
-      model_weight_values <- 1
-      message('No selection_probabilities were found. We recommend running
-              stabilitySelection() prior to estimating the glasso model!')
+      optimized_lambda <- optimizedLambda(object)
+    }
+  } else{
+    if(missing(optimal_lambda) == FALSE){
+
+      optimized_lambda <- optimal_lambda
+      optimizedLambda(object) <- optimal_lambda
+      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+
+    } else{
+
+      # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
+      # in adjDGlasso_minimal
+      optimized_lambda = NULL
+
+      stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
+      used in the analyis. However, We highly recommend optimizing the lambda parameter by running
+      BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
+           analysis.')
 
     }
+  }
 
+  #print lambda used
+  message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+
+  #model will used selection weights based on stability selection if provided
+  if (!is.null(selectionProbabilities(object))){
+
+    model_weight_values <- lapply(selectionProbabilities(object),
+                                  function(x) as.matrix(1/(1e-04 + x)))
+
+    message('selection_probabilites from stability selection will be used in glasso model!')
+
+  } else{
+
+    message('No selection_probabilities were found. We recommend running
+            stabilitySelection() prior to estimating the glasso model!')
+
+    model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
+                                matrix(rep(1, num_features^2), num_features, num_features))
+
+  }
+
+  #add names to model weights list
+  names(model_weight_values) <- names(selectionProbabilities(object))
     #############################################
     #**Estimate the partial correlation matrix**#
     #############################################
     #add in lambda parameter?
-    for (k in 1:length(object@dataset_summary$condition_levels)){
-      message(paste0('Estimating model for ', object@dataset_summary$condition_levels[k], ' ...'), appendLF = TRUE)
+    for (k in conditionLevels(object)){
+      message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
       fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                                 weights= model_weight_values[[k]],
                                 lambda = optimized_lambda)
-      weights_adjusted[[k]] <- fit$Theta.glasso
+      weighted_adjacency_matrices[[k]] <- fit$Theta.glasso
     }
 
     ## Get the unweighted adjacency matrix by thresholding the partial correlations
-    weights_threshold <- NULL
-    for (k in 1:length(object@dataset_summary$condition_levels)){
-      weights_threshold[[k]] <- abs(weights_adjusted[[k]]) >= matrix(rep(eps, num_features^2), num_features, num_features)
+    for (k in names(weighted_adjacency_matrices)){
+      unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps, num_features^2), num_features, num_features)
     }
 
     #####################################
@@ -472,15 +482,11 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     #####################################
 
     #print message for total edges
-    message(paste0("Number of edges in ",object@dataset_summary$condition_levels[[1]],": ", sum(weights_threshold[[1]])/2), appendLF = TRUE)
-    message(paste0("Number of edges in ",object@dataset_summary$condition_levels[[2]],": ", sum(weights_threshold[[2]])/2), appendLF = TRUE)
+    message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+    message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
-    output <- vector('list', 2)
-    names(output) <-c("weighted_matrix", "threshold_matrix")
-    output[["weighted_matrix"]] <- weights_adjusted
-    output[["threshold_matrix"]] <- weights_threshold
-
-    object@adjacency_matrix <- output
+    AdjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
+    AdjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
 
     #######################
     #**Create Edge List **#
@@ -488,22 +494,22 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
     #initiate output dataframe
     pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
-    df <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
-                     pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
-                     check.names = FALSE)
+    edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
+                            pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
+                            check.names = FALSE)
 
     #concatenate results into dataframe
-    df[,1:2] <- do.call(rbind, pairs)
-    df[,3] <- lowerTriangle(weights_adjusted[[1]])
-    df[,4] <- lowerTriangle(weights_adjusted[[2]])
-    df$edge <- rep(-99, length(pairs))#non-edge
-    df$edge[which((abs(df$pcor.0) >= eps)*(abs(df$pcor.1) >= eps)==1)] <- "Both" #common edge
-    df$edge[which((abs(df$pcor.0) >= eps)*(abs(df$pcor.1)  < eps)==1)] <- object@dataset_summary$condition_levels[[1]]
-    df$edge[which((abs(df$pcor.0) <  eps)*(abs(df$pcor.1) >= eps)==1)] <- object@dataset_summary$condition_levels[[2]]
-    df <- df[(df$edge!=-99),]
-    rownames(df) <- NULL
+    edge_list[,1:2] <- do.call(rbind, pairs)
+    edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
+    edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
+    edge_list$edge <- rep(-99, length(pairs))#non-edge
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps)*(abs(edge_list$pcor.1) >= eps)==1)] <- "Both" #common edge
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps)*(abs(edge_list$pcor.1)  < eps)==1)] <- names(weighted_adjacency_matrices)[[1]]
+    edge_list$edge[which((abs(edge_list$pcor.0) <  eps)*(abs(edge_list$pcor.1) >= eps)==1)] <- names(weighted_adjacency_matrices)[[2]]
+    edge_list <- edge_list[(edge_list$edge!=-99),]
+    rownames(edge_list) <- NULL
 
-    object@edge_list <- df
+    edgeList(object) <- edge_list
     return(object)
 
 }
@@ -542,40 +548,41 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   #**tau must be above 0.5**#
   ###########################
 
-  if(tau < 0.5 | tau > 1.0) stop(paste('tau must be greater than 0.5!,
-                           Clustering results below this threshold are not reliable -',
-                           'Please see user documentation for more information!'))
+  if(tau < 0.5 | tau > 1.0) stop(paste0('tau corresponds to a percent agreement among the clustering methods. ',
+                                        ' As such, tau must be greater than 0.5 and less than 1! ',
+                                        'Clustering results below this threshold are not reliable -',
+                                        'Please see user documentation for more information!'))
 
   #####################################
   #**Join the two condition networks**#
   #####################################
 
   #create list to hold graph from adjacency matrix
-  adjacency_matrix_graphs <- vector("list", length(object@adjacency_matrix[["threshold_matrix"]]))
+  adjacency_matrix_graphs <- vector("list", length(AdjacencyMatrix(object, weighted = TRUE)))
 
-  for (loop_el in 1:length(object@adjacency_matrix[["threshold_matrix"]])) {
-    g <- graph_from_adjacency_matrix(object@adjacency_matrix[["weighted_matrix"]][[loop_el]], mode="undirected", weighted = TRUE)
-    V(g)$name <- as.character(featureNames(object))
-    adjacency_matrix_graphs[[loop_el]] <- g
+  for (loop_el in names(AdjacencyMatrix(object, weighted = TRUE))) {
+    adjacency_graph <- graph_from_adjacency_matrix(AdjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
+    V(adjacency_graph)$name <- as.character(featureNames(object))
+    adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
 
   #join adjacency matrix graphs
-  jointGraph <- igraph::union(adjacency_matrix_graphs[[1]], adjacency_matrix_graphs[[2]])
+  joint_graph <- igraph::union(adjacency_matrix_graphs[[1]], adjacency_matrix_graphs[[2]])
 
-  #modify the jointGraph
-  jointLayout <- layout_nicely(jointGraph)
-  E(jointGraph)$lty <- 1
-  E(jointGraph)$color <- "black"
-  E(jointGraph)$lty[is.na(E(jointGraph)$weight_2)] <- 2 #Group_1
-  E(jointGraph)$lty[is.na(E(jointGraph)$weight_1)] <- 3 #Group_2
-  E(jointGraph)$color[is.na(E(jointGraph)$weight_2)] <- "green" #Group_1
-  E(jointGraph)$color[is.na(E(jointGraph)$weight_1)] <- "red"   #Group_2
+  #modify the joint_graph
+  jointLayout <- layout_nicely(joint_graph)
+  E(joint_graph)$lty <- 1
+  E(joint_graph)$color <- "black"
+  E(joint_graph)$lty[is.na(E(joint_graph)$weight_2)] <- 2 #Group_1
+  E(joint_graph)$lty[is.na(E(joint_graph)$weight_1)] <- 3 #Group_2
+  E(joint_graph)$color[is.na(E(joint_graph)$weight_2)] <- "green" #Group_1
+  E(joint_graph)$color[is.na(E(joint_graph)$weight_1)] <- "red"   #Group_2
 
-  if(exists('object@node_list$DEstatus')){
-    V(jointGraph)$color <- ifelse(object@node_list$DEstatus=="TRUE", "purple", "white")
-    V(jointGraph)$DE <- object@node_list$DEstatus
+  if(!is.null(nodeList(object)[, "DEstatus"])){
+    V(joint_graph)$color <- ifelse(nodeList(object)[, "DEstatus"], "purple", "white")
+    V(joint_graph)$DE <- nodeList(object)[, "DEstatus"]
   } else{
-    V(jointGraph)$DE <- rep(NA, numFeatures(object))
+    V(joint_graph)$DE <- rep(NA, numFeatures(object))
   }
 
   ###########################################################
@@ -583,20 +590,19 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   ###########################################################
 
   #run consensus cluster algorithm
-  # fit <- run_consensus_cluster(jointGraph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
-  fit <- run_consensus_cluster(jointGraph, tau=tau, method = method, num_iterations = num_iterations )
+  # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
+  fit <- run_consensus_cluster(joint_graph, tau=tau, method = method, num_iterations = num_iterations )
   consensus_membership <- fit$dcl
 
-  #gather results
+  #initiate output matrix
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object))
-  rownames(subnetwork_results) <- paste0("Subnetwork",1:length(unique(consensus_membership)))
+  rownames(subnetwork_results) <- paste0("subnetwork",1:length(unique(consensus_membership)))
+
+  #gather results
   for (j in 1:nrow(subnetwork_results)){
-    subnetwork_results[j,which(consensus_membership==j)] <- 1
+    subnetwork_results[j, which(consensus_membership == j)] <- 1
   }
-  if (length(which(rowSums(subnetwork_results)<5))>0){
-    subnetwork_results <- subnetwork_results[-which(rowSums(subnetwork_results)<5),]
-  }
-  npath <- nrow(subnetwork_results)
+
 
   #####################################
   #**Concatenate results for output **#
@@ -604,7 +610,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 
   summary_list <- list()
   for (loop_cluster in 1:nrow(subnetwork_results) ){
-    cluster_c <- induced.subgraph(jointGraph, V(jointGraph)$name[(subnetwork_results[loop_cluster,]==1)])
+    cluster_c <- induced.subgraph(joint_graph, V(joint_graph)$name[(subnetwork_results[loop_cluster,]==1)])
     summary_list[[loop_cluster]] <- data.frame("number_of_nodes"=length(V(cluster_c)),
                                                "number_of_edges"=length(E(cluster_c)),
                                                "number_of_DE.nodes"=sum(as.numeric(table(V(cluster_c)$DE)[names(table(V(cluster_c)$DE))==TRUE])),
@@ -616,7 +622,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   object@netGSA_results[["summary"]]<- summary_stat
   object@netGSA_results[["subnetwork_results"]] <- subnetwork_results
   object@node_list$membership <- consensus_membership
-  object@joint_graph <- jointGraph
+  object@joint_graph <- joint_graph
 
   return(object)
 

@@ -13,7 +13,7 @@ object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FAL
 finish <- Sys.time()
 finish - start
 
-object <- getNeworks(object = object, optimal_lambda = sqrt(log(144)/50))
+object <- getNeworks(object = object)
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
 

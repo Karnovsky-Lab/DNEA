@@ -2,12 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{nodeList}
 \alias{nodeList}
+\alias{nodeList<-}
 \alias{nodeList,pcorNetwork-method}
+\alias{nodeList<-,pcorNetwork-method}
 \title{nodeList returns the node list created from DNEA}
 \usage{
 nodeList(x)
 
+nodeList(x) <- value
+
 \S4method{nodeList}{pcorNetwork}(x)
+
+\S4method{nodeList}{pcorNetwork}(x) <- value
 }
 \arguments{
 \item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
@@ -19,3 +25,4 @@ a data.frame corresponding to the node list determined by DNEA
 The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
 the node list created from the getNetworks() function
 }
+\keyword{internal}

@@ -2,12 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{edgeList}
 \alias{edgeList}
+\alias{edgeList<-}
 \alias{edgeList,pcorNetwork-method}
+\alias{edgeList<-,pcorNetwork-method}
 \title{edgeList returns the edge list created from DNEA}
 \usage{
 edgeList(x)
 
+edgeList(x) <- value
+
 \S4method{edgeList}{pcorNetwork}(x)
+
+\S4method{edgeList}{pcorNetwork}(x) <- value
 }
 \arguments{
 \item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
@@ -19,3 +25,4 @@ a data.frame corresponding to the edge list determined by DNEA
 The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
 the edge list created from the getNetworks() function
 }
+\keyword{internal}

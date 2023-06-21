@@ -207,6 +207,7 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
                 joint_graph = make_empty_graph(n = ncol(restructured_data[[1]][['scaled_expression_data']]),
                                                directed = TRUE),
                 hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
+                adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
 
