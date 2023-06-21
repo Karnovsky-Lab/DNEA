@@ -42,7 +42,7 @@ setClass(Class = "DNEAresults",
            stable_networks = 'list',
            joint_graph = 'igraph',
            consensus_clustering = "consensusClusteringResults",
-           netGSA = 'list')
+           netGSA = 'data.frame')
 )
 
 #' #'Set "collapsed_DNEAresults" class

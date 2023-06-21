@@ -153,6 +153,20 @@ setGeneric("adjacencyGraph", function(x, graph) standardGeneric("adjacencyGraph"
 #' @export
 setGeneric("adjacencyGraph<-", function(x, graph, value) standardGeneric("adjacencyGraph<-"))
 
+#'
+#' @rdname CCsummary
+#' @export
+setGeneric("CCsummary", function(x) standardGeneric("CCsummary"))
+
+#'
+#' @rdname netGSAresults
+#' @export
+setGeneric("netGSAresults", function(x) standardGeneric("netGSAresults"))
+
+#'
+#' @rdname netGSAresults
+#' @export
+setGeneric("netGSAresults<-", function(x, value) standardGeneric("netGSAresults<-"))
 
 
 

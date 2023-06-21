@@ -49,8 +49,8 @@ BICtune <- function(object,
 
   ##split data by condition
   dat <- split_by_condition(dat = expressionData(object, type = "normalized"),
-                            condition_levels = conditionLevels(object),
-                            condition_by_sample = conditions(object))
+                            condition_levels = networkGroups(object),
+                            condition_by_sample = networkGroupIDs(object))
 
   ##create input for model training
   n4cov <- max(sapply(dat, ncol))
@@ -231,8 +231,8 @@ stabilitySelection <- function(object,
 
   #split data by condition
   data_split_by_condition = lapply(split_by_condition(dat = expressionData(object, type = "normalized"),
-                                    condition_levels = conditionLevels(object),
-                                    condition_by_sample = conditions(object)), function(d) t(d))
+                                    condition_levels = networkGroups(object),
+                                    condition_by_sample = networkGroupIDs(object)), function(d) t(d))
 
 
   # pbapply requires a vector of length nreps
@@ -317,12 +317,12 @@ stabilitySelection <- function(object,
   #####################################
 
   #initiate list for stability selection raw results
-  selection_results <- vector("list", length(conditionLevels(object)))
-  names(selection_results) <- conditionLevels(object)
+  selection_results <- vector("list", length(networkGroups(object)))
+  names(selection_results) <- networkGroups(object)
 
   #initiate list for stability selection results converted to probabilities
-  selection_probabilities <- vector("list", length(conditionLevels(object)))
-  names(selection_probabilities) <- conditionLevels(object)
+  selection_probabilities <- vector("list", length(networkGroups(object)))
+  names(selection_probabilities) <- networkGroups(object)
 
 
   #reduce results to one matrix and calculate selection probabilities
@@ -382,16 +382,16 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
   ##set up output to save the weighted and unweighted adjacency matrices from each model
   #weighted
-  weighted_adjacency_matrices <- vector("list", length(conditionLevels(object)))
-  names(weighted_adjacency_matrices) <- conditionLevels(object)
+  weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
+  names(weighted_adjacency_matrices) <- networkGroups(object)
 
   #unweighted
   unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
   #separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, type = "normalized"),
-                                                condition_levels = conditionLevels(object),
-                                                condition_by_sample = conditions(object))
+                                                condition_levels = networkGroups(object),
+                                                condition_by_sample = networkGroupIDs(object))
 
   #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
   #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -464,7 +464,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     #**Estimate the partial correlation matrix**#
     #############################################
     #add in lambda parameter?
-    for (k in conditionLevels(object)){
+    for (k in networkGroups(object)){
       message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
       fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                                 weights= model_weight_values[[k]],
@@ -596,8 +596,9 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   consensus_membership <- fit$dcl
 
   #initiate output matrix
-  subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object))
-  rownames(subnetwork_results) <- paste0("subnetwork",1:length(unique(consensus_membership)))
+  subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
+                               dimnames = list(paste0("subnetwork",1:length(unique(consensus_membership))),
+                                               sapply(1:length(joint_graph), function(x) names(joint_graph[[x]]))))
 
   #gather results
   for (j in 1:nrow(subnetwork_results)){
@@ -624,12 +625,8 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   nodeList(object)[["membership"]] <- consensus_membership
   object@consensus_clustering <- new(Class = "consensusClusteringResults",
                                      summary = summary_stat,
-                                     subnetwork_membership = data.frame(consensus_membership),
+                                     subnetwork_membership = data.frame(subnetwork_results),
                                      adjacency_graphs = append(adjacency_matrix_graphs, list(joint_graph = joint_graph)))
-  # object@netGSA[["summary"]]<- summary_stat
-  # object@netGSA[["subnetwork_results"]] <- subnetwork_results
-  # nodeList(object)[["membership"]] <- consensus_membership
-  # object@joint_graph <- joint_graph
 
   return(object)
 
@@ -640,7 +637,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 #' to perform NetGSA on the two networks to determine differences in subnetwork (pathway) expression.
 #'
 #' @param object A DNEAobject
-#'
+#' @param min_size The minimum size of metabolic modules for enrichment analysis
 #' @returns A DNEAobject containing containing results from NetGSA. Pathway expression differences for
 #'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
 #'          using getNetGSAresults().
@@ -651,33 +648,38 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 #' @include netgsa_complex.R
 #' @include utilities.R
 #' @export
-runNetGSA <- function(object){
+runNetGSA <- function(object, min_size = 5){
 
   #################################
   #**Prepare data and run netGSA**#
   #################################
-  #separate the data by condition
-  separated_conditions_data <- split_by_condition(dat = scaledExpressionData(object),
-                                                  condition_levels = object@dataset_summary$condition_levels,
-                                                  condition_by_sample = condition(object))
 
-  out.netgsa <- NetGSA(object@adjacency_matrix[["weighted_matrix"]],
+  ##filter subnetworks to only include those greater than or equal to min_size
+  filtered_subnetworks <- subnetworkMembership(object)
+  filtered_subnetworks <- filtered_subnetworks[rowSums(filtered_subnetworks) >= min_size, ]
+
+  #separate the data by condition
+  separated_conditions_data <- split_by_condition(dat = expressionData(object, type = "input"),
+                                                  condition_levels = networkGroups(object),
+                                                  condition_by_sample = networkGroupIDs(object))
+
+  out.netgsa <- NetGSA(adjacencyMatrix(x = object, weighted = TRUE),
                        x = cbind(separated_conditions_data[[1]], separated_conditions_data[[2]]),
                        y = c(rep(1, ncol(separated_conditions_data[[1]])), rep(2, ncol(separated_conditions_data[[2]]))),
-                       B = object@netGSA_results[["subnetwork_results"]], lklMethod = "REML")
+                       B = as.matrix(filtered_subnetworks), lklMethod = "REML")
 
   #####################################
   #**Concatenate results for output **#
   #####################################
 
   #add netGSA results to Node list
-  object@node_list$mean1 <- out.netgsa$beta[[1]]
-  object@node_list$mean2 <- out.netgsa$beta[[2]]
-  object@node_list$meanchange <- out.netgsa$beta[[2]] - out.netgsa$beta[[1]]
-  object@node_list$mc.notes <- paste(object@dataset_summary$condition_levels[[2]], 'over', object@dataset_summary$condition_levels[[1]])
+  nodeList(object)[["mean1"]] <- as.vector(out.netgsa$beta[[1]])
+  nodeList(object)[["mean2"]] <- as.vector(out.netgsa$beta[[2]])
+  nodeList(object)[["meanchange"]] <- out.netgsa$beta[[2]] - out.netgsa$beta[[1]]
+  nodeList(object)[["mc.notes"]] <- paste(networkGroups(object)[[2]], 'over', networkGroups(object)[[1]])
 
   #concatenate netGSA summary output
-  res <- data.frame(object@netGSA_results[['summary']],
+  res <- data.frame(CCsummary(object),
                     "NetGSA_pval"= out.netgsa$p.value,
                     "NetGSA_pFDR"= p.adjust(out.netgsa$p.value, "BH"),
                     check.names = FALSE)
@@ -685,15 +687,13 @@ runNetGSA <- function(object){
   rownames(res) <- 1:nrow(res)
 
   #modify membership column of Node list
-  object@node_list$membership[!(object@node_list$membership %in% gsub('Subnetwork','',res$Subnetworks))] <- NA
-  object@node_list$membership <- rownames(res)[match(object@node_list$membership, as.numeric(gsub('Subnetwork','',res$Subnetworks)))]
-  object@node_list$membership <- as.numeric(object@node_list$membership)
-  res$Subnetworks <- paste0("Subnetwork ",rownames(res))
+  nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('Subnetwork','',res$Subnetworks))] <- NA
+  nodeList(object)[["membership"]] <- rownames(res)[match(nodeList(object)[["membership"]], as.numeric(gsub('subnetwork','',res$subnetworks)))]
+  nodeList(object)[["membership"]] <- as.numeric(nodeList(object)[["membership"]])
+  res$subnetworks <- paste0("subnetwork ",rownames(res))
 
   #update DNEAobject
-  object@netGSA_results <- object@netGSA_results[object@netGSA_results != 'B']
-  object@netGSA_results[['summary']] <- NULL
-  object@netGSA_results[['summary']] <- res
+  netGSAresults(object) <- res
 
   return(object)
 }

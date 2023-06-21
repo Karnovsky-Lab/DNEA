@@ -35,11 +35,11 @@ NetGSA <-
     p = dim(x)[1] #No. of genes
     n = length(y) #No. of samples in total
 
-    if (dim(x)[2] != n) {
+    if(dim(x)[2] != n) {
       stop("The dimensions of the data matrix and class vector don't match.")
     }
 
-    if (dim(B)[2] != p) {
+    if(dim(B)[2] != p) {
       stop("The dimensions of the data matrix and indicator matrix don't match.")
     }
 

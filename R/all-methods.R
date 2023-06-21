@@ -505,10 +505,10 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
 
 #' summary retrieves the summary results of consensus clustering
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-#' and returns a summary of the results of consensus clustering determined via runConsensusCluster().
+#' The function takes as input a consensusClusteringResults object and returns a summary of the results of
+#' consensus clustering determined via runConsensusCluster().
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param x A consensusClusteringResults
 #' @return A data.frame that corresponds to a summary of the results of consensus clustering
 #'
 #' @rdname summary
@@ -518,11 +518,19 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
   object@summary
 })
 
-#' @rdname summary
+#' CCsummary retrieves the summary results of consensus clustering
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns a summary
+#' of the results of consensus clustering determined via runConsensusCluster().
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed
+#' @returns A data.frame summary of the consensus clustering results from DNEA
+#'
+#' @rdname CCsummary
 #' @export
-setMethod("summary", signature(object = "DNEAresults"), function(object){
+setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
 
-  object@consensus_clustering@summary
+  summary(x@consensus_clustering)
 })
 
 #' subnetworkMembership retrieves the subnetwork membership for each feature
@@ -547,8 +555,30 @@ setMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x){
   x@consensus_clustering@subnetwork_membership
 })
 
+#' netGSAresults accesses the netGSA slot of a DNEAresults object
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
+#' and returns the netGSA results.
+#' **FOR INTERNAL USE ONLY - The results can also be inserted into the object via the setter functionality of the function.**
+#'
+#' @param x A DNEAresults object
+#' @returns The results from netGSA
+#'
+#' @rdname netGSAresults
+#' @export
+setMethod("netGSAresults", signature(x = "DNEAresults"), function(x){
 
+  x@netGSA
+})
 
+#' @rdname netGSAresults
+#' @keywords internal
+setReplaceMethod("netGSAresults", signature(x = "DNEAresults"), function(x, value){
+
+  x@netGSA <- value
+  validObject(x)
+  x
+})
 
 
 
