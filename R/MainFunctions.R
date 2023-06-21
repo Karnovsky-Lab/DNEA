@@ -485,8 +485,8 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
     message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
-    AdjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
-    AdjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
+    adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
+    adjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
 
     #######################
     #**Create Edge List **#
@@ -558,10 +558,11 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   #####################################
 
   #create list to hold graph from adjacency matrix
-  adjacency_matrix_graphs <- vector("list", length(AdjacencyMatrix(object, weighted = TRUE)))
+  adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted = TRUE)))
+  names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted = TRUE))
 
-  for (loop_el in names(AdjacencyMatrix(object, weighted = TRUE))) {
-    adjacency_graph <- graph_from_adjacency_matrix(AdjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
+  for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
+    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -610,19 +611,25 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 
   summary_list <- list()
   for (loop_cluster in 1:nrow(subnetwork_results) ){
-    cluster_c <- induced.subgraph(joint_graph, V(joint_graph)$name[(subnetwork_results[loop_cluster,]==1)])
+    cluster_c <- induced.subgraph(joint_graph, V(joint_graph)$name[(subnetwork_results[loop_cluster,] == 1)])
     summary_list[[loop_cluster]] <- data.frame("number_of_nodes"=length(V(cluster_c)),
                                                "number_of_edges"=length(E(cluster_c)),
                                                "number_of_DE.nodes"=sum(as.numeric(table(V(cluster_c)$DE)[names(table(V(cluster_c)$DE))==TRUE])),
-                                               "number_of_DE.edges"=sum(as.numeric(table(E(cluster_c)$color)[names(table(E(cluster_c)$color)) %in% c("red", "green")])),check.names = FALSE)
+                                               "number_of_DE.edges"=sum(as.numeric(table(E(cluster_c)$color)[names(table(E(cluster_c)$color)) %in% c("red", "green")])),
+                                               check.names = FALSE)
   }
 
-  summary_stat <- data.frame("Subnetworks"= rownames(subnetwork_results), do.call(rbind, summary_list), check.names = FALSE)
+  summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results), do.call(rbind, summary_list), check.names = FALSE)
 
-  object@netGSA_results[["summary"]]<- summary_stat
-  object@netGSA_results[["subnetwork_results"]] <- subnetwork_results
-  object@node_list$membership <- consensus_membership
-  object@joint_graph <- joint_graph
+  nodeList(object)[["membership"]] <- consensus_membership
+  object@consensus_clustering <- new(Class = "consensusClusteringResults",
+                                     summary = summary_stat,
+                                     subnetwork_membership = data.frame(consensus_membership),
+                                     adjacency_graphs = append(adjacency_matrix_graphs, list(joint_graph = joint_graph)))
+  # object@netGSA[["summary"]]<- summary_stat
+  # object@netGSA[["subnetwork_results"]] <- subnetwork_results
+  # nodeList(object)[["membership"]] <- consensus_membership
+  # object@joint_graph <- joint_graph
 
   return(object)
 

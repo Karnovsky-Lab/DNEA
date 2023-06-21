@@ -8,11 +8,20 @@
 #' @noRd
 setOldClass('igraph')
 
-#'Set generic "pcorNetwork" class
+#' Set consensusClusteringResults class
 #'
 #' @import methods
-#' @noRd
-setClass(Class = "pcorNetwork",
+#' @rdname consensusClusteringResults
+setClass(Class = "consensusClusteringResults",
+         slots = c(summary = "data.frame",
+                   subnetwork_membership = "data.frame",
+                   adjacency_graphs = "list"))
+
+#' set generic "DNEAresults" class
+#'
+#'  @import methods
+#'  @rdname DNEAresults
+setClass(Class = "DNEAresults",
          slots = c(
            project_name = 'character',
            assays = 'list',
@@ -23,44 +32,52 @@ setClass(Class = "pcorNetwork",
            hyperparameter = 'list',
            adjacency_matrix = 'list',
            stable_networks = 'list',
-           joint_graph = 'igraph'
-         )
+           joint_graph = 'igraph',
+           consensus_clustering = "consensusClusteringResults",
+           netGSA = 'list')
 )
-#'Set "DNEAobject" class
-#'
-#' @import methods
-#' @noRd
-setClass(Class = "DNEAobject",
-         slots = c(netGSA_results = "list"),
-         contains = "pcorNetwork")
-# setClass(Class = "DNEAobject",
-#          slots = c(
-#            project_name = 'character',
-#            assays = 'list',
-#            metadata = 'list',
-#            dataset_summary = 'list',
-#            node_list = 'data.frame',
-#            edge_list = 'data.frame',
-#            hyperparameter = 'list',
-#            adjacency_matrix = 'list',
-#            stable_networks = 'list',
-#            joint_graph = 'igraph',
-#            netGSA_results = 'list',
-#            feature_membership = 'list'
-#          )
-# )
-#'Set "DNEAobject_collapsed" class
-#'
-#' @import methods
-#' @noRd
-setClass(Class = "DNEAobject_collapsed",
-         slots = c(feature_membership = "list"),
-         contains = "DNEAobject")
+
+#' #'Set "collapsed_DNEAresults" class
+#' #'
+#' #' @import methods
+#' #' @noRd
+#' setClass(Class = "collapsed_DNEAresults",
+#'          slots = c(original = "DNEAresults",
+#'                    feature_membership = "list"),
+#'          contains = "DNEAobject")
+#' #'Set generic "pcorNetwork" class
+#' #'
+#' #' @import methods
+#' #' @noRd
+#' setClass(Class = "pcorNetwork",
+#'          slots = c(
+#'            project_name = 'character',
+#'            assays = 'list',
+#'            metadata = 'list',
+#'            dataset_summary = 'list',
+#'            node_list = 'data.frame',
+#'            edge_list = 'data.frame',
+#'            hyperparameter = 'list',
+#'            adjacency_matrix = 'list',
+#'            stable_networks = 'list',
+#'            joint_graph = 'igraph'
+#'          )
+#' )
+#' #'Set "DNEAobject" class
+#' #'
+#' #' @import methods
+#' #' @noRd
+#' setClass(Class = "DNEAobject",
+#'          contains = "pcorNetwork",
+#'          representation(netGSA = "list",
+#'                         consensus_clustering = "list"))
+
+
 #'Check Validity of "DNEAobject"
 #'
 #' @import methods
 #' @noRd
-setValidity("DNEAobject", function(object){
+setValidity("DNEAresults", function(object){
   if(!(is.character(object@project_name))){
     "@project_name must be a character string"
   }
@@ -100,6 +117,8 @@ setValidity("DNEAobject", function(object){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
 })
+
+############################################################################
 
 
 

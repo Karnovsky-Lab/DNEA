@@ -200,7 +200,7 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
   }
 
   ##initiate DNEA object
-  object <- new("DNEAobject",
+  object <- new("DNEAresults",
                 project_name = project_name,
                 assays =  restructured_data[[1]],
                 metadata = restructured_data[[2]],

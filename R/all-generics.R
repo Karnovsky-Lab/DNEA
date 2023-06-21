@@ -120,15 +120,28 @@ setGeneric("datasetSummary", function(x) standardGeneric("datasetSummary"))
 setGeneric("datasetSummary<-", function(x, value) standardGeneric("datasetSummary<-"))
 
 #'
-#' @rdname AdjacencyMatrix
+#' @rdname adjacencyMatrix
 #' @keywords internal
-setGeneric("AdjacencyMatrix", function(x, weighted) standardGeneric("AdjacencyMatrix"))
+setGeneric("adjacencyMatrix", function(x, weighted) standardGeneric("adjacencyMatrix"))
 
 #'
-#' @rdname AdjacencyMatrix
+#' @rdname adjacencyMatrix
 #' @keywords internal
-setGeneric("AdjacencyMatrix<-", function(x, weighted, value) standardGeneric("AdjacencyMatrix<-"))
+setGeneric("adjacencyMatrix<-", function(x, weighted, value) standardGeneric("adjacencyMatrix<-"))
 
+
+#' @rdname subnetworkMembership
+#' @export
+setGeneric("subnetworkMembership", function(x) standardGeneric("subnetworkMembership"))
+
+#' @rdname adjacencyGraph
+#' @export
+setGeneric("adjacencyGraph", function(x, graph) standardGeneric("adjacencyGraph"))
+
+#'
+#' @rdname adjacencyGraph
+#' @export
+setGeneric("adjacencyGraph<-", function(x, graph, value) standardGeneric("adjacencyGraph<-"))
 
 
 

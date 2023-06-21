@@ -5,7 +5,7 @@
 #' @param object A DNEAobject
 #' @export
 #' @noRd
-setMethod("show", "pcorNetwork", function(object) {
+setMethod("show", "DNEAresults", function(object) {
   cat(is(object)[[1]], "\n",
       "  Project Name -  ", object@project_name, "\n",
       "  Un-scaled data - ", class(object@assays[["expression_data"]])[[1]], "\n",
@@ -22,7 +22,7 @@ setMethod("show", "pcorNetwork", function(object) {
   )
 })
 
-expressionData.pcorNetwork <- function(x, type = c("input", "normalized")){
+expressionData.DNEAresults <- function(x, type = c("input", "normalized")){
 
   ##set data to be pulled
   type = match.arg(type)
@@ -49,9 +49,9 @@ expressionData.pcorNetwork <- function(x, type = c("input", "normalized")){
 #'
 #' @rdname expressionData
 #' @export
-setMethod("expressionData",signature(x = "pcorNetwork"), expressionData.pcorNetwork)
+setMethod("expressionData",signature(x = "DNEAresults"), expressionData.DNEAresults)
 
-conditionLevels.DNEAobject <- function(x){
+conditionLevels.DNEAresults <- function(x){
   x@dataset_summary$condition_levels
 }
 #' conditionLevels returns the group information for samples in a DNEAobject,
@@ -66,9 +66,9 @@ conditionLevels.DNEAobject <- function(x){
 #'
 #' @rdname conditionLevels
 #' @export
-setMethod("conditionLevels", signature(x = "DNEAobject"), conditionLevels.DNEAobject)
+setMethod("conditionLevels", signature(x = "DNEAresults"), conditionLevels.DNEAresults)
 
-conditions.DNEAobject <- function(x){
+conditions.DNEAresults <- function(x){
 
   x@metadata$samples$conditions
 }
@@ -82,18 +82,18 @@ conditions.DNEAobject <- function(x){
 #'
 #' @rdname conditions
 #' @export
-setMethod("conditions", signature(x = "DNEAobject"), conditions.DNEAobject)
+setMethod("conditions", signature(x = "DNEAresults"), conditions.DNEAresults)
 
 #' @rdname conditions
 #' @export
-setMethod("conditions<-", signature(x = "DNEAobject"), function(x, value){
+setMethod("conditions<-", signature(x = "DNEAresults"), function(x, value){
 
   x@metadata$samples$conditions <- x@metadata$samples[[value]]
   validObject(x)
   x
 })
 
-sampleNames.pcorNetwork <- function(x){
+sampleNames.DNEAresults <- function(x){
   x@metadata[["samples"]]$samples
 }
 #' sampleNames retrieves the sample names from the metadata slot.
@@ -106,9 +106,9 @@ sampleNames.pcorNetwork <- function(x){
 #'
 #' @rdname sampleNames
 #' @export
-setMethod("sampleNames", signature(x = "pcorNetwork"), sampleNames.pcorNetwork)
+setMethod("sampleNames", signature(x = "DNEAresults"), sampleNames.DNEAresults)
 
-featureNames.pcorNetwork <- function(x, original = TRUE){
+featureNames.DNEAresults <- function(x, original = TRUE){
 
   if(isTRUE(original)){
     x@metadata[["features"]]$feature_names
@@ -128,9 +128,9 @@ featureNames.pcorNetwork <- function(x, original = TRUE){
 #' @return A vector of feature names
 #' @rdname featureNames
 #' @export
-setMethod("featureNames", signature(x = "pcorNetwork"), featureNames.pcorNetwork)
+setMethod("featureNames", signature(x = "DNEAresults"), featureNames.DNEAresults)
 
-numFeatures.pcorNetwork <- function(x){
+numFeatures.DNEAresults <- function(x){
   x@dataset_summary$num_features
 }
 #' numFeatures finds the total number of features in the dataset
@@ -140,9 +140,9 @@ numFeatures.pcorNetwork <- function(x){
 #'
 #' @rdname numFeatures
 #' @export
-setMethod("numFeatures", signature(x = "pcorNetwork"), numFeatures.pcorNetwork)
+setMethod("numFeatures", signature(x = "DNEAresults"), numFeatures.DNEAresults)
 
-numSamples.pcorNetwork <- function(x){
+numSamples.DNEAresults <- function(x){
   x@dataset_summary$num_samples
 }
 #' numSamples finds the total number of samples in the dataset
@@ -151,9 +151,9 @@ numSamples.pcorNetwork <- function(x){
 #' @return The number of samples in the dataset
 #' @rdname numSamples
 #' @export
-setMethod("numSamples", signature(x = "pcorNetwork"), numSamples.pcorNetwork)
+setMethod("numSamples", signature(x = "DNEAresults"), numSamples.DNEAresults)
 
-optimizedLambda.pcorNetwork <- function(x){
+optimizedLambda.DNEAresults <- function(x){
   x@hyperparameter$optimized_lambda
 }
 #' optimizedLambda returns the lambda value used in analysis.
@@ -166,18 +166,18 @@ optimizedLambda.pcorNetwork <- function(x){
 #'
 #' @rdname optimizedLambda
 #' @export
-setMethod("optimizedLambda", signature(x = "pcorNetwork"), optimizedLambda.pcorNetwork)
+setMethod("optimizedLambda", signature(x = "DNEAresults"), optimizedLambda.DNEAresults)
 
 #' @rdname optimizedLambda
 #' @export
-setReplaceMethod("optimizedLambda", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("optimizedLambda", signature(x = "DNEAresults"), function(x, value){
 
   x@hyperparameter$optimized_lambda <- value
   validObject(x)
   x
 })
 
-lambdas2Test.pcorNetwork <- function(x){
+lambdas2Test.DNEAresults <- function(x){
   x@hyperparameter$tested_lambda_values
 }
 #' lambdas2Test returns the lambda values tested during hyperparameter optimization
@@ -190,18 +190,18 @@ lambdas2Test.pcorNetwork <- function(x){
 #'
 #' @rdname lambdas2Test
 #' @export
-setMethod("lambdas2Test", signature(x = "pcorNetwork"), lambdas2Test.pcorNetwork)
+setMethod("lambdas2Test", signature(x = "DNEAresults"), lambdas2Test.DNEAresults)
 
 #' @rdname lambdas2Test
 #' @export
-setReplaceMethod("lambdas2Test", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("lambdas2Test", signature(x = "DNEAresults"), function(x, value){
 
   x@hyperparameter$tested_lambda_values <- value
   validObject(x)
   x
 })
 
-BICscores.pcorNetwork <- function(x){
+BICscores.DNEAresults <- function(x){
   x@hyperparameter$BIC_scores
 }
 #' BICscores returns the BIC scores for each lambda value evaluated
@@ -214,18 +214,18 @@ BICscores.pcorNetwork <- function(x){
 #'
 #' @rdname BICscores
 #' @export
-setMethod("BICscores", signature(x = "pcorNetwork"), function(x) BICscores.pcorNetwork)
+setMethod("BICscores", signature(x = "DNEAresults"), function(x) BICscores.DNEAresults)
 
 #' @rdname BICscores
 #' @keywords internal
-setReplaceMethod("BICscores", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("BICscores", signature(x = "DNEAresults"), function(x, value){
 
   x@hyperparameter$BIC_scores <- value
   validObject(x)
   x
 })
 
-selectionResults.pcorNetwork <- function(x){
+selectionResults.DNEAresults <- function(x){
   x@stable_networks$selection_results
 }
 #' selectionResults returns an m x m matrix of the edge selection results from stabilitySelection()
@@ -240,19 +240,19 @@ selectionResults.pcorNetwork <- function(x){
 #'
 #' @rdname selectionResults
 #' @keywords internal
-setMethod("selectionResults", signature(x = "pcorNetwork"), selectionResults.pcorNetwork)
+setMethod("selectionResults", signature(x = "DNEAresults"), selectionResults.DNEAresults)
 
 #'
 #' @rdname selectionResults
 #' @keywords internal
-setReplaceMethod("selectionResults", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("selectionResults", signature(x = "DNEAresults"), function(x, value){
 
   x@stable_networks$selection_results <- value
   validObject(x)
   x
 })
 
-selectionProbabilities.pcorNetwork <- function(x){
+selectionProbabilities.DNEAresults <- function(x){
   x@stable_networks$selection_probabilities
 }
 #' selectionProbabilities returns an m x m matrix of the edge selection results from stabilitySelection()
@@ -267,19 +267,19 @@ selectionProbabilities.pcorNetwork <- function(x){
 #'
 #' @rdname selectionProbabilities
 #' @keywords internal
-setMethod("selectionProbabilities", signature(x = "pcorNetwork"), selectionProbabilities.pcorNetwork)
+setMethod("selectionProbabilities", signature(x = "DNEAresults"), selectionProbabilities.DNEAresults)
 
 #'
 #' @rdname selectionProbabilities
 #' @keywords internal
-setReplaceMethod("selectionProbabilities", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("selectionProbabilities", signature(x = "DNEAresults"), function(x, value){
 
   x@stable_networks$selection_probabilities <- value
   validObject(x)
   x
 })
 
-edgeList.pcorNetwork <- function(x){
+edgeList.DNEAresults <- function(x){
 
   x@edge_list
 }
@@ -293,17 +293,17 @@ edgeList.pcorNetwork <- function(x){
 #'
 #' @rdname edgeList
 #' @export
-setMethod("edgeList", signature(x = "pcorNetwork"), edgeList.pcorNetwork)
+setMethod("edgeList", signature(x = "DNEAresults"), edgeList.DNEAresults)
 
 #' @rdname edgeList
 #' @keywords internal
-setReplaceMethod("edgeList", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("edgeList", signature(x = "DNEAresults"), function(x, value){
   x@edge_list <- value
   validObject(x)
   x
 })
 
-nodeList.pcorNetwork <- function(x){
+nodeList.DNEAresults <- function(x){
 
   x@node_list
 }
@@ -317,17 +317,17 @@ nodeList.pcorNetwork <- function(x){
 #'
 #' @rdname nodeList
 #' @export
-setMethod("nodeList", signature(x = "pcorNetwork"), nodeList.pcorNetwork)
+setMethod("nodeList", signature(x = "DNEAresults"), nodeList.DNEAresults)
 
 #' @rdname nodeList
 #' @keywords internal
-setReplaceMethod("nodeList", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("nodeList", signature(x = "DNEAresults"), function(x, value){
 
   x@node_list <- value
   validObject(x)
   x
 })
-datasetSummary.pcorNetwork <- function(x){
+datasetSummary.DNEAresults <- function(x){
 
   message(paste0("Number of samples: ", numSamples(object)))
   message(paste0("Number of features: ", numFeatures(x)))
@@ -349,18 +349,18 @@ datasetSummary.pcorNetwork <- function(x){
 #'
 #' @rdname datasetSummary
 #' @keywords internal
-setMethod("datasetSummary", signature(x = "pcorNetwork"), datasetSummary.pcorNetwork)
+setMethod("datasetSummary", signature(x = "DNEAresults"), datasetSummary.DNEAresults)
 
 #' @rdname datasetSummary
 #' @keywords internal
-setReplaceMethod("datasetSummary", signature(x = "pcorNetwork"), function(x, value){
+setReplaceMethod("datasetSummary", signature(x = "DNEAresults"), function(x, value){
 
   x@dataset_summary <- value
   validObject(x)
   x
 })
 
-AdjacencyMatrix.pcorNetwork <- function(x, weighted = FALSE){
+adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 
   if(weighted){
 
@@ -371,22 +371,22 @@ AdjacencyMatrix.pcorNetwork <- function(x, weighted = FALSE){
     x@adjacency_matrix$unweighted_adjacency
   }
 }
-#' AdjacencyMatrix retrieves the weighted or unweighted adjacency matrix
+#' adjacencyMatrix retrieves the weighted or unweighted adjacency matrix
 #'
-#' FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' and returns the weighted or unweighted adjacency matrix determined via getNetworks(). The matrix can also be
-#' inserted into the object via the setter functionality of the function.
+#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' and returns the weighted or unweighted adjacency matrix determined via getNetworks().
+#' **FOR INTERNAL USE ONLY - The matrix can also be inserted into the object via the setter functionality of the function.**
 #'
 #' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
 #' @return The input object after filling the @@adjacency_matrix slot or a matrix corresponding to the adjacency matrix
 #'
-#' @rdname AdjacencyMatrix
+#' @rdname adjacencyMatrix
 #' @keywords internal
-setMethod("AdjacencyMatrix", signature(x = "pcorNetwork"), AdjacencyMatrix.pcorNetwork)
+setMethod("adjacencyMatrix", signature(x = "DNEAresults"), adjacencyMatrix.DNEAresults)
 
-#' @rdname AdjacencyMatrix
+#' @rdname adjacencyMatrix
 #' @keywords internal
-setReplaceMethod("AdjacencyMatrix", signature(x = "pcorNetwork"), function(x, weighted = FALSE, value){
+setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, weighted = FALSE, value){
 
   if(weighted){
 
@@ -400,6 +400,99 @@ setReplaceMethod("AdjacencyMatrix", signature(x = "pcorNetwork"), function(x, we
   validObject(x)
   x
 })
+
+#' adjacencyGraph retrieves the adjacency graph for the case, control, or joint network
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
+#' and returns the adjacency graph made for the case, control, or joint network determined via runConsensusCluster().
+#' **FOR INTERNAL USE ONLY - The graph can also be inserted into the object via the setter functionality of the function.**
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param graph the adjacency graph to retrieve. Values can be a provided condition name for either independent network,
+#' or "joint_graph" for the total network graph
+#' @return The input object after filling the @@adjacency_matrix slot or a graph corresponding to the specified
+#' adjacency graph
+#'
+#' @rdname adjacencyGraph
+#' @export
+setMethod("adjacencyGraph", signature(x = "DNEAresults"), function(x, graph){
+
+  x@consensus_clustering@adjacency_graphs$graph
+})
+
+#' @rdname adjacencyGraph
+#' @keywords internal
+setReplaceMethod("adjacencyGraph", signature(x = "DNEAresults"), function(x, graph, value){
+
+  x@consensus_clustering@adjacency_graphs$graph <- value
+  validObject(x)
+  x
+})
+
+#' @rdname adjacencyGraph
+#' @export
+setMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), function(x, graph){
+
+  x@adjacency_graphs$graph
+})
+
+#' @rdname adjacencyGraph
+#' @keywords internal
+setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), function(x, graph, value){
+
+  x@adjacency_graphs$graph <- value
+  validObject(x)
+  x
+})
+
+#' summary retrieves the summary results of consensus clustering
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
+#' and returns a summary of the results of consensus clustering determined via runConsensusCluster().
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return A data.frame that corresponds to a summary of the results of consensus clustering
+#'
+#' @rdname summary
+#' @export
+setMethod("summary", signature(object = "consensusClusteringResults"), function(object){
+
+  object@summary
+})
+
+#' @rdname summary
+#' @export
+setMethod("summary", signature(object = "DNEAresults"), function(object){
+
+  object@consensus_clustering@summary
+})
+
+#' subnetworkMembership retrieves the subnetwork membership for each feature
+#'
+#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
+#' and returns the results of consensus clustering determined via runConsensusCluster().
+#'
+#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @return A data.frame that corresponds to the results of consensus clustering
+#'
+#' @rdname subnetworkMembership
+#' @export
+setMethod("subnetworkMembership", signature(x = "consensusClusteringResults"), function(x){
+
+  x@subnetwork_membership
+})
+
+#' @rdname subnetworkMembership
+#' @export
+setMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x){
+
+  x@consensus_clustering@subnetwork_membership
+})
+
+
+
+
+
 
 
 
