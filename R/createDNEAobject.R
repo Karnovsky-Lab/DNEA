@@ -30,7 +30,7 @@ restructure_input_data <- function(expression_data, scaled_expression_data, cont
   #*####################
 
   #create metadata list and add names
-  meta_key<-c("samples", "features", "clean_feature_names","condition_values")
+  meta_key<-c("samples", "features", "network_group_IDs", "network_groups")
   metadata<-vector(mode = 'list', length = length(meta_key))
   names(metadata) <- meta_key
 
@@ -210,18 +210,23 @@ createDNEAobject <- function(project_name, expression_data, scaled_expression_da
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
+  networkGroups(object) <- "conditions"
 
    ##perform diagnostic testing on dataset
    diagnostic_values <- dataDiagnostics(mat = expressionData(object, type = "normalized"),
-                                        condition_values = levels(conditions(object)),
-                                        conditions = conditions(object))
-   datasetSummary(object) <- diagnostic_values
+                                        condition_values = networkGroups(object),
+                                        conditions = networkGroupIDs(object))
+
+   datasetSummary(object) <- new("DNEAinputSummary",
+                                 num_samples = diagnostic_values[[1]],
+                                 num_features = diagnostic_values[[2]],
+                                 diagnostic_values = diagnostic_values[[4]])
 
 
    ##perform differential expression on the features
    DEresults <- metabDE(mat = expressionData(x = object, type = "input"),
-                        condition_values = conditionLevels(object),
-                        conditions = conditions(object))
+                        condition_values = networkGroups(object),
+                        conditions = networkGroupIDs(object))
    nodeList(object) <- DEresults
 
   return(object)

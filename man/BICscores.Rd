@@ -3,17 +3,17 @@
 \name{BICscores}
 \alias{BICscores}
 \alias{BICscores<-}
-\alias{BICscores,pcorNetwork-method}
-\alias{BICscores<-,pcorNetwork-method}
+\alias{BICscores,DNEAresults-method}
+\alias{BICscores<-,DNEAresults-method}
 \title{BICscores returns the BIC scores for each lambda value evaluated}
 \usage{
 BICscores(x)
 
 BICscores(x) <- value
 
-\S4method{BICscores}{pcorNetwork}(x)
+\S4method{BICscores}{DNEAresults}(x)
 
-\S4method{BICscores}{pcorNetwork}(x) <- value
+\S4method{BICscores}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

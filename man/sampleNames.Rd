@@ -2,12 +2,12 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{sampleNames}
 \alias{sampleNames}
-\alias{sampleNames,pcorNetwork-method}
+\alias{sampleNames,DNEAresults-method}
 \title{sampleNames retrieves the sample names from the metadata slot.}
 \usage{
 sampleNames(x)
 
-\S4method{sampleNames}{pcorNetwork}(x)
+\S4method{sampleNames}{DNEAresults}(x)
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

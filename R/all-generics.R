@@ -6,19 +6,19 @@
 setGeneric("expressionData", function(x, type) standardGeneric("expressionData"))
 
 #'
-#' @rdname conditionLevels
+#' @rdname networkGroups
 #' @export
-setGeneric("conditionLevels", function(x) standardGeneric("conditionLevels"))
+setGeneric("networkGroups", function(x) standardGeneric("networkGroups"))
 
 #'
-#' @rdname conditions
+#' @rdname networkGroups
 #' @export
-setGeneric("conditions", function(x) standardGeneric("conditions"))
+setGeneric("networkGroups<-", function(x, value) standardGeneric("networkGroups<-"))
 
 #'
-#' @rdname conditions
+#' @rdname networkGroupIDs
 #' @export
-setGeneric("conditions<-", function(x, value) standardGeneric("conditions<-"))
+setGeneric("networkGroupIDs", function(x) standardGeneric("networkGroupIDs"))
 
 #'
 #' @rdname sampleNames
@@ -108,6 +108,16 @@ setGeneric("edgeList", function(x) standardGeneric("edgeList"))
 #' @rdname edgeList
 #' @keywords internal
 setGeneric("edgeList<-", function(x, value) standardGeneric("edgeList<-"))
+
+#'
+#' @rdname diagnostics
+#' @keywords internal
+setGeneric("diagnostics", function(x) standardGeneric("diagnostics"))
+
+#'
+#' @rdname diagnostics
+#' @keywords internal
+setGeneric("diagnostics<-", function(x, value) standardGeneric("diagnostics<-"))
 
 #'
 #' @rdname datasetSummary

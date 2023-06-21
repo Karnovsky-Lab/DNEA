@@ -3,17 +3,17 @@
 \name{lambdas2Test}
 \alias{lambdas2Test}
 \alias{lambdas2Test<-}
-\alias{lambdas2Test,pcorNetwork-method}
-\alias{lambdas2Test<-,pcorNetwork-method}
+\alias{lambdas2Test,DNEAresults-method}
+\alias{lambdas2Test<-,DNEAresults-method}
 \title{lambdas2Test returns the lambda values tested during hyperparameter optimization}
 \usage{
 lambdas2Test(x)
 
 lambdas2Test(x) <- value
 
-\S4method{lambdas2Test}{pcorNetwork}(x)
+\S4method{lambdas2Test}{DNEAresults}(x)
 
-\S4method{lambdas2Test}{pcorNetwork}(x) <- value
+\S4method{lambdas2Test}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}

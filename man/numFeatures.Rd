@@ -2,12 +2,12 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{numFeatures}
 \alias{numFeatures}
-\alias{numFeatures,pcorNetwork-method}
+\alias{numFeatures,DNEAresults-method}
 \title{numFeatures finds the total number of features in the dataset}
 \usage{
 numFeatures(x)
 
-\S4method{numFeatures}{pcorNetwork}(x)
+\S4method{numFeatures}{DNEAresults}(x)
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

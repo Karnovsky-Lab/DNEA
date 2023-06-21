@@ -3,17 +3,17 @@
 \name{edgeList}
 \alias{edgeList}
 \alias{edgeList<-}
-\alias{edgeList,pcorNetwork-method}
-\alias{edgeList<-,pcorNetwork-method}
+\alias{edgeList,DNEAresults-method}
+\alias{edgeList<-,DNEAresults-method}
 \title{edgeList returns the edge list created from DNEA}
 \usage{
 edgeList(x)
 
 edgeList(x) <- value
 
-\S4method{edgeList}{pcorNetwork}(x)
+\S4method{edgeList}{DNEAresults}(x)
 
-\S4method{edgeList}{pcorNetwork}(x) <- value
+\S4method{edgeList}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

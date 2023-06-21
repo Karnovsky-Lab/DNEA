@@ -3,17 +3,17 @@
 \name{nodeList}
 \alias{nodeList}
 \alias{nodeList<-}
-\alias{nodeList,pcorNetwork-method}
-\alias{nodeList<-,pcorNetwork-method}
+\alias{nodeList,DNEAresults-method}
+\alias{nodeList<-,DNEAresults-method}
 \title{nodeList returns the node list created from DNEA}
 \usage{
 nodeList(x)
 
 nodeList(x) <- value
 
-\S4method{nodeList}{pcorNetwork}(x)
+\S4method{nodeList}{DNEAresults}(x)
 
-\S4method{nodeList}{pcorNetwork}(x) <- value
+\S4method{nodeList}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

@@ -3,17 +3,17 @@
 \name{selectionResults}
 \alias{selectionResults}
 \alias{selectionResults<-}
-\alias{selectionResults,pcorNetwork-method}
-\alias{selectionResults<-,pcorNetwork-method}
+\alias{selectionResults,DNEAresults-method}
+\alias{selectionResults<-,DNEAresults-method}
 \title{selectionResults returns an m x m matrix of the edge selection results from stabilitySelection()}
 \usage{
 selectionResults(x)
 
 selectionResults(x) <- value
 
-\S4method{selectionResults}{pcorNetwork}(x)
+\S4method{selectionResults}{DNEAresults}(x)
 
-\S4method{selectionResults}{pcorNetwork}(x) <- value
+\S4method{selectionResults}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

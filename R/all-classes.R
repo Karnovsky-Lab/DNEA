@@ -17,6 +17,14 @@ setClass(Class = "consensusClusteringResults",
                    subnetwork_membership = "data.frame",
                    adjacency_graphs = "list"))
 
+#' Set DNEAinputData class
+#'
+#' @import methods
+#' @rdname DNEAinputSummary
+setClass(Class = "DNEAinputSummary",
+         slots = c(num_samples = "numeric",
+                   num_features = "numeric",
+                   diagnostic_values = "data.frame"))
 #' set generic "DNEAresults" class
 #'
 #'  @import methods
@@ -26,7 +34,7 @@ setClass(Class = "DNEAresults",
            project_name = 'character',
            assays = 'list',
            metadata = 'list',
-           dataset_summary = 'list',
+           dataset_summary = 'DNEAinputSummary',
            node_list = 'data.frame',
            edge_list = 'data.frame',
            hyperparameter = 'list',

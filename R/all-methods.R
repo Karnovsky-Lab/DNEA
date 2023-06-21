@@ -22,6 +22,18 @@ setMethod("show", "DNEAresults", function(object) {
   )
 })
 
+#'#' Show function will display general information about the data present in the DNEAinputSummary slots
+#' @param object A DNEAinputSummary object
+#' @export
+#' @noRd
+setMethod("show", "DNEAinputSummary", function(object) {
+  cat(is(object)[[1]], "\n",
+      "  Number of Samples  -  ", numSamples(object), "\n",
+      "  Number of Features  -  ", numFeatures(object), "\n",
+      diagnostics(object),
+      sep = ""
+  )
+})
 expressionData.DNEAresults <- function(x, type = c("input", "normalized")){
 
   ##set data to be pulled
@@ -51,28 +63,25 @@ expressionData.DNEAresults <- function(x, type = c("input", "normalized")){
 #' @export
 setMethod("expressionData",signature(x = "DNEAresults"), expressionData.DNEAresults)
 
-conditionLevels.DNEAresults <- function(x){
-  x@dataset_summary$condition_levels
+networkGroupIDs.DNEAresults <- function(x){
+  x@metadata$network_group_IDs
 }
-#' conditionLevels returns the group information for samples in a DNEAobject,
+#' networkGroupIDs returns the group information for samples in a DNEAobject,
 #'  or DNEAobject_collapsed
 #'
 #' This function takes in a DNEAobject or DNEAobject_collapsed and return the unique condition
-#'  labels located in the dataset_summary slot of the object
+#'  labels located in the metadata slot of the object. You can also change the sample
+#'  variable being used to determine groups.
 #'
 #'
 #' @param x A DNEAobject or DNEAobject_collapsed
 #' @return A vector of the unique condition labels
 #'
-#' @rdname conditionLevels
+#' @rdname networkGroupIDs
 #' @export
-setMethod("conditionLevels", signature(x = "DNEAresults"), conditionLevels.DNEAresults)
+setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
 
-conditions.DNEAresults <- function(x){
-
-  x@metadata$samples$conditions
-}
-#' condition retrieves the condition values for each sample from the metadata slot.
+#' networkGroups retrieves the condition values for each sample from the metadata slot.
 #'
 #' This function takes in a DNEAobject, or DNEAobject_collapsed object and
 #'  return the condition values located in the metatdata slot of the object
@@ -80,15 +89,23 @@ conditions.DNEAresults <- function(x){
 #' @param x A DNEAobject, or DNEAobject_collapsed object
 #' @return A vector of the condition values
 #'
-#' @rdname conditions
+#' @rdname networkGroups
 #' @export
-setMethod("conditions", signature(x = "DNEAresults"), conditions.DNEAresults)
+setMethod("networkGroups", signature(x = "DNEAresults"), function(x){
 
-#' @rdname conditions
+  x@metadata$network_groups
+})
+
+#' @rdname networkGroups
 #' @export
-setMethod("conditions<-", signature(x = "DNEAresults"), function(x, value){
+setMethod("networkGroups<-", signature(x = "DNEAresults"), function(x, value){
 
-  x@metadata$samples$conditions <- x@metadata$samples[[value]]
+  #set new group ID's
+  if(length(unique(x@metadata$samples[[value]])) >2) stop("DNEA requires exactly two groups!")
+  x@metadata$network_group_IDs <- x@metadata$samples[[value]]
+
+  #update group levels
+  x@metadata$network_groups <- levels(x@metadata$samples[[value]])
   validObject(x)
   x
 })
@@ -131,7 +148,7 @@ featureNames.DNEAresults <- function(x, original = TRUE){
 setMethod("featureNames", signature(x = "DNEAresults"), featureNames.DNEAresults)
 
 numFeatures.DNEAresults <- function(x){
-  x@dataset_summary$num_features
+  x@dataset_summary@num_features
 }
 #' numFeatures finds the total number of features in the dataset
 #'
@@ -142,8 +159,14 @@ numFeatures.DNEAresults <- function(x){
 #' @export
 setMethod("numFeatures", signature(x = "DNEAresults"), numFeatures.DNEAresults)
 
+#' @rdname numFeatures
+#' @export
+setMethod("numFeatures", signature(x = "DNEAinputSummary"), function(x){
+
+  x@num_features
+})
 numSamples.DNEAresults <- function(x){
-  x@dataset_summary$num_samples
+  x@dataset_summary@num_samples
 }
 #' numSamples finds the total number of samples in the dataset
 #'
@@ -153,6 +176,12 @@ numSamples.DNEAresults <- function(x){
 #' @export
 setMethod("numSamples", signature(x = "DNEAresults"), numSamples.DNEAresults)
 
+#' @rdname numSamples
+#' @export
+setMethod("numSamples", signature(x = "DNEAinputSummary"), function(x){
+
+  x@num_samples
+})
 optimizedLambda.DNEAresults <- function(x){
   x@hyperparameter$optimized_lambda
 }
@@ -327,29 +356,59 @@ setReplaceMethod("nodeList", signature(x = "DNEAresults"), function(x, value){
   validObject(x)
   x
 })
-datasetSummary.DNEAresults <- function(x){
+diagnostics.DNEAresults <- function(x){
 
-  message(paste0("Number of samples: ", numSamples(object)))
-  message(paste0("Number of features: ", numFeatures(x)))
-  message("Condition levels:")
-  message(paste0("  1. ", conditionLevels(x)[1]))
-  message(paste0("  2. ", conditionLevels(x)[2]))
-  message("The diagnostic values are as follows:")
-  print(as.matrix(x@dataset_summary$diagnostic_values))
-
-  return(x@dataset_summary)
+  as.matrix(x@dataset_summary$diagnostic_values)
 }
-#' datasetSummary retrieves the dataset summary
+#' diagnostics retrieves the diagnostic values for the input expression data
 #'
 #' FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' and returns the datasetSummary containing the number of features and samples, and the diagnostic values
+#' and returns the diagnostic values for the input expression data
 #'
 #' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @return prints the values to console and returns a list of the aforementioned variables
+#' @return returns the diagnostic values for the input expression data
+#'
+#' @rdname diagnostics
+#' @keywords internal
+setMethod("diagnostics", signature(x = "DNEAresults"), diagnostics.DNEAresults)
+
+#' @rdname diagnostics
+#' @keywords internal
+setReplaceMethod("diagnostics", signature(x = "DNEAresults"), function(x, value){
+
+  x@dataset_summary$diagnostic_values <- value
+  validObject(x)
+  x
+})
+
+#' @rdname diagnostics
+#' @export
+setMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x){
+
+  x@diagnostic_values
+})
+
+#' @rdname diagnostics
+#' @keywords internal
+setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, value){
+
+  x@diagnostic_values <- value
+  validObject(x)
+  x
+})
+
+#' datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object
+#'
+#' @param x A DNEA results object
+#' @returns The DNEAinputSummary object if retrieving data, or the input object after populating the dataset_summary
+#' slot
 #'
 #' @rdname datasetSummary
 #' @keywords internal
-setMethod("datasetSummary", signature(x = "DNEAresults"), datasetSummary.DNEAresults)
+setMethod("datasetSummary", signature(x = "DNEAresults"), function(x){
+
+  x@dataset_summary
+})
 
 #' @rdname datasetSummary
 #' @keywords internal
@@ -359,7 +418,6 @@ setReplaceMethod("datasetSummary", signature(x = "DNEAresults"), function(x, val
   validObject(x)
   x
 })
-
 adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 
   if(weighted){

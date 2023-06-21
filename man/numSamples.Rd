@@ -2,12 +2,12 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{numSamples}
 \alias{numSamples}
-\alias{numSamples,pcorNetwork-method}
+\alias{numSamples,DNEAresults-method}
 \title{numSamples finds the total number of samples in the dataset}
 \usage{
 numSamples(x)
 
-\S4method{numSamples}{pcorNetwork}(x)
+\S4method{numSamples}{DNEAresults}(x)
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

@@ -2,13 +2,13 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{expressionData}
 \alias{expressionData}
-\alias{expressionData,pcorNetwork-method}
+\alias{expressionData,DNEAresults-method}
 \title{expressionData is an accessor function for the data in the "assays" slot of a pcorNetwork,
 DNEAobject, or DNEAobject_collapsed}
 \usage{
 expressionData(x, type)
 
-\S4method{expressionData}{pcorNetwork}(x, type = c("input", "normalized"))
+\S4method{expressionData}{DNEAresults}(x, type = c("input", "normalized"))
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

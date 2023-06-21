@@ -2,12 +2,12 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{featureNames}
 \alias{featureNames}
-\alias{featureNames,pcorNetwork-method}
+\alias{featureNames,DNEAresults-method}
 \title{featureNames retrieves the feature names from the metadata slot.}
 \usage{
 featureNames(x, original = TRUE)
 
-\S4method{featureNames}{pcorNetwork}(x, original = TRUE)
+\S4method{featureNames}{DNEAresults}(x, original = TRUE)
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

@@ -3,17 +3,17 @@
 \name{optimizedLambda}
 \alias{optimizedLambda}
 \alias{optimizedLambda<-}
-\alias{optimizedLambda,pcorNetwork-method}
-\alias{optimizedLambda<-,pcorNetwork-method}
+\alias{optimizedLambda,DNEAresults-method}
+\alias{optimizedLambda<-,DNEAresults-method}
 \title{optimizedLambda returns the lambda value used in analysis.}
 \usage{
 optimizedLambda(x)
 
 optimizedLambda(x) <- value
 
-\S4method{optimizedLambda}{pcorNetwork}(x)
+\S4method{optimizedLambda}{DNEAresults}(x)
 
-\S4method{optimizedLambda}{pcorNetwork}(x) <- value
+\S4method{optimizedLambda}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
