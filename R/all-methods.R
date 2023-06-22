@@ -475,7 +475,7 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
 #' @export
 setMethod("adjacencyGraph", signature(x = "DNEAresults"), function(x, graph){
 
-  x@consensus_clustering@adjacency_graphs$graph
+  x@consensus_clustering@adjacency_graphs[[graph]]
 })
 
 #' @rdname adjacencyGraph
@@ -579,7 +579,6 @@ setReplaceMethod("netGSAresults", signature(x = "DNEAresults"), function(x, valu
   validObject(x)
   x
 })
-
 
 
 

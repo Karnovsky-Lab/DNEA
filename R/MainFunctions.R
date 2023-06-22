@@ -4,6 +4,7 @@
 #' @include preprocess_lib.R
 #' @include all-methods.R
 #' @include all-generics.R
+#' @include all-classes.R
 #'
 NULL
 
@@ -20,7 +21,7 @@ NULL
 #' @param runParallel A boolean indicating if stability selection should be run in parallel
 #' @param nCores The number of cores available for parallel processing. If more cores than lambda values
 #'        tested is specified, will default to one worker per lambda value.
-#' @param eps_cutoff A significance cut-off for thresholding network interactions.
+#' @param eps_threshold A significance cut-off for thresholding network edges
 #'        The default value is 1e-06.
 #' @param eta_value default parameter ??. Default is 0.1
 #'
@@ -40,7 +41,7 @@ BICtune <- function(object,
                     lambda_values,
                     runParallel = FALSE,
                     nCores = 1,
-                    eps_cutoff = 1e-06,
+                    eps_threshold = 1e-06,
                     eta_value = 0.1){
 
   ############################################
@@ -104,7 +105,7 @@ BICtune <- function(object,
                         testX = trainX,
                         model = trainY,
                         BIC = TRUE,
-                        eps = eps_cutoff,
+                        eps = eps_threshold,
                         eta = eta_value)
 
   } else{
@@ -118,22 +119,26 @@ BICtune <- function(object,
                         testX = trainX,
                         model = trainY,
                         BIC = TRUE,
-                        eps = eps_cutoff,
+                        eps = eps_threshold,
                         eta = eta_value)
 
   }
 
-  #add empty line after progress bar
+  ##add empty line after progress bar
   message("", appendLF = TRUE)
 
+  ##collect BIC scores
+  BIC_scores = unlist(sapply(bic_guo, function(a) a$BIC))
+
   ##make sure all bic values are finite and remove those that are not
-  tmp = unlist(sapply(bic_guo, function(a) a$BIC))
-  if (max(is.infinite(tmp))==1){
-    bic_guo <- bic_guo[is.finite(tmp)]
-    lambda_values <- lambda_values[is.finite(tmp)]
-    lastar_guo <- lambda_values[which.min(tmp)]
+  if (max(is.infinite(BIC_scores)) == 1){
+
+    bic_guo <- bic_guo[is.finite(BIC_scores)]
+    lambda_values <- lambda_values[is.finite(BIC_scores)]
+    lastar_guo <- lambda_values[match(min(BIC_scores), BIC_scores)]
   } else {
-    lastar_guo <- lambda_values[which.min(sapply(bic_guo, function(a) a$BIC))]
+
+    lastar_guo <- lambda_values[match(min(BIC_scores), BIC_scores)]
   }
 
   #######################
@@ -216,11 +221,11 @@ stabilitySelection <- function(object,
       optimized_lambda <- optimizedLambda(object)
     }
   } else{
-    if(missing(optimal_lambda) == FALSE){
+    if(!missing(optimal_lambda)){
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda')
+      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to the optimal_lambda provided!')
 
     } else{
 
@@ -236,7 +241,7 @@ stabilitySelection <- function(object,
 
 
   # pbapply requires a vector of length nreps
-  nreps_input = 1:nreps
+  # nreps_input = 1:nreps
 
   #initialize static variables to pass to workers
   stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
@@ -272,7 +277,7 @@ stabilitySelection <- function(object,
 
       stab_sel <- pbapply::pblapply(cl = cl,
                                     FUN = "CGM_AHP_stabsel_subsample",
-                                    X = nreps_input,
+                                    X = 1:nreps,
                                     init_param = stabsel_init_param,
                                     listX = data_split_by_condition,
                                     lastar = optimized_lambda)
@@ -281,7 +286,7 @@ stabilitySelection <- function(object,
 
       stab_sel <- pbapply::pblapply(cl = cl,
                                     FUN ="CGM_AHP_stabsel",
-                                    X = nreps_input,
+                                    X = 1:nreps,
                                     init_param = stabsel_init_param,
                                     listX = data_split_by_condition,
                                     lastar = optimized_lambda)
@@ -294,7 +299,7 @@ stabilitySelection <- function(object,
       message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
 
       stab_sel <- pbapply::pblapply(FUN = "CGM_AHP_stabsel_subsample",
-                                    X = nreps_input,
+                                    X = 1:nreps,
                                     init_param = stabsel_init_param,
                                     listX = data_split_by_condition,
                                     lastar = optimized_lambda)
@@ -302,7 +307,7 @@ stabilitySelection <- function(object,
       message("Stability selection WITHOUT additional subsampling using Guo et al ...\n", appendLF = TRUE)
 
       stab_sel <- pbapply::pblapply(FUN ="CGM_AHP_stabsel",
-                                    X = nreps_input,
+                                    X = 1:nreps,
                                     init_param = stabsel_init_param,
                                     listX = data_split_by_condition,
                                     lastar = optimized_lambda)
@@ -369,7 +374,9 @@ stabilitySelection <- function(object,
 #' @include JSEM.R
 #' @include utilities.R
 #' @export
-getNeworks <- function(object, optimal_lambda, eps = 1e-06){
+getNeworks <- function(object,
+                       optimal_lambda,
+                       eps_threshold = 1e-06){
 
   ############################################
   #**Prepare data and initialize parameters**#
@@ -388,13 +395,14 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
   #unweighted
   unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+
   #separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, type = "normalized"),
                                                 condition_levels = networkGroups(object),
                                                 condition_by_sample = networkGroupIDs(object))
 
-  #getNetworks requires lambda hyper-parameter. Will use optimal_lambda if
-  #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+  # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
+  # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
   # choosing lambda follows the following algorithm:
   # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
@@ -403,8 +411,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
   #    @hyperparamater[['optimized_lambda']]
   # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
   #    for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, use.
-  #    optimized_lambda = sqrt(log(# features) / # samples) for analysis.
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
   if(!is.null(optimizedLambda(object))){
     if(missing(optimal_lambda) == FALSE){
 
@@ -460,21 +467,27 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 
   #add names to model weights list
   names(model_weight_values) <- names(selectionProbabilities(object))
+
     #############################################
     #**Estimate the partial correlation matrix**#
     #############################################
-    #add in lambda parameter?
+
     for (k in networkGroups(object)){
+
       message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
+
+      #fit the networks
       fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                                 weights= model_weight_values[[k]],
                                 lambda = optimized_lambda)
+
+      #grab the adjacency matrices
       weighted_adjacency_matrices[[k]] <- fit$Theta.glasso
     }
 
     ## Get the unweighted adjacency matrix by thresholding the partial correlations
     for (k in names(weighted_adjacency_matrices)){
-      unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps, num_features^2), num_features, num_features)
+      unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps_threshold, num_features^2), num_features, num_features)
     }
 
     #####################################
@@ -485,6 +498,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
     message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
+    #store the adjacency matrices in DNEAresults object
     adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
     adjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
 
@@ -502,11 +516,11 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
     edge_list[,1:2] <- do.call(rbind, pairs)
     edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
     edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
-    edge_list$edge <- rep(-99, length(pairs))#non-edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps)*(abs(edge_list$pcor.1) >= eps)==1)] <- "Both" #common edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps)*(abs(edge_list$pcor.1)  < eps)==1)] <- names(weighted_adjacency_matrices)[[1]]
-    edge_list$edge[which((abs(edge_list$pcor.0) <  eps)*(abs(edge_list$pcor.1) >= eps)==1)] <- names(weighted_adjacency_matrices)[[2]]
-    edge_list <- edge_list[(edge_list$edge!=-99),]
+    edge_list$edge <- rep(NA, length(pairs)) #non-edge
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold)==1)] <- "Both" #common edge
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold)==1)] <- names(weighted_adjacency_matrices)[[1]]
+    edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold)==1)] <- names(weighted_adjacency_matrices)[[2]]
+    edge_list <- edge_list[!is.na(edge_list$edge),]
     rownames(edge_list) <- NULL
 
     edgeList(object) <- edge_list
@@ -522,15 +536,6 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 #'
 #' @param object A DNEA object
 #' @param tau The consensus probabilty threshold for agreement among clustering algorithms
-#' @param method The consensus clustering method to be used. The options are as follows
-#'        - "ensemble": indicates that all seven of the available clustering methods
-#'        (cluster_edge_betweenness, cluster_fast_greedy, cluster_infomap, cluster_label_prop,
-#'        cluster_leading_eigen, cluster_louvain, cluster_walktrap) should be used.
-#'        -"lpm" utilizes the cluster_label_prop, cluster_infomap, and cluster_walktrap methods.
-#'        -"walktrap" utilizes only cluster_walktrap.
-#'        -"infomap" utilizes only infomap
-#' @param num_iterations The number of clustering iterations to perform - this parameter not relevant
-#'        for the "ensemble" method. Default is 10 iterations.
 #'
 #' @return A DNEAobject containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using getClusterResults().
@@ -541,7 +546,7 @@ getNeworks <- function(object, optimal_lambda, eps = 1e-06){
 #' @include preprocess_lib.R
 #' @include utilities.R
 #' @export
-runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method = "ensemble"){
+runConsensusCluster <- function(object, tau = 0.5){
 
 
   ###########################
@@ -562,6 +567,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
   names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted = TRUE))
 
   for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
+
     adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
@@ -592,7 +598,7 @@ runConsensusCluster <- function(object, tau = 0.5, num_iterations = 10, method =
 
   #run consensus cluster algorithm
   # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
-  fit <- run_consensus_cluster(joint_graph, tau=tau, method = method, num_iterations = num_iterations )
+  fit <- run_consensus_cluster(joint_graph, tau=tau, method = "ensemble", num_iterations = 10)
   consensus_membership <- fit$dcl
 
   #initiate output matrix
@@ -683,13 +689,17 @@ runNetGSA <- function(object, min_size = 5){
                     "NetGSA_pval"= out.netgsa$p.value,
                     "NetGSA_pFDR"= p.adjust(out.netgsa$p.value, "BH"),
                     check.names = FALSE)
+
+  #order netGSA results by FDR
   res <- res[order(res$NetGSA_pFDR),]
   rownames(res) <- 1:nrow(res)
 
-  #modify membership column of Node list
-  nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('Subnetwork','',res$Subnetworks))] <- NA
+  #Change nodelist membership to be indicative of new order
+  nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('subnetwork','',res$subnetworks))] <- NA
   nodeList(object)[["membership"]] <- rownames(res)[match(nodeList(object)[["membership"]], as.numeric(gsub('subnetwork','',res$subnetworks)))]
   nodeList(object)[["membership"]] <- as.numeric(nodeList(object)[["membership"]])
+
+  #change res rownames to match new order
   res$subnetworks <- paste0("subnetwork ",rownames(res))
 
   #update DNEAobject

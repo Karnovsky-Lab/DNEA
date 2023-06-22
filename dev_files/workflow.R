@@ -1,6 +1,6 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
-
+set.seed(417)
 #dat <- read.csv('~/Documents/Karnovsky_lab/published_files/adjT1DfullPlasma10262022.csv')
 start <- Sys.time()
 dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
@@ -9,7 +9,7 @@ dat<- dat[,-1]
 
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
 object <- BICtune(object = object,runParallel = TRUE, nCores = 4)
-object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 4, nCores = 4)
+object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 500, nCores = 4)
 finish <- Sys.time()
 finish - start
 

@@ -94,3 +94,78 @@ getNetworkFiles <- function(object, file_path){
   return(object)
 }
 
+#' plot will create network graphs of the metabolic modules
+#'
+#' The function takes as input a DNEAresults object and creates network plots for each of the subnetworks identified
+#' via runConsensusClustering().
+#'
+#' @param x A DNEAresults object
+#' @param type "group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
+#' specified by teh subnetwork parameter
+#' @param subnetwork The subnetwork to plot
+#' @returns a network plot for each of the subnetworks
+#'
+#' @import igraph
+#' @export
+plotNetworks <- function(x,
+                         type = c("group_networks", "subnetworks"),
+                         subnetwork){
+
+  #get type argument
+  type <- match.arg(type)
+
+  #grab network graph
+  network_graph <- adjacencyGraph(object, "joint_graph")
+
+  #grab node list
+  node_list <- nodeList(object)
+
+  if(type == "group_networks"){
+
+    #grab necessary info
+    edge_list <- edgeList(object)
+    group1_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == networkGroups(object)[[1]]],
+                             edge_list$Metabolite.B[edge_list$edge == networkGroups(object)[[1]]]))
+
+    group2_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == networkGroups(object)[[2]]],
+                             edge_list$Metabolite.B[edge_list$edge == networkGroups(object)[[2]]]))
+
+    #graph for control network
+    cluster_c1 <- induced.subgraph(network_graph, V(network_graph)$name[match(group1_nodes, V(network_graph)$name)])
+
+    #graph for total network
+    cluster_c3 <- induced.subgraph(network_graph, V(network_graph)$name)
+
+    #graph for case network
+    cluster_c2 <- induced.subgraph(network_graph, V(network_graph)$name[match(group2_nodes, V(network_graph)$name)])
+
+    ##plot
+    #set layout
+    par(mfrow = c(1,3))
+
+    #control network
+    plot(cluster_c1, vertex.label = V(cluster_c1)$name, vertex.label.cex = 1,
+         layout = layout.fruchterman.reingold(cluster_c1),
+         main = networkGroups(object)[[1]])
+
+    #total network
+    plot(cluster_c3, vertex.label = V(cluster_c3)$name, vertex.label.cex = 1,
+         layout = layout.fruchterman.reingold(cluster_c3),
+         main = "Total Network")
+
+    #case network
+    plot(cluster_c2, vertex.label = V(cluster_c2)$name, vertex.label.cex = 1,
+         layout = layout.fruchterman.reingold(cluster_c2),
+         main = networkGroups(object)[[2]])
+
+    dev.off()
+  }else if(type == "subnetworks"){
+
+    cluster_c <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subnetwork])
+
+    plot(cluster_c, vertex.label = V(cluster_c)$name, vertex.label.cex = 1,
+         layout = layout.fruchterman.reingold(cluster_c),
+         main = paste0("subnetwork: ", subnetwork))
+  }
+}
+
