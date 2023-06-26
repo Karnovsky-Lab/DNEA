@@ -9,13 +9,41 @@ dat<- dat[,-1]
 
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
 object <- BICtune(object = object,runParallel = TRUE, nCores = 4)
-object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 500, nCores = 4)
+object<- stabilitySelection(object = object, runParallel = TRUE, subSample = FALSE, nreps = 4, nCores = 4, main.seed = 101)
 finish <- Sys.time()
 finish - start
 
-object <- getNeworks(object = object)
+object <- getNeworks(object = object, optimal_lambda = sqrt(log(144)/50))
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
+
+load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_BIC_tuning.rda")
+
+load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_stable_networks.rda")
+sel2 <- vector("list", length(networkGroups(object)))
+names(sel2) <- networkGroups(object)
+
+#initiate list for stability selection results converted to probabilities
+selp <- vector("list", length(networkGroups(object)))
+names(selp) <- networkGroups(object)
+
+for (k in 1:length(sel2)){
+  sel2[[k]] <- lapply(stab_guo, function(r) r$mat[[k]])
+  sel2[[k]] <- Reduce("+", sel2[[k]])
+
+  if (subSample){
+    message(paste0("Calculating selection probabilities WITH subsampling for...", names(sel2)[[k]],"..."), appendLF = TRUE)
+    selp[[k]] <- sel2[[k]]/(nreps)
+  } else {
+    message(paste0("Calculating selection probabilities WITHOUT subsampling for...",names(sel2)[[k]],"..."), appendLF = TRUE)
+    selp[[k]] <- sel2[[k]]/(2 * nreps)
+  }
+}
+
+ed<- read.table("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_edgelist.txt",
+                header = TRUE)
+ed <- ed[,c(1:4, 7)]
+ed2<-edgeList(object)
 
 
 

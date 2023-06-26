@@ -3,11 +3,14 @@
 \name{numFeatures}
 \alias{numFeatures}
 \alias{numFeatures,DNEAresults-method}
+\alias{numFeatures,DNEAinputSummary-method}
 \title{numFeatures finds the total number of features in the dataset}
 \usage{
 numFeatures(x)
 
 \S4method{numFeatures}{DNEAresults}(x)
+
+\S4method{numFeatures}{DNEAinputSummary}(x)
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}

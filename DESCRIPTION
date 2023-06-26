@@ -15,7 +15,6 @@ Collate:
     'all-generics.R'
     'all-methods.R'
     'preprocess_lib.R'
-    'netgsa_complex.R'
     'utilities.R'
     'MainFunctions.R'
     'collapseNodes-fun.R'
@@ -33,6 +32,7 @@ Imports:
     janitor,
     Matrix,
     methods,
+    netgsa,
     pbapply,
     stringr,
     zoo

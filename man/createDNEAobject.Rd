@@ -4,13 +4,7 @@
 \alias{createDNEAobject}
 \title{Initializs the DNEAobject}
 \usage{
-createDNEAobject(
-  project_name,
-  expression_data,
-  scaled_expression_data,
-  control,
-  case
-)
+createDNEAobject(project_name, expression_data, control, case)
 }
 \arguments{
 \item{project_name}{A string containing an identifying name for the analysis}
@@ -19,11 +13,11 @@ createDNEAobject(
 and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 the numeric expression data}
 
-\item{scaled_expression_data}{A matrix or dataframe similar to expression_data but for scaled data}
-
 \item{control}{A string corresponding to the name of condition 1 in column one of the data matrix}
 
 \item{case}{A string corresponding to the name of condition 2 in column one of the data matrix}
+
+\item{scaled_expression_data}{A matrix or dataframe similar to expression_data but for scaled data}
 }
 \value{
 DNEAobject containing the scaled and un-scaled (if provided) data in assays, as well as sample number,

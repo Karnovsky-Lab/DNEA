@@ -168,10 +168,4 @@ setGeneric("netGSAresults", function(x) standardGeneric("netGSAresults"))
 #' @export
 setGeneric("netGSAresults<-", function(x, value) standardGeneric("netGSAresults<-"))
 
-#'
-#' @rdname plotNetworks
-#' @export
-setGeneric("plotNetworks", function(x, ...) standardGeneric("plotNetworks"))
-
-
 

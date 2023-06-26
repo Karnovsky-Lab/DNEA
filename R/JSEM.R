@@ -216,6 +216,7 @@ CGM_AHP_tune <- function(
   return(out)
 }
 
+
 #' stabsel_init initializes static tuning variables to pass to stability selection
 #' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample)
 #'
@@ -374,7 +375,6 @@ CGM_AHP_stabsel <- function(listX,
 
   return(list(mat = selection_matrix, stab_sel_rep = X))
 }
-
 #' CGM_AHP_stabsel_subsample performs stability selection WITH additional subsampling
 #'
 #' This function will take as input the expression data and optimized lambda in order to randomly sample
@@ -512,7 +512,7 @@ adjDGlasso_minimal <- function(
 
   if (!quiet){message("model estimated!\n", appendLF = TRUE)}
 
-  coeff <- diag(1,p) - cov2cor(Theta.hat.from.Glasso)
+  coeff <- diag(1,num_features) - cov2cor(Theta.hat.from.Glasso)
 
   return(list(Theta.glasso=coeff))
 }

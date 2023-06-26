@@ -1,6 +1,5 @@
 #' @include JSEM.R
 #' @include utilities.R
-#' @include netgsa_complex.R
 #' @include preprocess_lib.R
 #' @include all-methods.R
 #' @include all-generics.R
@@ -482,7 +481,12 @@ getNeworks <- function(object,
                                 lambda = optimized_lambda)
 
       #grab the adjacency matrices
-      weighted_adjacency_matrices[[k]] <- fit$Theta.glasso
+      weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
+                                                 nrow = 144, ncol = 144,
+                                                 dimnames = list(featureNames(object),
+                                                                 featureNames(object)))
+
+
     }
 
     ## Get the unweighted adjacency matrix by thresholding the partial correlations
@@ -517,9 +521,9 @@ getNeworks <- function(object,
     edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
     edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
     edge_list$edge <- rep(NA, length(pairs)) #non-edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold)==1)] <- "Both" #common edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold)==1)] <- names(weighted_adjacency_matrices)[[1]]
-    edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold)==1)] <- names(weighted_adjacency_matrices)[[2]]
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- "Both" #common edge
+    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[1]]
+    edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[2]]
     edge_list <- edge_list[!is.na(edge_list$edge),]
     rownames(edge_list) <- NULL
 
@@ -599,7 +603,7 @@ runConsensusCluster <- function(object, tau = 0.5){
   #run consensus cluster algorithm
   # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
   fit <- run_consensus_cluster(joint_graph, tau=tau, method = "ensemble", num_iterations = 10)
-  consensus_membership <- fit$dcl
+  consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
@@ -651,7 +655,7 @@ runConsensusCluster <- function(object, tau = 0.5){
 #' @importFrom stats p.adjust
 #' @import igraph
 #' @import corpcor
-#' @include netgsa_complex.R
+#' @import netgsa
 #' @include utilities.R
 #' @export
 runNetGSA <- function(object, min_size = 5){
@@ -660,34 +664,50 @@ runNetGSA <- function(object, min_size = 5){
   #**Prepare data and run netGSA**#
   #################################
 
+  ##set input variables
+  adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
+                             list(adjacencyMatrix(x = object, weighted = TRUE)[[2]]))
+  expression_data <- t(expressionData(object, type = "input"))
+  data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
+  subnetworks <- as.matrix(subnetworkMembership(object))
+
   ##filter subnetworks to only include those greater than or equal to min_size
   filtered_subnetworks <- subnetworkMembership(object)
-  filtered_subnetworks <- filtered_subnetworks[rowSums(filtered_subnetworks) >= min_size, ]
+  filtered_subnetworks <- as.matrix(filtered_subnetworks[rowSums(filtered_subnetworks) >= min_size, ])
 
-  #separate the data by condition
-  separated_conditions_data <- split_by_condition(dat = expressionData(object, type = "input"),
-                                                  condition_levels = networkGroups(object),
-                                                  condition_by_sample = networkGroupIDs(object))
+  ##run netgsa
+  netgsa_results <- NetGSA(A = adjacency_matrices,
+                           x = expression_data,
+                           group = data_groups,
+                           pathways = filtered_subnetworks,
+                           lklMethod = "REML",
+                           minsize = min_size)
 
-  out.netgsa <- NetGSA(adjacencyMatrix(x = object, weighted = TRUE),
-                       x = cbind(separated_conditions_data[[1]], separated_conditions_data[[2]]),
-                       y = c(rep(1, ncol(separated_conditions_data[[1]])), rep(2, ncol(separated_conditions_data[[2]]))),
-                       B = as.matrix(filtered_subnetworks), lklMethod = "REML")
 
+
+  # #separate the data by condition
+  # separated_conditions_data <- split_by_condition(dat = expressionData(object, type = "input"),
+  #                                                 condition_levels = networkGroups(object),
+  #                                                 condition_by_sample = networkGroupIDs(object))
+
+  # out.netgsa <- NetGSA(adjacencyMatrix(x = object, weighted = TRUE),
+  #                      x = cbind(separated_conditions_data[[1]], separated_conditions_data[[2]]),
+  #                      y = c(rep(1, ncol(separated_conditions_data[[1]])), rep(2, ncol(separated_conditions_data[[2]]))),
+  #                      B = as.matrix(filtered_subnetworks), lklMethod = "REML")
   #####################################
   #**Concatenate results for output **#
   #####################################
 
   #add netGSA results to Node list
-  nodeList(object)[["mean1"]] <- as.vector(out.netgsa$beta[[1]])
-  nodeList(object)[["mean2"]] <- as.vector(out.netgsa$beta[[2]])
-  nodeList(object)[["meanchange"]] <- out.netgsa$beta[[2]] - out.netgsa$beta[[1]]
+  nodeList(object)[["mean1"]] <- as.vector(netgsa_results$beta[[1]])
+  nodeList(object)[["mean2"]] <- as.vector(netgsa_results$beta[[2]])
+  nodeList(object)[["meanchange"]] <- netgsa_results$beta[[2]] - netgsa_results$beta[[1]]
   nodeList(object)[["mc.notes"]] <- paste(networkGroups(object)[[2]], 'over', networkGroups(object)[[1]])
 
   #concatenate netGSA summary output
-  res <- data.frame(CCsummary(object),
-                    "NetGSA_pval"= out.netgsa$p.value,
-                    "NetGSA_pFDR"= p.adjust(out.netgsa$p.value, "BH"),
+  res <- data.frame(CCsummary(object)[CCsummary(object)$number_of_nodes >= min_size, ],
+                    "NetGSA_pval"= netgsa_results$results$pval,
+                    "NetGSA_pFDR"= netgsa_results$results$pFdr,
                     check.names = FALSE)
 
   #order netGSA results by FDR
@@ -695,9 +715,9 @@ runNetGSA <- function(object, min_size = 5){
   rownames(res) <- 1:nrow(res)
 
   #Change nodelist membership to be indicative of new order
-  nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('subnetwork','',res$subnetworks))] <- NA
-  nodeList(object)[["membership"]] <- rownames(res)[match(nodeList(object)[["membership"]], as.numeric(gsub('subnetwork','',res$subnetworks)))]
-  nodeList(object)[["membership"]] <- as.numeric(nodeList(object)[["membership"]])
+  # nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('subnetwork','',res$subnetworks))] <- NA
+  # nodeList(object)[["membership"]] <- rownames(res)[match(nodeList(object)[["membership"]], as.numeric(gsub('subnetwork','',res$subnetworks)))]
+  # nodeList(object)[["membership"]] <- as.numeric(nodeList(object)[["membership"]])
 
   #change res rownames to match new order
   res$subnetworks <- paste0("subnetwork ",rownames(res))

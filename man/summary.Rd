@@ -2,20 +2,17 @@
 % Please edit documentation in R/all-methods.R
 \name{summary,consensusClusteringResults-method}
 \alias{summary,consensusClusteringResults-method}
-\alias{summary,DNEAresults-method}
 \title{summary retrieves the summary results of consensus clustering}
 \usage{
 \S4method{summary}{consensusClusteringResults}(object)
-
-\S4method{summary}{DNEAresults}(object)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A consensusClusteringResults}
 }
 \value{
 A data.frame that corresponds to a summary of the results of consensus clustering
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-and returns a summary of the results of consensus clustering determined via runConsensusCluster().
+The function takes as input a consensusClusteringResults object and returns a summary of the results of
+consensus clustering determined via runConsensusCluster().
 }

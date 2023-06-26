@@ -4,14 +4,12 @@
 \alias{restructure_input_data}
 \title{Structure input data for initialization of DNEAobject}
 \usage{
-restructure_input_data(expression_data, scaled_expression_data, control, case)
+restructure_input_data(expression_data, control, case)
 }
 \arguments{
 \item{expression_data}{A matrix or dataframe of un-scaled expression data. The sample names should be rownames
 and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 the numeric expression data}
-
-\item{scaled_expression_data}{A matrix or dataframe similar to expression_data but for scaled data}
 
 \item{control}{A string corresponding to the name of condition 1 in column one of the data matrix}
 

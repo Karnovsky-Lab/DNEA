@@ -5,7 +5,7 @@
 \alias{datasetSummary<-}
 \alias{datasetSummary,DNEAresults-method}
 \alias{datasetSummary<-,DNEAresults-method}
-\title{datasetSummary retrieves the dataset summary}
+\title{datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object}
 \usage{
 datasetSummary(x)
 
@@ -16,13 +16,13 @@ datasetSummary(x) <- value
 \S4method{datasetSummary}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{a}{pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEA results object}
 }
 \value{
-prints the values to console and returns a list of the aforementioned variables
+The DNEAinputSummary object if retrieving data, or the input object after populating the dataset_summary
+slot
 }
 \description{
-FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-and returns the datasetSummary containing the number of features and samples, and the diagnostic values
+datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object
 }
 \keyword{internal}

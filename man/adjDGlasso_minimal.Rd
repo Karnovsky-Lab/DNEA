@@ -5,7 +5,7 @@
 \title{adjDGlasso_minimal constructs the debiased glasso model}
 \usage{
 adjDGlasso_minimal(
-  X,
+  data,
   weights = 1,
   theta_star = NULL,
   lambda = NULL,
@@ -14,8 +14,6 @@ adjDGlasso_minimal(
 )
 }
 \arguments{
-\item{X}{A matrix of expression data wherein the samples are rows and features are columns.}
-
 \item{weights}{A matrix of selection weights determined via stability selection to be integrated
 into the model. Default is 1.}
 
@@ -28,6 +26,8 @@ value is FALSE}
 
 \item{zero.edge}{Indices of entries of inverse covariance to be constrained to zero (to be passed
 to glasso). The default is NULL}
+
+\item{X}{A matrix of expression data wherein the samples are rows and features are columns.}
 }
 \value{
 An adjacency matrix for the data network estimated by the glasso model
