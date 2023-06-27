@@ -216,6 +216,7 @@ CGM_AHP_tune <- function(
   return(out)
 }
 
+
 #' stabsel_init initializes static tuning variables to pass to stability selection
 #' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample)
 #'
@@ -294,7 +295,6 @@ stabsel_init <- function(
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6
-#' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
 #'
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
@@ -308,18 +308,17 @@ CGM_AHP_stabsel <- function(listX,
                             init_param,
                             lastar,
                             eta=0.01,
-                            limkappa=1e+6,
-                            main.seed = 101) {
+                            limkappa=1e+6) {
 
   ########################################
   #**Set seed and initialize parameters**#
   ########################################
 
-  #set the seed for reproducibility in random sampling
-  set.seed(X*100+main.seed)
+  # #set the seed for reproducibility in random sampling
+  # set.seed(X*100+main.seed)
 
-  X1 = vector("list", init_param[['num_conditions']])
-  X2 = vector("list", init_param[['num_conditions']])
+  rand_sample1 = vector("list", init_param[['num_conditions']])
+  rand_sample2 = vector("list", init_param[['num_conditions']])
 
   model1 = NULL
   model2 = NULL
@@ -335,14 +334,14 @@ CGM_AHP_stabsel <- function(listX,
     #create index to randomly sample half of the available samples
     ind1 = sample(x = seq(1, init_param[['num_samples']][[k]]), size = init_param[['num_samples']][[k]]/2, replace = FALSE)
 
-    #create index to select the other half of samples not in ind.1
-    ind2 = seq(1, init_param[['num_samples']][[k]])[match(seq(1, init_param[['num_samples']][[k]]), ind1, 0) == 0]
+    #collect the other half of samples not in index1
+    ind2 = seq(1, init_param[['num_samples']][[k]])[is.na(match(seq(1, init_param[['num_samples']][[k]]), ind1, nomatch = NA))]
 
     #grab the first group of samples indicated by ind.1
-    X1[[k]] = listX[[k]][ind1, ]
+    rand_sample1[[k]] = listX[[k]][ind1, ]
 
     #grab the remaining samples indicated by ind.2
-    X2[[k]] = listX[[k]][ind2, ]
+    rand_sample2[[k]] = listX[[k]][ind2, ]
 
     model1 = c(model1, rep(k, length(ind1)))
     model2 = c(model2, rep(k, length(ind2)))
@@ -351,28 +350,29 @@ CGM_AHP_stabsel <- function(listX,
   #########################################
   #**train model and concatenate results**#
   #########################################
-  tmp1 = try(CGM_AHP_train(trainX=do.call(rbind, X1), trainY=model1, lambda_value=lastar, limkappa = limkappa, eta=eta))
-  tmp2 = try(CGM_AHP_train(trainX=do.call(rbind, X2), trainY=model2, lambda_value=lastar, limkappa = limkappa, eta=eta))
+  group1_model = try(CGM_AHP_train(trainX=do.call(rbind, rand_sample1), trainY=model1, lambda_value=lastar, limkappa=limkappa, eta=eta))
+  group2_model = try(CGM_AHP_train(trainX=do.call(rbind, rand_sample2), trainY=model2, lambda_value=lastar, limkappa=limkappa, eta=eta))
 
-  if (inherits(tmp1, "try-error") || inherits(tmp2, "try-error")){
+  if (inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
     warning("There might be some error!")
   }
 
   for (k in 1:init_param[['num_conditions']]){
-    mat1 = as(tmp1$OMEGA[[k]], "sparseMatrix")
-    mat1[abs(mat1) > 1e-5] <- 1
-    #mat1[which(abs(mat1)>1e-5)] = 1
-    diag(mat1) = 0
-    mat2 = as(tmp2$OMEGA[[k]], "sparseMatrix")
-    mat2[abs(mat2) > 1e-5] <- 1
-    #mat2[which(abs(mat2)>1e-5)] = 1
-    diag(mat2) = 0
-    selection_matrix[[k]] = selection_matrix[[k]] + mat1 + mat2
+
+    #adjacency matrix from rand_sample1 model
+    adjacency_mat1 = as(group1_model$OMEGA[[k]], "sparseMatrix")
+    adjacency_mat1[abs(adjacency_mat1) > 1e-5] <- 1
+    diag(adjacency_mat1) = 0
+
+    #adjacency matrix from rand_sample2 model
+    adjacency_mat2 = as(group2_model$OMEGA[[k]], "sparseMatrix")
+    adjacency_mat2[abs(adjacency_mat2) > 1e-5] <- 1
+    diag(adjacency_mat2) = 0
+    selection_matrix[[k]] = selection_matrix[[k]] + adjacency_mat1 + adjacency_mat2
   }
 
   return(list(mat = selection_matrix, stab_sel_rep = X))
 }
-
 #' CGM_AHP_stabsel_subsample performs stability selection WITH additional subsampling
 #'
 #' This function will take as input the expression data and optimized lambda in order to randomly sample
@@ -388,8 +388,7 @@ CGM_AHP_stabsel <- function(listX,
 #' @param lastar the optimized lambda parameter
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'       Default is 1e+6
-#' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
+#'       Default is 1e+6.
 #'
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
@@ -403,15 +402,14 @@ CGM_AHP_stabsel_subsample <- function(listX,
                                       init_param,
                                       lastar,
                                       eta=0.01,
-                                      limkappa=1e+6,
-                                      main.seed = 101) {
+                                      limkappa=1e+6) {
 
   ########################################
   #**Set seed and initialize parameters**#
   ########################################
 
-  #set the seed for reproducibility in random sampling
-  set.seed(X*100+main.seed)
+  # #set the seed for reproducibility in random sampling
+  # set.seed(X*100+main.seed)
 
   #initialize selection matrix and edge matrix
   selection_matrix <- init_param[["selection_matrix"]]
@@ -426,15 +424,15 @@ CGM_AHP_stabsel_subsample <- function(listX,
   ##########################################################
 
   ###subsampling
-  subsampled_listX[[which.max(init_param[['num_samples']])]] = dplyr::sample_n(as.data.frame(listX[[which.max(init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
+  #randomly sample 1.3x the samples in the smaller group from the larger group
+  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
 
-  temp90 = dplyr::sample_n(as.data.frame(listX[[which.min(init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace = FALSE)
+  #subsample 90% of the smaller group and add an additional 10%
+  temp90 = dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace = FALSE)
   temp10 = dplyr::sample_n(temp90, 0.1*init_param[['min_num_samples']], replace = FALSE)
+  subsampled_listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]] = rbind(temp90, temp10)
 
-  subsampled_listX[[which.min(init_param[['num_samples']])]] = rbind(temp90, temp10)
-
-  #should we add a scaling step here?#
-
+  ##get new sample numbers
   subsampled_num_samples = lapply(subsampled_listX, nrow)
 
   for (k in 1:init_param[['num_conditions']]){
@@ -453,11 +451,11 @@ CGM_AHP_stabsel_subsample <- function(listX,
   }
 
   for (k in 1:init_param[['num_conditions']]){
-    tmp_mat = as(tmp_model$OMEGA[[k]], "sparseMatrix")
-    tmp_mat[which(abs(tmp_mat) > 1e-5)] = 1
-    diag(tmp_mat) = 0
-    selection_matrix[[k]] = selection_matrix[[k]] + tmp_mat
-    edge_matrix[[k]][,X] = t(tmp_mat)[lower.tri(tmp_mat,diag=F)]
+    tmp_adjacency_mat = as(tmp_model$OMEGA[[k]], "sparseMatrix")
+    tmp_adjacency_mat[abs(tmp_adjacency_mat) > 1e-5] = 1
+    diag(tmp_adjacency_mat) = 0
+    selection_matrix[[k]] = selection_matrix[[k]] + tmp_adjacency_mat
+    edge_matrix[[k]][,X] = t(tmp_adjacency_mat)[lower.tri(tmp_adjacency_mat,diag=F)]
   }
 
   return(list(mat = selection_matrix, edge_matrix = edge_matrix, stab_sel_rep = X))
@@ -482,19 +480,18 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #' @importFrom stats cov2cor
 #' @export
 adjDGlasso_minimal <- function(
-    X,
+    data,
     weights=1,
     theta_star=NULL,
     lambda = NULL,
     quiet=FALSE,
     zero.edge=NULL
 ){
-  n <- nrow(X)
-  p <- ncol(X)
-  X <- scale(X, center = T, scale = F)
-  empcov <- (1/n) * (t(X) %*% X) #empirical cov
+  num_samples <- nrow(data)
+  num_features <- ncol(data)
+  empcov <- (1/num_samples) * (t(data) %*% data) #empirical cov
   if (is.null(lambda)){
-    lambda <- sqrt(log(p)/n)
+    lambda <- sqrt(log(num_features)/num_samples)
   }
 
   if (!is.null(zero.edge)){
@@ -511,7 +508,7 @@ adjDGlasso_minimal <- function(
 
   if (!quiet){message("model estimated!\n", appendLF = TRUE)}
 
-  coeff <- diag(1,p) - cov2cor(Theta.hat.from.Glasso)
+  coeff <- diag(1,num_features) - cov2cor(Theta.hat.from.Glasso)
 
   return(list(Theta.glasso=coeff))
 }

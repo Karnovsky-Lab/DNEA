@@ -4,7 +4,7 @@
 \alias{getConsensusMatrix}
 \title{getConsensusMatrix will calculate the consensus matrix of the network}
 \usage{
-getConsensusMatrix(cl)
+getConsensusMatrix(cluster_results)
 }
 \arguments{
 \item{cl}{the results from the consensus clustering algorithm}

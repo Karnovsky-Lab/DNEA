@@ -7,10 +7,10 @@
 getNetworkFiles(object, file_path)
 }
 \arguments{
-\item{object}{A DNEAobject}
+\item{object}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
 }
 \value{
-The same DNEAobject as input and saves the node and edge information as .csv files in
+The same object as input and saves the node and edge information as .csv files in
 the working directory
 }
 \description{

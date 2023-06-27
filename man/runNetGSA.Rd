@@ -4,10 +4,12 @@
 \alias{runNetGSA}
 \title{Runs the NetGSA algorithm described in Hellstern et al.}
 \usage{
-runNetGSA(object)
+runNetGSA(object, min_size = 5)
 }
 \arguments{
 \item{object}{A DNEAobject}
+
+\item{min_size}{The minimum size of metabolic modules for enrichment analysis}
 }
 \value{
 A DNEAobject containing containing results from NetGSA. Pathway expression differences for

@@ -4,28 +4,12 @@
 \alias{runConsensusCluster}
 \title{runConsensusCluster performs consensus clustering using an adjacency matrix for the network}
 \usage{
-runConsensusCluster(
-  object,
-  tau = 0.5,
-  num_iterations = 10,
-  method = "ensemble"
-)
+runConsensusCluster(object, tau = 0.5)
 }
 \arguments{
 \item{object}{A DNEA object}
 
 \item{tau}{The consensus probabilty threshold for agreement among clustering algorithms}
-
-\item{num_iterations}{The number of clustering iterations to perform - this parameter not relevant
-for the "ensemble" method. Default is 10 iterations.}
-
-\item{method}{The consensus clustering method to be used. The options are as follows
-- "ensemble": indicates that all seven of the available clustering methods
-(cluster_edge_betweenness, cluster_fast_greedy, cluster_infomap, cluster_label_prop,
-cluster_leading_eigen, cluster_louvain, cluster_walktrap) should be used.
--"lpm" utilizes the cluster_label_prop, cluster_infomap, and cluster_walktrap methods.
--"walktrap" utilizes only cluster_walktrap.
--"infomap" utilizes only infomap}
 }
 \value{
 A DNEAobject containing sub-network determinations for the nodes within the input network.

@@ -4,7 +4,7 @@
 \alias{getNeworks}
 \title{Creates the network model using glasso}
 \usage{
-getNeworks(object, optimal_lambda, eps = 1e-06)
+getNeworks(object, optimal_lambda, eps_threshold = 1e-06)
 }
 \arguments{
 \item{object}{A DNEAobject}
