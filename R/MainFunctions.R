@@ -12,17 +12,15 @@ NULL
 #' This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
 #' determined by the number of features within the dataset. The lambda value with the lowest (BIC) score is
 #' chosen for analysis. It takes a DNEAobject as input and has an option that allows the function to be run
-#' in parallel. The main.seed parameter is for reproducibility and can be left as default.
+#' in parallel.
 #'
 #' @param object A DNEA object
 #' @param lambda_values An optional list of lambda values to fit a model and calculate the BIC score.
 #'        If not provided, a set of lambda values are chosen based on the size of the dataset.
-#' @param runParallel A boolean indicating if stability selection should be run in parallel
-#' @param nCores The number of cores available for parallel processing. If more cores than lambda values
-#'        tested is specified, will default to one worker per lambda value.
 #' @param eps_threshold A significance cut-off for thresholding network edges
 #'        The default value is 1e-06.
 #' @param eta_value default parameter ??. Default is 0.1
+#' @param BPPARAM A BiocParallel object
 #'
 #' @return A DNEAobject containing the BIC and liklihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
@@ -33,15 +31,13 @@ NULL
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import parallel
-#' @import pbapply
+#' @import BiocParallel
 #' @export
 BICtune <- function(object,
                     lambda_values,
-                    runParallel = FALSE,
-                    nCores = 1,
                     eps_threshold = 1e-06,
-                    eta_value = 0.1){
+                    eta_value = 0.1,
+                    BPPARAM = bpparam()){
 
   ############################################
   #**Prepare data and initialize parameters**#
@@ -69,70 +65,82 @@ BICtune <- function(object,
   #**Initialize workers and optimize lambda **#
   #############################################
 
-  message("BIC using Guo et al ...", appendLF = TRUE)
+  message("Optimizing the lambda hyperparameter using Bayesian-Information
+          Criterion outlined in Guo et al. (2012)", appendLF = TRUE)
 
-  #set progress bar
-  pbapply::pboptions(type = "timer", char = c('='), style = 5)
+  BIC_guo <- BiocParallel::bplapply(X = lambda_values,
+                                    FUN = 'CGM_AHP_tune',
+                                    trainX = trainX,
+                                    testX = trainX,
+                                    model = trainY,
+                                    BIC = TRUE,
+                                    eps = eps_threshold,
+                                    eta = eta_value,
+                                    BPPARAM = BPPARAM,
+                                    BPOPTIONS = bpoptions(progressbar = TRUE, tasks = 10))
 
-  #If more cores available than lambda values tested, will set one worker
-  #per lambda value to improve efficiency
-  if(runParallel){
-
-    message("Lambda parameter will be optimized in parallel.\n", appendLF = TRUE)
-
-    if(nCores > length(lambda_values)){
-
-      nCores <- length(lambda_values)
-      message("More cores available than lambda values being tested.", appendLF = TRUE)
-      message("Resource utilization is being adjusted for efficiency.", appendLF = TRUE)
-      message(paste0(nCores, 'independent processes will be used in parallelization.'), appendLF = TRUE)
-    }
-
-    #initialize parallel process
-    cl <- parallel::makeCluster(nCores, type = 'PSOCK')
-    on.exit(stopCluster(cl))
-
-    #pass necessary objects to workers
-    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
-    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
-
-    # optimize lambda
-    bic_guo <- pblapply(cl = cl,
-                        FUN = 'CGM_AHP_tune',
-                        X = lambda_values,
-                        trainX = trainX,
-                        testX = trainX,
-                        model = trainY,
-                        BIC = TRUE,
-                        eps = eps_threshold,
-                        eta = eta_value)
-
-  } else{
-
-    message('Lambda parameter will be optimized sequentially. \n', appendLF = TRUE)
-
-    # optimize lambda
-    bic_guo <- pblapply(FUN = 'CGM_AHP_tune',
-                        X = lambda_values,
-                        trainX = trainX,
-                        testX = trainX,
-                        model = trainY,
-                        BIC = TRUE,
-                        eps = eps_threshold,
-                        eta = eta_value)
-
-  }
+  # #set progress bar
+  # pbapply::pboptions(type = "timer", char = c('='), style = 5)
+  #
+  # #If more cores available than lambda values tested, will set one worker
+  # #per lambda value to improve efficiency
+  # if(runParallel){
+  #
+  #   message("Lambda parameter will be optimized in parallel.\n", appendLF = TRUE)
+  #
+  #   if(nCores > length(lambda_values)){
+  #
+  #     nCores <- length(lambda_values)
+  #     message("More cores available than lambda values being tested.", appendLF = TRUE)
+  #     message("Resource utilization is being adjusted for efficiency.", appendLF = TRUE)
+  #     message(paste0(nCores, 'independent processes will be used in parallelization.'), appendLF = TRUE)
+  #   }
+  #
+  #   #initialize parallel process
+  #   cl <- parallel::makeCluster(nCores, type = 'PSOCK')
+  #   on.exit(stopCluster(cl))
+  #
+  #   #pass necessary objects to workers
+  #   parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune","CGM_AHP_train", "matTr"))
+  #   parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso")))
+  #
+  #   # optimize lambda
+  #   BIC_guo <- pblapply(cl = cl,
+  #                       FUN = 'CGM_AHP_tune',
+  #                       X = lambda_values,
+  #                       trainX = trainX,
+  #                       testX = trainX,
+  #                       model = trainY,
+  #                       BIC = TRUE,
+  #                       eps = eps_threshold,
+  #                       eta = eta_value)
+  #
+  # } else{
+  #
+  #   message('Lambda parameter will be optimized sequentially. \n', appendLF = TRUE)
+  #
+  #   # optimize lambda
+  #   BIC_guo <- pblapply(FUN = 'CGM_AHP_tune',
+  #                       X = lambda_values,
+  #                       trainX = trainX,
+  #                       testX = trainX,
+  #                       model = trainY,
+  #                       BIC = TRUE,
+  #                       eps = eps_threshold,
+  #                       eta = eta_value)
+  #
+  # }
 
   ##add empty line after progress bar
   message("", appendLF = TRUE)
 
   ##collect BIC scores
-  BIC_scores = unlist(sapply(bic_guo, function(a) a$BIC))
+  BIC_scores = unlist(sapply(BIC_guo, function(a) a$BIC))
 
   ##make sure all bic values are finite and remove those that are not
   if (max(is.infinite(BIC_scores)) == 1){
 
-    bic_guo <- bic_guo[is.finite(BIC_scores)]
+    BIC_guo <- BIC_guo[is.finite(BIC_scores)]
     lambda_values <- lambda_values[is.finite(BIC_scores)]
     lastar_guo <- lambda_values[match(min(BIC_scores), BIC_scores)]
   } else {
@@ -144,7 +152,7 @@ BICtune <- function(object,
   #**update DNEAobject**#
   #######################
 
-  BICscores(object) <- bic_guo
+  BICscores(object) <- BIC_guo
   optimizedLambda(object) <- lastar_guo
   lambdas2Test(object) <- lambda_values
 
@@ -157,22 +165,18 @@ BICtune <- function(object,
 #' This function randomly samples each condition a number of times specified by nreps. It takes a DNEAobject as input.
 #' The unevenGroups parameter should be set to TRUE if the sample numbers across condition are uneven - this will
 #' ensure that samples are randomly sampled in a way that ensures equal representation in stability selection. This
-#' function can also be run in parallel by specifying the available cores through nCores. The main.seed parameter
-#' is for reproducibility and can be left as default.
+#' function can also be run in parallel by specifying the available cores through nCores.
 #'
 #' @param object A DNEA object
-#' @param runParallel A boolean indicating if stability selection should be run in parallel
 #' @param subSample A boolean that specifies whether the number of samples are unevenly split
 #'         by condition and, therefore, should be adjusted for when randomly sampling.
 #' @param nreps The total number of reps to perform stability selection. As the sample number
 #'        gets smaller, more reps should be run; For datasets under 200 samples, we suggest running
 #'        500 reps.
-#' @param nCores The number of cores available for parallel processing. It is generally optimal
-#'        to begin with ~10 reps per core. However, you may need to run one rep per core for optimal
-#'        performance with some datasets.
 #' @param optimal_lambda The optimal lambda value to be used in the model. This parameter is only
 #'        necessary if BICtune() is not performed
-#' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
+#'
+#' @param BPPARAM a BiocParallel object
 #'
 #' @return DNEAobject containing the stable networks for analysis.
 #'
@@ -180,18 +184,15 @@ BICtune <- function(object,
 #' @import glasso
 #' @import glmnet
 #' @import corpcor
-#' @import parallel
-#' @import pbapply
+#' @import BiocParallel
 #' @include JSEM.R
 #' @include utilities.R
 #' @export
 stabilitySelection <- function(object,
-                               runParallel = TRUE,
                                subSample = FALSE,
                                nreps = 50,
-                               nCores = 4,
                                optimal_lambda,
-                               main.seed = 101){
+                               BPPARAM = bpparam()){
 
   ############################################
   #**Prepare data and initialize parameters**#
@@ -238,80 +239,101 @@ stabilitySelection <- function(object,
                                     condition_levels = networkGroups(object),
                                     condition_by_sample = networkGroupIDs(object)), function(d) t(d))
 
-
-  # pbapply requires a vector of length nreps
-  # nreps_input = 1:nreps
-
   #initialize static variables to pass to workers
   stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
+
 
   #########################################################
   #**Initialize workers and perform stability selection **#
   #########################################################
 
-  #set progress bar
-  pbapply::pboptions(type = "timer", char = c('='), style = 5)
-
-  #print lambda used
+  #print message to user
   message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+  message(paste0("stabilitySelection will be performed with ", nreps, " replicates"))
 
-  if(runParallel){
+  if(subSample){
 
-    message('stabilitySelection() will be run in parallel ...', appendLF = TRUE)
+    message("Additional sub-sampling will be performed on uneven groups")
+    ss_function <- "CGM_AHP_stabsel_subsample"
+  }else if(!subSample){
 
-    #create independent processes to run reps in parallel
-    cl <- parallel::makeCluster(nCores, type = 'PSOCK')
-    on.exit(stopCluster(cl))
-
-    #pass necessary objects to independent workers
-    parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
-                                                 "CGM_AHP_train",
-                                                 "CGM_AHP_stabsel_subsample",
-                                                 "CGM_AHP_stabsel",
-                                                 "matTr"))
-    parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso"), library("Matrix")))
-
-    if (subSample){
-      message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
-
-      stab_sel <- pbapply::pblapply(cl = cl,
-                                    FUN = "CGM_AHP_stabsel_subsample",
-                                    X = 1:nreps,
-                                    init_param = stabsel_init_param,
-                                    listX = data_split_by_condition,
-                                    lastar = optimized_lambda)
-    } else {
-      message("Stability selection WITHOUT additional subsampling using Guo et al ...\n", appendLF = TRUE)
-
-      stab_sel <- pbapply::pblapply(cl = cl,
-                                    FUN ="CGM_AHP_stabsel",
-                                    X = 1:nreps,
-                                    init_param = stabsel_init_param,
-                                    listX = data_split_by_condition,
-                                    lastar = optimized_lambda)
-    }
-  }else{
-
-    message('stabilitySelection() will be run sequentially ...', appendLF = TRUE)
-
-    if (subSample){
-      message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
-
-      stab_sel <- pbapply::pblapply(FUN = "CGM_AHP_stabsel_subsample",
-                                    X = 1:nreps,
-                                    init_param = stabsel_init_param,
-                                    listX = data_split_by_condition,
-                                    lastar = optimized_lambda)
-    } else {
-      message("Stability selection WITHOUT additional subsampling using Guo et al ...\n", appendLF = TRUE)
-
-      stab_sel <- pbapply::pblapply(FUN ="CGM_AHP_stabsel",
-                                    X = 1:nreps,
-                                    init_param = stabsel_init_param,
-                                    listX = data_split_by_condition,
-                                    lastar = optimized_lambda)
-    }
+    message("No additional sub-sampling will be performed. Sample groups will both be randomly
+            sampled 50%")
+    ss_function <- "CGM_AHP_stabsel"
   }
+
+  stab_sel <- BiocParallel:: bplapply(X = 1:nreps,
+                                      FUN = ss_function,
+                                      init_param = stabsel_init_param,
+                                      listX = data_split_by_condition,
+                                      lastar = optimized_lambda,
+                                      BPPARAM = BPPARAM,
+                                      BPOPTIONS = bpoptions(progressbar = TRUE, tasks = 10))
+
+
+  # #set progress bar
+  # pbapply::pboptions(type = "timer", char = c('='), style = 5)
+  #
+  # #print lambda used
+  # message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+  #
+  # if(runParallel){
+  #
+  #   message('stabilitySelection() will be run in parallel ...', appendLF = TRUE)
+  #
+  #   #create independent processes to run reps in parallel
+  #   cl <- parallel::makeCluster(nCores, type = 'PSOCK')
+  #   on.exit(stopCluster(cl))
+  #
+  #   #pass necessary objects to independent workers
+  #   parallel::clusterExport(cl = cl, varlist = c("CGM_AHP_tune",
+  #                                                "CGM_AHP_train",
+  #                                                "CGM_AHP_stabsel_subsample",
+  #                                                "CGM_AHP_stabsel",
+  #                                                "matTr"))
+  #   parallel::clusterEvalQ(cl = cl, c(library("MASS"), library("glasso"), library("Matrix")))
+  #
+  #   if (subSample){
+  #     message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
+  #
+  #     stab_sel <- pbapply::pblapply(cl = cl,
+  #                                   FUN = "CGM_AHP_stabsel_subsample",
+  #                                   X = 1:nreps,
+  #                                   init_param = stabsel_init_param,
+  #                                   listX = data_split_by_condition,
+  #                                   lastar = optimized_lambda)
+  #   } else {
+  #     message("Stability selection WITHOUT additional subsampling using Guo et al ...\n", appendLF = TRUE)
+  #
+  #     stab_sel <- pbapply::pblapply(cl = cl,
+  #                                   FUN ="CGM_AHP_stabsel",
+  #                                   X = 1:nreps,
+  #                                   init_param = stabsel_init_param,
+  #                                   listX = data_split_by_condition,
+  #                                   lastar = optimized_lambda)
+  #   }
+  # }else{
+  #
+  #   message('stabilitySelection() will be run sequentially ...', appendLF = TRUE)
+  #
+  #   if (subSample){
+  #     message("Stability selection WITH additional subsampling using Guo et al ...\n", appendLF = TRUE)
+  #
+  #     stab_sel <- pbapply::pblapply(FUN = "CGM_AHP_stabsel_subsample",
+  #                                   X = 1:nreps,
+  #                                   init_param = stabsel_init_param,
+  #                                   listX = data_split_by_condition,
+  #                                   lastar = optimized_lambda)
+  #   } else {
+  #     message("Stability selection WITHOUT additional subsampling using Guo et al ...\n", appendLF = TRUE)
+  #
+  #     stab_sel <- pbapply::pblapply(FUN ="CGM_AHP_stabsel",
+  #                                   X = 1:nreps,
+  #                                   init_param = stabsel_init_param,
+  #                                   listX = data_split_by_condition,
+  #                                   lastar = optimized_lambda)
+  #   }
+  # }
 
   #add empty line after progress bar
   message("", appendLF = TRUE)
@@ -467,68 +489,70 @@ getNeworks <- function(object,
   #add names to model weights list
   names(model_weight_values) <- names(selectionProbabilities(object))
 
-    #############################################
-    #**Estimate the partial correlation matrix**#
-    #############################################
+  #############################################
+  #**Estimate the partial correlation matrix**#
+  #############################################
 
-    for (k in networkGroups(object)){
+  for (k in networkGroups(object)){
 
-      message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
+    message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
 
-      #fit the networks
-      fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
-                                weights= model_weight_values[[k]],
-                                lambda = optimized_lambda)
+    #fit the networks
+    fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
+                              weights= model_weight_values[[k]],
+                              lambda = optimized_lambda)
 
-      #grab the adjacency matrices
-      weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
-                                                 nrow = 144, ncol = 144,
-                                                 dimnames = list(featureNames(object),
-                                                                 featureNames(object)))
+    #grab the adjacency matrices
+    weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
+                                               nrow = 144, ncol = 144,
+                                               dimnames = list(featureNames(object),
+                                                               featureNames(object)))
 
 
-    }
+  }
 
-    ## Get the unweighted adjacency matrix by thresholding the partial correlations
-    for (k in names(weighted_adjacency_matrices)){
-      unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps_threshold, num_features^2), num_features, num_features)
-    }
+  ## threshold the weighted_adjacency_matrix as specified
 
-    #####################################
-    #**Concatenate results for output **#
-    #####################################
+  ## Get the unweighted adjacency matrix by thresholding the partial correlations
+  for (k in names(weighted_adjacency_matrices)){
+    unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps_threshold, num_features^2), num_features, num_features)
+  }
 
-    #print message for total edges
-    message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-    message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+  #####################################
+  #**Concatenate results for output **#
+  #####################################
 
-    #store the adjacency matrices in DNEAresults object
-    adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
-    adjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
+  #print message for total edges
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
-    #######################
-    #**Create Edge List **#
-    #######################
+  #store the adjacency matrices in DNEAresults object
+  adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
+  adjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
 
-    #initiate output dataframe
-    pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
-    edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
-                            pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
-                            check.names = FALSE)
+  #######################
+  #**Create Edge List **#
+  #######################
 
-    #concatenate results into dataframe
-    edge_list[,1:2] <- do.call(rbind, pairs)
-    edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
-    edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
-    edge_list$edge <- rep(NA, length(pairs)) #non-edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- "Both" #common edge
-    edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[1]]
-    edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[2]]
-    edge_list <- edge_list[!is.na(edge_list$edge),]
-    rownames(edge_list) <- NULL
+  #initiate output dataframe
+  pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
+  edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
+                          pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
+                          check.names = FALSE)
 
-    edgeList(object) <- edge_list
-    return(object)
+  #concatenate results into dataframe
+  edge_list[,1:2] <- do.call(rbind, pairs)
+  edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
+  edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
+  edge_list$edge <- rep(NA, length(pairs)) #non-edge
+  edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- "Both" #common edge
+  edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[1]]
+  edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[2]]
+  edge_list <- edge_list[!is.na(edge_list$edge),]
+  rownames(edge_list) <- NULL
+
+  edgeList(object) <- edge_list
+  return(object)
 
 }
 #' runConsensusCluster performs consensus clustering using an adjacency matrix for the network
@@ -602,7 +626,7 @@ runConsensusCluster <- function(object, tau = 0.5){
 
   #run consensus cluster algorithm
   # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
-  fit <- run_consensus_cluster(joint_graph, tau=tau, method = "ensemble", num_iterations = 10)
+  fit <- run_consensus_cluster(joint_graph, tau=tau)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix
@@ -655,7 +679,7 @@ runConsensusCluster <- function(object, tau = 0.5){
 #' @importFrom stats p.adjust
 #' @import igraph
 #' @import corpcor
-#' @import netgsa
+#' @importFrom netgsa NetGSA
 #' @include utilities.R
 #' @export
 runNetGSA <- function(object, min_size = 5){

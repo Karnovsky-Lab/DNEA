@@ -22,6 +22,7 @@ Collate:
     'diagnostics.R'
     'metabDE.R'
 Imports: 
+    BiocParallel,
     corpcor,
     dplyr,
     furrr,

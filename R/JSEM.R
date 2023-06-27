@@ -295,7 +295,6 @@ stabsel_init <- function(
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6
-#' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
 #'
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
@@ -309,15 +308,14 @@ CGM_AHP_stabsel <- function(listX,
                             init_param,
                             lastar,
                             eta=0.01,
-                            limkappa=1e+6,
-                            main.seed = 101) {
+                            limkappa=1e+6) {
 
   ########################################
   #**Set seed and initialize parameters**#
   ########################################
 
-  #set the seed for reproducibility in random sampling
-  set.seed(X*100+main.seed)
+  # #set the seed for reproducibility in random sampling
+  # set.seed(X*100+main.seed)
 
   rand_sample1 = vector("list", init_param[['num_conditions']])
   rand_sample2 = vector("list", init_param[['num_conditions']])
@@ -390,8 +388,7 @@ CGM_AHP_stabsel <- function(listX,
 #' @param lastar the optimized lambda parameter
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'       Default is 1e+6
-#' @param main.seed Sets the seed for random number generation. This ensures reproducibility.
+#'       Default is 1e+6.
 #'
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
@@ -405,15 +402,14 @@ CGM_AHP_stabsel_subsample <- function(listX,
                                       init_param,
                                       lastar,
                                       eta=0.01,
-                                      limkappa=1e+6,
-                                      main.seed = 101) {
+                                      limkappa=1e+6) {
 
   ########################################
   #**Set seed and initialize parameters**#
   ########################################
 
-  #set the seed for reproducibility in random sampling
-  set.seed(X*100+main.seed)
+  # #set the seed for reproducibility in random sampling
+  # set.seed(X*100+main.seed)
 
   #initialize selection matrix and edge matrix
   selection_matrix <- init_param[["selection_matrix"]]
