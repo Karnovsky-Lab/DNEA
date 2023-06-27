@@ -6,18 +6,14 @@
 \usage{
 stabilitySelection(
   object,
-  runParallel = TRUE,
   subSample = FALSE,
   nreps = 50,
-  nCores = 4,
   optimal_lambda,
-  main.seed = 101
+  BPPARAM = bpparam()
 )
 }
 \arguments{
 \item{object}{A DNEA object}
-
-\item{runParallel}{A boolean indicating if stability selection should be run in parallel}
 
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
@@ -26,14 +22,10 @@ by condition and, therefore, should be adjusted for when randomly sampling.}
 gets smaller, more reps should be run; For datasets under 200 samples, we suggest running
 500 reps.}
 
-\item{nCores}{The number of cores available for parallel processing. It is generally optimal
-to begin with ~10 reps per core. However, you may need to run one rep per core for optimal
-performance with some datasets.}
-
 \item{optimal_lambda}{The optimal lambda value to be used in the model. This parameter is only
 necessary if BICtune() is not performed}
 
-\item{main.seed}{Sets the seed for random number generation. This ensures reproducibility.}
+\item{BPPARAM}{a BiocParallel object}
 }
 \value{
 DNEAobject containing the stable networks for analysis.
