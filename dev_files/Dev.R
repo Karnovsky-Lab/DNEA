@@ -23,6 +23,8 @@ usethis::use_package("pbapply")
 usethis::use_package("stringr")
 usethis::use_package("zoo")
 usethis::use_package("netgsa")
+usethis::use_package("BiocParallel")
+usethis::use_package("future")
 
 devtools::document()
 devtools::check()
