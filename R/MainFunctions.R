@@ -198,40 +198,42 @@ stabilitySelection <- function(object,
   #**Prepare data and initialize parameters**#
   ############################################
 
-  #stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
-  #supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+  # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
+  # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
   # choosing lambda follows the following algorithm:
   # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
   #    for analysis
-  # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
-  #    @hyperparamater[['optimized_lambda']]
-  # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-  #    for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
-  if(!is.null(optimizedLambda(object))){
-    if(!missing(optimal_lambda)){
+  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']] missing, use optimal lambda
+  #    and set to store as new lambda value
+  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda missing, @hyperparamater[['optimized_lambda']]
+  #    is used for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
+  if(!missing(optimal_lambda)){
+    if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
-              already exists - optimal_lambda will be used in analysis')
-
-    } else{
-
-      optimized_lambda <- optimizedLambda(object)
-    }
-  } else{
-    if(!missing(optimal_lambda)){
+            already exists - optimal_lambda will be used in analysis')
+    }else{
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to the optimal_lambda provided!')
-
-    } else{
-
-      stop('No lambda value was supplied for the model. Please run BICtune() or provide a lambda
-         value using the optimal_lambda parameter.')
+      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
+  }else if(!is.null(optimizedLambda(object))){
+
+    optimized_lambda <- optimizedLambda(object)
+  }else{
+
+    # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
+    # in adjDGlasso_minimal
+    optimized_lambda = NULL
+
+    stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
+      used in the analyis. However, We highly recommend optimizing the lambda parameter by running
+      BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
+           analysis.')
   }
 
   #split data by condition
@@ -381,7 +383,8 @@ stabilitySelection <- function(object,
 #' @param object A DNEAobject
 #' @param optimal_lambda Lambda hyperparameter to be used in analysis. Not necessary if BICtune()
 #'        or stabilitySelection() were already run.
-#' @param eps A significance cut-off for thresholding the adjacency matrix. This can be left as default
+#' @param eps_threshold A cut-off value thresholding the adjacency matrix. Edges with a partial correlation value below this
+#' threshold will be removed.
 #'
 #' @return A DNEA object containing an adjacency matrix for the data network,
 #'          determined by the glasso model
@@ -422,48 +425,44 @@ getNeworks <- function(object,
                                                 condition_levels = networkGroups(object),
                                                 condition_by_sample = networkGroupIDs(object))
 
-  # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
+  # getNetworks() requires lambda hyper-parameter. Will use optimal_lambda if
   # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
   # choosing lambda follows the following algorithm:
   # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
   #    for analysis
-  # 2. if @hyperparamater[['optimized_lambda']] and optimal_lambda missing, use
-  #    @hyperparamater[['optimized_lambda']]
-  # 3. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-  #    for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, throw error.
-  if(!is.null(optimizedLambda(object))){
-    if(missing(optimal_lambda) == FALSE){
+  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']] missing, use optimal lambda
+  #    and set to store as new lambda value
+  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda missing, @hyperparamater[['optimized_lambda']]
+  #    is used for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
+  if(!missing(optimal_lambda)){
+    if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
             already exists - optimal_lambda will be used in analysis')
-
-    } else{
-
-      optimized_lambda <- optimizedLambda(object)
-    }
-  } else{
-    if(missing(optimal_lambda) == FALSE){
+    }else{
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
       message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+    }
+  }else if(!is.null(optimizedLambda(object))){
 
-    } else{
+    optimized_lambda <- optimizedLambda(object)
+  }else{
 
-      # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
-      # in adjDGlasso_minimal
-      optimized_lambda = NULL
+    # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
+    # in adjDGlasso_minimal
+    optimized_lambda = NULL
 
-      stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
+    stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
       used in the analyis. However, We highly recommend optimizing the lambda parameter by running
       BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
            analysis.')
-
-    }
   }
+
 
   #print lambda used
   message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
@@ -513,9 +512,12 @@ getNeworks <- function(object,
 
   ## threshold the weighted_adjacency_matrix as specified
 
+
   ## Get the unweighted adjacency matrix by thresholding the partial correlations
   for (k in names(weighted_adjacency_matrices)){
-    unweighted_adjacency_matrices[[k]] <- abs(weighted_adjacency_matrices[[k]]) >= matrix(rep(eps_threshold, num_features^2), num_features, num_features)
+
+    weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < eps_threshold] <- 0
+    unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
   }
 
   #####################################
@@ -545,10 +547,11 @@ getNeworks <- function(object,
   edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
   edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
   edge_list$edge <- rep(NA, length(pairs)) #non-edge
-  edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- "Both" #common edge
-  edge_list$edge[which((abs(edge_list$pcor.0) >= eps_threshold)*(abs(edge_list$pcor.1)  < eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[1]]
-  edge_list$edge[which((abs(edge_list$pcor.0) <  eps_threshold)*(abs(edge_list$pcor.1) >= eps_threshold) == 1)] <- names(weighted_adjacency_matrices)[[2]]
-  edge_list <- edge_list[!is.na(edge_list$edge),]
+  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 == 0] <- names(weighted_adjacency_matrices)[[1]] #control
+  edge_list$edge[edge_list$pcor.0 == 0 & edge_list$pcor.1 != 0] <- names(weighted_adjacency_matrices)[[2]] #case
+  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 != 0] <- "Both" #Both
+
+  edge_list <- edge_list[!is.na(edge_list$edge),] #remove non-edges
   rownames(edge_list) <- NULL
 
   edgeList(object) <- edge_list
@@ -565,6 +568,8 @@ getNeworks <- function(object,
 #' @param object A DNEA object
 #' @param tau The consensus probabilty threshold for agreement among clustering algorithms
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
+#' @param eps_threshold A cut-off value thresholding the adjacency matrix. Edges with a partial correlation value below this
+#' threshold will be removed.
 #'
 #' @return A DNEAobject containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using getClusterResults().
@@ -575,7 +580,10 @@ getNeworks <- function(object,
 #' @include preprocess_lib.R
 #' @include utilities.R
 #' @export
-runConsensusCluster <- function(object, tau = 0.5, max_iterations = 5){
+runConsensusCluster <- function(object,
+                                tau = 0.5,
+                                max_iterations = 5,
+                                eps_threshold = 1e-06){
 
 
   ###########################
@@ -591,13 +599,20 @@ runConsensusCluster <- function(object, tau = 0.5, max_iterations = 5){
   #**Join the two condition networks**#
   #####################################
 
+  ## Get the unweighted adjacency matrix by thresholding the partial correlations
+  weighted_adjacency_matrices <- adjacencyMatrix(object, weighted = TRUE)
+  for (k in names(weighted_adjacency_matrices)){
+
+    weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < eps_threshold] <- 0
+  }
+
   #create list to hold graph from adjacency matrix
-  adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted = TRUE)))
-  names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted = TRUE))
+  adjacency_matrix_graphs <- vector("list", length(weighted_adjacency_matrices))
+  names(adjacency_matrix_graphs) <- names(weighted_adjacency_matrices)
 
-  for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
+  for (loop_el in names(weighted_adjacency_matrices)) {
 
-    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
+    adjacency_graph <- graph_from_adjacency_matrix(weighted_adjacency_matrices[[loop_el]], mode="undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -626,7 +641,6 @@ runConsensusCluster <- function(object, tau = 0.5, max_iterations = 5){
   ###########################################################
 
   #run consensus cluster algorithm
-  # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
   fit <- run_consensus_cluster(joint_graph, tau=tau, max_iteration = max_iterations)
   consensus_membership <- fit$final_consensus_cluster
 

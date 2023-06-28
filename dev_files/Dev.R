@@ -26,6 +26,12 @@ usethis::use_package("netgsa")
 usethis::use_package("BiocParallel")
 usethis::use_package("future")
 
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/.gitignore", escape = TRUE)
+
 devtools::document()
 devtools::check()
 devtools::build()
