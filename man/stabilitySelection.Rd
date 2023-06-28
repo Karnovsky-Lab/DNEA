@@ -34,6 +34,5 @@ DNEAobject containing the stable networks for analysis.
 This function randomly samples each condition a number of times specified by nreps. It takes a DNEAobject as input.
 The unevenGroups parameter should be set to TRUE if the sample numbers across condition are uneven - this will
 ensure that samples are randomly sampled in a way that ensures equal representation in stability selection. This
-function can also be run in parallel by specifying the available cores through nCores. The main.seed parameter
-is for reproducibility and can be left as default.
+function can also be run in parallel by specifying the available cores through nCores.
 }

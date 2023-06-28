@@ -4,12 +4,22 @@
 \alias{runConsensusCluster}
 \title{runConsensusCluster performs consensus clustering using an adjacency matrix for the network}
 \usage{
-runConsensusCluster(object, tau = 0.5)
+runConsensusCluster(
+  object,
+  tau = 0.5,
+  max_iterations = 5,
+  eps_threshold = 1e-06
+)
 }
 \arguments{
 \item{object}{A DNEA object}
 
 \item{tau}{The consensus probabilty threshold for agreement among clustering algorithms}
+
+\item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
+
+\item{eps_threshold}{A cut-off value thresholding the adjacency matrix. Edges with a partial correlation value below this
+threshold will be removed.}
 }
 \value{
 A DNEAobject containing sub-network determinations for the nodes within the input network.

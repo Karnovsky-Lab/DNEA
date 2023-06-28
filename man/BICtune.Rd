@@ -33,5 +33,5 @@ the optimized lambda value
 This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
 determined by the number of features within the dataset. The lambda value with the lowest (BIC) score is
 chosen for analysis. It takes a DNEAobject as input and has an option that allows the function to be run
-in parallel. The main.seed parameter is for reproducibility and can be left as default.
+in parallel.
 }

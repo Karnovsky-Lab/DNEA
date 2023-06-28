@@ -10,8 +10,7 @@ CGM_AHP_stabsel_subsample(
   init_param,
   lastar,
   eta = 0.01,
-  limkappa = 1e+06,
-  main.seed = 101
+  limkappa = 1e+06
 )
 }
 \arguments{
@@ -27,9 +26,7 @@ are in rows and the features are columns.}
 \item{eta}{default parameter ??. Default is 0.01}
 
 \item{limkappa}{default parameter that acts as the limit for the condition number of the sample cov.
-Default is 1e+6}
-
-\item{main.seed}{Sets the seed for random number generation. This ensures reproducibility.}
+Default is 1e+6.}
 }
 \value{
 a precision matrix for the network corresponding to the input data created via that rep

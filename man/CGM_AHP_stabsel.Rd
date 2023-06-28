@@ -4,15 +4,7 @@
 \alias{CGM_AHP_stabsel}
 \title{CGM_AHP_stabsel performs stability selection WITHOUT additional subsampling}
 \usage{
-CGM_AHP_stabsel(
-  listX,
-  X,
-  init_param,
-  lastar,
-  eta = 0.01,
-  limkappa = 1e+06,
-  main.seed = 101
-)
+CGM_AHP_stabsel(listX, X, init_param, lastar, eta = 0.01, limkappa = 1e+06)
 }
 \arguments{
 \item{listX}{A list containing matrices of the expression data split by condition. The samples
@@ -28,8 +20,6 @@ are in rows and the features are columns.}
 
 \item{limkappa}{default parameter that acts as the limit for the condition number of the sample cov.
 Default is 1e+6}
-
-\item{main.seed}{Sets the seed for random number generation. This ensures reproducibility.}
 }
 \value{
 a precision matrix for the network corresponding to the input data created via that rep
