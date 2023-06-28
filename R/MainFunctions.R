@@ -599,20 +599,13 @@ runConsensusCluster <- function(object,
   #**Join the two condition networks**#
   #####################################
 
-  ## Get the unweighted adjacency matrix by thresholding the partial correlations
-  weighted_adjacency_matrices <- adjacencyMatrix(object, weighted = TRUE)
-  for (k in names(weighted_adjacency_matrices)){
-
-    weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < eps_threshold] <- 0
-  }
-
   #create list to hold graph from adjacency matrix
-  adjacency_matrix_graphs <- vector("list", length(weighted_adjacency_matrices))
-  names(adjacency_matrix_graphs) <- names(weighted_adjacency_matrices)
+  adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted = TRUE)))
+  names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted = TRUE))
 
-  for (loop_el in names(weighted_adjacency_matrices)) {
+  for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
 
-    adjacency_graph <- graph_from_adjacency_matrix(weighted_adjacency_matrices[[loop_el]], mode="undirected", weighted = TRUE)
+    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -722,17 +715,6 @@ runNetGSA <- function(object, min_size = 5){
                            lklMethod = "REML",
                            minsize = min_size)
 
-
-
-  # #separate the data by condition
-  # separated_conditions_data <- split_by_condition(dat = expressionData(object, type = "input"),
-  #                                                 condition_levels = networkGroups(object),
-  #                                                 condition_by_sample = networkGroupIDs(object))
-
-  # out.netgsa <- NetGSA(adjacencyMatrix(x = object, weighted = TRUE),
-  #                      x = cbind(separated_conditions_data[[1]], separated_conditions_data[[2]]),
-  #                      y = c(rep(1, ncol(separated_conditions_data[[1]])), rep(2, ncol(separated_conditions_data[[2]]))),
-  #                      B = as.matrix(filtered_subnetworks), lklMethod = "REML")
   #####################################
   #**Concatenate results for output **#
   #####################################
@@ -751,15 +733,6 @@ runNetGSA <- function(object, min_size = 5){
 
   #order netGSA results by FDR
   res <- res[order(res$NetGSA_pFDR),]
-  rownames(res) <- 1:nrow(res)
-
-  #Change nodelist membership to be indicative of new order
-  # nodeList(object)[["membership"]][!(nodeList(object)[["membership"]] %in% gsub('subnetwork','',res$subnetworks))] <- NA
-  # nodeList(object)[["membership"]] <- rownames(res)[match(nodeList(object)[["membership"]], as.numeric(gsub('subnetwork','',res$subnetworks)))]
-  # nodeList(object)[["membership"]] <- as.numeric(nodeList(object)[["membership"]])
-
-  #change res rownames to match new order
-  res$subnetworks <- paste0("subnetwork ",rownames(res))
 
   #update DNEAobject
   netGSAresults(object) <- res
