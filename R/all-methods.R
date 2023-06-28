@@ -580,6 +580,122 @@ setReplaceMethod("netGSAresults", signature(x = "DNEAresults"), function(x, valu
   x
 })
 
+filterNetworks.DNEAresults <- function(data,
+                                       pcor,
+                                       top_percent_edges){
+
+  ##grab adjacency matrices
+  weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
+
+  ##start new unweighted adjacency list
+  unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
+  names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+
+  #filter networks
+  if(!missing(pcor) & !missing(top_percent_edges)){
+
+    stop("Only pcor or top_percent_edges should be specified, not both!")
+  }else if(!missing(pcor)){
+
+    #filter by pcor
+    for(k in names(weighted_adjacency_matrices)){
+      weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < pcor] <- 0
+      unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
+    }
+  }else if(!missing(top_percent_edges)){
+
+    #filter by top_percent_edges
+    for(k in names(weighted_adjacency_matrices)){
+
+      #grab quantile value
+      percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
+                                 probs = (1 - top_percent_edges))
+
+      ##filter networks to top x% strongest edges
+      weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
+      unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
+    }
+  }else{
+
+    stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
+  }
+
+  #print message for total edges
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+
+  #store the adjacency matrices in DNEAresults object
+  adjacencyMatrix(x = data, weighted = TRUE) <- weighted_adjacency_matrices
+  adjacencyMatrix(x = data, weighted = FALSE) <- unweighted_adjacency_matrices
+
+  return(data)
+}
+#' filterNetworks() will reduce the adjacency matrices to only the edges that meet the filter conditions
+#'
+#' filterNetworks() takes as input a DNEAresults object and allows the user to filter the network edges by one of two ways:\n
+#' 1. The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.\n
+#' 2. The networks can be filtered to only include the strongest x% of edges by pcor value.\n
+#' Filtering is performed on the case and control adjacency matrix separately.
+#'
+#' @param data A DNEAresults object
+#' @param pcor A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.
+#' @param top_percent_edges A value between 0-1 that corresponds to the top x% edges to keep in the networks
+#' ie. top_percent_edges = 0.1 will keep only the top 10% strongest edges in the networks.
+#'
+#' @returns The input object after filtering the egdes in the network according to the specified parameters
+#'
+#' @rdname filterNetworks
+#' @export
+setMethod("filterNetworks", signature(data = "DNEAresults"), filterNetworks.DNEAresults)
+
+filterNetworks.list <- function(data, pcor, top_percent_edges){
+
+  ##rename input variable
+  weighted_adjacency_matrices <- data
+
+  ##start new unweighted adjacency list
+  unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
+  names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+
+  #filter networks
+  if(!missing(pcor) & !missing(top_percent_edges)){
+
+    stop("Only pcor or top_percent_edges should be specified, not both!")
+  }else if(!missing(pcor)){
+
+    #filter by pcor
+    for(k in names(weighted_adjacency_matrices)){
+      weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < pcor] <- 0
+      unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
+    }
+  }else if(!missing(top_percent_edges)){
+
+    #filter by top_percent_edges
+    for(k in names(weighted_adjacency_matrices)){
+
+      #grab quantile value
+      percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
+                                 probs = (1 - top_percent_edges))
+
+      ##filter networks to top x% strongest edges
+      weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
+      unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
+    }
+  }else{
+
+    stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
+  }
+
+  #print message for total edges
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+
+  return(list(weighted = weighted_adjacency_matrices, unweighted = unweighted_adjacency_matrices))
+}
+#'
+#' @rdname filterNetworks
+#' @keywords internal
+setMethod("filterNetworks", signature(data = "list"), filterNetworks.list)
 
 
 

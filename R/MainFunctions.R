@@ -506,31 +506,14 @@ getNeworks <- function(object,
                                                nrow = 144, ncol = 144,
                                                dimnames = list(featureNames(object),
                                                                featureNames(object)))
-
-
   }
-
-  ## threshold the weighted_adjacency_matrix as specified
-
 
   ## Get the unweighted adjacency matrix by thresholding the partial correlations
-  for (k in names(weighted_adjacency_matrices)){
+  adjacency_matrices <- filterNetworks(data = weighted_adjacency_matrices, pcor = eps_threshold)
 
-    weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < eps_threshold] <- 0
-    unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
-  }
-
-  #####################################
-  #**Concatenate results for output **#
-  #####################################
-
-  #print message for total edges
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
-
-  #store the adjacency matrices in DNEAresults object
-  adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
-  adjacencyMatrix(x = object, weighted = FALSE) <- unweighted_adjacency_matrices
+  ##store the adjacency matrices in DNEAresults object
+  adjacencyMatrix(x = object, weighted = TRUE) <- adjacency_matrices$weighted
+  adjacencyMatrix(x = object, weighted = FALSE) <- adjacency_matrices$unweighted
 
   #######################
   #**Create Edge List **#

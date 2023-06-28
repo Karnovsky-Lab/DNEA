@@ -168,4 +168,8 @@ setGeneric("netGSAresults", function(x) standardGeneric("netGSAresults"))
 #' @export
 setGeneric("netGSAresults<-", function(x, value) standardGeneric("netGSAresults<-"))
 
+#'
+#' @rdname filterNetworks
+#' @export
+setGeneric("filterNetworks", function(data, pcor, top_percent_edges) standardGeneric("filterNetworks"))
 

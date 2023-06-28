@@ -15,6 +15,8 @@ finish <- Sys.time()
 finish - start
 
 object <- getNeworks(object = object)
+object2 <- filterNetworks(object, pcor = 0.3)
+object2 <- filterNetworks(object, top_percent_edges = 0.2)
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
 
