@@ -533,11 +533,15 @@ getNeworks <- function(object,
   edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 == 0] <- names(weighted_adjacency_matrices)[[1]] #control
   edge_list$edge[edge_list$pcor.0 == 0 & edge_list$pcor.1 != 0] <- names(weighted_adjacency_matrices)[[2]] #case
   edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 != 0] <- "Both" #Both
-
   edge_list <- edge_list[!is.na(edge_list$edge),] #remove non-edges
   rownames(edge_list) <- NULL
 
+  #add edge list to object
   edgeList(object) <- edge_list
+
+  #add message about shared edges - filterNetworks will message edges for control and case networks
+  message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
+
   return(object)
 
 }

@@ -587,11 +587,15 @@ filterNetworks.DNEAresults <- function(data,
   ##grab adjacency matrices
   weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
 
+  #get edge list
+  edge_list <- edgeList(data)
+
   ##start new unweighted adjacency list
   unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
-  #filter networks
+  ##filter networks
+  #can't provide both filters
   if(!missing(pcor) & !missing(top_percent_edges)){
 
     stop("Only pcor or top_percent_edges should be specified, not both!")
@@ -604,29 +608,53 @@ filterNetworks.DNEAresults <- function(data,
     }
   }else if(!missing(top_percent_edges)){
 
-    #filter by top_percent_edges
+    #filter networks to top x% strongest edges
     for(k in names(weighted_adjacency_matrices)){
 
       #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
                                  probs = (1 - top_percent_edges))
 
-      ##filter networks to top x% strongest edges
+      #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else{
 
+    #must provide one filter
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
-
-  #print message for total edges
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
   #store the adjacency matrices in DNEAresults object
   adjacencyMatrix(x = data, weighted = TRUE) <- weighted_adjacency_matrices
   adjacencyMatrix(x = data, weighted = FALSE) <- unweighted_adjacency_matrices
+
+  ##update edge list
+  #initiate output dataframe
+  pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
+  edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
+                          pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
+                          check.names = FALSE)
+
+  #concatenate results into dataframe
+  edge_list[,1:2] <- do.call(rbind, pairs)
+  edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
+  edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
+  edge_list$edge <- rep(NA, length(pairs)) #non-edge
+  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 == 0] <- names(weighted_adjacency_matrices)[[1]] #control
+  edge_list$edge[edge_list$pcor.0 == 0 & edge_list$pcor.1 != 0] <- names(weighted_adjacency_matrices)[[2]] #case
+  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 != 0] <- "Both" #Both
+  edge_list <- edge_list[!is.na(edge_list$edge),] #remove non-edges
+  rownames(edge_list) <- NULL
+
+  #replace edgelist
+  edgeList(data) <- edge_list
+
+
+  #print message for total edges
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+  message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
 
   return(data)
 }
@@ -657,7 +685,8 @@ filterNetworks.list <- function(data, pcor, top_percent_edges){
   unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
-  #filter networks
+  ##filter networks
+  #can't provide both filters
   if(!missing(pcor) & !missing(top_percent_edges)){
 
     stop("Only pcor or top_percent_edges should be specified, not both!")
@@ -670,23 +699,24 @@ filterNetworks.list <- function(data, pcor, top_percent_edges){
     }
   }else if(!missing(top_percent_edges)){
 
-    #filter by top_percent_edges
+    #filter networks to top x% strongest edges
     for(k in names(weighted_adjacency_matrices)){
 
       #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
                                  probs = (1 - top_percent_edges))
 
-      ##filter networks to top x% strongest edges
+      #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else{
 
+    #must provide one filter
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  #print message for total edges
+  ##print message for total edges
   message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
   message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
 
