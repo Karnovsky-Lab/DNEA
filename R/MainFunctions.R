@@ -564,6 +564,7 @@ getNeworks <- function(object,
 #'
 #' @param object A DNEA object
 #' @param tau The consensus probabilty threshold for agreement among clustering algorithms
+#' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
 #'
 #' @return A DNEAobject containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using getClusterResults().
@@ -574,7 +575,7 @@ getNeworks <- function(object,
 #' @include preprocess_lib.R
 #' @include utilities.R
 #' @export
-runConsensusCluster <- function(object, tau = 0.5){
+runConsensusCluster <- function(object, tau = 0.5, max_iterations = 5){
 
 
   ###########################
@@ -626,7 +627,7 @@ runConsensusCluster <- function(object, tau = 0.5){
 
   #run consensus cluster algorithm
   # fit <- run_consensus_cluster(joint_graph,tau=tau0,method="ensemble", runParallel = runParallel, nCores = nCores)
-  fit <- run_consensus_cluster(joint_graph, tau=tau)
+  fit <- run_consensus_cluster(joint_graph, tau=tau, max_iteration = max_iterations)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix

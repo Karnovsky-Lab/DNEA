@@ -31,6 +31,30 @@ getConsensusMatrix <- function(cluster_results){
   return(consensus_matrix)
 }
 
+ensembl_cluster <- function(adjacency_graph,
+                            consensus,
+                            graph_weights = NULL){
+
+
+  ##initiate list
+  clustering_results <- vector("list", length = 7)
+
+  ##perform clustering
+  clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = graph_weights)
+  clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = graph_weights)
+  clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = graph_weights)
+  clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = graph_weights)
+  clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = graph_weights)
+  clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = graph_weights)
+  clustering_results[[7]] <- tryCatch(cluster_leading_eigen(adjacency_graph, weights = graph_weights),
+                                      error = function(some_error){
+                                        message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
+                                        message('This is a known issue with a dependency and will not affect your results')
+                                        return(NA)
+                                      })
+
+  return(clustering_results)
+}
 #' Performs consensus clustering
 #'
 #' This function will take as input an adjacency matrix graph from the determined networks and perform
@@ -56,86 +80,131 @@ getConsensusMatrix <- function(cluster_results){
 #' @import igraph
 #' @import furrr
 #' @noRd
-run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
-                                  method= c("ensemble", "lpm", "infomap", "walktrap"),
-                                  maxIter=5){
+run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5, max_iterations = 5){
 
-  method <- match.arg(method)
-  if (method=="ensemble"){
-    clustering_results <- list()
-    set.seed(1)
+  ##cluster the adjacency graph
+  clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
 
-    clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = NULL)
-    clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = NULL)
-    clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = NULL)
-    clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = NULL)
-    clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = NULL)
-    clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = NULL)
-    clustering_results[[7]] <- tryCatch(cluster_leading_eigen(adjacency_graph, weights = NULL),
-                                        error = function(some_error){
-                                          message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
-                                          message('This is a known issue with a dependency and will not affect your results')
-                                          return(NA)
-                                        })
-  } else {
-
-    clustering_results <- vector("list", num_iterations)
-    for (algo_iter in 1:num_iterations){
-      set.seed(algo_iter)
-      if (method=="lpm"){
-        clustering_results[[algo_iter]] <- cluster_label_prop(adjacency_graph, weights=NULL)
-      } else if (method=="infomap"){
-        clustering_results[[algo_iter]] <- cluster_infomap(adjacency_graph, e.weights=NULL)
-      } else if (method=="walktrap"){
-        clustering_results[[algo_iter]] <- cluster_walktrap(adjacency_graph, weights=NULL, steps=algo_iter)
-      }
-    }
-  }
-
+  ##get consensus matrix
   consensus_matrix <- getConsensusMatrix(clustering_results[!(is.na(clustering_results))])
-  iter <- 0
-  while(length(table(consensus_matrix)) > 2 && iter < maxIter){
+
+  ##set iter
+
+  ##start loop
+  for(x in 1:max_iterations){
+
+    ##stop iterations if at max
+    if(iter == max_iterations){
+
+      break
+    }
+
+    ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0
     threshold_consensus_matrix <- consensus_matrix * (consensus_matrix > tau)
 
-    threshold_consensus_graph <- graph.adjacency(threshold_consensus_matrix, mode="undirected", weighted = TRUE)
-    if (method=="ensemble"){
-      final_consensus_cluster <- list()
-      set.seed(iter)
-      final_consensus_cluster[[1]] <- cluster_edge_betweenness(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[2]] <- cluster_fast_greedy(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[3]] <- cluster_infomap(threshold_consensus_graph, e.weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[4]] <- cluster_label_prop(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[5]] <- cluster_louvain(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[6]] <- cluster_walktrap(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-      final_consensus_cluster[[7]] <- tryCatch(cluster_leading_eigen(threshold_consensus_graph,
-                                                 weights = E(threshold_consensus_graph)$weight),
-                           error = function(some_error){
-                             message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
-                             message('This is a known issue with a dependency and will not affect your results')
-                             return(NA)
-                           })
-    } else {
-      final_consensus_cluster <- vector("list",num_iterations)
-      for (k in 1:num_iterations){
-        set.seed(k)
-        if (method=="lpm"){
-          final_consensus_cluster[[k]] <- cluster_label_prop(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
-        } else if (method=="infomap"){
-          final_consensus_cluster[[k]] <- cluster_infomap(threshold_consensus_graph, e.weights = E(threshold_consensus_graph)$weight)
-        } else if (method=="walktrap"){
-          final_consensus_cluster[[k]] <- cluster_walktrap(threshold_consensus_graph, weights = NULL, steps=k)
-        }
-      }
-    }
+    ##great graph from consensus matrix
+    threshold_consensus_graph <- graph.adjacency(threshold_consensus_matrix,
+                                                 mode="undirected",
+                                                 weighted = TRUE)
+
+    ##run clustering algorithms
+    final_consensus_cluster <- ensembl_cluster(threshold_consensus_graph,
+                                               graph_weights = E(threshold_consensus_graph)$weight)
+
+
+    #get new consensus matrix
     consensus_matrix <- getConsensusMatrix(final_consensus_cluster[!(is.na(final_consensus_cluster))])
+
+    #add to iter
     iter <- iter + 1
   }
+
   new.order <- order(final_consensus_cluster[[1]]$membership)
   return(list(final_consensus_cluster = final_consensus_cluster[[1]]$membership,
               consensus_matrix = consensus_matrix,
               order = new.order,iter = iter))
 }
+# run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5,
+#                                   method= c("ensemble", "lpm", "infomap", "walktrap"),
+#                                   maxIter=5){
+#
+#   method <- match.arg(method)
+#   if (method=="ensemble"){
+#     clustering_results <- list()
+#     set.seed(1)
+#
+#     clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = NULL)
+#     clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = NULL)
+#     clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = NULL)
+#     clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = NULL)
+#     clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = NULL)
+#     clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = NULL)
+#     clustering_results[[7]] <- tryCatch(cluster_leading_eigen(adjacency_graph, weights = NULL),
+#                                         error = function(some_error){
+#                                           message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
+#                                           message('This is a known issue with a dependency and will not affect your results')
+#                                           return(NA)
+#                                         })
+#   } else {
+#
+#     clustering_results <- vector("list", num_iterations)
+#     for (algo_iter in 1:num_iterations){
+#       set.seed(algo_iter)
+#       if (method=="lpm"){
+#         clustering_results[[algo_iter]] <- cluster_label_prop(adjacency_graph, weights=NULL)
+#       } else if (method=="infomap"){
+#         clustering_results[[algo_iter]] <- cluster_infomap(adjacency_graph, e.weights=NULL)
+#       } else if (method=="walktrap"){
+#         clustering_results[[algo_iter]] <- cluster_walktrap(adjacency_graph, weights=NULL, steps=algo_iter)
+#       }
+#     }
+#   }
+#
+#   consensus_matrix <- getConsensusMatrix(clustering_results[!(is.na(clustering_results))])
+#   iter <- 0
+#   while(length(table(consensus_matrix)) > 2 && iter < maxIter){
+#     diag(consensus_matrix) <- 0
+#     threshold_consensus_matrix <- consensus_matrix * (consensus_matrix > tau)
+#
+#     threshold_consensus_graph <- graph.adjacency(threshold_consensus_matrix, mode="undirected", weighted = TRUE)
+#     if (method=="ensemble"){
+#       final_consensus_cluster <- list()
+#       set.seed(iter)
+#       final_consensus_cluster[[1]] <- cluster_edge_betweenness(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[2]] <- cluster_fast_greedy(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[3]] <- cluster_infomap(threshold_consensus_graph, e.weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[4]] <- cluster_label_prop(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[5]] <- cluster_louvain(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[6]] <- cluster_walktrap(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#       final_consensus_cluster[[7]] <- tryCatch(cluster_leading_eigen(threshold_consensus_graph,
+#                                                  weights = E(threshold_consensus_graph)$weight),
+#                            error = function(some_error){
+#                              message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
+#                              message('This is a known issue with a dependency and will not affect your results')
+#                              return(NA)
+#                            })
+#     } else {
+#       final_consensus_cluster <- vector("list",num_iterations)
+#       for (k in 1:num_iterations){
+#         set.seed(k)
+#         if (method=="lpm"){
+#           final_consensus_cluster[[k]] <- cluster_label_prop(threshold_consensus_graph, weights = E(threshold_consensus_graph)$weight)
+#         } else if (method=="infomap"){
+#           final_consensus_cluster[[k]] <- cluster_infomap(threshold_consensus_graph, e.weights = E(threshold_consensus_graph)$weight)
+#         } else if (method=="walktrap"){
+#           final_consensus_cluster[[k]] <- cluster_walktrap(threshold_consensus_graph, weights = NULL, steps=k)
+#         }
+#       }
+#     }
+#     consensus_matrix <- getConsensusMatrix(final_consensus_cluster[!(is.na(final_consensus_cluster))])
+#     iter <- iter + 1
+#   }
+#   new.order <- order(final_consensus_cluster[[1]]$membership)
+#   return(list(final_consensus_cluster = final_consensus_cluster[[1]]$membership,
+#               consensus_matrix = consensus_matrix,
+#               order = new.order,iter = iter))
+# }
 
 # run_consensus_cluster <- function(adjacency_graph, K=10, tau=0.5,
 #                                   method=c("infomap","lpm","walktrap","ensemble"),
