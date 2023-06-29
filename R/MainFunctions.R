@@ -473,12 +473,12 @@ getNeworks <- function(object,
     model_weight_values <- lapply(selectionProbabilities(object),
                                   function(x) as.matrix(1/(1e-04 + x)))
 
-    message('selection_probabilites from stability selection will be used in glasso model!')
+    message('selection_probabilites from stability selection will be used in glasso model!\n')
 
   } else{
 
-    message('No selection_probabilities were found. We recommend running
-            stabilitySelection() prior to estimating the glasso model!')
+    message("No selection_probabilities were found. We recommend running
+            stabilitySelection() prior to estimating the glasso model!\n")
 
     model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
                                 matrix(rep(1, num_features^2), num_features, num_features))
@@ -508,42 +508,13 @@ getNeworks <- function(object,
                                                                featureNames(object)))
   }
 
-  ## Get the unweighted adjacency matrix by thresholding the partial correlations
-  adjacency_matrices <- filterNetworks(data = weighted_adjacency_matrices, pcor = eps_threshold)
+  ##input weighted_adjacency_matrices into object
+  adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
 
-  ##store the adjacency matrices in DNEAresults object
-  adjacencyMatrix(x = object, weighted = TRUE) <- adjacency_matrices$weighted
-  adjacencyMatrix(x = object, weighted = FALSE) <- adjacency_matrices$unweighted
-
-  #######################
-  #**Create Edge List **#
-  #######################
-
-  #initiate output dataframe
-  pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
-  edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
-                          pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
-                          check.names = FALSE)
-
-  #concatenate results into dataframe
-  edge_list[,1:2] <- do.call(rbind, pairs)
-  edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
-  edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
-  edge_list$edge <- rep(NA, length(pairs)) #non-edge
-  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 == 0] <- names(weighted_adjacency_matrices)[[1]] #control
-  edge_list$edge[edge_list$pcor.0 == 0 & edge_list$pcor.1 != 0] <- names(weighted_adjacency_matrices)[[2]] #case
-  edge_list$edge[edge_list$pcor.0 != 0 & edge_list$pcor.1 != 0] <- "Both" #Both
-  edge_list <- edge_list[!is.na(edge_list$edge),] #remove non-edges
-  rownames(edge_list) <- NULL
-
-  #add edge list to object
-  edgeList(object) <- edge_list
-
-  #add message about shared edges - filterNetworks will message edges for control and case networks
-  message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
+  ##filter the weighted_adjacency_matrices by eps_threshold and create unweighed_adjacency_matrices plus edge list
+  object <- filterNetworks(data = object, pcor = eps_threshold)
 
   return(object)
-
 }
 #' runConsensusCluster performs consensus clustering using an adjacency matrix for the network
 #'

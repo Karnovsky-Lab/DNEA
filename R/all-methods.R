@@ -616,9 +616,6 @@ filterNetworks.DNEAresults <- function(data,
   ##grab adjacency matrices
   weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
 
-  #get edge list
-  edge_list <- edgeList(data)
-
   ##start new unweighted adjacency list
   unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
@@ -681,9 +678,11 @@ filterNetworks.DNEAresults <- function(data,
 
 
   #print message for total edges
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+  message(paste0(names(unweighted_adjacency_matrices)[[1]]," network specific edges: ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+  message(paste0(names(unweighted_adjacency_matrices)[[2]]," network specific edges: ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+  message(rep("-", 35), appendLF = TRUE)
   message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
+  message(paste0("Total number of edges in dataset: ", nrow(edge_list)))
 
   return(data)
 }

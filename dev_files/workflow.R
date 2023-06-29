@@ -9,7 +9,6 @@ dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1Dpla
 rownames(dat) <- dat$sample
 dat<- dat[,-1]
 
-saveRDS(dat, "~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDY.rds")
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
@@ -17,12 +16,13 @@ finish <- Sys.time()
 finish - start
 
 object <- getNeworks(object = object, eps_threshold = 0.3)
-plotNetworks(object, type = "group_networks")
-object2 <- filterNetworks(object, pcor = 0.3)
-object2 <- filterNetworks(object, top_percent_edges = 0.2)
+
+object <- filterNetworks(object, pcor = 0.3)
+# object <- filterNetworks(object, top_percent_edges = 0.2)
 object <- runConsensusCluster(object = object, tau = 0.5)
 object <- runNetGSA(object)
-
+plotNetworks(object, type = "group_networks")
+plotNetworks(object, type = "subnetworks", subnetwork = 1)
 load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_BIC_tuning.rda")
 
 load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_stable_networks.rda")

@@ -25,6 +25,7 @@ usethis::use_package("zoo")
 usethis::use_package("netgsa")
 usethis::use_package("BiocParallel")
 usethis::use_package("future")
+usethis::use_package()
 
 usethis::use_data(TEDDY)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest.R", escape = TRUE)
