@@ -45,14 +45,15 @@ setClass(Class = "DNEAresults",
            netGSA = 'data.frame')
 )
 
-#' #'Set "collapsed_DNEAresults" class
-#' #'
-#' #' @import methods
-#' #' @noRd
-#' setClass(Class = "collapsed_DNEAresults",
-#'          slots = c(original = "DNEAresults",
-#'                    feature_membership = "list"),
-#'          contains = "DNEAobject")
+#'Set "collapsed_DNEAresults" class
+#'
+#' @import methods
+#' @noRd
+setClass(Class = "collapsed_DNEAresults",
+         slots = c(original_experiment = "DNEAresults",
+                   feature_membership = "data.frame"),
+         contains = "DNEAresults")
+
 #' #'Set generic "pcorNetwork" class
 #' #'
 #' #' @import methods
