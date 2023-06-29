@@ -73,6 +73,8 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' The files are formatted for input into Cytoscape.
 #'
 #' @param object A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param file_path The filepath to save the node and edge lists to. If **NULL**, the files will be saved to the working
+#' directory
 #'
 #' @return The same object as input and saves the node and edge information as .csv files in
 #'          the working directory
@@ -99,15 +101,17 @@ getNetworkFiles <- function(object, file_path){
 #' The function takes as input a DNEAresults object and creates network plots for each of the subnetworks identified
 #' via runConsensusClustering().
 #'
-#' @param x A DNEAresults object
+#' @param object A DNEAresults object
 #' @param type "group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
 #' specified by teh subnetwork parameter
 #' @param subnetwork The subnetwork to plot
 #' @returns a network plot for each of the subnetworks
 #'
 #' @import igraph
+#' @importFrom grDevices dev.off
+#' @importFrom graphics par
 #' @export
-plotNetworks <- function(x,
+plotNetworks <- function(object,
                          type = c("group_networks", "subnetworks"),
                          subnetwork){
 
