@@ -43,3 +43,4 @@ A list containing the BIC and liklihood score for each lambda parameter evaluate
 This function takes the data and corresponding condition, as well as a list of lambda values
 as input in order to optimize the lambda hyper-parameter.
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ trace of the input matrix (scalar)
 \description{
 maTr computes the trace of the matrix
 }
+\keyword{internal}

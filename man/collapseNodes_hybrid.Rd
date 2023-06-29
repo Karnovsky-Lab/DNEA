@@ -4,14 +4,14 @@
 \alias{collapseNodes_hybrid}
 \title{collapseNodes_hybrid node-collapsing based on correlations and user-supplied metabolite groups}
 \usage{
-collapseNodes_hybrid(dat, metabolite.groups, corr.threshold = 0.9)
+collapseNodes_hybrid(dat, metabolite_groups, correlation_threshold = 0.9)
 }
 \arguments{
 \item{dat}{unscaled expression data}
 
-\item{metabolite.groups}{metabolite groupings}
+\item{metabolite_groups}{metabolite groupings}
 
-\item{corr.threshold}{correlation threshold}
+\item{correlation_threshold}{correlation threshold}
 }
 \value{
 collapsed data

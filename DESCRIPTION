@@ -25,7 +25,6 @@ Imports:
     BiocParallel,
     corpcor,
     dplyr,
-    furrr,
     gdata,
     glasso,
     glmnet,
@@ -34,6 +33,8 @@ Imports:
     Matrix,
     methods,
     netgsa,
-    pbapply,
     stringr,
     zoo
+Depends: 
+    R (>= 2.10)
+LazyData: true

@@ -17,6 +17,8 @@ lambdas2Test(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
+
+\item{value}{A vector of lambda values to optimize in BICtune()}
 }
 \value{
 The lambda values to evaluate in optimization

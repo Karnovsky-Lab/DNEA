@@ -22,3 +22,4 @@ an initialized vector for BIC scores (BIC_score), an initialized vector for like
 \description{
 initialize static tuning variables to pass to CGM_AHP_tune
 }
+\keyword{internal}

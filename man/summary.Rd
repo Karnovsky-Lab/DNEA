@@ -7,7 +7,7 @@
 \S4method{summary}{consensusClusteringResults}(object)
 }
 \arguments{
-\item{x}{A consensusClusteringResults}
+\item{object}{A consensusClusteringResults}
 }
 \value{
 A data.frame that corresponds to a summary of the results of consensus clustering

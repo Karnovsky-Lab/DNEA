@@ -4,12 +4,12 @@
 \alias{collapseNodes_cor}
 \title{collapseNodes_cor will collapse nodes based on correlation}
 \usage{
-collapseNodes_cor(dat, corr.threshold = 0.9)
+collapseNodes_cor(dat, correlation_threshold = 0.9)
 }
 \arguments{
 \item{dat}{unscaled expression data}
 
-\item{corr.threshold}{correlation threshold}
+\item{correlation_threshold}{correlation threshold}
 }
 \value{
 collapsed data

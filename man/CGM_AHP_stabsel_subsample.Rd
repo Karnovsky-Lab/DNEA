@@ -38,3 +38,4 @@ the data to perform stability selection. The function is based on the method des
 difference between this function and the related CGM_AHP_stabsel is that random sampling is done
 in a way that evens out sample distribution across the two conditions
 }
+\keyword{internal}

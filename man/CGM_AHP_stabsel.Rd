@@ -29,3 +29,4 @@ This function will take as input the expression data and optimized lambda in ord
 the data to perform stability selection. The function is based on the method described by Guo et al.
 (2011) and is designed to be run with some variation of the lapply family of functions.
 }
+\keyword{internal}

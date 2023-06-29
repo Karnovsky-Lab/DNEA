@@ -4,10 +4,10 @@
 \alias{plotNetworks}
 \title{plot will create network graphs of the metabolic modules}
 \usage{
-plotNetworks(x, type = c("group_networks", "subnetworks"), subnetwork)
+plotNetworks(object, type = c("group_networks", "subnetworks"), subnetwork)
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{object}{A DNEAresults object}
 
 \item{type}{"group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
 specified by teh subnetwork parameter}

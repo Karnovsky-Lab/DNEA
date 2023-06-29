@@ -17,6 +17,8 @@ optimizedLambda(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
+
+\item{value}{A numeric value between 0 and 1 corresponding to the lambda parameter to use in the analysis}
 }
 \value{
 The optimized lambda hyperparameter

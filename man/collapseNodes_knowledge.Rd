@@ -4,12 +4,12 @@
 \alias{collapseNodes_knowledge}
 \title{collapseNodes_knowledge node-collapsing based on user-supplied metabolite groups}
 \usage{
-collapseNodes_knowledge(dat, metabolite.groups)
+collapseNodes_knowledge(dat, metabolite_groups)
 }
 \arguments{
 \item{dat}{unscaled expression data}
 
-\item{metabolite.groups}{metabolite groupings}
+\item{metabolite_groups}{metabolite groupings}
 }
 \value{
 collapsed data

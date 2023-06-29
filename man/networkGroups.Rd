@@ -17,6 +17,9 @@ networkGroups(x) <- value
 }
 \arguments{
 \item{x}{A DNEAobject, or DNEAobject_collapsed object}
+
+\item{value}{A vector of group names that specifies the condition to test the data on. It should have exactly two unique
+groups and be exactly as long as the number of samples in the data.}
 }
 \value{
 A vector of the condition values

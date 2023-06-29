@@ -14,6 +14,8 @@ adjDGlasso_minimal(
 )
 }
 \arguments{
+\item{data}{A matrix of expression data wherein the samples are rows and features are columns.}
+
 \item{weights}{A matrix of selection weights determined via stability selection to be integrated
 into the model. Default is 1.}
 
@@ -26,8 +28,6 @@ value is FALSE}
 
 \item{zero.edge}{Indices of entries of inverse covariance to be constrained to zero (to be passed
 to glasso). The default is NULL}
-
-\item{X}{A matrix of expression data wherein the samples are rows and features are columns.}
 }
 \value{
 An adjacency matrix for the data network estimated by the glasso model
@@ -35,3 +35,4 @@ An adjacency matrix for the data network estimated by the glasso model
 \description{
 This function takes the expression data and optimized lambda as input and fits the glasso model
 }
+\keyword{internal}

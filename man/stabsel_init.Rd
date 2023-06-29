@@ -26,3 +26,4 @@ an initialized vector for BIC scores (BIC_score), an initialized vector for like
 stabsel_init initializes static tuning variables to pass to stability selection
 (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample)
 }
+\keyword{internal}

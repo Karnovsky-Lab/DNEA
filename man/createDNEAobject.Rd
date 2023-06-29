@@ -16,8 +16,6 @@ the numeric expression data}
 \item{control}{A string corresponding to the name of condition 1 in column one of the data matrix}
 
 \item{case}{A string corresponding to the name of condition 2 in column one of the data matrix}
-
-\item{scaled_expression_data}{A matrix or dataframe similar to expression_data but for scaled data}
 }
 \value{
 DNEAobject containing the scaled and un-scaled (if provided) data in assays, as well as sample number,

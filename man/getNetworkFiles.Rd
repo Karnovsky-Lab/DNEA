@@ -8,6 +8,9 @@ getNetworkFiles(object, file_path)
 }
 \arguments{
 \item{object}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+
+\item{file_path}{The filepath to save the node and edge lists to. If \strong{NULL}, the files will be saved to the working
+directory}
 }
 \value{
 The same object as input and saves the node and edge information as .csv files in
