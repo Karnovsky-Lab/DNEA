@@ -110,6 +110,7 @@ getNetworkFiles <- function(object, file_path){
 #' @import igraph
 #' @importFrom grDevices dev.off
 #' @importFrom graphics par
+#' @importFrom autoimage reset.par
 #' @export
 plotNetworks <- function(object,
                          type = c("group_networks", "subnetworks"),
@@ -162,9 +163,11 @@ plotNetworks <- function(object,
          layout = layout.fruchterman.reingold(cluster_c2),
          main = networkGroups(object)[[2]])
 
-    dev.off()
+    reset.par()
   }else if(type == "subnetworks"){
 
+    #check that subnetwork given is relevant
+    if(all(is.na(match(subnetwork, node_list$membership)))) stop("The subnetwork specified does not exist!\nPlease specify a value contained in the membership column of the node list")
     cluster_c <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subnetwork])
 
     plot(cluster_c, vertex.label = V(cluster_c)$name, vertex.label.cex = 1,
