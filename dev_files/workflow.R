@@ -1,6 +1,7 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 BP_plan <- MulticoreParam(workers = 4, RNGseed = 101)
+set.seed(101)
 # set.seed(101)
 #dat <- read.csv('~/Documents/Karnovsky_lab/published_files/adjT1DfullPlasma10262022.csv')
 start <- Sys.time()
@@ -8,13 +9,15 @@ dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1Dpla
 rownames(dat) <- dat$sample
 dat<- dat[,-1]
 
+saveRDS(dat, "~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDY.rds")
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
 finish <- Sys.time()
 finish - start
 
-object <- getNeworks(object = object)
+object <- getNeworks(object = object, eps_threshold = 0.3)
+plotNetworks(object, type = "group_networks")
 object2 <- filterNetworks(object, pcor = 0.3)
 object2 <- filterNetworks(object, top_percent_edges = 0.2)
 object <- runConsensusCluster(object = object, tau = 0.5)
