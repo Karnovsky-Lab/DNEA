@@ -10,13 +10,13 @@ setMethod("show", "DNEAresults", function(object) {
       "  Project Name -  ", object@project_name, "\n",
       "  Un-scaled data - ", class(object@assays[["expression_data"]])[[1]], "\n",
       "  Scaled data -  ", class(object@assays[["scaled_expression_data"]])[[1]], "\n",
-      "  Samples -  ", paste0('There are ',length(object@metadata[["samples"]]), ' samples.'), "\n",
-      "  Features -  ", paste0('There are ',length(object@metadata[["features"]]), ' Features.'), "\n",
-      "  Conditions -  ", paste0("control: ", object@dataset_summary[["condition_levels"]][[1]],
-                                 " case: ", object@dataset_summary[["condition_levels"]][[1]]), "\n",
-      "  Optimized Lambda - ", paste0("lambda: ",object@hyperparameter[["optimizedLambda"]],
+      "  Samples -  ", paste0('There are ',length(sampleNames(object)), ' samples.'), "\n",
+      "  Features -  ", paste0('There are ',length(featureNames(object)), ' Features.'), "\n",
+      "  Conditions -  ", paste0("control: ", networkGroups(object)[[1]],
+                                 " case: ", networkGroups(object)[[2]]), "\n",
+      "  Optimized Lambda - ", paste0("lambda: ",optimizedLambda(object),
                                       " will be used in analysis."), "\n",
-      "  Sub-clusters: ", paste0("there are ", length(unique(object@node_list[["membership"]])),
+      "  Sub-clusters: ", paste0("there are ", length(unique(nodeList(object)[["membership"]])),
                                  " sub-clusters."),
       sep = ""
   )
@@ -81,12 +81,38 @@ networkGroupIDs.DNEAresults <- function(x){
 #' @export
 setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
 
+#' projectName() returns the name of the current experiment
+#'
+#' projectName() returns the name of the current experiment and allows the user to change the name as well
+#'
+#' @param x A DNEAresults object
+#' @param value A string that corresponds to the new project name
+#' @return The name of the DNEA experiment
+#'
+#' @rdname projectName
+#' @export
+setMethod("projectName", signature(x= "DNEAresults"), function(x){
+
+  x@project_name
+})
+
+#'
+#' @rdname projectName
+#' @export
+setReplaceMethod("projectName", signature(x= "DNEAresults"), function(x, value){
+
+  x@project_name <- value
+  validObject(x)
+  x
+})
 #' networkGroups retrieves the condition values for each sample from the metadata slot.
 #'
 #' This function takes in a DNEAobject, or DNEAobject_collapsed object and
 #'  return the condition values located in the metatdata slot of the object
 #'
 #' @param x A DNEAobject, or DNEAobject_collapsed object
+#' @param value A vector of group names that specifies the condition to test the data on. It should have exactly two unique
+#' groups and be exactly as long as the number of samples in the data.
 #' @return A vector of the condition values
 #'
 #' @rdname networkGroups
@@ -191,6 +217,7 @@ optimizedLambda.DNEAresults <- function(x){
 #'  the hyperparameter (lambda) that is currently being used for the analysis
 #'
 #' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
+#' @param value A numeric value between 0 and 1 corresponding to the lambda parameter to use in the analysis
 #' @return The optimized lambda hyperparameter
 #'
 #' @rdname optimizedLambda
@@ -215,6 +242,8 @@ lambdas2Test.DNEAresults <- function(x){
 #'  the lambda values that were testing during hyperparameter optimization performed via BICtune()
 #'
 #' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
+#' @param value A vector of lambda values to optimize in BICtune()
+#'
 #' @return The lambda values to evaluate in optimization
 #'
 #' @rdname lambdas2Test
@@ -358,7 +387,7 @@ setReplaceMethod("nodeList", signature(x = "DNEAresults"), function(x, value){
 })
 diagnostics.DNEAresults <- function(x){
 
-  as.matrix(x@dataset_summary$diagnostic_values)
+  x@dataset_summary@diagnostic_values
 }
 #' diagnostics retrieves the diagnostic values for the input expression data
 #'
@@ -508,7 +537,7 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
 #' The function takes as input a consensusClusteringResults object and returns a summary of the results of
 #' consensus clustering determined via runConsensusCluster().
 #'
-#' @param x A consensusClusteringResults
+#' @param object A consensusClusteringResults
 #' @return A data.frame that corresponds to a summary of the results of consensus clustering
 #'
 #' @rdname summary
@@ -631,7 +660,7 @@ filterNetworks.DNEAresults <- function(data,
 
   ##update edge list
   #initiate output dataframe
-  pairs <- combn(as.character(featureNames(object)), 2, simplify=FALSE)
+  pairs <- combn(as.character(featureNames(data)), 2, simplify=FALSE)
   edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                           pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
                           check.names = FALSE)
@@ -660,9 +689,12 @@ filterNetworks.DNEAresults <- function(data,
 }
 #' filterNetworks() will reduce the adjacency matrices to only the edges that meet the filter conditions
 #'
-#' filterNetworks() takes as input a DNEAresults object and allows the user to filter the network edges by one of two ways:\n
-#' 1. The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.\n
-#' 2. The networks can be filtered to only include the strongest x% of edges by pcor value.\n
+#' filterNetworks() takes as input a DNEAresults object and allows the user to filter the network edges by one of two ways:
+#'
+#' 1. The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
+#'
+#' 2. The networks can be filtered to only include the strongest x% of edges by pcor value.
+#'
 #' Filtering is performed on the case and control adjacency matrix separately.
 #'
 #' @param data A DNEAresults object
@@ -672,6 +704,7 @@ filterNetworks.DNEAresults <- function(data,
 #'
 #' @returns The input object after filtering the egdes in the network according to the specified parameters
 #'
+#' @importFrom stats quantile
 #' @rdname filterNetworks
 #' @export
 setMethod("filterNetworks", signature(data = "DNEAresults"), filterNetworks.DNEAresults)
@@ -726,6 +759,4 @@ filterNetworks.list <- function(data, pcor, top_percent_edges){
 #' @rdname filterNetworks
 #' @keywords internal
 setMethod("filterNetworks", signature(data = "list"), filterNetworks.list)
-
-
 

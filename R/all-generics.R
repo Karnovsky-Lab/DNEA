@@ -1,5 +1,15 @@
 
 #'
+#' @rdname projectName
+#' @export
+setGeneric("projectName", function(x) standardGeneric("projectName"))
+
+#'
+#' @rdname projectName
+#' @export
+setGeneric("projectName<-", function(x, value) standardGeneric("projectName<-"))
+
+#'
 #' @include all-classes.R
 #' @rdname expressionData
 #' @export

@@ -2,7 +2,7 @@
 #' maTr computes the trace of the matrix
 #' @param z square numerical matrix
 #' @return trace of the input matrix (scalar)
-#' @export
+#' @keywords internal
 matTr <- function(z){
 
   res <- sum(diag(z))
@@ -30,7 +30,7 @@ matTr <- function(z){
 #' @import glmnet
 #' @import corpcor
 #' @importFrom stats cov
-#' @export
+#' @keywords internal
 CGM_AHP_train <- function(
   trainX,
   trainY,
@@ -118,6 +118,7 @@ CGM_AHP_train <- function(
 #'         the training_data: number of features (p), number of conditions (K), number of lambda
 #'         values being tested (N), an a vector containing the number of samples per condition (n),
 #'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
+#' @keywords internal
 tune_init <- function(
     trainX, #training data
     model, #labels for models.
@@ -166,7 +167,7 @@ tune_init <- function(
 #' @import corpcor
 #' @importFrom stats cov
 #' @importFrom Matrix Matrix
-#' @export
+#' @keywords internal
 CGM_AHP_tune <- function(
     trainX,   # training data
     testX,    # test data
@@ -233,7 +234,7 @@ CGM_AHP_tune <- function(
 #'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
 #'
 #' @importFrom Matrix Matrix
-#' @export
+#' @keywords internal
 stabsel_init <- function(
     listX, #The expression data split by condition
     nreps #number of reps performed for stability selection
@@ -302,7 +303,7 @@ stabsel_init <- function(
 #' @import glmnet
 #' @import corpcor
 #' @importFrom Matrix Matrix
-#' @export
+#' @keywords internal
 CGM_AHP_stabsel <- function(listX,
                             X,
                             init_param,
@@ -396,7 +397,7 @@ CGM_AHP_stabsel <- function(listX,
 #' @import glmnet
 #' @import corpcor
 #' @importFrom Matrix Matrix
-#' @export
+#' @keywords internal
 CGM_AHP_stabsel_subsample <- function(listX,
                                       X,
                                       init_param,
@@ -464,7 +465,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'
 #' This function takes the expression data and optimized lambda as input and fits the glasso model
 #'
-#' @param X A matrix of expression data wherein the samples are rows and features are columns.
+#' @param data A matrix of expression data wherein the samples are rows and features are columns.
 #' @param weights A matrix of selection weights determined via stability selection to be integrated
 #'        into the model. Default is 1.
 #' @param theta_star The true precision matrix. Default is NULL
@@ -478,7 +479,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'
 #' @import glasso
 #' @importFrom stats cov2cor
-#' @export
+#' @keywords internal
 adjDGlasso_minimal <- function(
     data,
     weights=1,

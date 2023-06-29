@@ -71,16 +71,14 @@ ensembl_cluster <- function(adjacency_graph,
 #'        *2. "lpm" - *utilizes the cluster_label_prop, cluster_infomap, and cluster_walktrap methods.\n
 #'        *3. "walktrap" - *utilizes only cluster_walktrap.\n
 #'        *4. "infomap" - *utilizes only infomap.\n
-#' @param num_iterations The number of clustering iterations to perform - this parameter not relevant
-#'        for the "ensemble" method. Default is 10 iterations.
-#' @param maxIter Maximum number of iterations to perform trying to reach consensus.
+#' @param max_iterations Maximum number of iterations to perform trying to reach consensus.
 #'
 #' @return Sub-network determinations for the nodes within the input network
 #'
 #' @import igraph
 #' @import furrr
 #' @noRd
-run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5, max_iterations = 5){
+run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
 
   ##cluster the adjacency graph
   clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
@@ -91,6 +89,7 @@ run_consensus_cluster <- function(adjacency_graph, num_iterations=10, tau=0.5, m
   ##set iter
 
   ##start loop
+  iter = 0
   for(x in 1:max_iterations){
 
     ##stop iterations if at max

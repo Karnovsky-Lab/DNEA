@@ -621,7 +621,7 @@ runConsensusCluster <- function(object,
   ###########################################################
 
   #run consensus cluster algorithm
-  fit <- run_consensus_cluster(joint_graph, tau=tau, max_iteration = max_iterations)
+  fit <- run_consensus_cluster(joint_graph, tau=tau, max_iterations = max_iterations)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix

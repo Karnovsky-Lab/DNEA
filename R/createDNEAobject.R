@@ -40,7 +40,7 @@ restructure_input_data <- function(expression_data, control, case){
   ############################################################
 
   #check proper data structure
-  if(!is.character(expression_data[,1])) stop('First column should be sample condition')
+  if(!is.character(expression_data[,1]) & !is.factor(expression_data[,1])) stop('First column should be sample condition')
 
   #turn condition into factor
   if(!(is.factor(expression_data[,1]))){
@@ -115,7 +115,6 @@ restructure_input_data <- function(expression_data, control, case){
 #' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
-#' @param scaled_expression_data A matrix or dataframe similar to expression_data but for scaled data
 #' @param control A string corresponding to the name of condition 1 in column one of the data matrix
 #' @param case A string corresponding to the name of condition 2 in column one of the data matrix
 #'
