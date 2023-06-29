@@ -2,7 +2,7 @@
 % Please edit documentation in R/collapseNodes-fun.R
 \name{reduceFeatures}
 \alias{reduceFeatures}
-\title{reduceFeatures() will perform node-collapsing on the matrix in expression_data}
+\title{reduceFeatures() will collapse correlated features in the input non-normalized expression data}
 \usage{
 reduceFeatures(
   object,
@@ -12,7 +12,7 @@ reduceFeatures(
 )
 }
 \arguments{
-\item{object}{A DNEA object}
+\item{object}{A DNEAresults object}
 
 \item{method}{A parameter that dictates the collapsing method to use. The options are
 as follows:
@@ -25,8 +25,37 @@ will be grouped into one. This parameter is only necessary for the correlation a
 methods}
 
 \item{metabolite_groups}{A dataframe containing group information for the collapsing algorithm
-indicated by the "knowledge" method}
+indicated by the "knowledge" and "hybrid" methods}
+}
+\value{
+A collapsed_DNEAresults object
 }
 \description{
-More info
+reduceFeatures collapses correlated features in the input non-normalized input expression data using one of 3 methods:
+}
+\details{
+\strong{1. correlation-based}
+
+\strong{2. knowledge-based}
+
+\strong{3. hybrid}
+
+Identified groups are collapsed by taking the mean expression of all features. More info about the different approaches
+can be found in the \strong{details} section.
+
+The three collapsing methods have their strengths dependent on the dataset and prior information known about the features.
+The following text explains more about each method and the best use cases:
+
+\strong{1. correlation-based:} The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value will be
+than the threshold are collapsed into one group. This approach is best when no prior information about the features is known.
+
+\strong{2. knowledge-based:} The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
+are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
+experiments where the dataset contains many highly similar compounds, like Fatty acids, carnitines, ceramides, etc.
+
+\strong{3. hybrid:} The user specifies both a correlation threshold like in the correlation-based approach and feature groups
+based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
+have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
+experiments where the dataset contains many highly similar compounds and prevents poorly correlated features from being
+collapsed into a single group.
 }
