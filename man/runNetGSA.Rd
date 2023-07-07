@@ -34,7 +34,7 @@ DNEA <- createDNEAobject(expression_data = TEDDY,
 DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 
 # perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
 
 #construct the networks
 DNEA <- getNetworks(object = DNEA)
@@ -60,4 +60,3 @@ Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interact
 \author{
 Christopher Patsalis
 }
-\concept{netgsa}

@@ -2,12 +2,12 @@
 % Please edit documentation in R/utilities.R
 \name{includeMetadata}
 \alias{includeMetadata}
-\title{includeMetadata adds info to metadata}
+\title{Add additional metadata to the DNEAresults object}
 \usage{
 includeMetadata(object, type = c("sample", "feature"), metadata)
 }
 \arguments{
-\item{object}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{object}{A DNEAresults object}
 
 \item{type}{sample or feature metadata}
 
@@ -17,6 +17,30 @@ includeMetadata(object, type = c("sample", "feature"), metadata)
 The same object as input with specified additions
 }
 \description{
-This function will take additional metadata and add it to the corresponding dataframe in the metadata
-slot.
+This function will take additional metadata and add it to the specified dataframe in the metadata
+slot. \emph{\strong{NOTE:}} The rownames of the new metadata must match the order of the input sample names or feature names,
+respectively
+}
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#create sample metadata file
+new_metadat <- data.frame(new_group = c(rep("group1", 72), rep("group2", 72)), row.names(sampleNames(DNEA)))
+
+#add new metadata to DNEAresults object
+DNEA <- includeMetadata(object = DNEA, type = "sample", metadata = new_metadat)
+
+}
+\seealso{
+\code{\link{featureNames}}, \code{\link{sampleNames}},
+}
+\author{
+Christopher Patsalis
 }

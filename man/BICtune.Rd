@@ -60,4 +60,3 @@ Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical mo
 \author{
 Christopher Patsalis
 }
-\concept{Lambda Optimization}

@@ -58,7 +58,7 @@ DNEA <- createDNEAobject(expression_data = TEDDY,
 DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 
 # perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
 
 }
 \references{
@@ -70,4 +70,3 @@ Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Po
 \author{
 Christopher Patsalis
 }
-\concept{stability selection}

@@ -38,7 +38,7 @@ DNEA <- createDNEAobject(expression_data = TEDDY,
 DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 
 # perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
 
 #construct the networks
 DNEA <- getNetworks(object = DNEA)
@@ -55,11 +55,7 @@ Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis 
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}
-
-Other network construction: 
-\code{\link{plotNetworks}()}
 }
 \author{
 Christopher Patsalis
 }
-\concept{network construction}

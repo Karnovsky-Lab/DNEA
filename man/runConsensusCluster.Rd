@@ -82,11 +82,7 @@ Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Po
 \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
 \code{\link{thresholdNetworks}}, \code{\link{plotNetworks}}
-
-Other consensus clustering: 
-\code{\link{plotNetworks}()}
 }
 \author{
 Christopher Patsalis
 }
-\concept{consensus clustering}

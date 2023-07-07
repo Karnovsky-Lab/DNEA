@@ -12,7 +12,7 @@ plotNetworks(object, type = c("group_networks", "subnetworks"), subnetwork)
 \item{type}{"group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
 specified by teh subnetwork parameter}
 
-\item{subnetwork}{The subnetwork to plot}
+\item{network}{The subnetwork to plot}
 }
 \value{
 a plot of the specified network
@@ -20,17 +20,36 @@ a plot of the specified network
 \description{
 The function plots the condition networks as well as the specified subnetworks identified via DNEA
 }
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+# perform stability selection
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+
+#construct the networks
+DNEA <- getNetworks(object = DNEA)
+
+#identify metabolic modules via consensus clustering
+DNEA <- runConsensusCluster(object = DNEA)
+
+#plot the networks
+plotNetworks(object = DNEA, type = "group_networks")
+plotNetworks(object = DNEA, type = "subnetworks", subnetwork = 1)
+
+}
 \seealso{
 \code{\link{getNetworks}}, \code{\link{runConsensusCluster}}
-
-Other network construction: 
-\code{\link{getNetworks}()}
-
-Other consensus clustering: 
-\code{\link{runConsensusCluster}()}
 }
 \author{
 Christopher Patsalis
 }
-\concept{consensus clustering}
-\concept{network construction}

@@ -3,7 +3,23 @@
 \docType{class}
 \name{DNEAinputSummary-class}
 \alias{DNEAinputSummary-class}
-\title{Set DNEAinputData class}
+\title{DNEAinputSummary}
 \description{
-Set DNEAinputData class
+An s4 class to represent the results from diagnostic testing on the input data
+}
+\section{Slots}{
+
+\describe{
+\item{\code{num_samples}}{a single-value numeric vector corresponding to the number of samples in the dataset}
+
+\item{\code{num_features}}{a single-value numeric vector corresponding to the number of features in the dataset}
+
+\item{\code{diagnostic_values}}{a 3x3 data frame with the diagnostic values calculated via \code{\link{createDNEAobject}}}
+}}
+
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
 }

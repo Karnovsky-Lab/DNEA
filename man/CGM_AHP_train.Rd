@@ -34,4 +34,7 @@ The ouput of a glasso model
 This function takes the data and corresponding condition, as well as a lambda value as input and
 trains a glasso model, outputting the results. This code comes from Guo et al. (2011)
 }
+\author{
+Jing Ma
+}
 \keyword{internal}

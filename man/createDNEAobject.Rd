@@ -2,7 +2,7 @@
 % Please edit documentation in R/createDNEAobject.R
 \name{createDNEAobject}
 \alias{createDNEAobject}
-\title{Initializs the DNEAobject}
+\title{Initialize DNEAresults object}
 \usage{
 createDNEAobject(project_name, expression_data, control, case)
 }
@@ -22,9 +22,48 @@ DNEAobject containing the scaled and un-scaled (if provided) data in assays, as 
 feature number, sample names, feature names, and condition number in metadata
 }
 \description{
-Takes the input data and restructures it to create the DNEAobject and expression_data is scaled if
-scaled_exprssion_data is not provided. Diagnostics are performed on the scaled data and the minimum
-eigen value and condition number are calculated for the whole dataset and each condition, specified by the
-control and case inputs, separated.The output will inform the user if Feature Reduction should be performed prior
-to continuing the analysis.
+This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
+case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
+T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing \emph{(described below)}
+are also performed on data.
+}
+\details{
+\emph{\strong{IMPORTANT}} Special attention should be given to the diagnostic criteria that is output. The minimum eigen
+value and condition number are calculated for the whole dataset as well as for each condition to determine
+mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
+found in \emph{Details}.
+
+Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
+parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
+is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
+number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
+direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
+correlated group and removing the rest. Due to the \emph{p >> n} problem common in -omics datasets, we have developed DNEA
+to be very robust in removing redundant features via several regularization steps (\strong{please see} \code{\link{BICtune}}
+\strong{and} \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
+this may not be ideal for several reasons.
+
+In scenarios like this we recommend collapsing highly correlated features into a single group using
+\code{\link{reduceFeatures}} - particularly if the dataset contains many highly-correlated features of a given class of molecules,
+ie. many fatty acids or carnitines, respectively. Doing so gives the user more control over what variables are included
+in the model. Without collapsing, the model regularization may result in one of the features within a class being included
+and some or all of the remaining features being removed. By collapsing first, you retain the signal from all of the features
+in the model and also have information pertaining to which features are highly correlated and as a result track each other.
+}
+\examples{
+#' #import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+}
+\seealso{
+\code{\link{BICtune}}, \code{\link{stabilitySelection}}
+}
+\author{
+Christopher Patsalis
 }

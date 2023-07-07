@@ -2,12 +2,12 @@
 % Please edit documentation in R/utilities.R
 \name{getNetworkFiles}
 \alias{getNetworkFiles}
-\title{getNetworkFiles will save the node and edge information}
+\title{Save the node and edge lists as .csv files}
 \usage{
-getNetworkFiles(object, file_path)
+getNetworkFiles(object, file_path = NULL)
 }
 \arguments{
-\item{object}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{object}{A DNEAresults object}
 
 \item{file_path}{The filepath to save the node and edge lists to. If \strong{NULL}, the files will be saved to the working
 directory}
@@ -19,4 +19,40 @@ the working directory
 \description{
 This function will save the node and edge information as .csv files in the working directory.
 The files are formatted for input into Cytoscape.
+}
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+# perform stability selection
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+
+#construct the networks
+DNEA <- getNetworks(object = DNEA)
+
+#identify metabolic modules via consensus clustering
+DNEA <- runConsensusCluster(object = DNEA)
+
+#perform pathway enrichment analysis using netGSA
+DNEA <- runNetGSA(object = DNEA)
+
+
+#save node and edge list for input to cytoscape
+getNetworkFiles(DNEA)
+
+}
+\seealso{
+\code{\link{edgeList}}, \code{\link{nodeList}}
+}
+\author{
+Christopher Patsalis
 }
