@@ -126,6 +126,10 @@ BICtune <- function(object,
   lambdas2Test(object) <- lambda_values
 
   message(paste0('The optimal Lambda hyper-parameter has been set to: ', lastar_guo, '!'))
+
+  #check valid object
+  validObject(object)
+
   return(object)
 }
 
@@ -191,10 +195,6 @@ stabilitySelection <- function(object,
                                optimal_lambda,
                                BPPARAM = bpparam()){
 
-  ############################################
-  #**Prepare data and initialize parameters**#
-  ############################################
-
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
   # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
@@ -242,26 +242,31 @@ stabilitySelection <- function(object,
   stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
 
 
-  #########################################################
-  #**Initialize workers and perform stability selection **#
-  #########################################################
+  #check that groups are sufficiently uneven if subSample selected
+  if(subSample){
+    if((1.3* stabsel_init_param[["min_num_sample"]]) > max(stabsel_init_param[["num_samples"]])) stop(paste0("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
+                                                                                                             "Please perform stability selection WITHOUT additional sub-sampling"))
+  }
 
+  ##perform stability selection
   #print message to user
   message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
   message(paste0("stabilitySelection will be performed with ", nreps, " replicates"))
 
   if(subSample){
 
+    #with additional sub-sampling
     message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
   }else if(!subSample){
 
-    message("No additional sub-sampling will be performed. Sample groups will both be randomly
-            sampled 50%")
+    #without additional sub-sampling
+    message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
   }
 
-  stab_sel <- BiocParallel:: bplapply(X = 1:nreps,
+  #run SS
+  stab_sel <- BiocParallel:: bplapply(X = seq(1, nreps),
                                       FUN = ss_function,
                                       init_param = stabsel_init_param,
                                       listX = data_split_by_condition,
@@ -272,10 +277,7 @@ stabilitySelection <- function(object,
   #add empty line after progress bar
   message("", appendLF = TRUE)
 
-  #####################################
-  #**Concatenate results for output **#
-  #####################################
-
+  ##concatenate results for output
   #initiate list for stability selection raw results
   selection_results <- vector("list", length(networkGroups(object)))
   names(selection_results) <- networkGroups(object)
@@ -301,6 +303,9 @@ stabilitySelection <- function(object,
 
   selectionResults(object) <- selection_results
   selectionProbabilities(object) <- selection_probabilities
+
+  #check valid object
+  validObject(object)
 
   return(object)
 }
@@ -477,6 +482,9 @@ getNetworks <- function(object,
   ##filter the weighted_adjacency_matrices by eps_threshold and create unweighed_adjacency_matrices plus edge list
   object <- filterNetworks(data = object, pcor = eps_threshold)
 
+  #check valid object
+  validObject(object)
+
   return(object)
 }
 #' Identify metabolic modules within the biological networks using a consensus clustering approach
@@ -645,6 +653,9 @@ runConsensusCluster <- function(object,
                                      subnetwork_membership = data.frame(subnetwork_results),
                                      adjacency_graphs = append(adjacency_matrix_graphs, list(joint_graph = joint_graph)))
 
+  #check valid object
+  validObject(object)
+
   return(object)
 
 }
@@ -750,6 +761,9 @@ runNetGSA <- function(object, min_size = 5){
 
   #update DNEAobject
   netGSAresults(object) <- res
+
+  #check valid object
+  validObject(object)
 
   return(object)
 }
