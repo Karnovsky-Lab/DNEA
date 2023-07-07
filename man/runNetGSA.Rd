@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{runNetGSA}
 \alias{runNetGSA}
-\title{Runs the NetGSA algorithm described in Hellstern et al.}
+\title{Identify metabolic modules that are enriched across experimental conditions}
 \usage{
 runNetGSA(object, min_size = 5)
 }
@@ -14,9 +14,50 @@ runNetGSA(object, min_size = 5)
 \value{
 A DNEAobject containing containing results from NetGSA. Pathway expression differences for
 each node can be found in the node_list. A summary of the NetGSA results can be viewed
-using getNetGSAresults().
+using getNetGSAresults()
 }
 \description{
-runNetGSA takes as input a DNEA object and utilizes the adjacency matrix calculated in getNetworks()
-to perform NetGSA on the two networks to determine differences in subnetwork (pathway) expression.
+This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{runConsensusCluster}}
+using the \code{\link{netgsa}} algorithm.
 }
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+# perform stability selection
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+
+#construct the networks
+DNEA <- getNetworks(object = DNEA)
+
+#identify metabolic modules via consensus clustering
+DNEA <- runConsensusCluster(object = DNEA)
+
+#perform pathway enrichment analysis using netGSA
+DNEA <- runNetGSA(object = DNEA)
+
+#view the results
+netGSAresults(DNEA)
+
+#save node and edge list for input to cytoscape
+getNetworkFiles(DNEA)
+}
+\references{
+Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol 17(6): e1008979. \url{https://doi.org/10.1371/journal.pcbi.1008979}
+}
+\seealso{
+\code{\link{netGSAresults}}, \code{\link{plotNetworks}}, \code{\link{nodeList}}
+}
+\author{
+Christopher Patsalis
+}
+\concept{netgsa}

@@ -2,37 +2,72 @@
 % Please edit documentation in R/MainFunctions.R
 \name{stabilitySelection}
 \alias{stabilitySelection}
-\title{Performs stability selection to determine probability of feature interactions}
+\title{Stability selection to calculate selection probabilities for every possible feature-feature interaction within the data}
 \usage{
 stabilitySelection(
   object,
   subSample = FALSE,
-  nreps = 50,
+  nreps = 500,
   optimal_lambda,
   BPPARAM = bpparam()
 )
 }
 \arguments{
-\item{object}{A DNEA object}
+\item{object}{A DNEAresults object}
 
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
 
-\item{nreps}{The total number of reps to perform stability selection. As the sample number
-gets smaller, more reps should be run; For datasets under 200 samples, we suggest running
-500 reps.}
+\item{nreps}{The total number of replicates to perform stability selection; The default is 500.
+Performing a high number of replicates becomes increasingly important as datasets decrease in size.}
 
-\item{optimal_lambda}{The optimal lambda value to be used in the model. This parameter is only
+\item{optimal_lambda}{\emph{\strong{OPTIONAL}} The optimal lambda value to be used in the model. This parameter is only
 necessary if BICtune() is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
 }
 \value{
-DNEAobject containing the stable networks for analysis.
+A DNEAresults object after populating the stable_networks slot of the object. It contains the selection
+results from stability selection as well as the calculated selection probabilities
 }
 \description{
-This function randomly samples each condition a number of times specified by nreps. It takes a DNEAobject as input.
-The unevenGroups parameter should be set to TRUE if the sample numbers across condition are uneven - this will
-ensure that samples are randomly sampled in a way that ensures equal representation in stability selection. This
-function can also be run in parallel by specifying the available cores through nCores.
+This function randomly samples 50\% of samples for each condition a number of times specified by nreps
+and fits a glasso model with the sampled data. A feature-feature interaction is considered present if the
+partial correlation value is above 1e-5. The resulting adjacency matrices are summed together and
+selection probabilities for each feature-feature interaction are calculated by dividing the number of replicates
+performed by 2 (two models are fit with each half of the randomly sampled data, respectively, per replicate).
 }
+\details{
+The subSample parameter should be set to TRUE if the sample numbers across condition are uneven - this will
+ensure that samples are randomly sampled in a way that ensures equal representation in stability selection. The
+principles of stability selection remain similar with both methods, however, there are a few caveats. When
+subSample = TRUE is set, The sample groups are stabilized by randomly sampling a smaller portion of the bigger group.
+Due to the smaller sample sizes per sampling, only one model is fit per replicate.
+}
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+# perform stability selection
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+
+}
+\references{
+Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{BICtune}}
+}
+\author{
+Christopher Patsalis
+}
+\concept{stability selection}

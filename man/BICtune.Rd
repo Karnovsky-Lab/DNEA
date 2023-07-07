@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{BICtune}
 \alias{BICtune}
-\title{BICtune Optimizes the Lambda parameter for glasso}
+\title{Optimize the lambda regularization parameter for the glasso-based network models using Bayesian-information Criterion}
 \usage{
 BICtune(
   object,
@@ -13,25 +13,51 @@ BICtune(
 )
 }
 \arguments{
-\item{object}{A DNEA object}
+\item{object}{A DNEAresults object. See \code{\link{createDNEAobject}}}
 
-\item{lambda_values}{An optional list of lambda values to fit a model and calculate the BIC score.
-If not provided, a set of lambda values are chosen based on the size of the dataset.}
+\item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing the lambda parameter.
+If not provided, a set of lambda values are chosen based on the theoretical value for the
+asymptoticly valid lambda. More information about this can be found in the details section}
 
 \item{eps_threshold}{A significance cut-off for thresholding network edges
-The default value is 1e-06.}
+The default value is 1e-06. This value generally should not change.}
 
 \item{eta_value}{default parameter ??. Default is 0.1}
 
 \item{BPPARAM}{A BiocParallel object}
 }
 \value{
-A DNEAobject containing the BIC and liklihood scores for every lambda value tested, as well as
+A DNEAresults object containing the BIC and liklihood scores for every lambda value tested, as well as
 the optimized lambda value
 }
 \description{
 This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
-determined by the number of features within the dataset. The lambda value with the lowest (BIC) score is
-chosen for analysis. It takes a DNEAobject as input and has an option that allows the function to be run
-in parallel.
+determined by the number of features within the dataset. The lambda value with the minimum BIC score is
+the optimal lambda value for the respective dataset and is stored in the DNEAresults object for
+use in stability selection using \code{\link{stabilitySelection}} and network generation using
+\code{\link{getNetworks}}
 }
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+}
+\references{
+Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604.
+}
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\concept{Lambda Optimization}

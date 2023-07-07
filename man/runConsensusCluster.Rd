@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{runConsensusCluster}
 \alias{runConsensusCluster}
-\title{runConsensusCluster performs consensus clustering using an adjacency matrix for the network}
+\title{Identify metabolic modules within the biological networks using a consensus clustering approach}
 \usage{
 runConsensusCluster(
   object,
@@ -12,9 +12,9 @@ runConsensusCluster(
 )
 }
 \arguments{
-\item{object}{A DNEA object}
+\item{object}{A DNEAresults object}
 
-\item{tau}{The consensus probabilty threshold for agreement among clustering algorithms}
+\item{tau}{The \% agreement threshold among the clustering algorithms for a node to be included in a subnetwork}
 
 \item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
 
@@ -28,8 +28,65 @@ Sub-network classification for each node can be found in the node_list slot of t
 DNEAobject.
 }
 \description{
-This function will take as input an adjacency matrix from the determined networks and perform
-consensus clustering using the following methods from the igraph package: cluster_edge_betweenness,
-cluster_fast_greedy, cluster_infomap, cluster_label_prop, cluster_leading_eigen, cluster_louvain,
-cluster_walktrap. The output results in sub-network classification for the nodes within the network.
+This function clusters the biological networks constructed using \code{\link{getNetworks}} using a consensus clustering
+approach described in Ma et al. \emph{(Please see references for more details)}
 }
+\details{
+Seven clustering algorithms from the \code{\link{igraph}} package:
+\enumerate{
+\item \code{\link{igraph::cluster_edge_betweenness}}
+\item \code{\link{igraph::cluster_fast_greedy}}
+\item \code{\link{igraph::cluster_infomap}}
+\item \code{\link{igraph::cluster_label_prop}}
+\item \code{\link{igraph::cluster_louvain}}
+\item \code{\link{igraph::cluster_walktrap}}
+\item \code{\link{igraph::cluster_leading_eigen}}
+}
+
+are performed iteratively on the adjacency matrix constructed using \code{\link{getNetworks}} until a consensus
+is reached on resulting subnetwork membership, or the specified max_iterations is reached.
+}
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#optimize lambda parameter
+DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+
+# perform stability selection
+DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 500, BPPARAM = bpparam())
+
+#construct the networks
+DNEA <- getNetworks(object = DNEA)
+
+#view the edgelist
+edgeList(object)
+
+#identify metabolic modules via consensus clustering
+DNEA <- runConsensusCluster(object = DNEA)
+
+#we can also plot the subnetworks
+plotNetworks(object = DNEA, type = "subnetworks", subnetwork = 1)
+
+}
+\references{
+Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
+\code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
+\code{\link{thresholdNetworks}}, \code{\link{plotNetworks}}
+
+Other consensus clustering: 
+\code{\link{plotNetworks}()}
+}
+\author{
+Christopher Patsalis
+}
+\concept{consensus clustering}
