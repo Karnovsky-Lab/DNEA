@@ -2,7 +2,7 @@
 % Please edit documentation in R/collapseNodes-fun.R
 \name{reduceFeatures}
 \alias{reduceFeatures}
-\title{reduceFeatures() will collapse correlated features in the input non-normalized expression data}
+\title{Collapse correlated features into a single goup}
 \usage{
 reduceFeatures(
   object,
@@ -28,10 +28,12 @@ methods}
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A collapsed_DNEAresults object
+A collapsed_DNEAresults object containing the original DNEAresults object as well as a new object with the
+collapsed dataset
 }
 \description{
-reduceFeatures collapses correlated features in the input non-normalized input expression data using one of 3 methods:
+This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
+non-transformed data using one of three methods:
 }
 \details{
 \strong{1. correlation-based}
@@ -40,22 +42,68 @@ reduceFeatures collapses correlated features in the input non-normalized input e
 
 \strong{3. hybrid}
 
-Identified groups are collapsed by taking the mean expression of all features. More info about the different approaches
-can be found in the \strong{details} section.
+More info about the different approaches can be found in the \strong{details} section.
+Highly correlated groups of features are collapsed by taking the mean expression of all features. \emph{NOTE:} This method was
+developed using non-normalized, non-transformed data and this fact is critical for feature collapsing since the mean
+expression value is used for each group. Normalized data may alter the results of collapsing.
 
-The three collapsing methods have their strengths dependent on the dataset and prior information known about the features.
-The following text explains more about each method and the best use cases:
+Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases exponentially as the
+number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
+parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
+limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can
+reduce the complexity of the analysis, and as a result decrease the necessary resources.
 
-\strong{1. correlation-based:} The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value will be
-than the threshold are collapsed into one group. This approach is best when no prior information about the features is known.
+In a related scenario, you may also have many highly-correlated features of the same class of compounds
+(ie. fatty acids or carnitines, respectively), and network analysis at the resolution of these individual features is not
+important or it is adding complexity to the analysis (\strong{Please see} \code{\link{createDNEAobject}}).
+This scenario is also a reasonable motivation to collapse features.
+
+Ultimately, this function allows the user to reduce the complexity of the dataset to reduce the computational power necessary
+for the analysis and/or in some cases improve the quality of the results. The most appropriate method to use when collapsing data
+is dependent on the dataset and prior information known about the features. The following text explains more about each
+method and the best use cases:
+
+\strong{1. correlation-based:} The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value
+than the threshold are collapsed into one group. This approach is best when no prior information about the features are known.
 
 \strong{2. knowledge-based:} The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
 are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
-experiments where the dataset contains many highly similar compounds, like Fatty acids, carnitines, ceramides, etc.
+experiments where the dataset contains many highly similar compounds, like fatty acids, carnitines, ceramides, etc.
 
-\strong{3. hybrid:} The user specifies both a correlation threshold like in the correlation-based approach and feature groups
+\strong{3. hybrid:} The user specifies both a correlation threshold, like in the correlation-based approach, and feature groups
 based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
 have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
-experiments where the dataset contains many highly similar compounds and prevents poorly correlated features from being
-collapsed into a single group.
+experiments where the dataset contains many highly similar compounds and prevents poorly correlated  or uncorrelated
+features from being collapsed into a single feature.
+}
+\examples{
+#import example data
+data(TEDDY)
+
+#initiate DNEAresults object
+DNEA <- createDNEAobject(expression_data = TEDDY,
+                         project_name = "TEDDYmetabolomics",
+                         case = "DM:case",
+                         control = "DM:control")
+
+#simulate group labels
+TEDDY_groups <- data.frame(features = colnames(expressionData(object, type = "input")),
+                           groups = c(colnames(TEDDY)[seq(2, 101)],
+                                      rep("group1", 10),
+                                      rep("group2", 10),
+                                      rep("group3", 10),
+                                      rep("group4", 14)),
+                           row.names = colnames(expressionData(object, type = "input")))
+
+collapsed_DNEA <- reduceFeatures(object = DNEA,
+                                 method = "hybrid",
+                                 correlation_threshold = 0.9,
+                                 metabolite_groups = TEDDY_groups)
+
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{stabilitySelection}}
+}
+\author{
+Christopher Patsalis
 }
