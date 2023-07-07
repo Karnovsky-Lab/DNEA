@@ -1,14 +1,25 @@
 #'
 #'
 #'
-#' set "igraph" class for consensus cluster
-#'
+#' import "igraph" class for consensus cluster
 #' @import igraph
 #' @keywords internal
 #' @noRd
 setOldClass('igraph')
 
-#' Set consensusClusteringResults class
+#' consensusClusteringResults
+#'
+#' An s4 class to represent the results from consensus clustering within DNEA
+#'
+#' @slot summary a data frame containing the subnetworks as rows and summary information as columns. The columns include:
+#' number_of_nodes, number_of_edges, number_of_DE_nodes, number_of_DE_edges
+#' @slot subnetwork_membership A data frame with the same number of rows as features in the data, and a column indicating which
+#' subnework a given feature belongs to, if any.
+#' @slot adjacency_graph The resulting adjacency graph from igraph created after consensus clustering
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{runConsensusCluster}}
 #'
 #' @import methods
 #' @rdname consensusClusteringResults
@@ -17,7 +28,17 @@ setClass(Class = "consensusClusteringResults",
                    subnetwork_membership = "data.frame",
                    adjacency_graphs = "list"))
 
-#' Set DNEAinputData class
+#' DNEAinputSummary
+#'
+#' An s4 class to represent the results from diagnostic testing on the input data
+#'
+#' @slot num_samples a single-value numeric vector corresponding to the number of samples in the dataset
+#' @slot num_features a single-value numeric vector corresponding to the number of features in the dataset
+#' @slot diagnostic_values a 3x3 data frame with the diagnostic values calculated via \code{\link{createDNEAobject}}
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{createDNEAobject}}
 #'
 #' @import methods
 #' @rdname DNEAinputSummary
@@ -25,10 +46,54 @@ setClass(Class = "DNEAinputSummary",
          slots = c(num_samples = "numeric",
                    num_features = "numeric",
                    diagnostic_values = "data.frame"))
-#' set generic "DNEAresults" class
+
+#' DNEAresults
 #'
-#'  @import methods
-#'  @rdname DNEAresults
+#' An s4 class to represent the DNEA workflow
+#'
+#' @slot project_name A string name for the experiment
+#'
+#' @slot assays A list of matrices, "expression_data" being non-normalized, non-transformed data and "scaled_expression_data"
+#' being normalized, log-transformed data. The row names and column names between the two must be identical
+#' (can access expression data via \code{\link{expressionData}})
+#'
+#' @slot metadata A list of metadata containing a dataframe for sample metadata (rownames match the sample order of
+#' expression data), a dataframe for feature metadata (rownames match the feature order of expression data), a two-level
+#' factor corresponding to the two groups in the data, and a character vector the same length as the number of samples
+#' corresponding to the group membership for each sample (can add additional metadata via \code{\link{includeMetadata}})
+#'
+#' @slot dataset_summary A DNEAinputSummary object (can view via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
+#'
+#' @slot node_list A data frame containing all of the features in the dataset as rows as well as the differential expression
+#' analysis results (can view the node list via \code{\link{nodeList}})
+#'
+#' @slot edge_list A data frame containing the network edges identified via \code{\link{getNetworks}} (can view the edge
+#' list via \code{\link{edgeList}})
+#'
+#' @slot hyperparameter A list of results obtained from \code{\link{BICtune}} containing a numeric vector of the lambda values
+#' tested during optimization, the resulting bayesian-information criterion and liklihood scores for each lambda value, and the
+#' optimized lambda for analysis (optimized lambda can be accessed or changed via \code{\link{optimizedLambda}})
+#'
+#' @slot adjacency_matrix A list of adjacency matrices determined via \code{\link{getNetworks}} (can be accessed via
+#' \code{\link{adjacencyMatrix}})
+#'
+#' @slot stable_networks A list of the selection results and selection probabilities for every possible feature-feature
+#' edge (can be accessed via \code{\link{selectionResults}} and \code{\link{selectionProbabilities}})
+#' @slot joint_graph The igraph graph object resulting from consensus clustering via \code{\link{runConsensusCluster}}
+#' @slot consensus_clustering A consensusClusteringResults object containing the results from consensus clustering
+#' via \code{\link{runConsensusCluster}}
+#' @slot netGSA a data frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
+#' Each row is a subnetwork tested for enrichment
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{expressionData}}, \code{\link{includeMetadata}},
+#' \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
+#' \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{runConsensusCluster}},
+#' \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
+#'
+#' @import methods
+#' @rdname DNEAresults
 setClass(Class = "DNEAresults",
          slots = c(
            project_name = 'character',
@@ -45,51 +110,75 @@ setClass(Class = "DNEAresults",
            netGSA = 'data.frame')
 )
 
-#'Set "collapsed_DNEAresults" class
+#' collapse_DNEAresults
+#'
+#' An s4 class to represent the DNEA workflow, including collapsing features. This class also inherits everything from
+#' /code{\link{DNEAresults-class}}
+#'
+#' @slot original_experiment A DNEAresults object input prior to collapsing features via \code{\link{reduceFeatures}}
+#' @slot feature_membership A data frame containing the all of the features from the original input data and their
+#' corresponding group membership in the collapsed data
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
 #'
 #' @import methods
-#' @noRd
+#' @rdname collapsed_DNEAresults
 setClass(Class = "collapsed_DNEAresults",
          slots = c(original_experiment = "DNEAresults",
                    feature_membership = "data.frame"),
          contains = "DNEAresults")
 
-#' #'Set generic "pcorNetwork" class
-#' #'
-#' #' @import methods
-#' #' @noRd
-#' setClass(Class = "pcorNetwork",
-#'          slots = c(
-#'            project_name = 'character',
-#'            assays = 'list',
-#'            metadata = 'list',
-#'            dataset_summary = 'list',
-#'            node_list = 'data.frame',
-#'            edge_list = 'data.frame',
-#'            hyperparameter = 'list',
-#'            adjacency_matrix = 'list',
-#'            stable_networks = 'list',
-#'            joint_graph = 'igraph'
-#'          )
-#' )
-#' #'Set "DNEAobject" class
-#' #'
-#' #' @import methods
-#' #' @noRd
-#' setClass(Class = "DNEAobject",
-#'          contains = "pcorNetwork",
-#'          representation(netGSA = "list",
-#'                         consensus_clustering = "list"))
+#' check validity of "consensusClusteringResults"
+#'
+#' @import methods
+#' @noRd
+setValidity("consensusClusteringResults", function(object){
 
+  if(ncol(object@summary != 5)){
+    "there was a problem with consensus cluster results object"
+  }
+  for(i in length(object@adjacency_graphs)){
+    if(class(object@adjacency_graphs[i]) != "igraph"){
+      "There was a problem with adjacency graphs in consensus clustering"
+    }
+  }
+  if(nrow(object@subnetwork_membership) != nrow(object@summary)){
+    "there was a problem with consensus cluster results object"
+  }
+  if(any(object@subnetwork_membership != 1 & object@subnetwork_membership != 0)){
+    "There was an error in determining metabolic modules"
+  }
+})
+#' check validity of "DNEAinputSummary"
+#'
+#' @import methods
+#' @noRd
+setValidity("DNEAinputSummary", function(object){
 
+  if(!is.numeric(object@num_samples) | length(object@num_samples) != 1){
+    "there was a problem with dataset summary"
+  }
+  if(!is.numeric(object@num_features) | length(object@num_features) != 1){
+    "there was a problem with dataset summary"
+  }
+  if(all(dim(diagnostics(object)) != c(3, 2))){
+    "There was a problem with diagnostics"
+  }
+})
 #'Check Validity of "DNEAobject"
 #'
 #' @import methods
 #' @noRd
 setValidity("DNEAresults", function(object){
-  if(!(is.character(object@project_name))){
+
+  #check project name
+  if(!(is.character(projectName(object)))){
     "@project_name must be a character string"
   }
+
+  #check assays
   for (i in length(object@assays)){
     if(!(is.matrix(object@assays[[i]]))){
       "@assays must be an expression matrix"
@@ -100,21 +189,30 @@ setValidity("DNEAresults", function(object){
     if(!(is.numeric(object@assays[[i]]))){
       "@assays must be a matrix with numeric values."
     }
-    if(all(rownames(object@assays[[i]]) != object@metadata$samples)){
+    if(all(rownames(object@assays[[i]]) != sampleNames(object))){
       "Samples are out of order"
     }
-    if(all(colnames(object@assays[[i]]) != object@metadata$clean_feature_names)){
+    if(all(colnames(object@assays[[i]]) != featureNames(object, original = FALSE))){
       "Features are out of order"
     }
   }
+  if(all(rownames(expressionData(object, type = "input")) != rownames(expressionData(object, type = "normalized")))){
+    "assays are not in the same order"
+  }
+
+  if(all(colnames(expressionData(object, type = "input")) != colnames(expressionData(object, type = "normalized")))){
+    "assays are not in the same order"
+  }
+
+  #check metadata
   if(!(is.data.frame(object@metadata$samples))){
     "@metadata$samples should be of class data.frame"
   }
   if(!(is.character(object@metadata$samples$samples))){
     "@metadata$samples$samples should be of class character"
   }
-  if(!(is.factor(object@metadata$samples$conditions))){
-    "@metadata$samples$conditions should be of class factor"
+  if(all(rownames(object@metadata$samples$samples) != rownames(expressionData(object, type = "input")))){
+    "sample metadata does not match order of expression data"
   }
   if(!(is.data.frame(object@metadata$features))){
     " @metadata$features should be of class data.frame"
@@ -124,6 +222,99 @@ setValidity("DNEAresults", function(object){
   }
   if(!(is.character(object@metadata$features$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
+  }
+  if(all(rownames(object@metadata$features$clean_feature_names) != colnames(expressionData(object, type = "input")))){
+    "feature metadata does not match order of expression data"
+  }
+  if(length(networkGroups(object)) != 2){
+    "sample conditions should be a two-level factor"
+  }
+  if(!is.factor(networkGroupIDs(object))){
+    "sample conditions should be a factor"
+  }
+  if(length(networkGroupIDs(object)) != length(sampleNames(object))){
+    "There should be only one group label for each sample"
+  }
+
+  #check dataset summary
+  if(all(dim(diagnostics(object)) != c(0, 0))){
+
+    if(numSamples(object) != nrow(expressionData(object, type = "input"))){
+      "There was a problem with the dataset summary"
+    }
+    if(numFeatures(object) != ncol(expressionData(object, type = "input"))){
+      "There was a problem with the dataset summary"
+    }
+    validObject(object@dataset_summary)
+  }
+
+  #check nodelist
+  if(all(dim(nodeList(object)) != c(0, 0))){
+
+    if(!all(nodeList(object)$Features == featureNames(object, original = FALSE))){
+      "Node list order does not match expression data"
+    }
+  }
+
+  #check edgeList
+  if(all(dim(edgeList(object)) != c(0, 0))){
+
+    if(ncol(edgeList(object) != 5)){
+      "There was a problem with the edge list"
+    }
+  }
+
+  #check hyperparameter slot
+  if(!is.null(lambdas2Test(object))){
+    if(length(object@hyperparameter$BIC_scores) != length(object@hyperparameter$tested_lambda_values)){
+      "There was a problem with the tested lambda values"
+    }
+    Bscores <- unlist(lapply(object@hyperparameter$BIC_scores, function(x) x$BIC))
+    if(optimizedLambda(object) != object@hyperparameter$tested_lambda_values[match(min(Bscores), Bscores)]){
+      "There was a problem with the optimized lambda"
+    }
+  }
+
+  #check adjacency matrices
+  if(!is.null(adjacencyMatrix(object, weighted = TRUE))){
+
+    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) != rownames(adjacencyMatrix(object, weighted = FALSE)))){
+      "there was a problem with the adjacency matrices"
+    }
+    if(all(colnames(adjacencyMatrix(object, weighted = TRUE)) != colnames(adjacencyMatrix(object, weighted = FALSE)))){
+      "there was a problem with the adjacency matrices"
+    }
+    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) != colnames(expressionData(object, type = "input")))){
+      "there was a problem with the adjacency matrices"
+    }
+  }
+
+  #check stable networks
+  if(!is.null(selectionProbabilities(object))){
+
+    for(i in length(selectionProbabilities(object))){
+
+      if(all(dim(selectionProbabilities(object)[[i]]) != c(numFeatures(object), numFeatures(object)))){
+        "There was a problem with the feature order for selection probabilites"
+      }
+      if(any(selectionProbabilities(object)[[i]] > 1) & any(selectionProbabilities(object)[[i]] < 0)){
+        "There was a problem calculating selectionProbabilites"
+      }
+    }
+  }
+
+  #check joint_graph
+  if(length(object@joint_graph) != ncol(expressionData(object, type = "input"))){
+    "There was a problem with the adjacency graph"
+  }
+
+  #check consensus_clustering
+  if(all(CCsummary(object) == c(0, 0))){
+
+    if(sum(object@consensus_clustering@summary$number_of_nodes) != ncol(expressionData(object, type = "input"))){
+      "There was a problem with consensus clustering"
+    }
+    validObject(object@consensus_clustering)
   }
 })
 
