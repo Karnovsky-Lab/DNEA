@@ -1,11 +1,10 @@
+
+#' Restructure input data for initialization of DNEAresults object
 #'
+#' This function takes as input a matrix of expression data, sample metadata, and the control/case labels in order to
+#' restructure the input as to prepare it for initiation of a DNEAresults object.
 #'
-#'
-#'Structure input data for initialization of DNEAobject
-#'
-#'Manipulates input data and creates metadata for initialization of DNEAobject
-#'
-#' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
+#' @param expression_data A matrix or dataframe of expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
 #' @param control A string corresponding to the name of condition 1 in column one of the data matrix
@@ -15,15 +14,15 @@
 #'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
 #'         from the input data.
 #'
+#' @author Christopher Patsalis
+#'
 #' @import methods
 #' @importFrom janitor make_clean_names
 #' @keywords internal
+#' @noRd
 restructure_input_data <- function(expression_data, control, case){
 
-  ######################
-  #**INITIALIZE LISTS**#
-  #*####################
-
+  ##initialize output data structures
   #create metadata list and add names
   meta_key<-c("samples", "features", "network_group_IDs", "network_groups")
   metadata<-vector(mode = 'list', length = length(meta_key))
@@ -34,15 +33,10 @@ restructure_input_data <- function(expression_data, control, case){
   assays <- vector(mode = 'list', length = length(assays_key))
   names(assays) <- assays_key
 
-
-  ############################################################
-  #**CHECK FOR PROPER CONDITIONS AND CONVERT DATA TO MATRIX**#
-  ############################################################
-
-  #check proper data structure
+  ##check proper data structure
   if(!is.character(expression_data[,1]) & !is.factor(expression_data[,1])) stop('First column should be sample condition')
 
-  #turn condition into factor
+  ##turn condition into factor
   if(!(is.factor(expression_data[,1]))){
 
     expression_data[,1]<- factor(expression_data[,1], levels = c(control, case))
@@ -54,16 +48,16 @@ restructure_input_data <- function(expression_data, control, case){
                    levels(expression_data[,1])[2]))
   }
 
-  #grab relevant metadata
+  ##grab relevant metadata
   feature_names <- colnames(expression_data[,-1])
   clean_feature_names <- make_clean_names(feature_names)
   sample_names <- rownames(expression_data)
   condition_values <- expression_data[,1]
 
-  #convert expression data to matrix
+  ##convert expression data to matrix
   expression_data <- as.matrix(expression_data[,-1])
 
-  #clean column names to avoid R conflicts
+  ##clean column names to avoid R conflicts
   colnames(expression_data) <- clean_feature_names
 
   #add to assays list
@@ -84,10 +78,7 @@ restructure_input_data <- function(expression_data, control, case){
 
   message('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!\n')
 
-  ##############################################
-  #**add data to initialized lists for output**#
-  ##############################################
-
+  ##concatenate output
   #add scaled data to assays list
   assays[['scaled_expression_data']] <- scaled_expression_data
 
@@ -100,16 +91,19 @@ restructure_input_data <- function(expression_data, control, case){
                                        row.names = feature_names)
 
   return(list(assays, metadata))
-
 }
 
-#'Initializs the DNEAobject
+#' Initialize DNEAresults object
 #'
-#'Takes the input data and restructures it to create the DNEAobject and expression_data is scaled if
-#' scaled_exprssion_data is not provided. Diagnostics are performed on the scaled data and the minimum
-#' eigen value and condition number are calculated for the whole dataset and each condition, specified by the
-#' control and case inputs, separated.The output will inform the user if Feature Reduction should be performed prior
-#' to continuing the analysis.
+#' This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
+#' case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
+#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing *(described below)*
+#' are also performed on data.
+#'
+#' ***IMPORTANT*** Special attention should be given to the diagnostic criteria that is output. The minimum eigen
+#' value and condition number are calculated for the whole dataset as well as for each condition to determine
+#' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
+#' found in *Details*.
 #'
 #' @param project_name A string containing an identifying name for the analysis
 #' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
@@ -118,8 +112,40 @@ restructure_input_data <- function(expression_data, control, case){
 #' @param control A string corresponding to the name of condition 1 in column one of the data matrix
 #' @param case A string corresponding to the name of condition 2 in column one of the data matrix
 #'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{BICtune}}, \code{\link{stabilitySelection}}
+#'
+#' @details
+#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
+#' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
+#' is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
+#' number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
+#' direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
+#' correlated group and removing the rest. Due to the *p >> n* problem common in -omics datasets, we have developed DNEA
+#' to be very robust in removing redundant features via several regularization steps (**please see** \code{\link{BICtune}}
+#' **and** \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
+#' this may not be ideal for several reasons.
+#'
+#' In scenarios like this we recommend collapsing highly correlated features into a single group using
+#' \code{\link{reduceFeatures}} - particularly if the dataset contains many highly-correlated features of a given class of molecules,
+#' ie. many fatty acids or carnitines, respectively. Doing so gives the user more control over what variables are included
+#' in the model. Without collapsing, the model regularization may result in one of the features within a class being included
+#' and some or all of the remaining features being removed. By collapsing first, you retain the signal from all of the features
+#' in the model and also have information pertaining to which features are highly correlated and as a result track each other.
+#'
 #' @return DNEAobject containing the scaled and un-scaled (if provided) data in assays, as well as sample number,
 #' feature number, sample names, feature names, and condition number in metadata
+#'
+#' @examples
+#' #' #import example data
+#' data(TEDDY)
+#'
+#' #initiate DNEAresults object
+#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#'                          project_name = "TEDDYmetabolomics",
+#'                          case = "DM:case",
+#'                          control = "DM:control")
 #'
 #' @export
 createDNEAobject <- function(project_name, expression_data, control, case){

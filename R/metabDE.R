@@ -1,14 +1,18 @@
-#'Performs differential expression on features of input data
+#' Perform differential expression analysis using students T-test
 #'
-#'Performs differential expression on features of the input data provided using student's T-Test and multiple hypothesis
-#'correction via Benjamini-Hochberg
+#' Performs differential expression on features of the input data provided using student's T-Test and multiple hypothesis
+#' correction via Benjamini-Hochberg
 #'
-#' @param mat an mxn expression matrix with features as columns
+#' @param mat An m x n expression matrix with features as columns
 #' @param condition_values a vector of the two possible condition values
 #' @param conditions a vector containing the condition labels corresponding to the samples in mat
 #'
-#' @return A dataframe containing the differential expression results
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{createDNEAobject}}
+#'
 #' @keywords internal
+#' @noRd
 metabDE <- function(mat,
                     condition_values,
                     conditions){
