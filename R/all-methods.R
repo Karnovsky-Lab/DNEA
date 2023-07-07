@@ -27,12 +27,11 @@ setMethod("show", "DNEAresults", function(object) {
 #' @export
 #' @noRd
 setMethod("show", "DNEAinputSummary", function(object) {
-  cat(is(object)[[1]], "\n",
-      "  Number of Samples  -  ", numSamples(object), "\n",
-      "  Number of Features  -  ", numFeatures(object), "\n",
-      diagnostics(object),
-      sep = ""
-  )
+  cat(paste0(is(object)[[1]], "\n",
+             "  Number of Samples  -  ", numSamples(object), "\n",
+             "  Number of Features  -  ", numFeatures(object), "\n"),
+      sep = "")
+  print(as.matrix(diagnostics(object)))
 })
 expressionData.DNEAresults <- function(x, type = c("input", "normalized")){
 

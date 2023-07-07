@@ -177,7 +177,7 @@ createDNEAobject <- function(project_name, expression_data, control, case){
 
   networkGroups(object) <- "conditions"
 
-   ##perform diagnostic testing on dataset
+   #perform diagnostic testing on dataset
    diagnostic_values <- dataDiagnostics(mat = expressionData(object, type = "normalized"),
                                         condition_values = networkGroups(object),
                                         conditions = networkGroupIDs(object))
