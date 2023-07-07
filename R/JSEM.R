@@ -1,8 +1,8 @@
-
 #' maTr computes the trace of the matrix
 #' @param z square numerical matrix
 #' @return trace of the input matrix (scalar)
 #' @keywords internal
+#' @noRd
 matTr <- function(z){
 
   res <- sum(diag(z))
@@ -22,6 +22,8 @@ matTr <- function(z){
 #' @param eta default parameter ??. Default is 0.01
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'        Default is 1e+6
+#'
+#' @author Jing Ma
 #'
 #' @return The ouput of a glasso model
 #'
@@ -76,14 +78,12 @@ CGM_AHP_train <- function(
       penalty_matrix <- lambda_value * adaptive_weight[k, , ] * V
       obj_glasso <- glasso(S[k, , ], penalty_matrix, maxit = 100)
       OMEGA_new[k, , ] <- (obj_glasso$wi + t(obj_glasso$wi))/2
-      #OMEGA_new[k, , ] <- obj_glasso$wi
     }
 
     ## Check the convergence
     diff_value <- sum(abs(OMEGA_new - OMEGA))/sum(abs(OMEGA))
     count <- count + 1
     OMEGA <- OMEGA_new
-    #cat(count, ', diff_value=', diff_value, '\n')
   }
 
   ## Filter the noise
@@ -109,65 +109,75 @@ CGM_AHP_train <- function(
 
   return(output)
 }
+
 #'initialize static tuning variables to pass to CGM_AHP_tune
 #'
 #' @param trainX a matrix of expression data wherein the samples are rows and features are columns
 #' @param model A list of corresponding conditions for the training_data
 #' @param lambda a vector of supplied lambda values
+#'
+#' @author Christopher Patsalis
 #' @return A set of variables corresponding to the following variables regarding
 #'         the training_data: number of features (p), number of conditions (K), number of lambda
 #'         values being tested (N), an a vector containing the number of samples per condition (n),
 #'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
+#'
 #' @keywords internal
+#' @noRd
 tune_init <- function(
     trainX, #training data
     model, #labels for models.
     lambda #a vector of supplied lambda values
 ){
+
+  ##initiate output list
   init_param <- vector(mode = 'list', length = 6)
   names(init_param) <- c('num_features','num_conditions','len_lambda','num_samples_by_cond', 'bic_score', 'likelihood')
 
 
+  ##set necessary parameters
   init_param[['num_features']] <- dim(trainX)[2]
   init_param[['num_conditions']] <- length(unique(model))
   init_param[['len_lambda']] <- length(lambda)
   init_param[['bic_score']] <- rep(0, init_param[['len_lambda']])
   init_param[['likelihood']] <- rep(0, init_param[['len_lambda']])
 
+
+  ##find number of samples in each condition
   num_samples_by_cond <- rep(0, init_param[['num_conditions']])
   for (k in 1:init_param[['num_conditions']]){
     num_samples_by_cond[k] <- length(which(model == k))
   }
+
   init_param[['num_samples_by_cond']] <- num_samples_by_cond
   return(init_param)
 }
 
-#' CGM_AHP_tune optimizes the tuning parameter for Guo et al. (2011) method in CGM_AHP_train
+#' Optimize the tuning parameter
 #'
 #' This function takes the data and corresponding condition, as well as a list of lambda values
-#' as input in order to optimize the lambda hyper-parameter.
+#' as input in order to optimize the lambda hyper-parameter. From Guo et al. (2011)
 #'
-#'@param trainX a matrix of expression data wherein the samples are rows and features are columns.
-#'@param testX a matrix of expression data wherein the samples are rows and features are columns.
-#'       testX should be identical to trainX.
-#'@param model a vector of corresponding conditions for samples in trainX
-#'@param X a vector of lambda values tested to find the optimal hyper-parameter
-#'@param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'       Default is FALSE.
-#'@param eps A significance cut-off for thresholding network interactions.
-#'       Default is 1e-06
-#'@param eta default parameter ??. Default is 0.01
-#'@param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'       Default is 1e+6
+#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
+#'        testX should be identical to trainX.
+#' @param model a vector of corresponding conditions for samples in trainX
+#' @param X a vector of lambda values tested to find the optimal hyper-parameter
+#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
+#'        Default is FALSE.
+#' @param eps A significance cut-off for thresholding network interactions.
+#'        Default is 1e-06
+#' @param eta default parameter ??. Default is 0.01
+#' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
+#'        Default is 1e+6
 #'
-#'@return A list containing the BIC and liklihood score for each lambda parameter evaluated.
+#' @author Jing Ma
+#' @return A list containing the BIC and liklihood score for each lambda parameter evaluated.
 #'
-#' @import zoo
-#' @import glmnet
-#' @import corpcor
 #' @importFrom stats cov
 #' @importFrom Matrix Matrix
 #' @keywords internal
+#' @noRd
 CGM_AHP_tune <- function(
     trainX,   # training data
     testX,    # test data
@@ -218,12 +228,16 @@ CGM_AHP_tune <- function(
 }
 
 
-#' stabsel_init initializes static tuning variables to pass to stability selection
-#' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample)
+#' Initialize static tuning variables
+#'
+#' Initialize the static tuning variables necessary to perform stasbility selection
+#' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample) within the DNEA algorithm.
 #'
 #' @param listX A list containing matrices of the expression data split by condition. The samples
 #'        are in rows and the features are columns.
 #' @param nreps The number of reps performed in stability selection
+#'
+#' @author Christopher Patsalis
 #'
 #' @return a set of variables corresponding to the following:
 #'         number of features (num_features), number of conditions (num_conditions),
@@ -235,11 +249,13 @@ CGM_AHP_tune <- function(
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
+#' @noRd
 stabsel_init <- function(
     listX, #The expression data split by condition
     nreps #number of reps performed for stability selection
 ){
-  #initialize output list
+
+  ##initialize output list
   init_param <- vector(mode = 'list', length = 6)
   names(init_param) <- c('num_features',
                          'num_conditions',
@@ -248,7 +264,7 @@ stabsel_init <- function(
                          'selection_matrix',
                          'edge_matrix')
 
-  #set static variables for analysis
+  ##set static variables for analysis
   if (is.list(listX)) {
     num_conditions = length(listX)
     num_features = ncol(listX[[1]])
@@ -282,7 +298,7 @@ stabsel_init <- function(
   return(init_param)
 }
 
-#' CGM_AHP_stabsel performs stability selection WITHOUT additional subsampling
+#' Perform stability selection WITHOUT additional subsampling
 #'
 #' This function will take as input the expression data and optimized lambda in order to randomly sample
 #' the data to perform stability selection. The function is based on the method described by Guo et al.
@@ -297,13 +313,12 @@ stabsel_init <- function(
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6
 #'
+#' @author Jing Ma
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
-#' @import zoo
-#' @import glmnet
-#' @import corpcor
 #' @importFrom Matrix Matrix
 #' @keywords internal
+#' @noRd
 CGM_AHP_stabsel <- function(listX,
                             X,
                             init_param,
@@ -311,13 +326,7 @@ CGM_AHP_stabsel <- function(listX,
                             eta=0.01,
                             limkappa=1e+6) {
 
-  ########################################
-  #**Set seed and initialize parameters**#
-  ########################################
-
-  # #set the seed for reproducibility in random sampling
-  # set.seed(X*100+main.seed)
-
+  #initialize parameters
   rand_sample1 = vector("list", init_param[['num_conditions']])
   rand_sample2 = vector("list", init_param[['num_conditions']])
 
@@ -326,10 +335,7 @@ CGM_AHP_stabsel <- function(listX,
 
   selection_matrix <- init_param[['selection_matrix']]
 
-  #############################################################
-  #**sample expression data WITHOUT SUBSAMPLING for each rep**#
-  #############################################################
-
+  #randomly sample 50% of data
   for (k in 1:init_param[['num_conditions']]){
 
     #create index to randomly sample half of the available samples
@@ -348,16 +354,15 @@ CGM_AHP_stabsel <- function(listX,
     model2 = c(model2, rep(k, length(ind2)))
   }
 
-  #########################################
-  #**train model and concatenate results**#
-  #########################################
+  #fit two glasso models
   group1_model = try(CGM_AHP_train(trainX=do.call(rbind, rand_sample1), trainY=model1, lambda_value=lastar, limkappa=limkappa, eta=eta))
   group2_model = try(CGM_AHP_train(trainX=do.call(rbind, rand_sample2), trainY=model2, lambda_value=lastar, limkappa=limkappa, eta=eta))
 
   if (inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
-    warning("There might be some error!")
+    warning(paste0("glasso model for replicate: ", X, " failed!"))
   }
 
+  #zero out unstable edges and combine model results
   for (k in 1:init_param[['num_conditions']]){
 
     #adjacency matrix from rand_sample1 model
@@ -374,7 +379,7 @@ CGM_AHP_stabsel <- function(listX,
 
   return(list(mat = selection_matrix, stab_sel_rep = X))
 }
-#' CGM_AHP_stabsel_subsample performs stability selection WITH additional subsampling
+#' Perform stability selection WITH additional subsampling
 #'
 #' This function will take as input the expression data and optimized lambda in order to randomly sample
 #' the data to perform stability selection. The function is based on the method described by Guo et al.
@@ -391,13 +396,13 @@ CGM_AHP_stabsel <- function(listX,
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6.
 #'
+#' @author Gayatri Iyer
+#'
 #' @return a precision matrix for the network corresponding to the input data created via that rep
 #'
-#' @import zoo
-#' @import glmnet
-#' @import corpcor
 #' @importFrom Matrix Matrix
 #' @keywords internal
+#' @noRd
 CGM_AHP_stabsel_subsample <- function(listX,
                                       X,
                                       init_param,
@@ -405,24 +410,12 @@ CGM_AHP_stabsel_subsample <- function(listX,
                                       eta=0.01,
                                       limkappa=1e+6) {
 
-  ########################################
-  #**Set seed and initialize parameters**#
-  ########################################
 
-  # #set the seed for reproducibility in random sampling
-  # set.seed(X*100+main.seed)
-
-  #initialize selection matrix and edge matrix
+  #initialize necessary parameters
   selection_matrix <- init_param[["selection_matrix"]]
   edge_matrix <- init_param[["edge_matrix"]]
-
-
   modelY = NULL
   subsampled_listX = vector("list", init_param[['num_conditions']])
-
-  ##########################################################
-  #**sample expression data WITH SUBSAMPLING for each rep**#
-  ##########################################################
 
   ###subsampling
   #randomly sample 1.3x the samples in the smaller group from the larger group
@@ -436,21 +429,20 @@ CGM_AHP_stabsel_subsample <- function(listX,
   ##get new sample numbers
   subsampled_num_samples = lapply(subsampled_listX, nrow)
 
+  #set up group vector
   for (k in 1:init_param[['num_conditions']]){
     modelY = c(modelY, rep(k, subsampled_num_samples[[k]]))
   }
 
-  #########################################
-  #**train model and concatenate results**#
-  #########################################
-
+  ##train glasso model
   tmp_model = try(CGM_AHP_train(trainX=scale(do.call(rbind, subsampled_listX)), trainY=modelY, lambda_value=lastar, limkappa = limkappa, eta=eta))
 
 
   if (inherits(tmp_model, "try-error")){
-    warning("There might be some error!")
+    warning(paste0("glasso model for replicate: ", X, " failed!"))
   }
 
+  #zero out unstable edges and prepare output matrices
   for (k in 1:init_param[['num_conditions']]){
     tmp_adjacency_mat = as(tmp_model$OMEGA[[k]], "sparseMatrix")
     tmp_adjacency_mat[abs(tmp_adjacency_mat) > 1e-5] = 1
@@ -461,9 +453,11 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
   return(list(mat = selection_matrix, edge_matrix = edge_matrix, stab_sel_rep = X))
 }
-#' adjDGlasso_minimal constructs the debiased glasso model
+
+#' Construct the debiased glasso model
 #'
-#' This function takes the expression data and optimized lambda as input and fits the glasso model
+#' This function takes the expression data, and rho regularization parameter (defined by the optimized lambda and
+#' selection probabilities) as input and fits the glasso model
 #'
 #' @param data A matrix of expression data wherein the samples are rows and features are columns.
 #' @param weights A matrix of selection weights determined via stability selection to be integrated
@@ -475,11 +469,14 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #' @param zero.edge Indices of entries of inverse covariance to be constrained to zero (to be passed
 #'        to glasso). The default is NULL
 #'
+#' @author Jing Ma
+#'
 #' @return An adjacency matrix for the data network estimated by the glasso model
 #'
 #' @import glasso
 #' @importFrom stats cov2cor
 #' @keywords internal
+#' @noRd
 adjDGlasso_minimal <- function(
     data,
     weights=1,
@@ -488,13 +485,18 @@ adjDGlasso_minimal <- function(
     quiet=FALSE,
     zero.edge=NULL
 ){
+
+  ##set static parameters
   num_samples <- nrow(data)
   num_features <- ncol(data)
   empcov <- (1/num_samples) * (t(data) %*% data) #empirical cov
+
+  #if no lambda provided default to theoretical asymptotically valid lambda for large p and large n
   if (is.null(lambda)){
     lambda <- sqrt(log(num_features)/num_samples)
   }
 
+  ##fit the glasso model
   if (!is.null(zero.edge)){
     Theta.hat.from.Glasso <- glasso(s=empcov,
                                     rho=lambda*weights,
