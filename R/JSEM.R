@@ -419,7 +419,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
   ###subsampling
   #randomly sample 1.3x the samples in the smaller group from the larger group
-  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
+  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[match(max(init_param[['num_samples']]), init_param[['num_samples']])]), 1.3*init_param[['min_num_samples']], replace = FALSE)
 
   #subsample 90% of the smaller group and add an additional 10%
   temp90 = dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace = FALSE)
