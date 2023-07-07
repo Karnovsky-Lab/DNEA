@@ -1,7 +1,7 @@
-
-#' reduceFeatures() will collapse correlated features in the input non-normalized expression data
+#' Collapse correlated features into a single goup
 #'
-#' reduceFeatures collapses correlated features in the input non-normalized input expression data using one of 3 methods:
+#' This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
+#' non-transformed data using one of three methods:
 #'
 #' **1. correlation-based**
 #'
@@ -9,30 +9,10 @@
 #'
 #' **3. hybrid**
 #'
-#' Identified groups are collapsed by taking the mean expression of all features. More info about the different approaches
-#' can be found in the **details** section.
-#'
-#' @details
-#' The three collapsing methods have their strengths dependent on the dataset and prior information known about the features.
-#' The following text explains more about each method and the best use cases:
-#'
-#'
-#' **1. correlation-based:** The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value will be
-#' than the threshold are collapsed into one group. This approach is best when no prior information about the features is known.
-#'
-#'
-#' **2. knowledge-based:** The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
-#' are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
-#' experiments where the dataset contains many highly similar compounds, like Fatty acids, carnitines, ceramides, etc.
-#'
-#'
-#' **3. hybrid:** The user specifies both a correlation threshold like in the correlation-based approach and feature groups
-#'  based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
-#'  have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
-#' experiments where the dataset contains many highly similar compounds and prevents poorly correlated features from being
-#' collapsed into a single group.
-#'
-#'
+#' More info about the different approaches can be found in the **details** section.
+#' Highly correlated groups of features are collapsed by taking the mean expression of all features. *NOTE:* This method was
+#' developed using non-normalized, non-transformed data and this fact is critical for feature collapsing since the mean
+#' expression value is used for each group. Normalized data may alter the results of collapsing.
 #'
 #' @param object A DNEAresults object
 #' @param method A parameter that dictates the collapsing method to use. The options are
@@ -45,7 +25,68 @@
 #'        methods
 #' @param metabolite_groups A dataframe containing group information for the collapsing algorithm
 #'        indicated by the "knowledge" and "hybrid" methods
-#' @returns A collapsed_DNEAresults object
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{stabilitySelection}}
+#'
+#' @details
+#' Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases exponentially as the
+#' number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
+#' parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
+#' limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can
+#' reduce the complexity of the analysis, and as a result decrease the necessary resources.
+#'
+#' In a related scenario, you may also have many highly-correlated features of the same class of compounds
+#' (ie. fatty acids or carnitines, respectively), and network analysis at the resolution of these individual features is not
+#' important or it is adding complexity to the analysis (**Please see** \code{\link{createDNEAobject}}).
+#' This scenario is also a reasonable motivation to collapse features.
+#'
+#' Ultimately, this function allows the user to reduce the complexity of the dataset to reduce the computational power necessary
+#' for the analysis and/or in some cases improve the quality of the results. The most appropriate method to use when collapsing data
+#' is dependent on the dataset and prior information known about the features. The following text explains more about each
+#' method and the best use cases:
+#'
+#' **1. correlation-based:** The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value
+#' than the threshold are collapsed into one group. This approach is best when no prior information about the features are known.
+#'
+#'
+#' **2. knowledge-based:** The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
+#' are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
+#' experiments where the dataset contains many highly similar compounds, like fatty acids, carnitines, ceramides, etc.
+#'
+#' **3. hybrid:** The user specifies both a correlation threshold, like in the correlation-based approach, and feature groups
+#' based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
+#' have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
+#' experiments where the dataset contains many highly similar compounds and prevents poorly correlated  or uncorrelated
+#' features from being collapsed into a single feature.
+#'
+#' @returns A collapsed_DNEAresults object containing the original DNEAresults object as well as a new object with the
+#' collapsed dataset
+#'
+#' @examples
+#' #import example data
+#' data(TEDDY)
+#'
+#' #initiate DNEAresults object
+#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#'                          project_name = "TEDDYmetabolomics",
+#'                          case = "DM:case",
+#'                          control = "DM:control")
+#'
+#' #simulate group labels
+#' TEDDY_groups <- data.frame(features = colnames(expressionData(object, type = "input")),
+#'                            groups = c(colnames(TEDDY)[seq(2, 101)],
+#'                                       rep("group1", 10),
+#'                                       rep("group2", 10),
+#'                                       rep("group3", 10),
+#'                                       rep("group4", 14)),
+#'                            row.names = colnames(expressionData(object, type = "input")))
+#'
+#' collapsed_DNEA <- reduceFeatures(object = DNEA,
+#'                                  method = "hybrid",
+#'                                  correlation_threshold = 0.9,
+#'                                  metabolite_groups = TEDDY_groups)
 #'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
@@ -59,30 +100,21 @@ reduceFeatures <- function(object,
                            correlation_threshold = 0.9,
                            metabolite_groups = NULL){
 
-  ################################################################
-  #**Check that input data is correct and initialize parameters**#
-  ################################################################
-
-  #set method
+  ##set method
   method <- match.arg(method)
 
-  #Check to see if there is raw expression data provided - Feature reduction must be done on raw expression data
+  ##Check to see if there is non-normalized, non-transformed expression data provided - Feature reduction requires this
   if(is.null(expressionData(object, type = "input"))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
                                                   'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
 
-  #check to see if data looks scaled
-  feature_mean <- colMeans(expressionData(object, type = "input"))
-  if(all(feature_mean < 0.05 & feature_mean > -0.05)) warning(paste0("Data in expression_data assay looks to be scaled...",
-                                                                     " Feature reduction must be done on raw data!"))
-
-  #create dataframe input for node collapsing algorithm
+  #check that rownames of metabolite_groups match feature order
+  if(!(all(colnames(expressionData(object, type = "input")) == rownames(metabolite_groups)))) stop("The feature order of metabolite_groups does not match the expression data!")
+  ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
                              groups = networkGroupIDs(object),
                              expressionData(object, type = "input"))
-  #######################################
-  #**perform node collapsing algorithm**#
-  #######################################
 
+  ##collapse features based on specified approach
   if (method == "correlation") {
     res <- collapseNodes_cor(dat = collapse_dat,
                              correlation_threshold = correlation_threshold)
@@ -101,10 +133,7 @@ reduceFeatures <- function(object,
                                                               'If you prefer another normalization method replace this data prior to proceeding!', '\n\n',
                                                               '(orginal DNEAobject can be found in the original_experiment slot)', '\n'))
 
-  ###################################################
-  #**use new data to initialize reduced DNEAobject**#
-  ###################################################
-
+  ##create new collapsed_DNEAresults object
   #convert reduced data to numeric
   res[["collapsed_data"]] <-cbind.data.frame(res[["collapsed_data"]][,c(1,2)],
                                              apply(res[["collapsed_data"]][,-c(1,2)], 2, as.numeric))[,-1]
@@ -150,19 +179,29 @@ reduceFeatures <- function(object,
 ################################################################################
 # main functions #
 
-# correlation-based node-collapsing
-#' collapseNodes_cor will collapse nodes based on correlation
+#' correlation-based node-collapsing
 #'
-#' more info about correlation
-#' @param dat unscaled expression data
+#' This function calculates a pearson correlation matrix for the features within the input dataset and then clusters and
+#' collapses features more highly-correlated than the user-specified cut-off. The mean expression of the features in each
+#' group is calculated as the new expression value for said group. *NOTE:* This method was developed using non-normalized,
+#' non-transformed data and this fact is critical for feature collapsing since the mean expression value is used for each
+#' group. Normalized data may alter the results of collapsing.
+#'
+#' @param dat non-normalized, non-transformed expression data
 #' @param correlation_threshold correlation threshold
 #'
-#' @return collapsed data
+#' @author Gayatri Iyer
+#'
+#' @seealso \code{\link{reduceFeatures}}
+#'
+#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
+#'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
 #' @keywords internal
+#' @noRd
 collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 
 
@@ -266,20 +305,28 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 }
 
 
-#' collapseNodes_knowledge node-collapsing based on user-supplied metabolite groups
+#' Node-collapsing based on user-supplied metabolite groups
 #'
-#' more info about correlation
+#' This function collapses related features based on user-specified groups via the metabolite_groups input parameter. The mean
+#' expression value for each group is used as the new value. *NOTE:* This method was developed using non-normalized,
+#' non-transformed data and this fact is critical for feature collapsing since the mean expression value is used for each
+#' group. Normalized data may alter the results of collapsing.
 #'
 #' @param dat unscaled expression data
 #' @param metabolite_groups metabolite groupings
 #'
-#' @return collapsed data
+#' @author Gayatri Iyer
+#'
+#' @seealso \code{\link{reduceFeatures}}
+#'
+#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
 #'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
 #' @keywords internal
+#' @noRd
 collapseNodes_knowledge <- function (dat,
                                      metabolite_groups) {
 
@@ -321,20 +368,31 @@ collapseNodes_knowledge <- function (dat,
 
 
 
-#' collapseNodes_hybrid node-collapsing based on correlations and user-supplied metabolite groups
+#' Node-collapsing based on correlations and user-supplied metabolite groups
 #'
-#' more info about correlation
+#' This function is a hybrid of \code{\link{collapseNodes_cor}} and \code{\link{collapseNodes_knowlege}}. It initially groups
+#' metabolites by user-specified groups via the metabolite_groups parameter. Then \code{\link{collapseNodes_cor}} is called on each group
+#' to identify sub-groups via the correlation based collapsing approach. More details on this method can be found at
+#' \code{\link{collapseNodes_cor}}. The mean of the features in each group is calculated as the new expression value for said
+#' group. *NOTE:* This method was developed using non-normalized, non-transformed data and this
+#' fact is critical for feature collapsing since the mean expression value is used for each group.
+#' Normalized data may alter the results of collapsing.
 #'
 #' @param dat unscaled expression data
 #' @param metabolite_groups metabolite groupings
 #' @param correlation_threshold correlation threshold
 #'
-#' @return collapsed data
+#' @author Gayatri Iyer
+#'
+#' @seealso \code{\link{collapseNodes_cor}}, \code{\link{collapseNodes_knowlege}}, \code{\link{reduceFeatures}}
+#'
+#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
 #' @keywords internal
+#' @noRd
 collapseNodes_hybrid <- function (dat,
                                   metabolite_groups,
                                   correlation_threshold = 0.9) {
