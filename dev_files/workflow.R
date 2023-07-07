@@ -15,7 +15,7 @@ object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPA
 finish <- Sys.time()
 finish - start
 
-object <- getNeworks(object = object, eps_threshold = 0.3)
+object <- getNeworks(object = object)
 
 object <- filterNetworks(object, pcor = 0.3)
 # object <- filterNetworks(object, top_percent_edges = 0.2)
