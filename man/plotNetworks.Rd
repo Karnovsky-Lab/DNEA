@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{plotNetworks}
 \alias{plotNetworks}
-\title{plot will create network graphs of the metabolic modules}
+\title{Visualize the biological networks identified via DNEA}
 \usage{
 plotNetworks(object, type = c("group_networks", "subnetworks"), subnetwork)
 }
@@ -15,9 +15,22 @@ specified by teh subnetwork parameter}
 \item{subnetwork}{The subnetwork to plot}
 }
 \value{
-a network plot for each of the subnetworks
+a plot of the specified network
 }
 \description{
-The function takes as input a DNEAresults object and creates network plots for each of the subnetworks identified
-via runConsensusClustering().
+The function plots the condition networks as well as the specified subnetworks identified via DNEA
 }
+\seealso{
+\code{\link{getNetworks}}, \code{\link{runConsensusCluster}}
+
+Other network construction: 
+\code{\link{getNetworks}()}
+
+Other consensus clustering: 
+\code{\link{runConsensusCluster}()}
+}
+\author{
+Christopher Patsalis
+}
+\concept{consensus clustering}
+\concept{network construction}

@@ -1,5 +1,4 @@
-#'
-#' split_by_condition splits the input data by condition
+#' splits the input data by the specified condition
 #'
 #' split_by_condition will separate the input expression matrix into a list of matrices. Each matrix
 #' corresponds to the expression data for one condition specified by condition_levels
@@ -10,6 +9,7 @@
 #'        sample.
 #' @return A list of expression matrices
 #' @keywords internal
+#' @noRd
 split_by_condition <- function(dat, condition_levels, condition_by_sample){
 
   #create key for separating the data by key and running diagnostic tests, feature DE calculations
@@ -24,16 +24,37 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
 
 }
 
-#' includeMetadata adds info to metadata
+#' Add additional metadata to the DNEAresults object
 #'
-#' This function will take additional metadata and add it to the corresponding dataframe in the metadata
-#' slot.
+#' This function will take additional metadata and add it to the specified dataframe in the metadata
+#' slot. ***NOTE:*** The rownames of the new metadata must match the order of the input sample names or feature names,
+#' respectively
 #'
-#' @param object A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param object A DNEAresults object
 #' @param type sample or feature metadata
 #' @param metadata a dataframe containing metadata to add
 #'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{featureNames}}, \code{\link{sampleNames}},
+#'
 #' @return The same object as input with specified additions
+#'
+#' @examples
+#' #import example data
+#' data(TEDDY)
+#'
+#' #initiate DNEAresults object
+#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#'                          project_name = "TEDDYmetabolomics",
+#'                          case = "DM:case",
+#'                          control = "DM:control")
+#'
+#' #create sample metadata file
+#' new_metadat <- data.frame(new_group = c(rep("group1", 72), rep("group2", 72)), row.names(sampleNames(DNEA)))
+#'
+#' #add new metadata to DNEAresults object
+#' DNEA <- includeMetadata(object = DNEA, type = "sample", metadata = new_metadat)
 #'
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
@@ -67,20 +88,54 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
   return(object)
 }
 
-#' getNetworkFiles will save the node and edge information
+#' Save the node and edge lists as .csv files
 #'
 #' This function will save the node and edge information as .csv files in the working directory.
 #' The files are formatted for input into Cytoscape.
 #'
-#' @param object A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param object A DNEAresults object
 #' @param file_path The filepath to save the node and edge lists to. If **NULL**, the files will be saved to the working
 #' directory
 #'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{edgeList}}, \code{\link{nodeList}}
+#'
 #' @return The same object as input and saves the node and edge information as .csv files in
 #'          the working directory
+#'
+#' @examples
+#' #import example data
+#' data(TEDDY)
+#'
+#' #initiate DNEAresults object
+#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#'                          project_name = "TEDDYmetabolomics",
+#'                          case = "DM:case",
+#'                          control = "DM:control")
+#'
+#' #optimize lambda parameter
+#' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+#'
+#' # perform stability selection
+#' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+#'
+#' #construct the networks
+#' DNEA <- getNetworks(object = DNEA)
+#'
+#' #identify metabolic modules via consensus clustering
+#' DNEA <- runConsensusCluster(object = DNEA)
+#'
+#' #perform pathway enrichment analysis using netGSA
+#' DNEA <- runNetGSA(object = DNEA)
+#'
+#'
+#' #save node and edge list for input to cytoscape
+#' getNetworkFiles(DNEA)
+#'
 #' @importFrom utils write.csv
 #' @export
-getNetworkFiles <- function(object, file_path){
+getNetworkFiles <- function(object, file_path=NULL){
 
   if(missing(file_path)){
     file_path <- paste0(getwd(), "/")
@@ -96,16 +151,47 @@ getNetworkFiles <- function(object, file_path){
   return(object)
 }
 
-#' plot will create network graphs of the metabolic modules
+#' Visualize the biological networks identified via DNEA
 #'
-#' The function takes as input a DNEAresults object and creates network plots for each of the subnetworks identified
-#' via runConsensusClustering().
+#' The function plots the condition networks as well as the specified subnetworks identified via DNEA
 #'
 #' @param object A DNEAresults object
 #' @param type "group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
 #' specified by teh subnetwork parameter
-#' @param subnetwork The subnetwork to plot
-#' @returns a network plot for each of the subnetworks
+#' @param network The subnetwork to plot
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{getNetworks}}, \code{\link{runConsensusCluster}}
+#'
+#'
+#' @returns a plot of the specified network
+#'
+#' @examples
+#' #import example data
+#' data(TEDDY)
+#'
+#' #initiate DNEAresults object
+#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#'                          project_name = "TEDDYmetabolomics",
+#'                          case = "DM:case",
+#'                          control = "DM:control")
+#'
+#' #optimize lambda parameter
+#' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+#'
+#' # perform stability selection
+#' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+#'
+#' #construct the networks
+#' DNEA <- getNetworks(object = DNEA)
+#'
+#' #identify metabolic modules via consensus clustering
+#' DNEA <- runConsensusCluster(object = DNEA)
+#'
+#' #plot the networks
+#' plotNetworks(object = DNEA, type = "group_networks")
+#' plotNetworks(object = DNEA, type = "subnetworks", subnetwork = 1)
 #'
 #' @import igraph
 #' @importFrom grDevices dev.off
