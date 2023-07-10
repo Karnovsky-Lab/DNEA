@@ -27,10 +27,7 @@ matTr <- function(z){
 #'
 #' @return The ouput of a glasso model
 #'
-#' @import zoo
 #' @import glasso
-#' @import glmnet
-#' @import corpcor
 #' @importFrom stats cov
 #' @keywords internal
 CGM_AHP_train <- function(

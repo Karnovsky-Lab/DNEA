@@ -1,5 +1,7 @@
-
-#' Restructure input data for initialization of DNEAresults object
+#'
+#'
+#'
+#' Restructure input data for initiation of DNEAresults object
 #'
 #' This function takes as input a matrix of expression data, sample metadata, and the control/case labels in order to
 #' restructure the input as to prepare it for initiation of a DNEAresults object.
@@ -97,13 +99,14 @@ restructure_input_data <- function(expression_data, control, case){
 #'
 #' This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
 #' case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
-#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing *(described below)*
-#' are also performed on data.
+#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing ***(described below)***
+#' are also performed on the data.
 #'
-#' ***IMPORTANT*** Special attention should be given to the diagnostic criteria that is output. The minimum eigen
+#' ##***IMPORTANT***
+#' Special attention should be given to the diagnostic criteria that is output. The minimum eigen
 #' value and condition number are calculated for the whole dataset as well as for each condition to determine
 #' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-#' found in *Details*.
+#' found in \strong{\emph{Details}}.
 #'
 #' @param project_name A string containing an identifying name for the analysis
 #' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
@@ -117,12 +120,13 @@ restructure_input_data <- function(expression_data, control, case){
 #' @seealso \code{\link{BICtune}}, \code{\link{stabilitySelection}}
 #'
 #' @details
+#' ##Diagnostics motivation
 #' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
 #' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
 #' is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
 #' number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
 #' direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. Due to the *p >> n* problem common in -omics datasets, we have developed DNEA
+#' correlated group and removing the rest. Due to the ***p >>> n*** problem common in -omics datasets, we have developed DNEA
 #' to be very robust in removing redundant features via several regularization steps (**please see** \code{\link{BICtune}}
 #' **and** \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
 #' this may not be ideal for several reasons.
@@ -175,10 +179,10 @@ createDNEAobject <- function(project_name, expression_data, control, case){
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
-  networkGroups(object) <- "conditions"
+  networkGroupIDs(object) <- "conditions"
 
    #perform diagnostic testing on dataset
-   diagnostic_values <- dataDiagnostics(mat = expressionData(object, type = "normalized"),
+   diagnostic_values <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),
                                         condition_values = networkGroups(object),
                                         conditions = networkGroupIDs(object))
 
@@ -189,7 +193,7 @@ createDNEAobject <- function(project_name, expression_data, control, case){
 
 
    ##perform differential expression on the features
-   DEresults <- metabDE(mat = expressionData(x = object, type = "input"),
+   DEresults <- metabDE(mat = expressionData(x = object, normalized = FALSE),
                         condition_values = networkGroups(object),
                         conditions = networkGroupIDs(object))
    nodeList(object) <- DEresults

@@ -1,19 +1,15 @@
-
+#'
+#'
 #'
 #' @rdname projectName
 #' @export
 setGeneric("projectName", function(x) standardGeneric("projectName"))
 
 #'
-#' @rdname projectName
-#' @export
-setGeneric("projectName<-", function(x, value) standardGeneric("projectName<-"))
-
-#'
 #' @include all-classes.R
 #' @rdname expressionData
 #' @export
-setGeneric("expressionData", function(x, type) standardGeneric("expressionData"))
+setGeneric("expressionData", function(x, normalized) standardGeneric("expressionData"))
 
 #'
 #' @rdname networkGroups
@@ -21,15 +17,15 @@ setGeneric("expressionData", function(x, type) standardGeneric("expressionData")
 setGeneric("networkGroups", function(x) standardGeneric("networkGroups"))
 
 #'
-#' @rdname networkGroups
-#' @export
-setGeneric("networkGroups<-", function(x, value) standardGeneric("networkGroups<-"))
-
-#'
 #' @rdname networkGroupIDs
 #' @export
 setGeneric("networkGroupIDs", function(x) standardGeneric("networkGroupIDs"))
 
+#'
+#' @rdname networkGroupIDs
+#' @keywords internal
+#' @noRd
+setGeneric("networkGroupIDs<-", function(x, value) standardGeneric("networkGroupIDs<-"))
 #'
 #' @rdname sampleNames
 #' @export
@@ -57,7 +53,8 @@ setGeneric("optimizedLambda", function(x) standardGeneric("optimizedLambda"))
 
 #'
 #' @rdname optimizedLambda
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("optimizedLambda<-", function(x, value) standardGeneric("optimizedLambda<-"))
 
 #'
@@ -67,7 +64,8 @@ setGeneric("lambdas2Test", function(x) standardGeneric("lambdas2Test"))
 
 #'
 #' @rdname lambdas2Test
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("lambdas2Test<-", function(x, value) standardGeneric("lambdas2Test<-"))
 
 #'
@@ -77,7 +75,8 @@ setGeneric("BICscores", function(x) standardGeneric("BICscores"))
 
 #'
 #' @rdname BICscores
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("BICscores<-", function(x, value) standardGeneric("BICscores<-"))
 
 #'

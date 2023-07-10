@@ -1,31 +1,44 @@
-#'#'#'
 #'
 #'
-#'#' Show function will display general information about the data present in the DNEAobject slots
+#'
+#' Display general information about the data present in the DNEAobject slots
+#'
+#' This function will display a summary of the information stored within a DNEAresults object
+#'
 #' @param object A DNEAobject
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @keywords helper
+#' @return A summary of the information stored in a DNEAresults object
 #' @export
-#' @noRd
 setMethod("show", "DNEAresults", function(object) {
   cat(is(object)[[1]], "\n",
       "  Project Name -  ", object@project_name, "\n",
-      "  Un-scaled data - ", class(object@assays[["expression_data"]])[[1]], "\n",
-      "  Scaled data -  ", class(object@assays[["scaled_expression_data"]])[[1]], "\n",
       "  Samples -  ", paste0('There are ',length(sampleNames(object)), ' samples.'), "\n",
       "  Features -  ", paste0('There are ',length(featureNames(object)), ' Features.'), "\n",
       "  Conditions -  ", paste0("control: ", networkGroups(object)[[1]],
                                  " case: ", networkGroups(object)[[2]]), "\n",
       "  Optimized Lambda - ", paste0("lambda: ",optimizedLambda(object),
                                       " will be used in analysis."), "\n",
-      "  Sub-clusters: ", paste0("there are ", length(unique(nodeList(object)[["membership"]])),
-                                 " sub-clusters."),
+      "  Metabolic modules: ", paste0("there are ", length(unique(nodeList(object)[["membership"]])),
+                                 " subnetworks."),
+      "  netGSA results", paste0(sum(netGSAresults(object)$NetGSA_pFDR <= 0.05),
+                                 " of the metabolic modules are differentially enriched across experimental condition"),
       sep = ""
   )
 })
 
-#'#' Show function will display general information about the data present in the DNEAinputSummary slots
+#' Display general information about the data present in the DNEAinputSummary slots
+#'
+#' This function will display the number of samples, number of features, and diagnostics values of the input dataset to a
+#' DNEAresults object
+#'
 #' @param object A DNEAinputSummary object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @keywords helper
+#' @return A summary of the input data to \code{\link{createDNEAobject}}
 #' @export
-#' @noRd
 setMethod("show", "DNEAinputSummary", function(object) {
   cat(paste0(is(object)[[1]], "\n",
              "  Number of Samples  -  ", numSamples(object), "\n",
@@ -33,29 +46,48 @@ setMethod("show", "DNEAinputSummary", function(object) {
       sep = "")
   print(as.matrix(diagnostics(object)))
 })
-expressionData.DNEAresults <- function(x, type = c("input", "normalized")){
 
-  ##set data to be pulled
-  type = match.arg(type)
+#' Return the name of the current experiment
+#'
+#' projectName() returns the name of the current experiment and allows the user to change the name as well
+#'
+#' @param x A DNEAresults object
+#' @return The name of the DNEA experiment
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}
+#' @keywords helper
+#' @rdname projectName
+#' @export
+setMethod("projectName", signature(x= "DNEAresults"), function(x){
+
+  x@project_name
+})
+
+expressionData.DNEAresults <- function(x, normalized = TRUE){
 
   ##pull data to return
-  if(type == "input"){
-    output <- x@assays$expression_data
-  }else if(type == "normalized"){
+  if(normalized){
+
     output <- x@assays$scaled_expression_data
+  }else if(!normalized){
+
+    output <- x@assays$expression_data
   }
 
   return(output)
 }
-#' expressionData is an accessor function for the data in the "assays" slot of a pcorNetwork,
-#'  DNEAobject, or DNEAobject_collapsed
+#' Access expression data within a DNEAresults object,
 #'
-#' The assays slot hold the expression data in a n x m matrix, with one row for each sample, and
-#'  one column for each feature.
+#' The assays slot holds the expression data in a n x m matrix, with one row for each sample, and
+#' one column for each feature.
 #'
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @param type "input" will return the original data, and "normalized" will return the scaled data
+#' @param x A DNEAresults object
+#' @param normalized A boolean indicating whether the normalized or original input data should be returned
+#'
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @keywords helper
 #' @return The indicated expression expression matrix
 #'
 #' @rdname expressionData
@@ -65,65 +97,26 @@ setMethod("expressionData",signature(x = "DNEAresults"), expressionData.DNEAresu
 networkGroupIDs.DNEAresults <- function(x){
   x@metadata$network_group_IDs
 }
-#' networkGroupIDs returns the group information for samples in a DNEAobject,
-#'  or DNEAobject_collapsed
+#' Access or set the experimental group information utilized by DNEA
 #'
-#' This function takes in a DNEAobject or DNEAobject_collapsed and return the unique condition
-#'  labels located in the metadata slot of the object. You can also change the sample
-#'  variable being used to determine groups.
+#' This function takes in a DNEAresults or collapsed_DNEAresults object and returns the unique condition
+#' labels located in the metadata slot of the object. The user can also set new group labels by providing a string name
+#' corresponding to the column name of the sample metadata dataframe to use as the experimental groups.
 #'
 #'
 #' @param x A DNEAobject or DNEAobject_collapsed
+#' @author Christopher Patsalis
+#' @seealso \code{\link{includeMetadata}}
+#' @keywords helper
 #' @return A vector of the unique condition labels
 #'
 #' @rdname networkGroupIDs
 #' @export
 setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
 
-#' projectName() returns the name of the current experiment
-#'
-#' projectName() returns the name of the current experiment and allows the user to change the name as well
-#'
-#' @param x A DNEAresults object
-#' @param value A string that corresponds to the new project name
-#' @return The name of the DNEA experiment
-#'
-#' @rdname projectName
+#' @rdname networkGroupIDs
 #' @export
-setMethod("projectName", signature(x= "DNEAresults"), function(x){
-
-  x@project_name
-})
-
-#'
-#' @rdname projectName
-#' @export
-setReplaceMethod("projectName", signature(x= "DNEAresults"), function(x, value){
-
-  x@project_name <- value
-  validObject(x)
-  x
-})
-#' networkGroups retrieves the condition values for each sample from the metadata slot.
-#'
-#' This function takes in a DNEAobject, or DNEAobject_collapsed object and
-#'  return the condition values located in the metatdata slot of the object
-#'
-#' @param x A DNEAobject, or DNEAobject_collapsed object
-#' @param value A vector of group names that specifies the condition to test the data on. It should have exactly two unique
-#' groups and be exactly as long as the number of samples in the data.
-#' @return A vector of the condition values
-#'
-#' @rdname networkGroups
-#' @export
-setMethod("networkGroups", signature(x = "DNEAresults"), function(x){
-
-  x@metadata$network_groups
-})
-
-#' @rdname networkGroups
-#' @export
-setMethod("networkGroups<-", signature(x = "DNEAresults"), function(x, value){
+setMethod("networkGroupIDs<-", signature(x = "DNEAresults"), function(x, value){
 
   #set new group ID's
   if(length(unique(x@metadata$samples[[value]])) >2) stop("DNEA requires exactly two groups!")
@@ -135,15 +128,35 @@ setMethod("networkGroups<-", signature(x = "DNEAresults"), function(x, value){
   x
 })
 
+#' Retrieve the unique group values of the experimental condition
+#'
+#' This function takes in a DNEAresults object and returns the unique group values of the experimental condition in the dataset
+#'
+#' @param x A DNEAobject, or DNEAobject_collapsed object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
+#' @keywords helper
+#' @return A vector of the condition values
+#'
+#' @rdname networkGroups
+#' @export
+setMethod("networkGroups", signature(x = "DNEAresults"), function(x){
+
+  x@metadata$network_groups
+})
+
 sampleNames.DNEAresults <- function(x){
   x@metadata[["samples"]]$samples
 }
-#' sampleNames retrieves the sample names from the metadata slot.
+
+#' Retrieve the sample names from the metadata slot.
 #'
-#' This function takes in a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and
-#'  return the sample names located in the metadata slot of the object.
+#' This function takes in a DNEAresults object and return the sample names located in the metadata slot of the object.
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}
+#' @keywords helper
 #' @return A vector of sample names
 #'
 #' @rdname sampleNames
@@ -158,15 +171,16 @@ featureNames.DNEAresults <- function(x, original = TRUE){
     x@metadata[["features"]]$clean_feature_names
   }
 }
-#' featureNames retrieves the feature names from the metadata slot.
+#' Retrieve the feature names from the metadata slot.
 #'
-#' This function takes in a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#'  and return the specified feature names located in the metadata slot of the object.
+#' This function takes in a DNEAresults object and return the specified feature names located in the metadata slot of the object.
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param x A DNEAresults object
 #' @param original "TRUE" returns the original feature names and "FALSE" returns the feature
 #'  names that have been modified to avoid errors as a result of special characters.
-#'
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}
+#' @keywords helper
 #' @return A vector of feature names
 #' @rdname featureNames
 #' @export
@@ -175,9 +189,14 @@ setMethod("featureNames", signature(x = "DNEAresults"), featureNames.DNEAresults
 numFeatures.DNEAresults <- function(x){
   x@dataset_summary@num_features
 }
-#' numFeatures finds the total number of features in the dataset
+#' Retrieve the total number of features in the dataset
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' This function prints to console the total number of features in the dataset
+#'
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}
+#' @keywords helper
 #' @return The number of features in the dataset
 #'
 #' @rdname numFeatures
@@ -193,9 +212,13 @@ setMethod("numFeatures", signature(x = "DNEAinputSummary"), function(x){
 numSamples.DNEAresults <- function(x){
   x@dataset_summary@num_samples
 }
-#' numSamples finds the total number of samples in the dataset
+#' Retrieves the total number of samples in the dataset
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' This function prints to console the total number of samples in the dataset
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}
+#' @keywords helper
 #' @return The number of samples in the dataset
 #' @rdname numSamples
 #' @export
@@ -210,13 +233,16 @@ setMethod("numSamples", signature(x = "DNEAinputSummary"), function(x){
 optimizedLambda.DNEAresults <- function(x){
   x@hyperparameter$optimized_lambda
 }
-#' optimizedLambda returns the lambda value used in analysis.
+
+#' Access the lambda value used in analysis
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#'  the hyperparameter (lambda) that is currently being used for the analysis
+#' The function takes as input a DNEAresults object and returns the hyperparameter (lambda) that is currently being
+#' used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
 #'
-#' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
-#' @param value A numeric value between 0 and 1 corresponding to the lambda parameter to use in the analysis
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{BICtune}}
+#' @keywords helper
 #' @return The optimized lambda hyperparameter
 #'
 #' @rdname optimizedLambda
@@ -235,68 +261,65 @@ setReplaceMethod("optimizedLambda", signature(x = "DNEAresults"), function(x, va
 lambdas2Test.DNEAresults <- function(x){
   x@hyperparameter$tested_lambda_values
 }
-#' lambdas2Test returns the lambda values tested during hyperparameter optimization
+#' Access the lambda values tested during hyperparameter optimization
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#'  the lambda values that were testing during hyperparameter optimization performed via BICtune()
+#' The function takes as input a DNEAresults object and returns the lambda values that were testing
+#' during hyperparameter optimization performed via BICtune()
 #'
 #' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
-#' @param value A vector of lambda values to optimize in BICtune()
-#'
+#' @author Christopher Patsalis
+#' @seealso \code{\link{BICtune}}
+#' @keywords helper
 #' @return The lambda values to evaluate in optimization
 #'
 #' @rdname lambdas2Test
 #' @export
 setMethod("lambdas2Test", signature(x = "DNEAresults"), lambdas2Test.DNEAresults)
 
-#' @rdname lambdas2Test
-#' @export
-setReplaceMethod("lambdas2Test", signature(x = "DNEAresults"), function(x, value){
-
-  x@hyperparameter$tested_lambda_values <- value
-  validObject(x)
-  x
-})
-
 BICscores.DNEAresults <- function(x){
   x@hyperparameter$BIC_scores
 }
-#' BICscores returns the BIC scores for each lambda value evaluated
+#' Access the BIC scores for each lambda value evaluated
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#'  the BIC values for each lambda tested during hyperparameter optimization performed via BICtune().
+#' The function takes as input a DNEAresults object and returns the BIC values for each lambda tested during
+#' hyperparameter optimization performed via BICtune().
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{BICtune}}
+#' @keywords helper
 #' @return The optimized lambda hyperparameter
 #'
 #' @rdname BICscores
 #' @export
-setMethod("BICscores", signature(x = "DNEAresults"), function(x) BICscores.DNEAresults)
+setMethod("BICscores", signature(x = "DNEAresults"), BICscores.DNEAresults)
 
 #' @rdname BICscores
 #' @keywords internal
-setReplaceMethod("BICscores", signature(x = "DNEAresults"), function(x, value){
+setReplaceMethod("BICscores", signature(x = "DNEAresults"), function(x){
 
-  x@hyperparameter$BIC_scores <- value
-  validObject(x)
-  x
+  x@hyperparameter$BIC_scores <- values
 })
-
 selectionResults.DNEAresults <- function(x){
   x@stable_networks$selection_results
 }
-#' selectionResults returns an m x m matrix of the edge selection results from stabilitySelection()
+#' Access and set the edge selection results from stabilitySelection()
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#' an m x m matrix of selection results for every possible network edge calculated through
-#' stabilitySelection()
+#' The function takes as input a DNEAresults object and returns an m x m matrix of selection results for every
+#' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @return A pcorNetwork, DNEAobject, or DNEAobject_collapsed object after filling the
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection results into the DNEAresults object
+#' within \code{\link{stabilitySelection}}.
+#'
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionProbabilites}}
+#' @keywords helper
+#' @return A DNEAresults object after filling the
 #' selection_results section of the stable_networks slot
 #'
 #' @rdname selectionResults
-#' @keywords internal
+#' @export
 setMethod("selectionResults", signature(x = "DNEAresults"), selectionResults.DNEAresults)
 
 #'
@@ -312,18 +335,23 @@ setReplaceMethod("selectionResults", signature(x = "DNEAresults"), function(x, v
 selectionProbabilities.DNEAresults <- function(x){
   x@stable_networks$selection_probabilities
 }
-#' selectionProbabilities returns an m x m matrix of the edge selection results from stabilitySelection()
+#' Access and set the edge selection probabilities from stabilitySelection()
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#' an m x m matrix of selection Probabilities for every possible network edge calculated through
-#' stabilitySelection()
+#' The function takes as input a DNEAresults object and returns an m x m matrix of selection probabilities for every
+#' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @return A pcorNetwork, DNEAobject, or DNEAobject_collapsed object after filling the
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection probabilities into the DNEAresults object
+#' within \code{\link{stabilitySelection}}.
+#'
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionResults}}
+#' @keywords helper
+#' @return A DNEAresults object after filling the
 #' selection_probabilities section of the stable_networks slot
 #'
 #' @rdname selectionProbabilities
-#' @keywords internal
+#' @export
 setMethod("selectionProbabilities", signature(x = "DNEAresults"), selectionProbabilities.DNEAresults)
 
 #'
@@ -340,12 +368,17 @@ edgeList.DNEAresults <- function(x){
 
   x@edge_list
 }
-#' edgeList returns the edge list created from DNEA
+#' Access the edge list
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#'  the edge list created from the getNetworks() function
+#' The function takes as input a DNEAresults object and returns the edge list created from \code{\link{getNetworks}}. \cr
 #'
-#' @param x a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the edge list into the DNEAresults object
+#' within \code{\link{getNetworks}} and \code{\link{thresholdNetworks}}.
+#'
+#' @param x a DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{getNetworks}}, \code{\link{thresholdNetworks}}, \code{\link{getNetworkFiles}}
+#' @keywords helper
 #' @return a data.frame corresponding to the edge list determined by DNEA
 #'
 #' @rdname edgeList
@@ -364,12 +397,18 @@ nodeList.DNEAresults <- function(x){
 
   x@node_list
 }
-#' nodeList returns the node list created from DNEA
+
+#' Access the node list
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-#'  the node list created from the getNetworks() function
+#' The function takes as input a DNEAresults object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 #'
-#' @param x a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the node list into the DNEAresults object
+#' within \code{\link{createDNEAobject}} and add the subnetwork membership in \code{\link{clusterNet}}.
+#'
+#' @param x a DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}
+#' @keywords helper
 #' @return a data.frame corresponding to the node list determined by DNEA
 #'
 #' @rdname nodeList
@@ -384,20 +423,26 @@ setReplaceMethod("nodeList", signature(x = "DNEAresults"), function(x, value){
   validObject(x)
   x
 })
+
 diagnostics.DNEAresults <- function(x){
 
   x@dataset_summary@diagnostic_values
 }
-#' diagnostics retrieves the diagnostic values for the input expression data
+#' Retrieve the diagnostic values for the input expression data
 #'
-#' FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' and returns the diagnostic values for the input expression data
+#' This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
 #'
-#' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the diagnostic values into the DNEAresults object
+#' within \code{\link{createDNEAobject}}.
+#'
+#' @param a DNEAresults object or DNEAinputSummary object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @keywords helper
 #' @return returns the diagnostic values for the input expression data
 #'
 #' @rdname diagnostics
-#' @keywords internal
+#' @export
 setMethod("diagnostics", signature(x = "DNEAresults"), diagnostics.DNEAresults)
 
 #' @rdname diagnostics
@@ -410,7 +455,6 @@ setReplaceMethod("diagnostics", signature(x = "DNEAresults"), function(x, value)
 })
 
 #' @rdname diagnostics
-#' @export
 setMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x){
 
   x@diagnostic_values
@@ -425,14 +469,22 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
   x
 })
 
-#' datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object
+#' Access the dataset_summary slot of a DNEAresults object
+#'
+#' This function prints to console the number of samples, number of features, and diagnostic values of the input data to
+#' \code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
+#'
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the dataset_summary slot into the DNEAresults object
+#' within \code{\link{createDNEAobject}}.
 #'
 #' @param x A DNEA results object
-#' @returns The DNEAinputSummary object if retrieving data, or the input object after populating the dataset_summary
-#' slot
+#' @author Christopher Patsalis
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @keywords helper
+#' @returns The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}
 #'
 #' @rdname datasetSummary
-#' @keywords internal
+#' @export
 setMethod("datasetSummary", signature(x = "DNEAresults"), function(x){
 
   x@dataset_summary
@@ -446,6 +498,7 @@ setReplaceMethod("datasetSummary", signature(x = "DNEAresults"), function(x, val
   validObject(x)
   x
 })
+
 adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 
   if(weighted){
@@ -457,17 +510,22 @@ adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
     x@adjacency_matrix$unweighted_adjacency
   }
 }
-#' adjacencyMatrix retrieves the weighted or unweighted adjacency matrix
+#' Retrieve the weighted or unweighted adjacency matrix
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' and returns the weighted or unweighted adjacency matrix determined via getNetworks().
-#' **FOR INTERNAL USE ONLY - The matrix can also be inserted into the object via the setter functionality of the function.**
+#' The function takes as input a DNEAresults object and returns the weighted or unweighted adjacency matrix
+#' determined via \code{\link{getNetworks}}. \cr
 #'
-#' @param a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @return The input object after filling the @@adjacency_matrix slot or a matrix corresponding to the adjacency matrix
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency_matrices calculated during
+#' \code{\link{getNetworks}} into the adjacency_matrix slot of the DNEAresults object
+#'
+#' @param a DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{getNetworks}}
+#' @keywords helper
+#' @return A matrix corresponding to the adjacency matrix specified
 #'
 #' @rdname adjacencyMatrix
-#' @keywords internal
+#' @export
 setMethod("adjacencyMatrix", signature(x = "DNEAresults"), adjacencyMatrix.DNEAresults)
 
 #' @rdname adjacencyMatrix
@@ -487,17 +545,20 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
   x
 })
 
-#' adjacencyGraph retrieves the adjacency graph for the case, control, or joint network
+#' Retrieve the adjacency graph for the case, control, or joint network
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-#' and returns the adjacency graph made for the case, control, or joint network determined via runConsensusCluster().
-#' **FOR INTERNAL USE ONLY - The graph can also be inserted into the object via the setter functionality of the function.**
+#' The function takes as input a DNEAresults object or consensusClusteringResults object and returns the adjacency graph
+#' made for the case, control, or joint network determined via \code{\link{clusterNet}}. \cr
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-#' @param graph the adjacency graph to retrieve. Values can be a provided condition name for either independent network,
-#' or "joint_graph" for the total network graph
-#' @return The input object after filling the @@adjacency_matrix slot or a graph corresponding to the specified
-#' adjacency graph
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency graphs created during
+#' \code{\link{clusterNet}} into the consensusClusteringResults object stored in the consensus_clustering slot of the
+#' DNEAresults object
+#'
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{clusterNet}}
+#' @keywords helper
+#' @return An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
 #'
 #' @rdname adjacencyGraph
 #' @export
@@ -531,12 +592,15 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
   x
 })
 
-#' summary retrieves the summary results of consensus clustering
+#' Retrieve a summary of a consensusClusteringResults object
 #'
 #' The function takes as input a consensusClusteringResults object and returns a summary of the results of
-#' consensus clustering determined via runConsensusCluster().
+#' consensus clustering determined via \code{\link{clusterNet}}.
 #'
 #' @param object A consensusClusteringResults
+#' @author Christopher Patsalis
+#' @seealso \code{\link{clusterNet}}
+#' @keywords helper
 #' @return A data.frame that corresponds to a summary of the results of consensus clustering
 #'
 #' @rdname summary
@@ -546,12 +610,15 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
   object@summary
 })
 
-#' CCsummary retrieves the summary results of consensus clustering
+#' Retrieves the summary results of consensus clustering
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns a summary
-#' of the results of consensus clustering determined via runConsensusCluster().
+#' The function takes as input a DNEAresults object and returns a summary
+#' of the results of consensus clustering determined via \code{\link{clusterNet}}.
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{clusterNet}}
+#' @keywords helper
 #' @returns A data.frame summary of the consensus clustering results from DNEA
 #'
 #' @rdname CCsummary
@@ -561,12 +628,15 @@ setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
   summary(x@consensus_clustering)
 })
 
-#' subnetworkMembership retrieves the subnetwork membership for each feature
+#' Retrieve the subnetwork membership for each feature
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-#' and returns the results of consensus clustering determined via runConsensusCluster().
+#' The function takes as input a DNEAresults or consensusClusteringResults object
+#' and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
 #'
-#' @param x A pcorNetwork, DNEAobject, or DNEAobject_collapsed object
+#' @param x A DNEAresults object
+#' @author Christopher Patsalis
+#' @seealso \code{\link{clusterNet}}
+#' @keywords helper
 #' @return A data.frame that corresponds to the results of consensus clustering
 #'
 #' @rdname subnetworkMembership
@@ -583,14 +653,18 @@ setMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x){
   x@consensus_clustering@subnetwork_membership
 })
 
-#' netGSAresults accesses the netGSA slot of a DNEAresults object
+#' Access the netGSA slot of a DNEAresults object
 #'
-#' The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-#' and returns the netGSA results.
-#' **FOR INTERNAL USE ONLY - The results can also be inserted into the object via the setter functionality of the function.**
+#' The function takes as input a DNEAresults object and returns the netGSA results in the netGSA slot. \cr
+#'
+#' \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the netgsa results from
+#' \code{\link{runNetGSA}} into the netGSA slot of the DNEAresults object.
 #'
 #' @param x A DNEAresults object
-#' @returns The results from netGSA
+#' @author Christopher Patsalis
+#' @seealso \code{\link{runNetGSA}}, \code{\link{netgsa, NetGSA}}
+#' @keywords helper
+#' @returns A data.frame of the results from netGSA
 #'
 #' @rdname netGSAresults
 #' @export
@@ -685,21 +759,23 @@ filterNetworks.DNEAresults <- function(data,
 
   return(data)
 }
-#' filterNetworks() will reduce the adjacency matrices to only the edges that meet the filter conditions
+#' Filter the adjacency matrices to only the edges that meet the filter conditions
 #'
-#' filterNetworks() takes as input a DNEAresults object and allows the user to filter the network edges by one of two ways:
+#' @description
+#' This function takes as input a DNEAresults object and allows the user to filter the network edges by one of two methods:
 #'
-#' 1. The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
+#' \enumerate{
+#' \item \strong{Partial Correlation} - The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
+#' \item \strong{Top \emph{X%} of edges} - The networks can be filtered to only include the strongest \emph{X%} of edges by pcor value.}
 #'
-#' 2. The networks can be filtered to only include the strongest x% of edges by pcor value.
+#' Filtering is performed on the case and control adjacency matrices separately. \cr
 #'
-#' Filtering is performed on the case and control adjacency matrix separately.
-#'
-#' @param data A DNEAresults object
+#' @param data A DNEAresults object or list of adjacency matrices
 #' @param pcor A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.
 #' @param top_percent_edges A value between 0-1 that corresponds to the top x% edges to keep in the networks
 #' ie. top_percent_edges = 0.1 will keep only the top 10% strongest edges in the networks.
-#'
+#' @author Christopher Patsalis
+#' @seealso \code{\link{getNetworks}}, \code{\link{adjacencyMatrix}}
 #' @returns The input object after filtering the egdes in the network according to the specified parameters
 #'
 #' @importFrom stats quantile

@@ -19,7 +19,7 @@
 #' is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
 #' number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
 #' direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. Due to the *p >> n* problem common in -omics datasets, we have developed DNEA
+#' correlated group and removing the rest. Due to the *p >>> n* problem common in -omics datasets, we have developed DNEA
 #' to be very robust in removing redundant features via several regularization steps (**please see** \code{\link{BICtune}}
 #' **and** \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
 #' this may not be ideal for several reasons.

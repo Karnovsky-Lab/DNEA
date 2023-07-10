@@ -79,9 +79,12 @@ setClass(Class = "DNEAinputSummary",
 #'
 #' @slot stable_networks A list of the selection results and selection probabilities for every possible feature-feature
 #' edge (can be accessed via \code{\link{selectionResults}} and \code{\link{selectionProbabilities}})
+#'
 #' @slot joint_graph The igraph graph object resulting from consensus clustering via \code{\link{runConsensusCluster}}
+#'
 #' @slot consensus_clustering A consensusClusteringResults object containing the results from consensus clustering
 #' via \code{\link{runConsensusCluster}}
+#'
 #' @slot netGSA a data frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
 #' Each row is a subnetwork tested for enrichment
 #'
@@ -124,7 +127,7 @@ setClass(Class = "DNEAresults",
 #' @seealso \code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
 #'
 #' @import methods
-#' @rdname collapsed_DNEAresults
+#' @rdname DNEAresults
 setClass(Class = "collapsed_DNEAresults",
          slots = c(original_experiment = "DNEAresults",
                    feature_membership = "data.frame"),
@@ -167,7 +170,7 @@ setValidity("DNEAinputSummary", function(object){
     "There was a problem with diagnostics"
   }
 })
-#'Check Validity of "DNEAobject"
+#'Check Validity of "DNEAresults" object
 #'
 #' @import methods
 #' @noRd
