@@ -3,19 +3,26 @@
 \name{CCsummary}
 \alias{CCsummary}
 \alias{CCsummary,DNEAresults-method}
-\title{CCsummary retrieves the summary results of consensus clustering}
+\title{Retrieves the summary results of consensus clustering}
 \usage{
 CCsummary(x)
 
 \S4method{CCsummary}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed}
+\item{x}{A DNEAresults object}
 }
 \value{
 A data.frame summary of the consensus clustering results from DNEA
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns a summary
-of the results of consensus clustering determined via runConsensusCluster().
+The function takes as input a DNEAresults object and returns a summary
+of the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
+\seealso{
+\code{\link{clusterNet}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

@@ -2,13 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{networkGroupIDs}
 \alias{networkGroupIDs}
+\alias{networkGroupIDs<-}
 \alias{networkGroupIDs,DNEAresults-method}
-\title{networkGroupIDs returns the group information for samples in a DNEAobject,
-or DNEAobject_collapsed}
+\alias{networkGroupIDs<-,DNEAresults-method}
+\title{Access or set the experimental group information utilized by DNEA}
 \usage{
 networkGroupIDs(x)
 
+networkGroupIDs(x) <- value
+
 \S4method{networkGroupIDs}{DNEAresults}(x)
+
+\S4method{networkGroupIDs}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAobject or DNEAobject_collapsed}
@@ -17,7 +22,14 @@ networkGroupIDs(x)
 A vector of the unique condition labels
 }
 \description{
-This function takes in a DNEAobject or DNEAobject_collapsed and return the unique condition
-labels located in the metadata slot of the object. You can also change the sample
-variable being used to determine groups.
+This function takes in a DNEAresults or collapsed_DNEAresults object and returns the unique condition
+labels located in the metadata slot of the object. The user can also set new group labels by providing a string name
+corresponding to the column name of the sample metadata dataframe to use as the experimental groups.
 }
+\seealso{
+\code{\link{includeMetadata}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

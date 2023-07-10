@@ -3,14 +3,14 @@
 \name{featureNames}
 \alias{featureNames}
 \alias{featureNames,DNEAresults-method}
-\title{featureNames retrieves the feature names from the metadata slot.}
+\title{Retrieve the feature names from the metadata slot.}
 \usage{
 featureNames(x, original = TRUE)
 
 \S4method{featureNames}{DNEAresults}(x, original = TRUE)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 
 \item{original}{"TRUE" returns the original feature names and "FALSE" returns the feature
 names that have been modified to avoid errors as a result of special characters.}
@@ -19,6 +19,12 @@ names that have been modified to avoid errors as a result of special characters.
 A vector of feature names
 }
 \description{
-This function takes in a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-and return the specified feature names located in the metadata slot of the object.
+This function takes in a DNEAresults object and return the specified feature names located in the metadata slot of the object.
 }
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

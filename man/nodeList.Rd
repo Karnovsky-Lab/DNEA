@@ -5,7 +5,7 @@
 \alias{nodeList<-}
 \alias{nodeList,DNEAresults-method}
 \alias{nodeList<-,DNEAresults-method}
-\title{nodeList returns the node list created from DNEA}
+\title{Access the node list}
 \usage{
 nodeList(x)
 
@@ -16,13 +16,23 @@ nodeList(x) <- value
 \S4method{nodeList}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{a DNEAresults object}
 }
 \value{
 a data.frame corresponding to the node list determined by DNEA
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-the node list created from the getNetworks() function
+The function takes as input a DNEAresults object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input the node list into the DNEAresults object
+within \code{\link{createDNEAobject}} and add the subnetwork membership in \code{\link{clusterNet}}.
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

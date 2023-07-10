@@ -4,7 +4,7 @@
 \alias{numSamples}
 \alias{numSamples,DNEAresults-method}
 \alias{numSamples,DNEAinputSummary-method}
-\title{numSamples finds the total number of samples in the dataset}
+\title{Retrieves the total number of samples in the dataset}
 \usage{
 numSamples(x)
 
@@ -13,11 +13,18 @@ numSamples(x)
 \S4method{numSamples}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 }
 \value{
 The number of samples in the dataset
 }
 \description{
-numSamples finds the total number of samples in the dataset
+This function prints to console the total number of samples in the dataset
 }
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

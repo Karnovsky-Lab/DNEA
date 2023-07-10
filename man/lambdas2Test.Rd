@@ -4,26 +4,28 @@
 \alias{lambdas2Test}
 \alias{lambdas2Test<-}
 \alias{lambdas2Test,DNEAresults-method}
-\alias{lambdas2Test<-,DNEAresults-method}
-\title{lambdas2Test returns the lambda values tested during hyperparameter optimization}
+\title{Access the lambda values tested during hyperparameter optimization}
 \usage{
 lambdas2Test(x)
 
 lambdas2Test(x) <- value
 
 \S4method{lambdas2Test}{DNEAresults}(x)
-
-\S4method{lambdas2Test}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
-
-\item{value}{A vector of lambda values to optimize in BICtune()}
 }
 \value{
 The lambda values to evaluate in optimization
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-the lambda values that were testing during hyperparameter optimization performed via BICtune()
+The function takes as input a DNEAresults object and returns the lambda values that were testing
+during hyperparameter optimization performed via BICtune()
 }
+\seealso{
+\code{\link{BICtune}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

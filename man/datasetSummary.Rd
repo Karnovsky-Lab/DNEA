@@ -5,7 +5,7 @@
 \alias{datasetSummary<-}
 \alias{datasetSummary,DNEAresults-method}
 \alias{datasetSummary<-,DNEAresults-method}
-\title{datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object}
+\title{Access the dataset_summary slot of a DNEAresults object}
 \usage{
 datasetSummary(x)
 
@@ -19,10 +19,21 @@ datasetSummary(x) <- value
 \item{x}{A DNEA results object}
 }
 \value{
-The DNEAinputSummary object if retrieving data, or the input object after populating the dataset_summary
-slot
+The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}
 }
 \description{
-datasetSummary is a setter/getter function for the dataset_summary slot of a DNEAresults object
+This function prints to console the number of samples, number of features, and diagnostic values of the input data to
+\code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input the dataset_summary slot into the DNEAresults object
+within \code{\link{createDNEAobject}}.
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

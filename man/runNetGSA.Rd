@@ -17,7 +17,7 @@ each node can be found in the node_list. A summary of the NetGSA results can be 
 using getNetGSAresults()
 }
 \description{
-This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{runConsensusCluster}}
+This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
 using the \code{\link{netgsa}} algorithm.
 }
 \examples{
@@ -40,7 +40,7 @@ DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM 
 DNEA <- getNetworks(object = DNEA)
 
 #identify metabolic modules via consensus clustering
-DNEA <- runConsensusCluster(object = DNEA)
+DNEA <- clusterNet(object = DNEA)
 
 #perform pathway enrichment analysis using netGSA
 DNEA <- runNetGSA(object = DNEA)
@@ -50,6 +50,7 @@ netGSAresults(DNEA)
 
 #save node and edge list for input to cytoscape
 getNetworkFiles(DNEA)
+
 }
 \references{
 Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol 17(6): e1008979. \url{https://doi.org/10.1371/journal.pcbi.1008979}

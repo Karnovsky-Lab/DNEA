@@ -3,22 +3,28 @@
 \name{expressionData}
 \alias{expressionData}
 \alias{expressionData,DNEAresults-method}
-\title{expressionData is an accessor function for the data in the "assays" slot of a pcorNetwork,
-DNEAobject, or DNEAobject_collapsed}
+\title{Access expression data within a DNEAresults object,}
 \usage{
-expressionData(x, type)
+expressionData(x, normalized)
 
-\S4method{expressionData}{DNEAresults}(x, type = c("input", "normalized"))
+\S4method{expressionData}{DNEAresults}(x, normalized = TRUE)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 
-\item{type}{"input" will return the original data, and "normalized" will return the scaled data}
+\item{normalized}{A boolean indicating whether the normalized or original input data should be returned}
 }
 \value{
 The indicated expression expression matrix
 }
 \description{
-The assays slot hold the expression data in a n x m matrix, with one row for each sample, and
+The assays slot holds the expression data in a n x m matrix, with one row for each sample, and
 one column for each feature.
 }
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

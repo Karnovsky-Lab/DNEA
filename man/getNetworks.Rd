@@ -20,9 +20,12 @@ A DNEAresults object after populating the adjaceny_matrix and edge_list slots wi
 adjacency_matrix for each sample condition as well as the network edge list.
 }
 \description{
-This function utilizes the lambda parameter tuned using \code{\link{BICtune}} \emph{(may also be user-specified)}
-and \emph{optionally} the feature-feature edge selection probabilities using \code{\link{stabilitySelection}} to jointly estimate the biological networks
-within the dataset.
+This function constructs the biological network for each sample condition using the joint estimation method described
+in Ma et al. (2019) (\emph{please see references below}). If \code{\link{BICtune}} and \code{\link{stabilitySelection}}
+were already run, the optimized lambda and selection probabilities from each function, respectively, will be used to
+add regularization when constructing the networks (please see the \strong{\emph{Details}} section of \code{\link{stabilitySelection}}
+for more information). Otherwise, \eq{\lambda = \sqrt{\ln (num. features) / num. samples}}{lambda = \sqrt{\ln (num. features) \ num. samples}}
+will be used as the regularization parameter.
 }
 \examples{
 #import example data

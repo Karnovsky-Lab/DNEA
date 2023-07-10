@@ -24,21 +24,23 @@ feature number, sample names, feature names, and condition number in metadata
 \description{
 This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
 case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
-T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing \emph{(described below)}
-are also performed on data.
+T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing \emph{\strong{(described below)}}
+are also performed on the data.
 }
 \details{
-\emph{\strong{IMPORTANT}} Special attention should be given to the diagnostic criteria that is output. The minimum eigen
+##\emph{\strong{IMPORTANT}}
+Special attention should be given to the diagnostic criteria that is output. The minimum eigen
 value and condition number are calculated for the whole dataset as well as for each condition to determine
 mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-found in \emph{Details}.
+found in \strong{\emph{Details}}.
 
+##Diagnostics motivation
 Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
 parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
 is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
 number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
 direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-correlated group and removing the rest. Due to the \emph{p >> n} problem common in -omics datasets, we have developed DNEA
+correlated group and removing the rest. Due to the \emph{\strong{p >>> n}} problem common in -omics datasets, we have developed DNEA
 to be very robust in removing redundant features via several regularization steps (\strong{please see} \code{\link{BICtune}}
 \strong{and} \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
 this may not be ideal for several reasons.

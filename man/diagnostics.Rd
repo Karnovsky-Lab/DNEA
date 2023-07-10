@@ -7,7 +7,7 @@
 \alias{diagnostics<-,DNEAresults-method}
 \alias{diagnostics,DNEAinputSummary-method}
 \alias{diagnostics<-,DNEAinputSummary-method}
-\title{diagnostics retrieves the diagnostic values for the input expression data}
+\title{Retrieve the diagnostic values for the input expression data}
 \usage{
 diagnostics(x)
 
@@ -22,13 +22,23 @@ diagnostics(x) <- value
 \S4method{diagnostics}{DNEAinputSummary}(x) <- value
 }
 \arguments{
-\item{a}{pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{a}{DNEAresults object or DNEAinputSummary object}
 }
 \value{
 returns the diagnostic values for the input expression data
 }
 \description{
-FOR INTERNAL USE ONLY - The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-and returns the diagnostic values for the input expression data
+This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input the diagnostic values into the DNEAresults object
+within \code{\link{createDNEAobject}}.
+}
+\seealso{
+\code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

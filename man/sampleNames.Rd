@@ -3,19 +3,25 @@
 \name{sampleNames}
 \alias{sampleNames}
 \alias{sampleNames,DNEAresults-method}
-\title{sampleNames retrieves the sample names from the metadata slot.}
+\title{Retrieve the sample names from the metadata slot.}
 \usage{
 sampleNames(x)
 
 \S4method{sampleNames}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 }
 \value{
 A vector of sample names
 }
 \description{
-This function takes in a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and
-return the sample names located in the metadata slot of the object.
+This function takes in a DNEAresults object and return the sample names located in the metadata slot of the object.
 }
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

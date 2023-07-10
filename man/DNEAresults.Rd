@@ -3,9 +3,13 @@
 \docType{class}
 \name{DNEAresults-class}
 \alias{DNEAresults-class}
+\alias{collapsed_DNEAresults-class}
 \title{DNEAresults}
 \description{
 An s4 class to represent the DNEA workflow
+
+An s4 class to represent the DNEA workflow, including collapsing features. This class also inherits everything from
+/code{\link{DNEAresults-class}}
 }
 \section{Slots}{
 
@@ -46,6 +50,11 @@ via \code{\link{runConsensusCluster}}}
 
 \item{\code{netGSA}}{a data frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
 Each row is a subnetwork tested for enrichment}
+
+\item{\code{original_experiment}}{A DNEAresults object input prior to collapsing features via \code{\link{reduceFeatures}}}
+
+\item{\code{feature_membership}}{A data frame containing the all of the features from the original input data and their
+corresponding group membership in the collapsed data}
 }}
 
 \seealso{
@@ -53,6 +62,8 @@ Each row is a subnetwork tested for enrichment}
 \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
 \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{runConsensusCluster}},
 \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
+
+\code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
 }
 \author{
 Christopher Patsalis

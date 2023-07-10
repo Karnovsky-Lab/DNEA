@@ -4,21 +4,16 @@
 \alias{projectName}
 \alias{projectName<-}
 \alias{projectName,DNEAresults-method}
-\alias{projectName<-,DNEAresults-method}
-\title{projectName() returns the name of the current experiment}
+\title{Return the name of the current experiment}
 \usage{
 projectName(x)
 
 projectName(x) <- value
 
 \S4method{projectName}{DNEAresults}(x)
-
-\S4method{projectName}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAresults object}
-
-\item{value}{A string that corresponds to the new project name}
 }
 \value{
 The name of the DNEA experiment
@@ -26,3 +21,10 @@ The name of the DNEA experiment
 \description{
 projectName() returns the name of the current experiment and allows the user to change the name as well
 }
+\seealso{
+\code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

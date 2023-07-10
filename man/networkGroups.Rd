@@ -2,29 +2,26 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{networkGroups}
 \alias{networkGroups}
-\alias{networkGroups<-}
 \alias{networkGroups,DNEAresults-method}
-\alias{networkGroups<-,DNEAresults-method}
-\title{networkGroups retrieves the condition values for each sample from the metadata slot.}
+\title{Retrieve the unique group values of the experimental condition}
 \usage{
 networkGroups(x)
 
-networkGroups(x) <- value
-
 \S4method{networkGroups}{DNEAresults}(x)
-
-\S4method{networkGroups}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAobject, or DNEAobject_collapsed object}
-
-\item{value}{A vector of group names that specifies the condition to test the data on. It should have exactly two unique
-groups and be exactly as long as the number of samples in the data.}
 }
 \value{
 A vector of the condition values
 }
 \description{
-This function takes in a DNEAobject, or DNEAobject_collapsed object and
-return the condition values located in the metatdata slot of the object
+This function takes in a DNEAresults object and returns the unique group values of the experimental condition in the dataset
 }
+\seealso{
+\code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

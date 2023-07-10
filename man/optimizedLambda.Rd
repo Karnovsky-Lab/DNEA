@@ -5,7 +5,7 @@
 \alias{optimizedLambda<-}
 \alias{optimizedLambda,DNEAresults-method}
 \alias{optimizedLambda<-,DNEAresults-method}
-\title{optimizedLambda returns the lambda value used in analysis.}
+\title{Access the lambda value used in analysis}
 \usage{
 optimizedLambda(x)
 
@@ -16,14 +16,19 @@ optimizedLambda(x) <- value
 \S4method{optimizedLambda}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
-
-\item{value}{A numeric value between 0 and 1 corresponding to the lambda parameter to use in the analysis}
+\item{x}{A DNEAresults object}
 }
 \value{
 The optimized lambda hyperparameter
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-the hyperparameter (lambda) that is currently being used for the analysis
+The function takes as input a DNEAresults object and returns the hyperparameter (lambda) that is currently being
+used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
 }
+\seealso{
+\code{\link{BICtune}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

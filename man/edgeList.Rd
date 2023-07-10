@@ -5,7 +5,7 @@
 \alias{edgeList<-}
 \alias{edgeList,DNEAresults-method}
 \alias{edgeList<-,DNEAresults-method}
-\title{edgeList returns the edge list created from DNEA}
+\title{Access the edge list}
 \usage{
 edgeList(x)
 
@@ -16,13 +16,23 @@ edgeList(x) <- value
 \S4method{edgeList}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{a pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{a DNEAresults object}
 }
 \value{
 a data.frame corresponding to the edge list determined by DNEA
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-the edge list created from the getNetworks() function
+The function takes as input a DNEAresults object and returns the edge list created from \code{\link{getNetworks}}. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input the edge list into the DNEAresults object
+within \code{\link{getNetworks}} and \code{\link{thresholdNetworks}}.
+}
+\seealso{
+\code{\link{getNetworks}}, \code{\link{thresholdNetworks}}, \code{\link{getNetworkFiles}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

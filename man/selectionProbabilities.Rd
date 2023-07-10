@@ -5,7 +5,7 @@
 \alias{selectionProbabilities<-}
 \alias{selectionProbabilities,DNEAresults-method}
 \alias{selectionProbabilities<-,DNEAresults-method}
-\title{selectionProbabilities returns an m x m matrix of the edge selection results from stabilitySelection()}
+\title{Access and set the edge selection probabilities from stabilitySelection()}
 \usage{
 selectionProbabilities(x)
 
@@ -16,15 +16,25 @@ selectionProbabilities(x) <- value
 \S4method{selectionProbabilities}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 }
 \value{
-A pcorNetwork, DNEAobject, or DNEAobject_collapsed object after filling the
+A DNEAresults object after filling the
 selection_probabilities section of the stable_networks slot
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object and returns
-an m x m matrix of selection Probabilities for every possible network edge calculated through
-stabilitySelection()
+The function takes as input a DNEAresults object and returns an m x m matrix of selection probabilities for every
+possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection probabilities into the DNEAresults object
+within \code{\link{stabilitySelection}}.
+}
+\seealso{
+\code{\link{stabilitySelection}}, \code{\link{selectionResults}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

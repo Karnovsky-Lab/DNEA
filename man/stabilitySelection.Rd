@@ -31,18 +31,34 @@ A DNEAresults object after populating the stable_networks slot of the object. It
 results from stability selection as well as the calculated selection probabilities
 }
 \description{
-This function randomly samples 50\% of samples for each condition a number of times specified by nreps
-and fits a glasso model with the sampled data. A feature-feature interaction is considered present if the
-partial correlation value is above 1e-5. The resulting adjacency matrices are summed together and
-selection probabilities for each feature-feature interaction are calculated by dividing the number of replicates
-performed by 2 (two models are fit with each half of the randomly sampled data, respectively, per replicate).
+This function randomly samples the input data and fits a glasso model with the sampled data for \emph{nreps} number of replicates.
+The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated. The
+exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
+found in the \strong{\emph{Details}} section.
 }
 \details{
-The subSample parameter should be set to TRUE if the sample numbers across condition are uneven - this will
-ensure that samples are randomly sampled in a way that ensures equal representation in stability selection. The
-principles of stability selection remain similar with both methods, however, there are a few caveats. When
-subSample = TRUE is set, The sample groups are stabilized by randomly sampling a smaller portion of the bigger group.
-Due to the smaller sample sizes per sampling, only one model is fit per replicate.
+Stability selection provides an additional approach by which to regularize the network model and create more robust results,
+particularly when \strong{\emph{p >>> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
+a glasso model to each subset of sampled data. The unwieghted adjacency matrix from each model is summed together
+(A feature-feature interaction is considered present if the partial correlation value is above 1e-5), and the probability of
+an edge being selected in a random subset of the data is calculated by dividing the number of times an edge was selected in
+the replicates over the total number of replicates. This results in a selection probability for every possible feature-feature interaction
+that is used to modify the regularization parameter via the following equation:
+\deqn{\rho = \lambda*(1 / (0.0001 + selection.probability))}{ rho = lambda*(1 / (0.0001 + selection.probability))}
+
+However, when the sample groups are very unbalanced randomly sampling strongly favors the larger group, resulting in
+over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
+sample by sub-sampling the groups individually to even out the numbers. In this method, 90\% of the smaller group is randomly
+sampled without replacement, and an additional 10\% is randomly sampled without replacement from the full group and added together.
+The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
+each group is equally represented in stability selection.  \cr
+
+The principles of stability selection remain similar with both methods, however, there are a few small differences.
+Stability selection \emph{without} additional sub-sampling randomly samples 50\% of each group (without replacement) and fits a
+model for both halves of the sampled data. Since nearly all of the data for the smaller group is used \emph{with} additional sub-sampling, only one
+model is fit per replicate when subSample = TRUE. This means that at the default value of nreps = 500, 1000 randomly sampled
+models are fit in total \emph{without} sub-sampling, but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
+More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 }
 \examples{
 #import example data
@@ -63,6 +79,8 @@ DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM 
 }
 \references{
 Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+
+Nicolai, M., & Peter, B. (2010). Stability selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 72(4), 417-473. \url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{BICtune}}

@@ -4,7 +4,7 @@
 \alias{subnetworkMembership}
 \alias{subnetworkMembership,consensusClusteringResults-method}
 \alias{subnetworkMembership,DNEAresults-method}
-\title{subnetworkMembership retrieves the subnetwork membership for each feature}
+\title{Retrieve the subnetwork membership for each feature}
 \usage{
 subnetworkMembership(x)
 
@@ -13,12 +13,19 @@ subnetworkMembership(x)
 \S4method{subnetworkMembership}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A DNEAresults object}
 }
 \value{
 A data.frame that corresponds to the results of consensus clustering
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-and returns the results of consensus clustering determined via runConsensusCluster().
+The function takes as input a DNEAresults or consensusClusteringResults object
+and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
+\seealso{
+\code{\link{clusterNet}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}

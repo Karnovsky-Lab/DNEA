@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{getNetworkFiles}
 \alias{getNetworkFiles}
-\title{Save the node and edge lists as .csv files}
+\title{Save network information for input to Cytoscape}
 \usage{
 getNetworkFiles(object, file_path = NULL)
 }
@@ -18,7 +18,7 @@ the working directory
 }
 \description{
 This function will save the node and edge information as .csv files in the working directory.
-The files are formatted for input into Cytoscape.
+The files are already formatted for input into Cytoscape.
 }
 \examples{
 #import example data

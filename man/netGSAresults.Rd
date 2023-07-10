@@ -5,7 +5,7 @@
 \alias{netGSAresults<-}
 \alias{netGSAresults,DNEAresults-method}
 \alias{netGSAresults<-,DNEAresults-method}
-\title{netGSAresults accesses the netGSA slot of a DNEAresults object}
+\title{Access the netGSA slot of a DNEAresults object}
 \usage{
 netGSAresults(x)
 
@@ -19,11 +19,20 @@ netGSAresults(x) <- value
 \item{x}{A DNEAresults object}
 }
 \value{
-The results from netGSA
+A data.frame of the results from netGSA
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-and returns the netGSA results.
-\strong{FOR INTERNAL USE ONLY - The results can also be inserted into the object via the setter functionality of the function.}
+The function takes as input a DNEAresults object and returns the netGSA results in the netGSA slot. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the netgsa results from
+\code{\link{runNetGSA}} into the netGSA slot of the DNEAresults object.
+}
+\seealso{
+\code{\link{runNetGSA}}, \code{\link{netgsa, NetGSA}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

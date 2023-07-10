@@ -7,7 +7,7 @@
 \alias{adjacencyGraph<-,DNEAresults-method}
 \alias{adjacencyGraph,consensusClusteringResults-method}
 \alias{adjacencyGraph<-,consensusClusteringResults-method}
-\title{adjacencyGraph retrieves the adjacency graph for the case, control, or joint network}
+\title{Retrieve the adjacency graph for the case, control, or joint network}
 \usage{
 adjacencyGraph(x, graph)
 
@@ -22,18 +22,25 @@ adjacencyGraph(x, graph) <- value
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph) <- value
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
-
-\item{graph}{the adjacency graph to retrieve. Values can be a provided condition name for either independent network,
-or "joint_graph" for the total network graph}
+\item{x}{A DNEAresults object}
 }
 \value{
-The input object after filling the @adjacency_matrix slot or a graph corresponding to the specified
-adjacency graph
+An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, DNEAobject_collapsed, or consensusClusteringResults object
-and returns the adjacency graph made for the case, control, or joint network determined via runConsensusCluster().
-\strong{FOR INTERNAL USE ONLY - The graph can also be inserted into the object via the setter functionality of the function.}
+The function takes as input a DNEAresults object or consensusClusteringResults object and returns the adjacency graph
+made for the case, control, or joint network determined via \code{\link{clusterNet}}. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency graphs created during
+\code{\link{clusterNet}} into the consensusClusteringResults object stored in the consensus_clustering slot of the
+DNEAresults object
+}
+\seealso{
+\code{\link{clusterNet}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

@@ -5,7 +5,7 @@
 \alias{adjacencyMatrix<-}
 \alias{adjacencyMatrix,DNEAresults-method}
 \alias{adjacencyMatrix<-,DNEAresults-method}
-\title{adjacencyMatrix retrieves the weighted or unweighted adjacency matrix}
+\title{Retrieve the weighted or unweighted adjacency matrix}
 \usage{
 adjacencyMatrix(x, weighted)
 
@@ -16,14 +16,24 @@ adjacencyMatrix(x, weighted) <- value
 \S4method{adjacencyMatrix}{DNEAresults}(x, weighted = FALSE) <- value
 }
 \arguments{
-\item{a}{pcorNetwork, DNEAobject, or DNEAobject_collapsed object}
+\item{a}{DNEAresults object}
 }
 \value{
-The input object after filling the @adjacency_matrix slot or a matrix corresponding to the adjacency matrix
+A matrix corresponding to the adjacency matrix specified
 }
 \description{
-The function takes as input a pcorNetwork, DNEAobject, or DNEAobject_collapsed object
-and returns the weighted or unweighted adjacency matrix determined via getNetworks().
-\strong{FOR INTERNAL USE ONLY - The matrix can also be inserted into the object via the setter functionality of the function.}
+The function takes as input a DNEAresults object and returns the weighted or unweighted adjacency matrix
+determined via \code{\link{getNetworks}}. \cr
 }
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency_matrices calculated during
+\code{\link{getNetworks}} into the adjacency_matrix slot of the DNEAresults object
+}
+\seealso{
+\code{\link{getNetworks}}
+}
+\author{
+Christopher Patsalis
+}
+\keyword{helper}
 \keyword{internal}

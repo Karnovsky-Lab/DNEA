@@ -37,6 +37,18 @@ the optimal lambda value for the respective dataset and is stored in the DNEAres
 use in stability selection using \code{\link{stabilitySelection}} and network generation using
 \code{\link{getNetworks}}
 }
+\details{
+There are several ways to optimize the lambda parameter for a GGM model, the two most common utilizing Bayesian-information criterion to select the optimal value,
+or through cross-validation wherein many values are tested to find the optimal parameter. We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
+DNEA for a number of reasons. BIC is a more balanced method and less computationally expensive. We can reduce the total number of values that
+need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
+\deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
+For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c.
+Generally, c falls between 0.01 and 0.3, but it needs to be determined mathematically. Therefore, to optimize lambda we
+modify the previous equation as follows: \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
+where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimizatio method deployed here can be found
+in the Guo et al. (2011) paper referenced below.
+}
 \examples{
 #import example data
 data(TEDDY)
@@ -52,7 +64,7 @@ DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 
 }
 \references{
-Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604.
+Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 }
 \seealso{
 \code{\link{createDNEAobject}}
