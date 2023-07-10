@@ -21,21 +21,19 @@ Collate:
     'createDNEAobject.R'
     'diagnostics.R'
     'metabDE.R'
+    'start-here.R
 Imports: 
     autoimage,
     BiocParallel,
-    corpcor,
     dplyr,
     gdata,
     glasso,
-    glmnet,
     igraph,
     janitor,
     Matrix,
     methods,
     netgsa,
     stringr,
-    zoo
 Depends: 
     R (>= 2.10)
 LazyData: true
