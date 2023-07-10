@@ -8,7 +8,7 @@ reduceFeatures(
   object,
   method = c("correlation", "knowledge", "hybrid"),
   correlation_threshold = 0.9,
-  metabolite_groups = NULL
+  feature_groups = NULL
 )
 }
 \arguments{
@@ -16,15 +16,16 @@ reduceFeatures(
 
 \item{method}{A parameter that dictates the collapsing method to use. The options are
 as follows:
-1. correlation
-2. knowledge
-3. hybrid}
+\enumerate{
+\item correlation
+\item knowledge
+\item hybrid}}
 
 \item{correlation_threshold}{A threshold wherein features correlated above correlation_threshold
 will be grouped into one. This parameter is only necessary for the correlation and hybrid
 methods}
 
-\item{metabolite_groups}{A dataframe containing group information for the collapsing algorithm
+\item{feature_groups}{A dataframe containing group information for the collapsing algorithm
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
@@ -33,48 +34,49 @@ collapsed dataset
 }
 \description{
 This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
-non-transformed data using one of three methods:
+non-transformed data using one of three methods:  \cr
+
+\enumerate{
+\item \strong{correlation-based}
+\item \strong{knowledge-based}
+\item \strong{hybrid}}
+
+More info about the different approaches can be found in the \strong{\emph{Details}} section.
+Highly correlated groups of features are collapsed by taking the mean expression of all features.
+
+\strong{\emph{NOTE:}} This method was developed using non-normalized, non-transformed data and this fact is critical for feature
+collapsing since the mean expression value is used for each group. Normalized data may alter the results of collapsing.
 }
 \details{
-\strong{1. correlation-based}
-
-\strong{2. knowledge-based}
-
-\strong{3. hybrid}
-
-More info about the different approaches can be found in the \strong{details} section.
-Highly correlated groups of features are collapsed by taking the mean expression of all features. \emph{NOTE:} This method was
-developed using non-normalized, non-transformed data and this fact is critical for feature collapsing since the mean
-expression value is used for each group. Normalized data may alter the results of collapsing.
-
 Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases exponentially as the
 number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
 parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
 limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can
-reduce the complexity of the analysis, and as a result decrease the necessary resources.
+reduce the complexity of the analysis, and as a result decrease the necessary resources.  \cr
 
 In a related scenario, you may also have many highly-correlated features of the same class of compounds
 (ie. fatty acids or carnitines, respectively), and network analysis at the resolution of these individual features is not
-important or it is adding complexity to the analysis (\strong{Please see} \code{\link{createDNEAobject}}).
-This scenario is also a reasonable motivation to collapse features.
+important or it is adding complexity to the analysis \strong{(Please see \code{\link{createDNEAobject}})}.
+This scenario is also a reasonable motivation to collapse features.  \cr
 
-Ultimately, this function allows the user to reduce the complexity of the dataset to reduce the computational power necessary
-for the analysis and/or in some cases improve the quality of the results. The most appropriate method to use when collapsing data
+Ultimately, this function allows the user to reduce the complexity of the dataset and reduce the computational power necessary
+for the analysis and/or also improve the quality of the results. The most appropriate method to use when collapsing data
 is dependent on the dataset and prior information known about the features. The following text explains more about each
-method and the best use cases:
+method and the best use cases:  \cr
 
-\strong{1. correlation-based:} The user specifies a correlation threshold wherein metabolites with a higher pearson correlation value
-than the threshold are collapsed into one group. This approach is best when no prior information about the features are known.
+\enumerate{
+\item \strong{correlation-based - } The user specifies a correlation threshold wherein features with a higher pearson correlation value
+than the threshold are collapsed into one group. This approach is best when no prior information about the features are known.\cr
 
-\strong{2. knowledge-based:} The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
+\item \strong{knowledge-based - } The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
 are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
-experiments where the dataset contains many highly similar compounds, like fatty acids, carnitines, ceramides, etc.
+experiments where the dataset contains many highly similar compounds, like fatty acids, carnitines, ceramides, etc. \cr
 
-\strong{3. hybrid:} The user specifies both a correlation threshold, like in the correlation-based approach, and feature groups
+\item \strong{hybrid - } The user specifies both a correlation threshold, like in the correlation-based approach, and feature groups
 based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
 have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
-experiments where the dataset contains many highly similar compounds and prevents poorly correlated  or uncorrelated
-features from being collapsed into a single feature.
+experiments where the dataset contains many highly similar compounds and prevents poorly correlated or uncorrelated
+features from being collapsed into a single feature.}
 }
 \examples{
 #import example data
@@ -98,7 +100,7 @@ TEDDY_groups <- data.frame(features = colnames(expressionData(object, type = "in
 collapsed_DNEA <- reduceFeatures(object = DNEA,
                                  method = "hybrid",
                                  correlation_threshold = 0.9,
-                                 metabolite_groups = TEDDY_groups)
+                                 feature_groups = TEDDY_groups)
 
 }
 \seealso{
