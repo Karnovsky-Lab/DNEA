@@ -1,12 +1,6 @@
 #'
 #'
 #'
-#' import "igraph" class for consensus cluster
-#' @import igraph
-#' @keywords internal
-#' @noRd
-setOldClass('igraph')
-
 #' consensusClusteringResults
 #'
 #' An s4 class to represent the results from consensus clustering within DNEA
@@ -82,8 +76,6 @@ setClass(Class = "DNEAinputSummary",
 #' for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
 #' \code{\link{selectionProbabilities}})
 #'
-#' @slot joint_graph The igraph adjacency graph object resulting from consensus clustering via \code{\link{clusterNet}}
-#'
 #' @slot consensus_clustering A consensusClusteringResults object containing the results from consensus clustering
 #' via \code{\link{clusterNet}}
 #'
@@ -110,7 +102,6 @@ setClass(Class = "DNEAresults",
            hyperparameter = 'list',
            adjacency_matrix = 'list',
            stable_networks = 'list',
-           joint_graph = 'igraph',
            consensus_clustering = "consensusClusteringResults",
            netGSA = 'data.frame')
 )
@@ -306,11 +297,6 @@ setValidity("DNEAresults", function(object){
         "There was a problem calculating selectionProbabilites"
       }
     }
-  }
-
-  #check joint_graph
-  if(length(object@joint_graph) != ncol(expressionData(object, normalized = FALSE))){
-    "There was a problem with the adjacency graph"
   }
 
   #check consensus_clustering
