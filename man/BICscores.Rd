@@ -25,9 +25,11 @@ The optimized lambda hyperparameter
 The function takes as input a DNEAresults object and returns the BIC values for each lambda tested during
 hyperparameter optimization performed via BICtune(). \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input BIC scores into the DNEAresults object
-within \code{\link{BICtune}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+BICscores(TEDDYresults)
 }
 \seealso{
 \code{\link{BICtune}}

@@ -19,21 +19,15 @@
 #'
 #' @examples
 #' #import example data
-#' data(TEDDY)
-#'
-#' #initiate DNEAresults object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
-#'                          project_name = "TEDDYmetabolomics",
-#'                          case = "DM:case",
-#'                          control = "DM:control")
+#' data(TEDDYresults)
 #'
 #' #create sample metadata file
 #' new_metadat <- data.frame(new_group = c(rep("group1", 72),
 #'                           rep("group2", 72)),
-#'                           row.names(sampleNames(DNEA)))
+#'                           row.names(sampleNames(TEDDYresults)))
 #'
 #' #add new metadata to DNEAresults object
-#' DNEA <- includeMetadata(object = DNEA, type = "sample", metadata = new_metadat)
+#' TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = new_metadat)
 #'
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
@@ -82,36 +76,11 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'
 #' @return Two .csv files, one for the node list and one for the edge list, saved to the specified file path.
 #' @examples
-#' #load BiocParallel
-#' library(BiocParallel)
-#'
 #' #import example data
-#' data(TEDDY)
-#'
-#' #initiate DNEAresults object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
-#'                          project_name = "TEDDYmetabolomics",
-#'                          case = "DM:case",
-#'                          control = "DM:control")
-#'
-#' #optimize lambda parameter
-#' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-#'
-#' # perform stability selection
-#' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
-#'
-#' #construct the networks
-#' DNEA <- getNetworks(object = DNEA)
-#'
-#' #identify metabolic modules via consensus clustering
-#' DNEA <- clusterNet(object = DNEA)
-#'
-#' #perform pathway enrichment analysis using netGSA
-#' DNEA <- runNetGSA(object = DNEA)
-#'
+#' data(TEDDYresults)
 #'
 #' #save node and edge list for input to cytoscape
-#' getNetworkFiles(DNEA)
+#' getNetworkFiles(TEDDYresults)
 #'
 #' @importFrom utils write.csv
 #' @export
@@ -148,33 +117,13 @@ getNetworkFiles <- function(object, file_path=NULL){
 #' @returns a plot of the specified network
 #'
 #' @examples
-#' #load BiocParallel
-#' library(BiocParallel)
-#'
 #' #import example data
-#' data(TEDDY)
-#'
-#' #initiate DNEAresults object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
-#'                          project_name = "TEDDYmetabolomics",
-#'                          case = "DM:case",
-#'                          control = "DM:control")
-#'
-#' #optimize lambda parameter
-#' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-#'
-#' # perform stability selection
-#' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
-#'
-#' #construct the networks
-#' DNEA <- getNetworks(object = DNEA)
-#'
-#' #identify metabolic modules via consensus clustering
-#' DNEA <- clusterNet(object = DNEA)
+#' data(TEDDYresults)
+
 #'
 #' #plot the networks
-#' plotNetworks(object = DNEA, type = "group_networks")
-#' plotNetworks(object = DNEA, type = "subnetworks", subnetwork = 1)
+#' plotNetworks(object = TEDDYresults, type = "group_networks")
+#' plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
 #'
 #' @import igraph
 #' @importFrom grDevices dev.off

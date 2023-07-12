@@ -53,11 +53,17 @@
 #' #import example data
 #' data(TEDDY)
 #'
+#' #create group labels
+#' group_labels <- factor(TEDDY$group, levels = c("DM:control", "DM:case"))
+#' names(group_labels) <- rownames(TEDDY)
+#'
+#' #remove group info and transpose expression data
+#' TEDDY <- t(TEDDY)
+#'
 #' #initiate DNEAresults object
 #' DNEA <- createDNEAobject(expression_data = TEDDY,
 #'                          project_name = "TEDDYmetabolomics",
-#'                          case = "DM:case",
-#'                          control = "DM:control")
+#'                          group_labels = group_labels)
 #'
 #' @export
 createDNEAobject <- function(project_name,
@@ -97,8 +103,6 @@ createDNEAobject <- function(project_name,
                                 features = restructured_data[[2]]$features,
                                 network_group_IDs = restructured_data[[2]]$samples$conditions,
                                 network_groups = levels(restructured_data[[2]]$samples$conditions)),
-                joint_graph = make_empty_graph(n = ncol(restructured_data[[1]][['scaled_expression_data']]),
-                                               directed = TRUE),
                 hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))

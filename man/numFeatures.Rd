@@ -21,6 +21,12 @@ The number of features in the dataset
 \description{
 This function prints to console the total number of features in the dataset
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+numFeatures(TEDDYresults)
+}
 \seealso{
 \code{\link{createDNEAobject}}
 }

@@ -30,9 +30,11 @@ returns the diagnostic values for the input expression data
 \description{
 This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input the diagnostic values into the DNEAresults object
-within \code{\link{createDNEAobject}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+diagnostics(TEDDYresults)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}

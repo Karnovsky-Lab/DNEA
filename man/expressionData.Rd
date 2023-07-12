@@ -21,6 +21,13 @@ The expression matrix specified by the user.
 This function accesses the expression data stored in the @assays slot of the DNEAresults object. The output is an
 \emph{n x m} matrix with one row for each sample and one column for each feature in the data.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+expressionData(TEDDYresults, normalized = TRUE)
+
+}
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 }

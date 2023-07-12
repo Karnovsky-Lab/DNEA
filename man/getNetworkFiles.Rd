@@ -20,36 +20,11 @@ This function will save the node and edge information as .csv files in the worki
 The files are already formatted for input into Cytoscape.
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
 #import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
-
-#optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-
-# perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
-
-#construct the networks
-DNEA <- getNetworks(object = DNEA)
-
-#identify metabolic modules via consensus clustering
-DNEA <- clusterNet(object = DNEA)
-
-#perform pathway enrichment analysis using netGSA
-DNEA <- runNetGSA(object = DNEA)
-
+data(TEDDYresults)
 
 #save node and edge list for input to cytoscape
-getNetworkFiles(DNEA)
+getNetworkFiles(TEDDYresults)
 
 }
 \seealso{

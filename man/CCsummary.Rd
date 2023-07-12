@@ -19,6 +19,12 @@ A data.frame summary of the consensus clustering results from DNEA
 The function takes as input a DNEAresults object and returns a summary
 of the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+CCsummary(TEDDYresults)
+}
 \seealso{
 \code{\link{clusterNet}}
 }

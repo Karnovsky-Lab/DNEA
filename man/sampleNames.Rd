@@ -18,6 +18,12 @@ A character vector of sample names
 \description{
 This function accesses the sample names stored in the @metadata slot of the DNEAresults object.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+sampleNames(TEDDYresults)
+}
 \seealso{
 \code{\link{createDNEAobject}}
 }

@@ -24,9 +24,11 @@ a data.frame corresponding to the node list determined by DNEA
 \description{
 The function takes as input a DNEAresults object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input the node list into the DNEAresults object
-within \code{\link{createDNEAobject}} and add the subnetwork membership in \code{\link{clusterNet}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+nodeList(TEDDYresults)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}

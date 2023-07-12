@@ -7,7 +7,7 @@
 \usage{
 featureNames(x, original = TRUE)
 
-\S4method{featureNames}{DNEAresults}(x, original = TRUE)
+\S4method{featureNames}{DNEAresults}(x, original = FALSE)
 }
 \arguments{
 \item{x}{A DNEAresults object}
@@ -20,6 +20,12 @@ A character vector of feature names
 }
 \description{
 This function accesses the feature names stored in the @metadata slot of the DNEAresults object.
+}
+\examples{
+#import example data
+data(TEDDYresults)
+
+featureNames(TEDDYresults, original = TRUE)
 }
 \seealso{
 \code{\link{createDNEAobject}}

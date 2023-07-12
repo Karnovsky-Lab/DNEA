@@ -60,11 +60,17 @@ information pertaining to which features are highly correlated and as a result t
 #import example data
 data(TEDDY)
 
+#create group labels
+group_labels <- factor(TEDDY$group, levels = c("DM:control", "DM:case"))
+names(group_labels) <- rownames(TEDDY)
+
+#remove group info and transpose expression data
+TEDDY <- t(TEDDY)
+
 #initiate DNEAresults object
 DNEA <- createDNEAobject(expression_data = TEDDY,
                          project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
+                         group_labels = group_labels)
 
 }
 \seealso{

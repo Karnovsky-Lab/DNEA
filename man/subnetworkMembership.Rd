@@ -22,6 +22,12 @@ A data.frame that corresponds to the results of consensus clustering
 The function takes as input a DNEAresults or consensusClusteringResults object
 and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+subnetworkMembership(TEDDYresults)
+}
 \seealso{
 \code{\link{clusterNet}}
 }

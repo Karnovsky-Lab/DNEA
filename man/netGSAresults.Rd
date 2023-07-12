@@ -28,6 +28,12 @@ The function takes as input a DNEAresults object and returns the netGSA results 
 \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the netgsa results from
 \code{\link{runNetGSA}} into the netGSA slot of the DNEAresults object.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+netGSAresults(TEDDYresults)
+}
 \seealso{
 \code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 }

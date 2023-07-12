@@ -24,9 +24,11 @@ a data.frame corresponding to the edge list determined by DNEA
 \description{
 The function takes as input a DNEAresults object and returns the edge list created from \code{\link{getNetworks}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input the edge list into the DNEAresults object
-within \code{\link{getNetworks}} and \code{\link{filterNetworks}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+edgeList(TEDDYresults)
 }
 \seealso{
 \code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}

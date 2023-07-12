@@ -25,9 +25,11 @@ The # of samples/features and diagnostic values of the input data calculated by 
 This function prints to console the number of samples, number of features, and diagnostic values of the input data to
 \code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input the dataset_summary slot into the DNEAresults object
-within \code{\link{createDNEAobject}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+datasetSummary(TEDDYresults)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}

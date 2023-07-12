@@ -23,6 +23,12 @@ A vector of the unique condition labels
 \description{
 This function accesses the experimental group labels for each sample stored in the @metadata slot of a DNEAresults object.
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+networkGroupIDs(TEDDYresults)
+}
 \seealso{
 \code{\link{includeMetadata}}
 }

@@ -23,21 +23,15 @@ respectively
 }
 \examples{
 #import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
+data(TEDDYresults)
 
 #create sample metadata file
 new_metadat <- data.frame(new_group = c(rep("group1", 72),
                           rep("group2", 72)),
-                          row.names(sampleNames(DNEA)))
+                          row.names(sampleNames(TEDDYresults)))
 
 #add new metadata to DNEAresults object
-DNEA <- includeMetadata(object = DNEA, type = "sample", metadata = new_metadat)
+TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = new_metadat)
 
 }
 \seealso{

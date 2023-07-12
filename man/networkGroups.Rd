@@ -18,6 +18,12 @@ A vector of the condition values
 \description{
 This function takes in a DNEAresults object and returns the unique group values of the experimental condition in the dataset
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+networkGroups(TEDDYresults)
+}
 \seealso{
 \code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
 }

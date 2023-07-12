@@ -21,6 +21,12 @@ The number of samples in the dataset
 \description{
 This function prints to console the total number of samples in the dataset
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+numSamples(TEDDYresults)
+}
 \seealso{
 \code{\link{createDNEAobject}}
 }

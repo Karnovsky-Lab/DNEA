@@ -18,6 +18,12 @@ The name of the DNEA experiment
 \description{
 This function returns the name of the DNEA experiment
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+projectName(TEDDYresults)
+}
 \seealso{
 \code{\link{createDNEAobject}}
 }

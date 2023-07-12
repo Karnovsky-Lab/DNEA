@@ -61,23 +61,11 @@ models are fit in total \emph{without} sub-sampling, but 500 randomly sampled mo
 More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
-#import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
-
-#optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+#import completed example data
+data(TEDDYresults)
 
 # perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+TEDDYresults <- stabilitySelection(object = TEDDYresults, subSample = FALSE, nreps = 4, BPPARAM = bpparam())
 
 }
 \references{

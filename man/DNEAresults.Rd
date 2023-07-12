@@ -41,8 +41,6 @@ optimized lambda for analysis (optimized lambda can be accessed or changed via \
 for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
 \code{\link{selectionProbabilities}})}
 
-\item{\code{joint_graph}}{The igraph adjacency graph object resulting from consensus clustering via \code{\link{clusterNet}}}
-
 \item{\code{consensus_clustering}}{A consensusClusteringResults object containing the results from consensus clustering
 via \code{\link{clusterNet}}}
 

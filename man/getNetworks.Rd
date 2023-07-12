@@ -28,29 +28,14 @@ for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / nu
 will be used as the regularization parameter.
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
-#import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
-
-#optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-
-# perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
+#import completed example data
+data(TEDDYresults)
 
 #construct the networks
-DNEA <- getNetworks(object = DNEA)
+TEDDYresults <- getNetworks(object = TEDDYresults)
 
 #now we can plot the group networks
-plotNetworks(object = DNEA, type = "group_networks")
+plotNetworks(object = TEDDYresults, type = "group_networks")
 
 }
 \references{

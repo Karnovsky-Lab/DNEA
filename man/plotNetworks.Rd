@@ -21,33 +21,12 @@ a plot of the specified network
 The function plots the condition networks as well as the specified subnetworks identified via DNEA
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
 #import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
-
-#optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-
-# perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
-
-#construct the networks
-DNEA <- getNetworks(object = DNEA)
-
-#identify metabolic modules via consensus clustering
-DNEA <- clusterNet(object = DNEA)
+data(TEDDYresults)
 
 #plot the networks
-plotNetworks(object = DNEA, type = "group_networks")
-plotNetworks(object = DNEA, type = "subnetworks", subnetwork = 1)
+plotNetworks(object = TEDDYresults, type = "group_networks")
+plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
 
 }
 \seealso{

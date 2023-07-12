@@ -21,38 +21,17 @@ This function performs pathway enrichment analysis on the metabolic modules iden
 using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
-#import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
-
-#optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
-
-# perform stability selection
-DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
-
-#construct the networks
-DNEA <- getNetworks(object = DNEA)
-
-#identify metabolic modules via consensus clustering
-DNEA <- clusterNet(object = DNEA)
+#import completed example data
+data(TEDDYresults)
 
 #perform pathway enrichment analysis using netGSA
-DNEA <- runNetGSA(object = DNEA)
+TEDDYresults <- runNetGSA(object = TEDDYresults, min_size = 5)
 
 #view the results
-netGSAresults(DNEA)
+netGSAresults(TEDDYresults)
 
 #save node and edge list for input to cytoscape
-getNetworkFiles(DNEA)
+getNetworkFiles(TEDDYresults)
 
 }
 \references{

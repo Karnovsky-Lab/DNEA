@@ -23,6 +23,9 @@ adjacencyGraph(x, graph) <- value
 }
 \arguments{
 \item{x}{A DNEAresults or consensusClusteringResults object}
+
+\item{graph}{A character string indicating which of the adjacency graphs to return. Values can be "joint_graph" for the
+whole graph object, or one of the group values returned by \code{\link{networkGroups}}}
 }
 \value{
 An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
@@ -31,10 +34,11 @@ An \code{\link{igraph}} graph object corresponding to the specified adjacency gr
 The function  returns the adjacency graph made for the case, control, or joint network determined via
 \code{\link{clusterNet}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency graphs created during
-\code{\link{clusterNet}} into the consensusClusteringResults object stored in the consensus_clustering slot of the
-DNEAresults object
+\examples{
+#import example data
+data(TEDDYresults)
+
+adjacencyGraph(TEDDYresults, graph = "DM:case")
 }
 \seealso{
 \code{\link{clusterNet}}

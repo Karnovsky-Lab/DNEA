@@ -15,6 +15,13 @@ A summary of the information stored in a DNEAresults object
 \description{
 This function will display a summary of the information stored within a DNEAresults object
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+TEDDYresults
+
+}
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 }

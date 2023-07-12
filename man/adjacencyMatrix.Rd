@@ -25,9 +25,11 @@ A matrix corresponding to the adjacency matrix specified
 The function takes as input a DNEAresults object and returns the weighted or unweighted adjacency matrix
 determined via \code{\link{getNetworks}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency_matrices calculated during
-\code{\link{getNetworks}} into the adjacency_matrix slot of the DNEAresults object
+\examples{
+#import example data
+data(TEDDYresults)
+
+adjacencyMatrix(TEDDYresults, weighted = TRUE)
 }
 \seealso{
 \code{\link{getNetworks}}

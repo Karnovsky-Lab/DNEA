@@ -26,9 +26,11 @@ selection_results section of the stable_networks slot
 The function takes as input a DNEAresults object and returns an m x m matrix of selection results for every
 possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection results into the DNEAresults object
-within \code{\link{stabilitySelection}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+selectionResults(TEDDYresults)
 }
 \seealso{
 \code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}

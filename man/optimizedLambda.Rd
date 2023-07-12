@@ -27,6 +27,12 @@ The optimized lambda hyperparameter
 The function takes as input a DNEAresults object and returns the hyperparameter (lambda) that is currently being
 used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
 }
+\examples{
+#import example data
+data(TEDDYresults)
+
+optimizedLambda(TEDDYresults)
+}
 \seealso{
 \code{\link{BICtune}}
 }

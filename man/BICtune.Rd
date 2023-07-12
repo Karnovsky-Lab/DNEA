@@ -49,20 +49,11 @@ where c takes on 15 evenly spaced values between 0.01 and 0.3. More information 
 in the Guo et al. (2011) paper referenced below.
 }
 \examples{
-#load BiocParallel
-library(BiocParallel)
-
-#import example data
-data(TEDDY)
-
-#initiate DNEAresults object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         case = "DM:case",
-                         control = "DM:control")
+#import completed example data
+data(TEDDYresults)
 
 #optimize lambda parameter
-DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
+TEDDYresults <- BICtune(object = TEDDYresults, BPPARAM = bpparam())
 
 }
 \references{

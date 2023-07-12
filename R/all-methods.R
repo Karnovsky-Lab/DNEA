@@ -10,6 +10,12 @@
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
 #' @return A summary of the information stored in a DNEAresults object
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
+#'
+#' TEDDYresults
+#'
 #' @keywords internal
 #' @export
 setMethod("show", "DNEAresults", function(object) {
@@ -39,7 +45,6 @@ setMethod("show", "DNEAresults", function(object) {
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
 #' @return A summary of the input data to \code{\link{createDNEAobject}}
-#'
 #' @keywords internal
 #' @export
 setMethod("show", "DNEAinputSummary", function(object) {
@@ -56,6 +61,11 @@ setMethod("show", "DNEAinputSummary", function(object) {
 #'
 #' @param x A DNEAresults object
 #' @return The name of the DNEA experiment
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
+#'
+#' projectName(TEDDYresults)
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #'
@@ -92,6 +102,11 @@ expressionData.DNEAresults <- function(x, normalized = TRUE){
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 
 #' @return The expression matrix specified by the user.
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
+#'
+#' expressionData(TEDDYresults, normalized = TRUE)
 #'
 #' @rdname expressionData
 #' @export
@@ -109,7 +124,11 @@ networkGroupIDs.DNEAresults <- function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{includeMetadata}}
 #' @return A vector of the unique condition labels
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' networkGroupIDs(TEDDYresults)
 #' @rdname networkGroupIDs
 #' @export
 setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
@@ -122,7 +141,11 @@ setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAr
 #' @author Christopher Patsalis
 #' @seealso \code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
 #' @return A vector of the condition values
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' networkGroups(TEDDYresults)
 #' @rdname networkGroups
 #' @export
 setMethod("networkGroups", signature(x = "DNEAresults"), function(x){
@@ -142,12 +165,16 @@ sampleNames.DNEAresults <- function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @return A character vector of sample names
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' sampleNames(TEDDYresults)
 #' @rdname sampleNames
 #' @export
 setMethod("sampleNames", signature(x = "DNEAresults"), sampleNames.DNEAresults)
 
-featureNames.DNEAresults <- function(x, original = TRUE){
+featureNames.DNEAresults <- function(x, original = FALSE){
 
   if(isTRUE(original)){
     x@metadata[["features"]]$feature_names
@@ -165,6 +192,11 @@ featureNames.DNEAresults <- function(x, original = TRUE){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @return A character vector of feature names
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
+#'
+#' featureNames(TEDDYresults, original = TRUE)
 #' @rdname featureNames
 #' @export
 setMethod("featureNames", signature(x = "DNEAresults"), featureNames.DNEAresults)
@@ -180,7 +212,11 @@ numFeatures.DNEAresults <- function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @return The number of features in the dataset
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' numFeatures(TEDDYresults)
 #' @rdname numFeatures
 #' @export
 setMethod("numFeatures", signature(x = "DNEAresults"), numFeatures.DNEAresults)
@@ -201,6 +237,11 @@ numSamples.DNEAresults <- function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @return The number of samples in the dataset
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
+#'
+#' numSamples(TEDDYresults)
 #' @rdname numSamples
 #' @export
 setMethod("numSamples", signature(x = "DNEAresults"), numSamples.DNEAresults)
@@ -226,7 +267,11 @@ optimizedLambda.DNEAresults <- function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
 #' @return The optimized lambda hyperparameter
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' optimizedLambda(TEDDYresults)
 #' @rdname optimizedLambda
 #' @export
 setMethod("optimizedLambda", signature(x = "DNEAresults"), optimizedLambda.DNEAresults)
@@ -249,14 +294,16 @@ lambdas2Test.DNEAresults <- function(x){
 #' The function takes as input a DNEAresults object and returns the lambda values that were testing
 #' during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input lambda values tested into the DNEAresults object
-#' within \code{\link{BICtune}}.
 #'
 #' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
 #' @return The lambda values to evaluate in optimization
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' lambdas2Test(TEDDYresults)
 #' @rdname lambdas2Test
 #' @export
 setMethod("lambdas2Test", signature(x = "DNEAresults"), lambdas2Test.DNEAresults)
@@ -280,14 +327,16 @@ BICscores.DNEAresults <- function(x){
 #' The function takes as input a DNEAresults object and returns the BIC values for each lambda tested during
 #' hyperparameter optimization performed via BICtune(). \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input BIC scores into the DNEAresults object
-#' within \code{\link{BICtune}}.
 #'
 #' @param x A DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
 #' @return The optimized lambda hyperparameter
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' BICscores(TEDDYresults)
 #' @rdname BICscores
 #' @export
 setMethod("BICscores", signature(x = "DNEAresults"), BICscores.DNEAresults)
@@ -308,15 +357,17 @@ selectionResults.DNEAresults <- function(x){
 #' The function takes as input a DNEAresults object and returns an m x m matrix of selection results for every
 #' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection results into the DNEAresults object
-#' within \code{\link{stabilitySelection}}.
 #'
 #' @param x A DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}
 #' @return A DNEAresults object after filling the
 #' selection_results section of the stable_networks slot
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' selectionResults(TEDDYresults)
 #' @rdname selectionResults
 #' @export
 setMethod("selectionResults", signature(x = "DNEAresults"), selectionResults.DNEAresults)
@@ -339,15 +390,17 @@ selectionProbabilities.DNEAresults <- function(x){
 #' The function takes as input a DNEAresults object and returns an m x m matrix of selection probabilities for every
 #' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the selection probabilities into the DNEAresults object
-#' within \code{\link{stabilitySelection}}.
 #'
 #' @param x A DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionResults}}
 #' @return A DNEAresults object after filling the
 #' selection_probabilities section of the stable_networks slot
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' selectionProbabilities(TEDDYresults)
 #' @rdname selectionProbabilities
 #' @export
 setMethod("selectionProbabilities", signature(x = "DNEAresults"), selectionProbabilities.DNEAresults)
@@ -370,14 +423,16 @@ edgeList.DNEAresults <- function(x){
 #'
 #' The function takes as input a DNEAresults object and returns the edge list created from \code{\link{getNetworks}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the edge list into the DNEAresults object
-#' within \code{\link{getNetworks}} and \code{\link{filterNetworks}}.
 #'
 #' @param x a DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}
 #' @return a data.frame corresponding to the edge list determined by DNEA
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' edgeList(TEDDYresults)
 #' @rdname edgeList
 #' @export
 setMethod("edgeList", signature(x = "DNEAresults"), edgeList.DNEAresults)
@@ -399,14 +454,16 @@ nodeList.DNEAresults <- function(x){
 #'
 #' The function takes as input a DNEAresults object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the node list into the DNEAresults object
-#' within \code{\link{createDNEAobject}} and add the subnetwork membership in \code{\link{clusterNet}}.
 #'
 #' @param x a DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}
 #' @return a data.frame corresponding to the node list determined by DNEA
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' nodeList(TEDDYresults)
 #' @rdname nodeList
 #' @export
 setMethod("nodeList", signature(x = "DNEAresults"), nodeList.DNEAresults)
@@ -428,14 +485,16 @@ diagnostics.DNEAresults <- function(x){
 #'
 #' This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the diagnostic values into the DNEAresults object
-#' within \code{\link{createDNEAobject}}.
 #'
 #' @param a DNEAresults object or DNEAinputSummary object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #' @return returns the diagnostic values for the input expression data
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' diagnostics(TEDDYresults)
 #' @rdname diagnostics
 #' @export
 setMethod("diagnostics", signature(x = "DNEAresults"), diagnostics.DNEAresults)
@@ -469,14 +528,16 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #' This function prints to console the number of samples, number of features, and diagnostic values of the input data to
 #' \code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used to input the dataset_summary slot into the DNEAresults object
-#' within \code{\link{createDNEAobject}}.
 #'
 #' @param x A DNEA results object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #' @returns The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' datasetSummary(TEDDYresults)
 #' @rdname datasetSummary
 #' @export
 setMethod("datasetSummary", signature(x = "DNEAresults"), function(x){
@@ -509,14 +570,16 @@ adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 #' The function takes as input a DNEAresults object and returns the weighted or unweighted adjacency matrix
 #' determined via \code{\link{getNetworks}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency_matrices calculated during
-#' \code{\link{getNetworks}} into the adjacency_matrix slot of the DNEAresults object
 #'
 #' @param a DNEAresults object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}
 #' @return A matrix corresponding to the adjacency matrix specified
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' adjacencyMatrix(TEDDYresults, weighted = TRUE)
 #' @rdname adjacencyMatrix
 #' @export
 setMethod("adjacencyMatrix", signature(x = "DNEAresults"), adjacencyMatrix.DNEAresults)
@@ -543,15 +606,18 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
 #' The function  returns the adjacency graph made for the case, control, or joint network determined via
 #' \code{\link{clusterNet}}. \cr
 #'
-#' \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency graphs created during
-#' \code{\link{clusterNet}} into the consensusClusteringResults object stored in the consensus_clustering slot of the
-#' DNEAresults object
 #'
 #' @param x A DNEAresults or consensusClusteringResults object
+#' @param graph A character string indicating which of the adjacency graphs to return. Values can be "joint_graph" for the
+#' whole graph object, or one of the group values returned by \code{\link{networkGroups}}
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
 #' @return An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' adjacencyGraph(TEDDYresults, graph = "DM:case")
 #' @rdname adjacencyGraph
 #' @export
 setMethod("adjacencyGraph", signature(x = "DNEAresults"), function(x, graph){
@@ -593,7 +659,6 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
 #' @return A data.frame that corresponds to a summary of the results of consensus clustering
-#'
 #' @rdname summary
 #' @export
 setMethod("summary", signature(object = "consensusClusteringResults"), function(object){
@@ -610,7 +675,11 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
 #' @returns A data.frame summary of the consensus clustering results from DNEA
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' CCsummary(TEDDYresults)
 #' @rdname CCsummary
 #' @export
 setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
@@ -627,7 +696,11 @@ setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
 #' @return A data.frame that corresponds to the results of consensus clustering
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' subnetworkMembership(TEDDYresults)
 #' @rdname subnetworkMembership
 #' @export
 setMethod("subnetworkMembership", signature(x = "consensusClusteringResults"), function(x){
@@ -653,7 +726,11 @@ setMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 #' @returns A data.frame of the results from netGSA
+#' @examples
+#' #import example data
+#' data(TEDDYresults)
 #'
+#' netGSAresults(TEDDYresults)
 #' @rdname netGSAresults
 #' @export
 setMethod("netGSAresults", signature(x = "DNEAresults"), function(x){

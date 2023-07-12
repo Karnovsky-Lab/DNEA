@@ -67,27 +67,21 @@
 #'
 #' @examples
 #' #import example data
-#' data(TEDDY)
-#'
-#' #initiate DNEAresults object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
-#'                          project_name = "TEDDYmetabolomics",
-#'                          case = "DM:case",
-#'                          control = "DM:control")
+#' data(TEDDYresults)
 #'
 #' #simulate group labels
-#' TEDDY_groups <- data.frame(features = colnames(expressionData(object, normalized = FALSE)),
+#' TEDDY_groups <- data.frame(features = colnames(expressionData(TEDDYresults, normalized = FALSE)),
 #'                            groups = c(colnames(TEDDY)[seq(2, 101)],
 #'                                       rep("group1", 10),
 #'                                       rep("group2", 10),
 #'                                       rep("group3", 10),
 #'                                       rep("group4", 14)),
-#'                            row.names = colnames(expressionData(object, normalized = FALSE)))
+#'                            row.names = colnames(expressionData(TEDDYresults, normalized = FALSE)))
 #'
-#' collapsed_DNEA <- reduceFeatures(object = DNEA,
-#'                                  method = "hybrid",
-#'                                  correlation_threshold = 0.9,
-#'                                  feature_groups = TEDDY_groups)
+#' collapsed_TEDDY <- reduceFeatures(object = TEDDYresults,
+#'                                   method = "hybrid",
+#'                                   correlation_threshold = 0.9,
+#'                                   feature_groups = TEDDY_groups)
 #'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select

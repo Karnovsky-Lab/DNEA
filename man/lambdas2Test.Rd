@@ -25,9 +25,11 @@ The lambda values to evaluate in optimization
 The function takes as input a DNEAresults object and returns the lambda values that were testing
 during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
 }
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used to input lambda values tested into the DNEAresults object
-within \code{\link{BICtune}}.
+\examples{
+#import example data
+data(TEDDYresults)
+
+lambdas2Test(TEDDYresults)
 }
 \seealso{
 \code{\link{BICtune}}
