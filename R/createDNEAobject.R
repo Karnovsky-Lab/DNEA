@@ -3,49 +3,52 @@
 #'
 #' Initialize DNEAresults object
 #'
+#' @description
 #' This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
 #' case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
-#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing ***(described below)***
-#' are also performed on the data.
+#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
 #'
-#' ##***IMPORTANT***
+#' ## IMPORTANT
 #' Special attention should be given to the diagnostic criteria that is output. The minimum eigen
 #' value and condition number are calculated for the whole dataset as well as for each condition to determine
 #' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
 #' found in \strong{\emph{Details}}.
 #'
-#' @param project_name A string containing an identifying name for the analysis
+#'
+#' @param project_name A character string name for the experiment
 #' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
-#' @param control A string corresponding to the name of condition 1 in column one of the data matrix
-#' @param case A string corresponding to the name of condition 2 in column one of the data matrix
+#' @param control A character string name of condition 1 in column one of the data matrix
+#' @param case A character string name of condition 2 in column one of the data matrix
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{BICtune}}, \code{\link{stabilitySelection}}
 #'
 #' @details
-#' ##Diagnostics motivation
-#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
+#' ## Diagnostics Motivation
+#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, thereby invalidating
 #' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
-#' is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
-#' number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
-#' direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. Due to the ***p >>> n*** problem common in -omics datasets, we have developed DNEA
-#' to be very robust in removing redundant features via several regularization steps (**please see** \code{\link{BICtune}}
-#' **and** \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
-#' this may not be ideal for several reasons.
+#' is calculated by first creating a pearson correlation matrix of the data. Instability may then occur for a
+#' number of reasons, but one common cause is highly correlated features (in the positive and negative
+#' direction). \cr
 #'
-#' In scenarios like this we recommend collapsing highly correlated features into a single group using
-#' \code{\link{reduceFeatures}} - particularly if the dataset contains many highly-correlated features of a given class of molecules,
-#' ie. many fatty acids or carnitines, respectively. Doing so gives the user more control over what variables are included
-#' in the model. Without collapsing, the model regularization may result in one of the features within a class being included
-#' and some or all of the remaining features being removed. By collapsing first, you retain the signal from all of the features
-#' in the model and also have information pertaining to which features are highly correlated and as a result track each other.
+#' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
+#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
+#' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
+#' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
+#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
 #'
-#' @return DNEAobject containing the scaled and un-scaled (if provided) data in assays, as well as sample number,
-#' feature number, sample names, feature names, and condition number in metadata
+#' ## Benefits of Feauture Collapsing
+#' In scenarios like this we recommend collapsing highly correlated features into a single group - particularly if the
+#' dataset contains many highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
+#' because the user then has more control over which variables are included in the model. Without collapsing, the model
+#' regularization may result in one of the features within a class being included and some or all of the remaining features
+#' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
+#' information pertaining to which features are highly correlated and as a result track each other.
+#'
+#' @return a DNEAresults object
 #'
 #' @examples
 #' #' #import example data
@@ -206,7 +209,7 @@ restructure_input_data <- function(expression_data, control, case){
 #' This function takes as input a DNEAresults object and first splits the scaled data by condition. The minimum eigen
 #' value and condition number are then calculated for the whole dataset as well as for each condition to determine
 #' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-#' found in *Details*.
+#' found in \strong{\emph{Details}}.
 #'
 #' @param mat A matrix of expression data
 #' @param condition_values A vector of condition names present in the dataset
@@ -217,22 +220,26 @@ restructure_input_data <- function(expression_data, control, case){
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
 #' @details
-#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, respectively, thereby invalidating
+#' ## Diagnostics Motivation
+#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, thereby invalidating
 #' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
-#' is calculated by first creating a pearson correlation matrix of the data. Negative eigenvalues may then occur for a
-#' number of reasons, but one commonly seen cause is highly correlated features (in the positive and negative
-#' direction). Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. Due to the *p >>> n* problem common in -omics datasets, we have developed DNEA
-#' to be very robust in removing redundant features via several regularization steps (**please see** \code{\link{BICtune}}
-#' **and** \code{\link{stabilitySelection}}). As such, highly correlated features may already be handled downstream, however,
-#' this may not be ideal for several reasons.
+#' is calculated by first creating a pearson correlation matrix of the data. Instability may then occur for a
+#' number of reasons, but one common cause is highly correlated features (in the positive and negative
+#' direction). \cr
 #'
-#' In scenarios like this we recommend collapsing highly correlated features into a single group using
-#' \code{\link{reduceFeatures}} - particularly if the dataset contains many highly-correlated features of a given class of molecules,
-#' ie. many fatty acids or carnitines, respectively. Doing so gives the user more control over what variables are included
-#' in the model. Without collapsing, the model regularization may result in one of the features within a class being included
-#' and some or all of the remaining features being removed. By collapsing first, you retain the signal from all of the features
-#' in the model and also have information pertaining to which features are highly correlated and as a result track each other.
+#' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
+#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
+#' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
+#' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
+#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
+#'
+#' ## Benefits of Feauture Collapsing
+#' In scenarios like this we recommend collapsing highly correlated features into a single group - particularly if the
+#' dataset contains many highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
+#' because the user then has more control over which variables are included in the model. Without collapsing, the model
+#' regularization may result in one of the features within a class being included and some or all of the remaining features
+#' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
+#' information pertaining to which features are highly correlated and as a result track each other.
 #'
 #' @returns A DNEA object containing an initialized node_list. Differential Expression is performed on
 #'          the features if un-scaled data is provided. The min eigen value and condition number is also

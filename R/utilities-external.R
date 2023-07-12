@@ -9,13 +9,13 @@
 #'
 #' @param object A DNEAresults object
 #' @param type sample or feature metadata
-#' @param metadata a dataframe containing metadata to add
+#' @param metadata a data.frame containing metadata to add
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{featureNames}}, \code{\link{sampleNames}},
 #'
-#' @return The same object as input with specified additions
+#' @return A DNEAresults object with the specified additions
 #'
 #' @examples
 #' #import example data
@@ -80,10 +80,11 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'
 #' @seealso \code{\link{edgeList}}, \code{\link{nodeList}}
 #'
-#' @return The same object as input and saves the node and edge information as .csv files in
-#'          the working directory
-#'
+#' @return Two .csv files, one for the node list and one for the edge list, saved to the specified file path.
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -103,7 +104,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' DNEA <- getNetworks(object = DNEA)
 #'
 #' #identify metabolic modules via consensus clustering
-#' DNEA <- runConsensusCluster(object = DNEA)
+#' DNEA <- clusterNet(object = DNEA)
 #'
 #' #perform pathway enrichment analysis using netGSA
 #' DNEA <- runNetGSA(object = DNEA)
@@ -141,12 +142,15 @@ getNetworkFiles <- function(object, file_path=NULL){
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{getNetworks}}, \code{\link{runConsensusCluster}}
+#' @seealso \code{\link{getNetworks}}, \code{\link{clusterNet}}
 #'
 #'
 #' @returns a plot of the specified network
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -166,7 +170,7 @@ getNetworkFiles <- function(object, file_path=NULL){
 #' DNEA <- getNetworks(object = DNEA)
 #'
 #' #identify metabolic modules via consensus clustering
-#' DNEA <- runConsensusCluster(object = DNEA)
+#' DNEA <- clusterNet(object = DNEA)
 #'
 #' #plot the networks
 #' plotNetworks(object = DNEA, type = "group_networks")

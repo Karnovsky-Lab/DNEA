@@ -23,8 +23,7 @@ setGeneric("networkGroupIDs", function(x) standardGeneric("networkGroupIDs"))
 
 #'
 #' @rdname networkGroupIDs
-#' @keywords internal
-#' @noRd
+#' @export
 setGeneric("networkGroupIDs<-", function(x, value) standardGeneric("networkGroupIDs<-"))
 #'
 #' @rdname sampleNames
@@ -53,8 +52,7 @@ setGeneric("optimizedLambda", function(x) standardGeneric("optimizedLambda"))
 
 #'
 #' @rdname optimizedLambda
-#' @keywords internal
-#' @noRd
+#' @export
 setGeneric("optimizedLambda<-", function(x, value) standardGeneric("optimizedLambda<-"))
 
 #'
@@ -64,8 +62,7 @@ setGeneric("lambdas2Test", function(x) standardGeneric("lambdas2Test"))
 
 #'
 #' @rdname lambdas2Test
-#' @keywords internal
-#' @noRd
+#' @export
 setGeneric("lambdas2Test<-", function(x, value) standardGeneric("lambdas2Test<-"))
 
 #'
@@ -75,8 +72,7 @@ setGeneric("BICscores", function(x) standardGeneric("BICscores"))
 
 #'
 #' @rdname BICscores
-#' @keywords internal
-#' @noRd
+#' @export
 setGeneric("BICscores<-", function(x, value) standardGeneric("BICscores<-"))
 
 #'
