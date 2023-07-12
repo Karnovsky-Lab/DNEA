@@ -26,7 +26,7 @@ usethis::use_package("stringr")
 usethis::use_package("netgsa")
 usethis::use_package("BiocParallel")
 usethis::use_package("autoimage")
-
+usethis::use_package("utils")
 # usethis::use_package("future")
 usethis::use_package()
 
