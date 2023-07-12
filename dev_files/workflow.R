@@ -1,8 +1,8 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 library(BiocParallel)
-BP_plan <- SerialParam(RNGseed = 101)
-set.seed(101)
+BP_plan <- SerialParam(RNGseed = 417)
+set.seed(417)
 
 dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 rownames(dat) <- dat$sample
