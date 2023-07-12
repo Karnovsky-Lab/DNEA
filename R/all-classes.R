@@ -188,25 +188,25 @@ setValidity("DNEAresults", function(object){
     if(!(is.matrix(object@assays[[i]]))){
       "@assays must be an expression matrix"
     }
-    if(length(colnames(object@assays[[i]])) != length(unique(colnames(object@assays[[i]])))){
+    if(length(rownames(object@assays[[i]])) != length(unique(rownames(object@assays[[i]])))){
       "@assays must be an expression matrix where each column is a unique feature."
     }
     if(!(is.numeric(object@assays[[i]]))){
       "@assays must be a matrix with numeric values."
     }
-    if(all(rownames(object@assays[[i]]) != sampleNames(object))){
+    if(all(colnames(object@assays[[i]]) != sampleNames(object))){
       "Samples are out of order"
     }
-    if(all(colnames(object@assays[[i]]) != featureNames(object, original = FALSE))){
+    if(all(rownames(object@assays[[i]]) != featureNames(object, original = FALSE))){
       "Features are out of order"
     }
   }
   if(all(rownames(expressionData(object, normalized = FALSE)) != rownames(expressionData(object, normalized = TRUE)))){
-    "assays are not in the same order"
+    "assay features are not in the same order"
   }
 
   if(all(colnames(expressionData(object, normalized = FALSE)) != colnames(expressionData(object, normalized = TRUE)))){
-    "assays are not in the same order"
+    "assay samples are not in the same order"
   }
 
   #check metadata
@@ -216,7 +216,7 @@ setValidity("DNEAresults", function(object){
   if(!(is.character(object@metadata$samples$samples))){
     "@metadata$samples$samples should be of class character"
   }
-  if(all(rownames(object@metadata$samples$samples) != rownames(expressionData(object, normalized = FALSE)))){
+  if(all(object@metadata$samples$samples != colnames(expressionData(object, normalized = FALSE)))){
     "sample metadata does not match order of expression data"
   }
   if(!(is.data.frame(object@metadata$features))){
@@ -228,7 +228,7 @@ setValidity("DNEAresults", function(object){
   if(!(is.character(object@metadata$features$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
-  if(all(rownames(object@metadata$features$clean_feature_names) != colnames(expressionData(object, normalized = FALSE)))){
+  if(all(object@metadata$features$clean_feature_names != rownames(expressionData(object, normalized = FALSE)))){
     "feature metadata does not match order of expression data"
   }
   if(length(networkGroups(object)) != 2){

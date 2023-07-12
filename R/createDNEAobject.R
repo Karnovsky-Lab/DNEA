@@ -4,7 +4,7 @@
 #' Initialize DNEAresults object
 #'
 #' @description
-#' This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
+#' This function takes as input a matrix of non-normalized, non-transformed expression data and the
 #' case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
 #' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
 #'
@@ -19,8 +19,7 @@
 #' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
-#' @param control A character string name of condition 1 in column one of the data matrix
-#' @param case A character string name of condition 2 in column one of the data matrix
+#' @param group_labels A numeric vector of experimental group labels named with the coresponding sample name
 #'
 #' @author Christopher Patsalis
 #'
@@ -61,16 +60,29 @@
 #'                          control = "DM:control")
 #'
 #' @export
-createDNEAobject <- function(project_name, expression_data, control, case){
+createDNEAobject <- function(project_name,
+                             expression_data,
+                             group_labels){
 
 
   ##restructure data to initiate object
   if(!missing(expression_data)){
 
+    ##turn condition into factor
+    if(!is.factor(group_labels)){
+
+      group_labels <- factor(group_labels)
+      message(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
+                     'Condition is now a factor with levels:',
+                     '\n', '1. ',
+                     levels(group_labels)[1],
+                     '\n', '2. ',
+                     levels(group_labels)[2]))
+    }
+
     #create data structures to initialize DNEAobject with un-scaled data
     restructured_data <- restructure_input_data(expression_data = expression_data,
-                                                control = control,
-                                                case = case)
+                                                condition_values = group_labels)
   } else{
 
     #no data was provided - throw error
@@ -112,14 +124,13 @@ createDNEAobject <- function(project_name, expression_data, control, case){
 
 #' Restructure input data for initiation of DNEAresults object
 #'
-#' This function takes as input a matrix of expression data, sample metadata, and the control/case labels in order to
+#' This function takes as input a matrix of expression data and the experimental group labels in order to
 #' restructure the input as to prepare it for initiation of a DNEAresults object.
 #'
 #' @param expression_data A matrix or dataframe of expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
-#' @param control A string corresponding to the name of condition 1 in column one of the data matrix
-#' @param case A string corresponding to the name of condition 2 in column one of the data matrix
+#' @param condition_values A factor vector of experimental group labels named with the corresponding sample name
 #'
 #' @return A list containing two lists. The first list, named assays, contains the uns-scaled data (if provided)
 #'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
@@ -131,7 +142,8 @@ createDNEAobject <- function(project_name, expression_data, control, case){
 #' @importFrom janitor make_clean_names
 #' @keywords internal
 #' @noRd
-restructure_input_data <- function(expression_data, control, case){
+restructure_input_data <- function(expression_data,
+                                   condition_values){
 
   ##initialize output data structures
   #create metadata list and add names
@@ -144,32 +156,18 @@ restructure_input_data <- function(expression_data, control, case){
   assays <- vector(mode = 'list', length = length(assays_key))
   names(assays) <- assays_key
 
-  ##check proper data structure
-  if(!is.character(expression_data[,1]) & !is.factor(expression_data[,1])) stop('First column should be sample condition')
 
-  ##turn condition into factor
-  if(!(is.factor(expression_data[,1]))){
-
-    expression_data[,1]<- factor(expression_data[,1], levels = c(control, case))
-    message(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
-                   'Condition is now a factor with levels:',
-                   '\n', '1. ',
-                   levels(expression_data[,1])[1],
-                   '\n', '2. ',
-                   levels(expression_data[,1])[2]))
-  }
 
   ##grab relevant metadata
-  feature_names <- colnames(expression_data[,-1])
+  feature_names <- rownames(expression_data)
   clean_feature_names <- make_clean_names(feature_names)
-  sample_names <- rownames(expression_data)
-  condition_values <- expression_data[,1]
+  sample_names <- colnames(expression_data)
 
   ##convert expression data to matrix
-  expression_data <- as.matrix(expression_data[,-1])
+  expression_data <- as.matrix(expression_data)
 
   ##clean column names to avoid R conflicts
-  colnames(expression_data) <- clean_feature_names
+  rownames(expression_data) <- clean_feature_names
 
   #add to assays list
   assays[['expression_data']] <- expression_data
@@ -179,13 +177,16 @@ restructure_input_data <- function(expression_data, control, case){
   scaled_expression_data <- lapply(split_by_condition(dat = expression_data,
                                                       condition_levels = levels(condition_values),
                                                       condition_by_sample = condition_values),
-                                   function(x) scale(t(x)))
+                                   function(x) t(scale(t(x))))
 
   #combine scaled data into one matrix
-  scaled_expression_data <- rbind(scaled_expression_data[[1]], scaled_expression_data[[2]])
+  scaled_expression_data <- cbind(scaled_expression_data[[1]], scaled_expression_data[[2]])
 
   #order samples to be same as un-scaled
-  scaled_expression_data <- scaled_expression_data[rownames(expression_data), ]
+  scaled_expression_data <- scaled_expression_data[, colnames(expression_data)]
+
+  #order group_labels to make sure that still matches
+  condition_values <- condition_values[colnames(expression_data)]
 
   message('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!\n')
 
@@ -197,6 +198,7 @@ restructure_input_data <- function(expression_data, control, case){
   metadata[["samples"]] <- data.frame(samples = sample_names,
                                       conditions = condition_values,
                                       row.names = sample_names)
+
   metadata[["features"]] <- data.frame(feature_names = feature_names,
                                        clean_feature_names = clean_feature_names,
                                        row.names = feature_names)
@@ -251,8 +253,8 @@ restructure_input_data <- function(expression_data, control, case){
 dataDiagnostics <- function(mat, condition_values, conditions) {
 
   ##set necessary parameters
-  num_features <- ncol(mat)
-  num_samples <- nrow(mat)
+  num_features <- nrow(mat)
+  num_samples <- ncol(mat)
 
   ##split data by condition
   separated_conditions_scaled <- split_by_condition(dat = mat,
@@ -317,9 +319,9 @@ metabDE <- function(mat,
                     conditions){
 
   ##set necessary parameters and output
-  num_features <- ncol(mat)
-  num_samples <- nrow(mat)
-  feature_info <- data.frame('Features' = colnames(mat))
+  num_features <- nrow(mat)
+  num_samples <- ncol(mat)
+  feature_info <- data.frame(clean_feature_names = rownames(mat))
 
   ##split data by condition
   cond_data <- split_by_condition(dat = mat,

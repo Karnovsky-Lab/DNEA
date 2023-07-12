@@ -591,9 +591,9 @@ getNetworks <- function(object,
 #' @import igraph
 #' @export
 clusterNet <- function(object,
-                                tau = 0.5,
-                                max_iterations = 5,
-                                eps_threshold = 1e-06){
+                       tau = 0.5,
+                       max_iterations = 5,
+                       eps_threshold = 1e-06){
 
 
   ###########################
@@ -753,7 +753,7 @@ runNetGSA <- function(object, min_size = 5){
   ##set input variables
   adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
                              list(adjacencyMatrix(x = object, weighted = TRUE)[[2]]))
-  expression_data <- t(expressionData(object, normalized = FALSE))
+  expression_data <- expressionData(object, normalized = FALSE)
   data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
   subnetworks <- as.matrix(subnetworkMembership(object))
 

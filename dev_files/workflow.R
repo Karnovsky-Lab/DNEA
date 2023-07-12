@@ -6,9 +6,14 @@ set.seed(101)
 
 dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 rownames(dat) <- dat$sample
-dat<- dat[,-1]
+group_labels <- dat$group
+names(group_labels) <- dat$sample
+group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
+group_labels[1:10]
+dat<- dat[,-c(1,2)]
+dat <- t(dat)
 
-object<-createDNEAobject(project_name = 'testing', expression_data = dat, case = 'DM:case', control = 'DM:control')
+object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
 

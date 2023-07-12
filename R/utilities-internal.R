@@ -17,7 +17,7 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
   names(separated_conditions_data) <- condition_levels
 
   for(cond in condition_levels){
-    separated_conditions_data[[cond]] <- t(dat)[,(condition_by_sample == cond)]
+    separated_conditions_data[[cond]] <- dat[,condition_by_sample == cond]
 
   }
   return(separated_conditions_data)
