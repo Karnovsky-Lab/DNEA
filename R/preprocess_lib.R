@@ -57,6 +57,8 @@ getConsensusMatrix <- function(cluster_results){
 #' interaction
 #'
 #' @returns A list containing the clustering results from each of the seven algorithms
+#'
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @keywords internal
 #' @noRd
 ensembl_cluster <- function(adjacency_graph,
@@ -66,19 +68,22 @@ ensembl_cluster <- function(adjacency_graph,
   ##initiate list
   clustering_results <- vector("list", length = 7)
 
+  #set progress bar
+  prog_bar <- txtProgressBar(min = 0, max = 7, style = 3, width = 50, char = "=")
+
   ##perform clustering
-  clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = graph_weights)
-  clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = graph_weights)
-  clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = graph_weights)
-  clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = graph_weights)
-  clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = graph_weights)
-  clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = graph_weights)
+  clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 1)
+  clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 2)
+  clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = graph_weights); setTxtProgressBar(prog_bar, 3)
+  clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 4)
+  clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 5)
+  clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 6)
   clustering_results[[7]] <- tryCatch(cluster_leading_eigen(adjacency_graph, weights = graph_weights),
                                       error = function(some_error){
                                         message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
                                         message('This is a known issue with a dependency and will not affect your results')
                                         return(NA)
-                                      })
+                                      }); setTxtProgressBar(prog_bar, 7)
 
   return(clustering_results)
 }
@@ -115,22 +120,27 @@ ensembl_cluster <- function(adjacency_graph,
 #' @noRd
 run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
 
+  message(paste0("Initiating consensus cluster with a maximum of ", max_iterations, " iterations!"))
+  message("Constructing initial consensus matrix...")
   ##cluster the adjacency graph
   clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
 
   ##get consensus matrix
   consensus_matrix <- getConsensusMatrix(clustering_results[!(is.na(clustering_results))])
 
+
   ##set iter and start loop
   iter <- 0
-  for(x in 1:max_iterations){
+  for(x in seq(max_iterations)){
 
     ##stop iterations if at max
     if(length(table(consensus_matrix)) < 3){
 
-      message(paste0("Consensus was reached in: ", iter, " iterations!"))
+      message(paste0("\nConsensus was reached in: ", iter, " iterations!"))
       break
     }
+
+    message(paste0("\n...starting iteration ", iter + 1, "..."))
 
     ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0
