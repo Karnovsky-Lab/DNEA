@@ -50,7 +50,7 @@
 #' @return a DNEAresults object
 #'
 #' @examples
-#' #' #import example data
+#' #import example data
 #' data(TEDDY)
 #'
 #' #initiate DNEAresults object
@@ -93,14 +93,15 @@ createDNEAobject <- function(project_name,
   object <- new("DNEAresults",
                 project_name = project_name,
                 assays =  restructured_data[[1]],
-                metadata = restructured_data[[2]],
+                metadata = list(samples = restructured_data[[2]]$samples,
+                                features = restructured_data[[2]]$features,
+                                network_group_IDs = restructured_data[[2]]$samples$conditions,
+                                network_groups = levels(restructured_data[[2]]$samples$conditions)),
                 joint_graph = make_empty_graph(n = ncol(restructured_data[[1]][['scaled_expression_data']]),
                                                directed = TRUE),
                 hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
-
-  networkGroupIDs(object) <- "conditions"
 
   #perform diagnostic testing on dataset
   diagnostic_values <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),

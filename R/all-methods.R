@@ -103,10 +103,6 @@ networkGroupIDs.DNEAresults <- function(x){
 #' Access and set the experimental group labels utilized by DNEA
 #'
 #' This function accesses the experimental group labels for each sample stored in the @@metadata slot of a DNEAresults object.
-#' The user can also set a new experimental condition by providing a character string name corresponding to a column name
-#' of the sample metadata data.frame to use as the experimental groups. \emph{NOTE:} DNEA will only compare two exactly two groups.
-#' An experimental condition that is not a two-level factor will cause an error.
-#'
 #'
 #' @param x A DNEAresults object
 #' @param value a character string name corresponding to a column name of the sample metadata data.frame
@@ -117,20 +113,6 @@ networkGroupIDs.DNEAresults <- function(x){
 #' @rdname networkGroupIDs
 #' @export
 setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
-
-#' @rdname networkGroupIDs
-#' @export
-setMethod("networkGroupIDs<-", signature(x = "DNEAresults"), function(x, value){
-
-  #set new group ID's
-  if(length(unique(x@metadata$samples[[value]])) >2) stop("DNEA requires exactly two groups!")
-  x@metadata$network_group_IDs <- x@metadata$samples[[value]]
-
-  #update group levels
-  x@metadata$network_groups <- levels(x@metadata$samples[[value]])
-  validObject(x)
-  x
-})
 
 #' Retrieve the unique group values of the experimental condition
 #'
