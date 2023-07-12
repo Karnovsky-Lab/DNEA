@@ -1,5 +1,6 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
+library(BiocParallel)
 BP_plan <- SerialParam(RNGseed = 101)
 set.seed(101)
 
@@ -16,7 +17,7 @@ object <- getNetworks(object = object)
 
 #object <- filterNetworks(object, pcor = 0.3)
 # object <- filterNetworks(object, top_percent_edges = 0.2)
-object <- runConsensusCluster(object = object, tau = 0.5)
+object <- clusterNet(object = object, tau = 0.5)
 object <- runNetGSA(object)
 plotNetworks(object, type = "group_networks")
 plotNetworks(object, type = "subnetworks", subnetwork = 1)
