@@ -22,33 +22,7 @@
 # preprocess_lib.R.................contains the internal functions necessary for consensus clustering                                           #
 #################################################################################################################################################
 
-#' DNEA packge for joint estimation of biological networks
-#'
-#' DNEA is designed to take as input non-normalized, non-transformed expression data -omics data
-#' (metabolomics, lipidomics, protiomics) and normalize the data, optimize the regularization
-#' parameter and fit jointly estimate the biological networks across a specified experimental
-#' condition. After Network construction, the user may cluster them using to identify metabolic modules,
-#' or subnetworks, within the larger networks and subsequently test for enrichment across the experimental
-#' condition of said subnetworks using the \code{\link{netgsa, NetGSA}} algorithm.
-#'
-#' The main workflow contains the following functions:
-#' \enumerate{
-#' \item \strong{\code{\link{createDNEAobject}}}
-#' \item \strong{\code{\link{BICtune}}}
-#' \item \strong{\code{\link{stabilitySelection}}}
-#' \item \strong{\code{\link{getNetworks}}}
-#' \item \strong{\code{\link{clusterNet}}}
-#' \item \strong{\code{\link{runNetGSA}}}}
-#'
-#' A more descriptive workflow can be view via the package vignette. This can be accessed by running \code{vignette("DNEA")}. \cr
-#'
-#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEAdev}
-#'
-#' @docType package
-#' @name DNEA-package
-#' @keywords package
-
-#' "TEDDY" example data from xxx
+#' The example data from xxx
 #'
 #' This data is an \emph{n x m} expression matrix corresponding to a curated list of metabolites from "The Environmental Determinants of
 #' Diabetes in the Young" clinical trial.
@@ -60,3 +34,30 @@
 #' @source The raw data can be downloaded from the Metabolomics workbench under study ID \strong{ST001386}:
 #' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 "TEDDY"
+
+#' DNEA package for joint estimation of biological networks
+#'
+#' DNEA is designed to take as input non-normalized, non-transformed -omics data
+#' (ie. metabolomics, lipidomics, proteomics) and normalize the expression values, optimize the regularization
+#' parameter, and jointly estimate the biological networks across a user-specified experimental
+#' condition. The resulting networks may then be clustered to identify metabolic modules,
+#' aka subnetworks, within the larger networks. These subnetworks are then tested for enrichment across the experimental
+#' condition using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
+#'
+#' The main workflow contains the following functions:
+#' \enumerate{
+#' \item \strong{\code{\link{createDNEAobject}}}
+#' \item \strong{\code{\link{BICtune}}}
+#' \item \strong{\code{\link{stabilitySelection}}}
+#' \item \strong{\code{\link{getNetworks}}}
+#' \item \strong{\code{\link{clusterNet}}}
+#' \item \strong{\code{\link{runNetGSA}}}}
+#'
+#' A more descriptive workflow can be viewed in the package vignette. This can be accessed by running \code{vignette("DNEA")} in the console. \cr
+#'
+#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEAdev}
+#'
+#' @docType package
+#' @name DNEA-package
+#' @keywords package
+NULL
