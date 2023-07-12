@@ -1,27 +1,17 @@
 Package: DNEAdev
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+      person("Christopher", "Patsalis", , "patsalis@umich.edu", role = c("cre", "aut")),
+      person("Gayatri", "Iyer", ,"griyer@umich.edu", role = c("aut")))
+Maintainer: Christopher Patsalis <patsalis@umich.edu>
+Description: DNEA is designed to take as input non-normalized, non-transformed expression data -omics data 
+    (ie. metabolomics, lipidomics, proteomics) and normalize the data, optimize the regularization parameter 
+    and fit jointly estimate the biological networks across a specified experimental condition.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Collate: 
-    'JSEM.R'
-    'all-classes.R'
-    'all-generics.R'
-    'all-methods.R'
-    'preprocess_lib.R'
-    'utilities.R'
-    'MainFunctions.R'
-    'collapseNodes-fun.R'
-    'createDNEAobject.R'
-    'diagnostics.R'
-    'metabDE.R'
-    'start-here.R
 Imports: 
     autoimage,
     BiocParallel,
@@ -33,7 +23,17 @@ Imports:
     Matrix,
     methods,
     netgsa,
-    stringr,
-Depends: 
-    R (>= 2.10)
-LazyData: true
+    stats,
+    stringr
+Collate: 
+    'JSEM.R'
+    'start-here.R'
+    'all-classes.R'
+    'all-generics.R'
+    'all-methods.R'
+    'preprocess_lib.R'
+    'utilities-internal.R'
+    'utilities-external.R'
+    'MainFunctions.R'
+    'collapseNodes-fun.R'
+    'createDNEAobject.R'
