@@ -35,5 +35,4 @@ within \code{\link{createDNEAobject}}.
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

@@ -35,5 +35,4 @@ determined via \code{\link{getNetworks}}. \cr
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

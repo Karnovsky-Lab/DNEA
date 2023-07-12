@@ -24,4 +24,3 @@ This function takes in a DNEAresults object and returns the unique group values 
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

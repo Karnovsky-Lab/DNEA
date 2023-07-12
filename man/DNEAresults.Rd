@@ -3,67 +3,58 @@
 \docType{class}
 \name{DNEAresults-class}
 \alias{DNEAresults-class}
-\alias{collapsed_DNEAresults-class}
 \title{DNEAresults}
 \description{
 An s4 class to represent the DNEA workflow
-
-An s4 class to represent the DNEA workflow, including collapsing features. This class also inherits everything from
-/code{\link{DNEAresults-class}}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{project_name}}{A string name for the experiment}
+\item{\code{project_name}}{A character string name for the experiment}
 
 \item{\code{assays}}{A list of matrices, "expression_data" being non-normalized, non-transformed data and "scaled_expression_data"
 being normalized, log-transformed data. The row names and column names between the two must be identical
 (can access expression data via \code{\link{expressionData}})}
 
-\item{\code{metadata}}{A list of metadata containing a dataframe for sample metadata (rownames match the sample order of
-expression data), a dataframe for feature metadata (rownames match the feature order of expression data), a two-level
-factor corresponding to the two groups in the data, and a character vector the same length as the number of samples
-corresponding to the group membership for each sample (can add additional metadata via \code{\link{includeMetadata}})}
+\item{\code{metadata}}{A list of information about the data, including a data.frame for sample metadata (rownames must match the
+sample order of expression data), a data.frame for feature metadata (rownames must match the feature order of expression
+data), a two-level factor corresponding to the two groups in the data, and a character vector the same length as the
+number of samples corresponding to the group membership for each sample (the user may add additional metadata via
+\code{\link{includeMetadata}})}
 
-\item{\code{dataset_summary}}{A DNEAinputSummary object (can view via \code{\link{datasetSummary}} and \code{\link{diagnostics}})}
+\item{\code{dataset_summary}}{A DNEAinputSummary object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})}
 
-\item{\code{node_list}}{A data frame containing all of the features in the dataset as rows as well as the differential expression
+\item{\code{node_list}}{A data.frame containing all of the features in the dataset as rows as well as the differential expression
 analysis results (can view the node list via \code{\link{nodeList}})}
 
-\item{\code{edge_list}}{A data frame containing the network edges identified via \code{\link{getNetworks}} (can view the edge
+\item{\code{edge_list}}{A data.frame containing the network edges identified via \code{\link{getNetworks}} (can view the edge
 list via \code{\link{edgeList}})}
 
 \item{\code{hyperparameter}}{A list of results obtained from \code{\link{BICtune}} containing a numeric vector of the lambda values
-tested during optimization, the resulting bayesian-information criterion and liklihood scores for each lambda value, and the
+tested during optimization, the resulting bayesian-information criterion and likelihood scores for each lambda value, and the
 optimized lambda for analysis (optimized lambda can be accessed or changed via \code{\link{optimizedLambda}})}
 
-\item{\code{adjacency_matrix}}{A list of adjacency matrices determined via \code{\link{getNetworks}} (can be accessed via
-\code{\link{adjacencyMatrix}})}
+\item{\code{adjacency_matrix}}{A list of adjacency matrices, one for each experimental condition, jointly estimated  via
+\code{\link{getNetworks}} (can be accessed via \code{\link{adjacencyMatrix}})}
 
-\item{\code{stable_networks}}{A list of the selection results and selection probabilities for every possible feature-feature
-edge (can be accessed via \code{\link{selectionResults}} and \code{\link{selectionProbabilities}})}
+\item{\code{stable_networks}}{A list of the selection results and selection probabilities, one for each experimental condition,
+for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
+\code{\link{selectionProbabilities}})}
 
-\item{\code{joint_graph}}{The igraph graph object resulting from consensus clustering via \code{\link{runConsensusCluster}}}
+\item{\code{joint_graph}}{The igraph adjacency graph object resulting from consensus clustering via \code{\link{clusterNet}}}
 
 \item{\code{consensus_clustering}}{A consensusClusteringResults object containing the results from consensus clustering
-via \code{\link{runConsensusCluster}}}
+via \code{\link{clusterNet}}}
 
-\item{\code{netGSA}}{a data frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
+\item{\code{netGSA}}{a data.frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
 Each row is a subnetwork tested for enrichment}
-
-\item{\code{original_experiment}}{A DNEAresults object input prior to collapsing features via \code{\link{reduceFeatures}}}
-
-\item{\code{feature_membership}}{A data frame containing the all of the features from the original input data and their
-corresponding group membership in the collapsed data}
 }}
 
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{expressionData}}, \code{\link{includeMetadata}},
 \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
-\code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{runConsensusCluster}},
+\code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{clusterNet}},
 \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
-
-\code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
 }
 \author{
 Christopher Patsalis

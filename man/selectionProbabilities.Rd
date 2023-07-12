@@ -36,5 +36,4 @@ within \code{\link{stabilitySelection}}.
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

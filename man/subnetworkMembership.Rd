@@ -28,4 +28,3 @@ and returns the results of consensus clustering determined via \code{\link{clust
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

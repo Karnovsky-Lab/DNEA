@@ -5,7 +5,7 @@
 \alias{networkGroupIDs<-}
 \alias{networkGroupIDs,DNEAresults-method}
 \alias{networkGroupIDs<-,DNEAresults-method}
-\title{Access or set the experimental group information utilized by DNEA}
+\title{Access and set the experimental group labels utilized by DNEA}
 \usage{
 networkGroupIDs(x)
 
@@ -16,15 +16,18 @@ networkGroupIDs(x) <- value
 \S4method{networkGroupIDs}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A DNEAobject or DNEAobject_collapsed}
+\item{x}{A DNEAresults object}
+
+\item{value}{a character string name corresponding to a column name of the sample metadata data.frame}
 }
 \value{
 A vector of the unique condition labels
 }
 \description{
-This function takes in a DNEAresults or collapsed_DNEAresults object and returns the unique condition
-labels located in the metadata slot of the object. The user can also set new group labels by providing a string name
-corresponding to the column name of the sample metadata dataframe to use as the experimental groups.
+This function accesses the experimental group labels for each sample stored in the @metadata slot of a DNEAresults object.
+The user can also set a new experimental condition by providing a character string name corresponding to a column name
+of the sample metadata data.frame to use as the experimental groups. \emph{NOTE:} DNEA will only compare two exactly two groups.
+An experimental condition that is not a two-level factor will cause an error.
 }
 \seealso{
 \code{\link{includeMetadata}}
@@ -32,4 +35,3 @@ corresponding to the column name of the sample metadata dataframe to use as the 
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

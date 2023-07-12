@@ -17,6 +17,8 @@ optimizedLambda(x) <- value
 }
 \arguments{
 \item{x}{A DNEAresults object}
+
+\item{value}{a single-value numeric vector corresponding to the lambda value to use in analysis}
 }
 \value{
 The optimized lambda hyperparameter
@@ -31,4 +33,3 @@ used for the analysis. The user may also provide a single-value numeric vector t
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

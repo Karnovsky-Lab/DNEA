@@ -4,6 +4,7 @@
 \alias{BICscores}
 \alias{BICscores<-}
 \alias{BICscores,DNEAresults-method}
+\alias{BICscores<-,DNEAresults-method}
 \title{Access the BIC scores for each lambda value evaluated}
 \usage{
 BICscores(x)
@@ -11,6 +12,8 @@ BICscores(x)
 BICscores(x) <- value
 
 \S4method{BICscores}{DNEAresults}(x)
+
+\S4method{BICscores}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAresults object}
@@ -20,7 +23,11 @@ The optimized lambda hyperparameter
 }
 \description{
 The function takes as input a DNEAresults object and returns the BIC values for each lambda tested during
-hyperparameter optimization performed via BICtune().
+hyperparameter optimization performed via BICtune(). \cr
+}
+\details{
+\emph{FOR INTERNAL USE ONLY -} This function is also used to input BIC scores into the DNEAresults object
+within \code{\link{BICtune}}.
 }
 \seealso{
 \code{\link{BICtune}}
@@ -28,4 +35,4 @@ hyperparameter optimization performed via BICtune().
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
+\keyword{internal}

@@ -16,10 +16,10 @@ featureNames(x, original = TRUE)
 names that have been modified to avoid errors as a result of special characters.}
 }
 \value{
-A vector of feature names
+A character vector of feature names
 }
 \description{
-This function takes in a DNEAresults object and return the specified feature names located in the metadata slot of the object.
+This function accesses the feature names stored in the @metadata slot of the DNEAresults object.
 }
 \seealso{
 \code{\link{createDNEAobject}}
@@ -27,4 +27,3 @@ This function takes in a DNEAresults object and return the specified feature nam
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

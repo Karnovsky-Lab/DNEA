@@ -22,4 +22,3 @@ consensus clustering determined via \code{\link{clusterNet}}.
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

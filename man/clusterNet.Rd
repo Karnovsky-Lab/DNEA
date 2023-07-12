@@ -17,31 +17,36 @@ clusterNet(object, tau = 0.5, max_iterations = 5, eps_threshold = 1e-06)
 threshold will be removed.}
 }
 \value{
-A DNEAobject containing sub-network determinations for the nodes within the input network.
-A summary of the consensus clustering results can be viewed using getClusterResults().
-Sub-network classification for each node can be found in the node_list slot of the returned
-DNEAobject.
+A DNEAresults object containing sub-network determinations for the nodes within the input network.
+A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
+Sub-network membership for each node can be found in the "membership" column of the node list, which can be
+viewed using \code{\link{nodeList}}.
 }
 \description{
-This function clusters the adjacency matrix constructed using \code{\link{getNetworks}} via the consensus clustering
-approach described in Ma et al. For each iteration, only clusters that meet or exceed the consensus threshold (tau) are recognized. A
-new graph is then constructed and a another iteration of clustering is performed until consensus or the maximum number of iterations (maxIter) is reached.
+This function clusters the jointly estimated adjacency matrix constructed using \code{\link{getNetworks}} via
+the consensus clustering approach described in Ma et al (\emph{Please see the \strong{\emph{Details}} section for more
+information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
+Only subnetworks with consensus that meets or exceeds tau are identified as real.
 }
 \details{
-#' Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
+Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
 \enumerate{
-\item \strong{\code{\link{igraph::cluster_edge_betweenness}}}
-\item \strong{\code{\link{igraph::cluster_fast_greedy}}}
-\item \strong{\code{\link{igraph::cluster_infomap}}}
-\item \strong{\code{\link{igraph::cluster_label_prop}}}
-\item \strong{\code{\link{igraph::cluster_louvain}}}
-\item \strong{\code{\link{igraph::cluster_walktrap}}}
-\item \strong{\code{\link{igraph::cluster_leading_eigen}}}}
+\item \code{\link[igraph:cluster_edge_betweenness]{igraph::cluster_edge_betweenness()}}
+\item \code{\link[igraph:cluster_fast_greedy]{igraph::cluster_fast_greedy()}}
+\item \code{\link[igraph:cluster_infomap]{igraph::cluster_infomap()}}
+\item \code{\link[igraph:cluster_label_prop]{igraph::cluster_label_prop()}}
+\item \code{\link[igraph:cluster_louvain]{igraph::cluster_louvain()}}
+\item \code{\link[igraph:cluster_walktrap]{igraph::cluster_walktrap()}}
+\item \code{\link[igraph:cluster_leading_eigen]{igraph::cluster_leading_eigen()}}}
 
-These algorithms are performed iteratively on the adjacency matrix constructed using \code{\link{getNetworks}} until a consensus
-is reached on resulting subnetwork membership, or the specified max_iterations is reached \emph{(Please see references for more details)}.
+For each iteration, node membership in each respective cluster is compared across the algorithms, and only the clusters with \% agreement
+greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
+on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
 }
 \examples{
+#load BiocParallel
+library(BiocParallel)
+
 #import example data
 data(TEDDY)
 
@@ -76,7 +81,7 @@ Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Po
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
-\code{\link{thresholdNetworks}}, \code{\link{plotNetworks}}
+\code{\link{filterNetworks}}, \code{\link{plotNetworks}}
 }
 \author{
 Christopher Patsalis

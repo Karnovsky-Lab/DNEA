@@ -27,4 +27,3 @@ This function prints to console the total number of samples in the dataset
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

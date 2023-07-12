@@ -18,11 +18,10 @@ stabilitySelection(
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
 
-\item{nreps}{The total number of replicates to perform stability selection; The default is 500.
-Performing a high number of replicates becomes increasingly important as datasets decrease in size.}
+\item{nreps}{The total number of replicates to perform in stability selection. The default is 500.}
 
-\item{optimal_lambda}{\emph{\strong{OPTIONAL}} The optimal lambda value to be used in the model. This parameter is only
-necessary if BICtune() is not performed}
+\item{optimal_lambda}{\emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
+necessary if \code{\link{BICtune}} is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
 }
@@ -31,14 +30,15 @@ A DNEAresults object after populating the stable_networks slot of the object. It
 results from stability selection as well as the calculated selection probabilities
 }
 \description{
-This function randomly samples the input data and fits a glasso model with the sampled data for \emph{nreps} number of replicates.
-The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated. The
+This function randomly samples the input data and fits a glasso model with the sampled data for \strong{\emph{nreps}} number of replicates.
+The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated.
+Stability selection is particularly useful for smaller datasets and when a large number of replicates are performed (the default is 500). The
 exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
 found in the \strong{\emph{Details}} section.
 }
 \details{
 Stability selection provides an additional approach by which to regularize the network model and create more robust results,
-particularly when \strong{\emph{p >>> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
+particularly when \strong{\emph{p >> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
 a glasso model to each subset of sampled data. The unwieghted adjacency matrix from each model is summed together
 (A feature-feature interaction is considered present if the partial correlation value is above 1e-5), and the probability of
 an edge being selected in a random subset of the data is calculated by dividing the number of times an edge was selected in
@@ -49,7 +49,7 @@ that is used to modify the regularization parameter via the following equation:
 However, when the sample groups are very unbalanced randomly sampling strongly favors the larger group, resulting in
 over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
 sample by sub-sampling the groups individually to even out the numbers. In this method, 90\% of the smaller group is randomly
-sampled without replacement, and an additional 10\% is randomly sampled without replacement from the full group and added together.
+sampled without replacement, and an additional 10\% is randomly sampled without replacement and added together.
 The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
 each group is equally represented in stability selection.  \cr
 
@@ -61,6 +61,9 @@ models are fit in total \emph{without} sub-sampling, but 500 randomly sampled mo
 More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 }
 \examples{
+#load BiocParallel
+library(BiocParallel)
+
 #import example data
 data(TEDDY)
 

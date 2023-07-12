@@ -13,10 +13,10 @@ sampleNames(x)
 \item{x}{A DNEAresults object}
 }
 \value{
-A vector of sample names
+A character vector of sample names
 }
 \description{
-This function takes in a DNEAresults object and return the sample names located in the metadata slot of the object.
+This function accesses the sample names stored in the @metadata slot of the DNEAresults object.
 }
 \seealso{
 \code{\link{createDNEAobject}}
@@ -24,4 +24,3 @@ This function takes in a DNEAresults object and return the sample names located 
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

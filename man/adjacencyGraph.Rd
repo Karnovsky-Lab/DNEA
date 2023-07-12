@@ -22,14 +22,14 @@ adjacencyGraph(x, graph) <- value
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph) <- value
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{x}{A DNEAresults or consensusClusteringResults object}
 }
 \value{
 An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
 }
 \description{
-The function takes as input a DNEAresults object or consensusClusteringResults object and returns the adjacency graph
-made for the case, control, or joint network determined via \code{\link{clusterNet}}. \cr
+The function  returns the adjacency graph made for the case, control, or joint network determined via
+\code{\link{clusterNet}}. \cr
 }
 \details{
 \emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the adjacency graphs created during
@@ -42,5 +42,4 @@ DNEAresults object
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

@@ -2,13 +2,10 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{projectName}
 \alias{projectName}
-\alias{projectName<-}
 \alias{projectName,DNEAresults-method}
 \title{Return the name of the current experiment}
 \usage{
 projectName(x)
-
-projectName(x) <- value
 
 \S4method{projectName}{DNEAresults}(x)
 }
@@ -19,7 +16,7 @@ projectName(x) <- value
 The name of the DNEA experiment
 }
 \description{
-projectName() returns the name of the current experiment and allows the user to change the name as well
+This function returns the name of the DNEA experiment
 }
 \seealso{
 \code{\link{createDNEAobject}}
@@ -27,4 +24,3 @@ projectName() returns the name of the current experiment and allows the user to 
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

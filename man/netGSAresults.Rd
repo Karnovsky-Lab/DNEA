@@ -29,10 +29,9 @@ The function takes as input a DNEAresults object and returns the netGSA results 
 \code{\link{runNetGSA}} into the netGSA slot of the DNEAresults object.
 }
 \seealso{
-\code{\link{runNetGSA}}, \code{\link{netgsa, NetGSA}}
+\code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 }
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

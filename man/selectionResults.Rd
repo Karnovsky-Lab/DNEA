@@ -31,10 +31,9 @@ possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 within \code{\link{stabilitySelection}}.
 }
 \seealso{
-\code{\link{stabilitySelection}}, \code{\link{selectionProbabilites}}
+\code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}
 }
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

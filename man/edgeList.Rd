@@ -26,13 +26,12 @@ The function takes as input a DNEAresults object and returns the edge list creat
 }
 \details{
 \emph{FOR INTERNAL USE ONLY -} This function is also used to input the edge list into the DNEAresults object
-within \code{\link{getNetworks}} and \code{\link{thresholdNetworks}}.
+within \code{\link{getNetworks}} and \code{\link{filterNetworks}}.
 }
 \seealso{
-\code{\link{getNetworks}}, \code{\link{thresholdNetworks}}, \code{\link{getNetworkFiles}}
+\code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}
 }
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

@@ -34,5 +34,4 @@ within \code{\link{createDNEAobject}} and add the subnetwork membership in \code
 \author{
 Christopher Patsalis
 }
-\keyword{helper}
 \keyword{internal}

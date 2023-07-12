@@ -20,7 +20,7 @@ subnework a given feature belongs to, if any.}
 }}
 
 \seealso{
-\code{\link{runConsensusCluster}}
+\code{\link{clusterNet}}
 }
 \author{
 Christopher Patsalis

@@ -15,11 +15,11 @@ expressionData(x, normalized)
 \item{normalized}{A boolean indicating whether the normalized or original input data should be returned}
 }
 \value{
-The indicated expression expression matrix
+The expression matrix specified by the user.
 }
 \description{
-The assays slot holds the expression data in a n x m matrix, with one row for each sample, and
-one column for each feature.
+This function accesses the expression data stored in the @assays slot of the DNEAresults object. The output is an
+\emph{n x m} matrix with one row for each sample and one column for each feature in the data.
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
@@ -27,4 +27,3 @@ one column for each feature.
 \author{
 Christopher Patsalis
 }
-\keyword{helper}

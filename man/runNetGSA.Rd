@@ -12,15 +12,18 @@ runNetGSA(object, min_size = 5)
 \item{min_size}{The minimum size of metabolic modules for enrichment analysis}
 }
 \value{
-A DNEAobject containing containing results from NetGSA. Pathway expression differences for
+A DNEAresults object after populating the @netGSA slot. Pathway expression differences for
 each node can be found in the node_list. A summary of the NetGSA results can be viewed
-using getNetGSAresults()
+using \code{\link{netGSAresults}}.
 }
 \description{
 This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
-using the \code{\link{netgsa}} algorithm.
+using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 }
 \examples{
+#load BiocParallel
+library(BiocParallel)
+
 #import example data
 data(TEDDY)
 

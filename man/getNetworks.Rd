@@ -9,25 +9,28 @@ getNetworks(object, optimal_lambda, eps_threshold = 1e-06)
 \arguments{
 \item{object}{A DNEAresults object}
 
-\item{optimal_lambda}{\emph{\strong{OPTIONAL}} The lambda hyperparameter to be used in analysis. Not necessary if \code{\link{BICtune}}
+\item{optimal_lambda}{\emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
 or \code{\link{stabilitySelection}} were already performed}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
-Edges with a partial correlation value below this threshold will be zero'd out from the adjacency matrix.}
+Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.}
 }
 \value{
 A DNEAresults object after populating the adjaceny_matrix and edge_list slots with the corresponding
 adjacency_matrix for each sample condition as well as the network edge list.
 }
 \description{
-This function constructs the biological network for each sample condition using the joint estimation method described
+This function constructs the biological network for each experimental condition using the joint estimation method described
 in Ma et al. (2019) (\emph{please see references below}). If \code{\link{BICtune}} and \code{\link{stabilitySelection}}
 were already run, the optimized lambda and selection probabilities from each function, respectively, will be used to
 add regularization when constructing the networks (please see the \strong{\emph{Details}} section of \code{\link{stabilitySelection}}
-for more information). Otherwise, \eq{\lambda = \sqrt{\ln (num. features) / num. samples}}{lambda = \sqrt{\ln (num. features) \ num. samples}}
+for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 will be used as the regularization parameter.
 }
 \examples{
+#load BiocParallel
+library(BiocParallel)
+
 #import example data
 data(TEDDY)
 

@@ -14,23 +14,18 @@ reduceFeatures(
 \arguments{
 \item{object}{A DNEAresults object}
 
-\item{method}{A parameter that dictates the collapsing method to use. The options are
-as follows:
-\enumerate{
-\item correlation
-\item knowledge
-\item hybrid}}
+\item{method}{A character string that dictates the collapsing method to use. The available methods are: "correlation",
+"knowledge", or "hybrid"}
 
 \item{correlation_threshold}{A threshold wherein features correlated above correlation_threshold
-will be grouped into one. This parameter is only necessary for the correlation and hybrid
+will be collapsed into one. This parameter is only necessary for the correlation and hybrid
 methods}
 
-\item{feature_groups}{A dataframe containing group information for the collapsing algorithm
+\item{feature_groups}{A data.frame containing group information for the collapsing algorithm
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A collapsed_DNEAresults object containing the original DNEAresults object as well as a new object with the
-collapsed dataset
+A collapsed_DNEAresults object
 }
 \description{
 This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
@@ -55,9 +50,10 @@ limited number of cpu cores or memory). Collapsing related features into groups 
 reduce the complexity of the analysis, and as a result decrease the necessary resources.  \cr
 
 In a related scenario, you may also have many highly-correlated features of the same class of compounds
-(ie. fatty acids or carnitines, respectively), and network analysis at the resolution of these individual features is not
-important or it is adding complexity to the analysis \strong{(Please see \code{\link{createDNEAobject}})}.
-This scenario is also a reasonable motivation to collapse features.  \cr
+(ie. fatty acids, carnitines, etc.), and network analysis at the resolution of these individual features is not
+important. Collapsing features would decrease the computing time without losing critical information to the analysis
+(Please see the \strong{\emph{Details}} section of \code{\link{createDNEAobject}} for more information about the motivation
+behind collapsing highly correlated features). \cr
 
 Ultimately, this function allows the user to reduce the complexity of the dataset and reduce the computational power necessary
 for the analysis and/or also improve the quality of the results. The most appropriate method to use when collapsing data
@@ -66,7 +62,7 @@ method and the best use cases:  \cr
 
 \enumerate{
 \item \strong{correlation-based - } The user specifies a correlation threshold wherein features with a higher pearson correlation value
-than the threshold are collapsed into one group. This approach is best when no prior information about the features are known.\cr
+than the threshold are collapsed into one group. This approach is best when no prior information about the features are known. \cr
 
 \item \strong{knowledge-based - } The user specifies feature groups based on a priori information (ie. all of the carnitines in a dataset
 are specified as a single group) and the features within each group are collapsed into one feature. This approach is best in
@@ -89,13 +85,13 @@ DNEA <- createDNEAobject(expression_data = TEDDY,
                          control = "DM:control")
 
 #simulate group labels
-TEDDY_groups <- data.frame(features = colnames(expressionData(object, type = "input")),
+TEDDY_groups <- data.frame(features = colnames(expressionData(object, normalized = FALSE)),
                            groups = c(colnames(TEDDY)[seq(2, 101)],
                                       rep("group1", 10),
                                       rep("group2", 10),
                                       rep("group3", 10),
                                       rep("group4", 14)),
-                           row.names = colnames(expressionData(object, type = "input")))
+                           row.names = colnames(expressionData(object, normalized = FALSE)))
 
 collapsed_DNEA <- reduceFeatures(object = DNEA,
                                  method = "hybrid",
