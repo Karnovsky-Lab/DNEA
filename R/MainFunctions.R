@@ -1,18 +1,19 @@
 #' @include JSEM.R
-#' @include utilities.R
+#' @include utilities-external.R
+#' @include utilities-internal.R
 #' @include preprocess_lib.R
 #' @include all-methods.R
 #' @include all-generics.R
 #' @include all-classes.R
-#'
+#' @include start-here.R
 NULL
 
 #' Optimize the lambda regularization parameter for the glasso-based network models using Bayesian-information Criterion
 #'
 #' This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
-#' determined by the number of features within the dataset. The lambda value with the minimum BIC score is
-#' the optimal lambda value for the respective dataset and is stored in the DNEAresults object for
-#'  use in stability selection using \code{\link{stabilitySelection}} and network generation using
+#' that are automatically generated (\emph{please see \strong{Details} for more info}) or that are user-specified.
+#' The lambda value with the minimum BIC score is the optimal lambda value for the dataset and is stored in the
+#' DNEAresults object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
 #'  \code{\link{getNetworks}}
 #'
 #' @param object A DNEAresults object. See \code{\link{createDNEAobject}}
@@ -31,21 +32,23 @@ NULL
 #' @references Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 #'
 #' @details
-#' There are several ways to optimize the lambda parameter for a GGM model, the two most common utilizing Bayesian-information criterion to select the optimal value,
-#' or through cross-validation wherein many values are tested to find the optimal parameter. We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-#' DNEA for a number of reasons. BIC is a more balanced method and less computationally expensive. We can reduce the total number of values that
+#' There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
+#' DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
 #' need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
 #'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
-#' For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c.
-#' Generally, c falls between 0.01 and 0.3, but it needs to be determined mathematically. Therefore, to optimize lambda we
-#' modify the previous equation as follows: \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
-#' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimizatio method deployed here can be found
+#' For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,
+#' that needs to be determined mathematically. Therefore, to optimize lambda we modify the previous equation as follows:
+#' \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
+#' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimization method deployed here can be found
 #' in the Guo et al. (2011) paper referenced below.
 #'
 #' @return A DNEAresults object containing the BIC and liklihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -58,8 +61,7 @@ NULL
 #' #optimize lambda parameter
 #' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 #'
-#' @include JSEM.R
-#' @include utilities.R
+#' @import glasso
 #' @import BiocParallel
 #' @export
 BICtune <- function(object,
@@ -94,8 +96,7 @@ BICtune <- function(object,
   #**Initialize workers and optimize lambda **#
   #############################################
 
-  message("Optimizing the lambda hyperparameter using Bayesian-Information
-          Criterion outlined in Guo et al. (2011)", appendLF = TRUE)
+  message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)", appendLF = TRUE)
   message("A Link to this reference can be found in the function documentation by running ?BICtune() in the console", appendLF = TRUE)
 
   BIC_guo <- BiocParallel::bplapply(X = lambda_values,
@@ -144,18 +145,18 @@ BICtune <- function(object,
 
 #' Stability selection to calculate selection probabilities for every possible feature-feature interaction within the data
 #'
-#' This function randomly samples the input data and fits a glasso model with the sampled data for \emph{nreps} number of replicates.
-#' The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated. The
+#' This function randomly samples the input data and fits a glasso model with the sampled data for \strong{\emph{nreps}} number of replicates.
+#' The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated.
+#' Stability selection is particularly useful for smaller datasets and when a large number of replicates are performed (the default is 500). The
 #' exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
 #' found in the \strong{\emph{Details}} section.
 #'
 #' @param object A DNEAresults object
 #' @param subSample A boolean that specifies whether the number of samples are unevenly split
 #'         by condition and, therefore, should be adjusted for when randomly sampling.
-#' @param nreps The total number of replicates to perform stability selection; The default is 500.
-#'        Performing a high number of replicates becomes increasingly important as datasets decrease in size.
-#' @param optimal_lambda ***OPTIONAL*** The optimal lambda value to be used in the model. This parameter is only
-#'        necessary if BICtune() is not performed
+#' @param nreps The total number of replicates to perform in stability selection. The default is 500.
+#' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
+#'        necessary if \code{\link{BICtune}} is not performed
 #' @param BPPARAM a BiocParallel object
 #'
 #' @author Christopher Patsalis
@@ -168,7 +169,7 @@ BICtune <- function(object,
 #'
 #' @details
 #' Stability selection provides an additional approach by which to regularize the network model and create more robust results,
-#' particularly when \strong{\emph{p >>> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
+#' particularly when \strong{\emph{p >> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
 #' a glasso model to each subset of sampled data. The unwieghted adjacency matrix from each model is summed together
 #' (A feature-feature interaction is considered present if the partial correlation value is above 1e-5), and the probability of
 #' an edge being selected in a random subset of the data is calculated by dividing the number of times an edge was selected in
@@ -179,7 +180,7 @@ BICtune <- function(object,
 #' However, when the sample groups are very unbalanced randomly sampling strongly favors the larger group, resulting in
 #' over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
 #' sample by sub-sampling the groups individually to even out the numbers. In this method, 90% of the smaller group is randomly
-#' sampled without replacement, and an additional 10% is randomly sampled without replacement from the full group and added together.
+#' sampled without replacement, and an additional 10% is randomly sampled without replacement and added together.
 #' The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
 #' each group is equally represented in stability selection.  \cr
 #'
@@ -195,6 +196,9 @@ BICtune <- function(object,
 #' results from stability selection as well as the calculated selection probabilities
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -210,6 +214,7 @@ BICtune <- function(object,
 #' # perform stability selection
 #' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
 #'
+#' @import glasso
 #' @import BiocParallel
 #' @export
 stabilitySelection <- function(object,
@@ -335,18 +340,18 @@ stabilitySelection <- function(object,
 
 #' Construct the GLASSO-based biological Networks
 #'
-#' This function constructs the biological network for each sample condition using the joint estimation method described
+#' This function constructs the biological network for each experimental condition using the joint estimation method described
 #' in Ma et al. (2019) (\emph{please see references below}). If \code{\link{BICtune}} and \code{\link{stabilitySelection}}
 #' were already run, the optimized lambda and selection probabilities from each function, respectively, will be used to
 #' add regularization when constructing the networks (please see the \strong{\emph{Details}} section of \code{\link{stabilitySelection}}
-#' for more information). Otherwise, \eq{\lambda = \sqrt{\ln (num. features) / num. samples}}{lambda = \sqrt{\ln (num. features) \ num. samples}}
+#' for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #' will be used as the regularization parameter.
 #'
 #' @param object A DNEAresults object
-#' @param optimal_lambda ***OPTIONAL*** The lambda hyperparameter to be used in analysis. Not necessary if \code{\link{BICtune}}
+#' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
 #'        or \code{\link{stabilitySelection}} were already performed
 #' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
-#' Edges with a partial correlation value below this threshold will be zero'd out from the adjacency matrix.
+#' Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.
 #'
 #' @author Christopher Patsalis
 #'
@@ -362,6 +367,9 @@ stabilitySelection <- function(object,
 #' adjacency_matrix for each sample condition as well as the network edge list.
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -509,9 +517,10 @@ getNetworks <- function(object,
 }
 #' Identify metabolic modules within the biological networks using a consensus clustering approach
 #'
-#' This function clusters the adjacency matrix constructed using \code{\link{getNetworks}} via the consensus clustering
-#' approach described in Ma et al. For each iteration, only clusters that meet or exceed the consensus threshold (tau) are recognized. A
-#' new graph is then constructed and a another iteration of clustering is performed until consensus or the maximum number of iterations (maxIter) is reached.
+#' This function clusters the jointly estimated adjacency matrix constructed using \code{\link{getNetworks}} via
+#' the consensus clustering approach described in Ma et al (\emph{Please see the \strong{\emph{Details}} section for more
+#' information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
+#' Only subnetworks with consensus that meets or exceeds tau are identified as real.
 #'
 #' @param object A DNEAresults object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
@@ -523,31 +532,35 @@ getNetworks <- function(object,
 #'
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 #' \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
-#' \code{\link{thresholdNetworks}}, \code{\link{plotNetworks}}
+#' \code{\link{filterNetworks}}, \code{\link{plotNetworks}}
 #'
 #' @references
 #' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
 #' @details
-#' #' Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
+#' Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
 #' \enumerate{
-#' \item \strong{\code{\link{igraph::cluster_edge_betweenness}}}
-#' \item \strong{\code{\link{igraph::cluster_fast_greedy}}}
-#' \item \strong{\code{\link{igraph::cluster_infomap}}}
-#' \item \strong{\code{\link{igraph::cluster_label_prop}}}
-#' \item \strong{\code{\link{igraph::cluster_louvain}}}
-#' \item \strong{\code{\link{igraph::cluster_walktrap}}}
-#' \item \strong{\code{\link{igraph::cluster_leading_eigen}}}}
+#' \item \code{\link[igraph:cluster_edge_betweenness]{igraph::cluster_edge_betweenness()}}
+#' \item \code{\link[igraph:cluster_fast_greedy]{igraph::cluster_fast_greedy()}}
+#' \item \code{\link[igraph:cluster_infomap]{igraph::cluster_infomap()}}
+#' \item \code{\link[igraph:cluster_label_prop]{igraph::cluster_label_prop()}}
+#' \item \code{\link[igraph:cluster_louvain]{igraph::cluster_louvain()}}
+#' \item \code{\link[igraph:cluster_walktrap]{igraph::cluster_walktrap()}}
+#' \item \code{\link[igraph:cluster_leading_eigen]{igraph::cluster_leading_eigen()}}}
 #'
-#' These algorithms are performed iteratively on the adjacency matrix constructed using \code{\link{getNetworks}} until a consensus
-#' is reached on resulting subnetwork membership, or the specified max_iterations is reached \emph{(Please see references for more details)}.
+#' For each iteration, node membership in each respective cluster is compared across the algorithms, and only the clusters with % agreement
+#' greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
+#' on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
 #'
-#' @return A DNEAobject containing sub-network determinations for the nodes within the input network.
-#'        A summary of the consensus clustering results can be viewed using getClusterResults().
-#'        Sub-network classification for each node can be found in the node_list slot of the returned
-#'        DNEAobject.
+#' @return A DNEAresults object containing sub-network determinations for the nodes within the input network.
+#'        A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
+#'        Sub-network membership for each node can be found in the "membership" column of the node list, which can be
+#'        viewed using \code{\link{nodeList}}.
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
@@ -676,7 +689,7 @@ clusterNet <- function(object,
 #' Identify metabolic modules that are enriched across experimental conditions
 #'
 #' This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
-#' using the \code{\link{netgsa}} algorithm.
+#' using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
 #' @param object A DNEAobject
 #' @param min_size The minimum size of metabolic modules for enrichment analysis
@@ -689,11 +702,14 @@ clusterNet <- function(object,
 #' Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol 17(6): e1008979. \url{https://doi.org/10.1371/journal.pcbi.1008979}
 #'
 #'
-#' @returns A DNEAobject containing containing results from NetGSA. Pathway expression differences for
+#' @returns A DNEAresults object after populating the @@netGSA slot. Pathway expression differences for
 #'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
-#'          using getNetGSAresults()
+#'          using \code{\link{netGSAresults}}.
 #'
 #' @examples
+#' #load BiocParallel
+#' library(BiocParallel)
+#'
 #' #import example data
 #' data(TEDDY)
 #'
