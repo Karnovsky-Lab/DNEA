@@ -4,7 +4,7 @@
 \alias{createDNEAobject}
 \title{Initialize DNEAresults object}
 \usage{
-createDNEAobject(project_name, expression_data, control, case)
+createDNEAobject(project_name, expression_data, group_labels)
 }
 \arguments{
 \item{project_name}{A character string name for the experiment}
@@ -13,15 +13,13 @@ createDNEAobject(project_name, expression_data, control, case)
 and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 the numeric expression data}
 
-\item{control}{A character string name of condition 1 in column one of the data matrix}
-
-\item{case}{A character string name of condition 2 in column one of the data matrix}
+\item{group_labels}{A numeric vector of experimental group labels named with the coresponding sample name}
 }
 \value{
 a DNEAresults object
 }
 \description{
-This function takes as input a matrix of non-normalized, non-transformed expression data, the sample metadata, and the
+This function takes as input a matrix of non-normalized, non-transformed expression data and the
 case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
 T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
 \subsection{IMPORTANT}{
@@ -59,7 +57,7 @@ information pertaining to which features are highly correlated and as a result t
 }
 }
 \examples{
-#' #import example data
+#import example data
 data(TEDDY)
 
 #initiate DNEAresults object
