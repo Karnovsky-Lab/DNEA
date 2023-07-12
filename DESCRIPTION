@@ -24,7 +24,8 @@ Imports:
     methods,
     netgsa,
     stats,
-    stringr
+    stringr,
+    utils
 Collate: 
     'JSEM.R'
     'start-here.R'

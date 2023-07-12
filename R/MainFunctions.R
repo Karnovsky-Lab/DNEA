@@ -62,7 +62,7 @@ NULL
 #' DNEA <- BICtune(object = DNEA, BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @import BiocParallel
+#' @importFrom BiocParallel bplapply bpparam
 #' @export
 BICtune <- function(object,
                     lambda_values,
@@ -215,7 +215,7 @@ BICtune <- function(object,
 #' DNEA <- stabilitySelection(object = DNEA, subSample = FALSE, nreps = 5, BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @import BiocParallel
+#' @importFrom BiocParallel bplapply bpparam
 #' @export
 stabilitySelection <- function(object,
                                subSample = FALSE,
