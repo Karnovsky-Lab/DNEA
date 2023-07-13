@@ -20,13 +20,13 @@
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
+#' data(T1Dmeta)
 #'
-#' #create sample metadata file
-#' new_metadat <- data.frame(new_group = c(rep("group1", 50), rep('group2', 50)),
-#'                           row.names = sampleNames(TEDDYresults))
+#' #make sure metadata has same sample order as DNEAresults object
+#' T1Dmeta <- T1Dmeta[sampleNames(TEDDYresults), ]
 #'
 #' #add new metadata to DNEAresults object
-#' TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = new_metadat)
+#' TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = T1Dmeta)
 #'
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
