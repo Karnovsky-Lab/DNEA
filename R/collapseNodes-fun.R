@@ -75,10 +75,7 @@
 #'                            row.names = rownames(expressionData(TEDDYresults, normalized = FALSE)))
 #'
 #' TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
-#' TEDDY_groups$groups[TEDDY_groups$groups %in% c("oleic_acid", "palmitic_acid",
-#'                                                "heptadecanoic_acid","stearic_acid",
-#'                                                "palmitoleic_acid", "linoleic_acid",
-#'                                                "x3_hydroxybutyric_acid")] <- "fatty_acids"
+#' TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
 #'
 #'
 #' collapsed_TEDDY <- reduceFeatures(object = TEDDYresults,
