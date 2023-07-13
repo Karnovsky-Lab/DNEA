@@ -70,17 +70,20 @@
 #' data(TEDDYresults)
 #'
 #' #simulate group labels
-#' TEDDY_groups <- data.frame(features = colnames(expressionData(TEDDYresults, normalized = FALSE)),
-#'                            groups = c(colnames(TEDDY)[seq(2, 101)],
-#'                                       rep("group1", 10),
-#'                                       rep("group2", 10),
-#'                                       rep("group3", 10),
-#'                                       rep("group4", 14)),
-#'                            row.names = colnames(expressionData(TEDDYresults, normalized = FALSE)))
+#' TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYresults, normalized = FALSE)),
+#'                            groups = rownames(expressionData(TEDDYresults, normalized = FALSE)),
+#'                            row.names = rownames(expressionData(TEDDYresults, normalized = FALSE)))
+#'
+#' TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
+#' TEDDY_groups$groups[TEDDY_groups$groups %in% c("oleic_acid", "palmitic_acid",
+#'                                                "heptadecanoic_acid","stearic_acid",
+#'                                                "palmitoleic_acid", "linoleic_acid",
+#'                                                "x3_hydroxybutyric_acid")] <- "fatty_acids"
+#'
 #'
 #' collapsed_TEDDY <- reduceFeatures(object = TEDDYresults,
 #'                                   method = "hybrid",
-#'                                   correlation_threshold = 0.9,
+#'                                   correlation_threshold = 0.7,
 #'                                   feature_groups = TEDDY_groups)
 #'
 #' @import igraph
@@ -101,17 +104,17 @@ reduceFeatures <- function(object,
   ##bind local variables to function
   feature_membership = NULL
 
-  #bind feature
   ##Check to see if there is non-normalized, non-transformed expression data provided - Feature reduction requires this
   if(is.null(expressionData(object, normalized = FALSE))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
                                                   'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
 
   #check that rownames of feature_groups match feature order
-  if(!(all(colnames(expressionData(object, normalized = FALSE)) == rownames(feature_groups)))) stop("The feature order of feature_groups does not match the expression data!")
+  if(!(all(rownames(expressionData(object, normalized = FALSE)) == rownames(feature_groups)))) stop("The feature order of feature_groups does not match the expression data!")
+
   ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
                              groups = networkGroupIDs(object),
-                             expressionData(object, normalized = FALSE))
+                             t(expressionData(object, normalized = FALSE)))
 
   ##collapse features based on specified approach
   if (method == "correlation") {
@@ -133,15 +136,19 @@ reduceFeatures <- function(object,
                                                               '(orginal DNEAobject can be found in the original_experiment slot)', '\n'))
 
   ##create new collapsed_DNEAresults object
-  #convert reduced data to numeric
-  res[["collapsed_data"]] <-cbind.data.frame(res[["collapsed_data"]][,c(1,2)],
-                                             apply(res[["collapsed_data"]][,-c(1,2)], 2, as.numeric))[,-1]
+  # #convert reduced data to numeric
+  # res[["collapsed_data"]] <-cbind.data.frame(res[["collapsed_data"]][,c(1,2)],
+  #                                            apply(res[["collapsed_data"]][,-c(1,2)], 2, as.numeric))
+
+  #new input
+  new_dat <- t(res[["collapsed_data"]][,-c(1,2)])
+  new_group_labels <- res[["collapsed_data"]][["groups"]]
+  names(new_group_labels) <- res[["collapsed_data"]][["samples"]]
 
   #initialize new collapsed_DNEAresults object
   reduced_object <- createDNEAobject(project_name = projectName(object),
-                                     expression_data = res[["collapsed_data"]],
-                                     control = networkGroups(object)[[1]],
-                                     case = networkGroups(object)[[2]])
+                                     expression_data = new_dat,
+                                     group_labels = new_group_labels)
 
   collapsed_object <- new("collapsed_DNEAresults",
                           project_name = projectName(reduced_object),
@@ -155,13 +162,11 @@ reduceFeatures <- function(object,
                                                                 row.names = featureNames(reduced_object, original = TRUE)),
                                           network_group_IDs = networkGroupIDs(reduced_object),
                                           network_groups = networkGroups(reduced_object)),
-                          joint_graph = make_empty_graph(n = numFeatures(reduced_object),
-                                                         directed = TRUE),
                           hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
                           adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                           stable_networks = list(selection_results = NULL, selection_probabilities = NULL),
                           original_experiment = reduced_object,
-                          feature_membership = res[["feature_membership"]])
+                          feature_membership = res[["final_membership"]])
 
   #add diagnostics
   datasetSummary(collapsed_object) <- new("DNEAinputSummary",
