@@ -80,17 +80,16 @@ data(TEDDYresults)
 
 #simulate group labels
 TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYresults, normalized = FALSE)),
-                           groups = c(rownames(expressionData(TEDDYresults,
-                                               normalized = FALSE))[seq(2, 101)],
-                                      rep("group1", 10),
-                                      rep("group2", 10),
-                                      rep("group3", 10),
-                                      rep("group4", 14)),
+                           groups = rownames(expressionData(TEDDYresults, normalized = FALSE)),
                            row.names = rownames(expressionData(TEDDYresults, normalized = FALSE)))
+
+TEDDY_groups$groups[TEDDY_groups$groups \%in\% c("isoleucine", "leucine", "valine")] <- "BCAAs"
+TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
+
 
 collapsed_TEDDY <- reduceFeatures(object = TEDDYresults,
                                   method = "hybrid",
-                                  correlation_threshold = 0.3,
+                                  correlation_threshold = 0.7,
                                   feature_groups = TEDDY_groups)
 
 }
