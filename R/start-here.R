@@ -35,6 +35,17 @@
 #' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 "TEDDY"
 
+#' Example results for DNEA
+#'
+#' This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
+#' data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
+#'
+#' @format ## `TEDDYresults`
+#' A DNEA results object after completing a DNEA experiment
+#'
+#' @source The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(TEDDYresults) in the console.
+"TEDDYresults"
+
 #' DNEA package for joint estimation of biological networks
 #'
 #' DNEA is designed to take as input non-normalized, non-transformed -omics data
@@ -58,6 +69,7 @@
 #' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEAdev}
 #'
 #' @docType package
-#' @name DNEA-package
+#' @name DNEA
+#' @aliases DNEA
 #' @keywords package
 NULL
