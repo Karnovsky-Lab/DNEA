@@ -16,7 +16,7 @@ group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 group_labels[1:10]
 dat<- dat[,-c(1,2)]
 dat <- t(dat)
-
+TEDDY <- dat
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
@@ -34,9 +34,7 @@ plotNetworks(object, type = "subnetworks", subnetwork = 1)
 data(TEDDYresults)
 
 #simulate group labels
-TEDDY_groups <- data.frame(features = rownames(expressionData(object, normalized = FALSE)),
-                           groups = rownames(expressionData(object, normalized = FALSE)),
-                           row.names = rownames(expressionData(object, normalized = FALSE)))
+TEDDY_groups <- data.frame(features = rownames(expressionData(object, normalized = FALSE)),groups = rownames(expressionData(object, normalized = FALSE)),row.names = rownames(expressionData(object, normalized = FALSE)))
 
 TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
 TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
@@ -50,8 +48,9 @@ dat_cor <- dat_cor[dat_cor$value != 1, ]
 dat_cor <- dat_cor[abs(dat_cor$value) >= 0.7,]
 dat_cor <- dat_cor[order(dat_cor$metab1, dat_cor$metab2),]
 
-
-
+T1Dmeta<-readRDS("~/Documents/Karnovsky_lab/DNEAproject/published_files/T1D_meta.rda")
+T1Dmeta <- T1Dmeta[colnames(dat),]
+all(rownames(T1Dmeta) == colnames(dat))
 
 
 
