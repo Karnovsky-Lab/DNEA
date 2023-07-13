@@ -79,17 +79,18 @@ features from being collapsed into a single feature.}
 data(TEDDYresults)
 
 #simulate group labels
-TEDDY_groups <- data.frame(features = colnames(expressionData(TEDDYresults, normalized = FALSE)),
-                           groups = c(colnames(TEDDY)[seq(2, 101)],
+TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYresults, normalized = FALSE)),
+                           groups = c(rownames(expressionData(TEDDYresults,
+                                               normalized = FALSE))[seq(2, 101)],
                                       rep("group1", 10),
                                       rep("group2", 10),
                                       rep("group3", 10),
                                       rep("group4", 14)),
-                           row.names = colnames(expressionData(TEDDYresults, normalized = FALSE)))
+                           row.names = rownames(expressionData(TEDDYresults, normalized = FALSE)))
 
 collapsed_TEDDY <- reduceFeatures(object = TEDDYresults,
                                   method = "hybrid",
-                                  correlation_threshold = 0.9,
+                                  correlation_threshold = 0.3,
                                   feature_groups = TEDDY_groups)
 
 }

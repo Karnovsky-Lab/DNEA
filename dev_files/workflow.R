@@ -4,7 +4,11 @@ library(BiocParallel)
 BP_plan <- SerialParam(RNGseed = 417)
 set.seed(417)
 
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
+# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
+# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+
+dat <- dat[, !grepl("nist", colnames(dat))]
 rownames(dat) <- dat$sample
 group_labels <- dat$group
 names(group_labels) <- dat$sample
@@ -26,66 +30,29 @@ object <- clusterNet(object = object, tau = 0.5)
 object <- runNetGSA(object)
 plotNetworks(object, type = "group_networks")
 plotNetworks(object, type = "subnetworks", subnetwork = 1)
-load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_BIC_tuning.rda")
 
-load("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_stable_networks.rda")
-sel2 <- vector("list", length(networkGroups(object)))
-names(sel2) <- networkGroups(object)
+data(TEDDYresults)
 
-#initiate list for stability selection results converted to probabilities
-selp <- vector("list", length(networkGroups(object)))
-names(selp) <- networkGroups(object)
+#simulate group labels
+TEDDY_groups <- data.frame(features = rownames(expressionData(object, normalized = FALSE)),
+                           groups = rownames(expressionData(object, normalized = FALSE)),
+                           row.names = rownames(expressionData(object, normalized = FALSE)))
 
-for (k in 1:length(sel2)){
-  sel2[[k]] <- lapply(stab_guo, function(r) r$mat[[k]])
-  sel2[[k]] <- Reduce("+", sel2[[k]])
+TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
+TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
 
-  if (subSample){
-    message(paste0("Calculating selection probabilities WITH subsampling for...", names(sel2)[[k]],"..."), appendLF = TRUE)
-    selp[[k]] <- sel2[[k]]/(nreps)
-  } else {
-    message(paste0("Calculating selection probabilities WITHOUT subsampling for...",names(sel2)[[k]],"..."), appendLF = TRUE)
-    selp[[k]] <- sel2[[k]]/(2 * nreps)
-  }
-}
+object <- reduceFeatures(object, method = "hybrid", correlation_threshold = 0.7, feature_groups = TEDDY_groups)
 
-ed<- read.table("~/Documents/Karnovsky_lab/DNEAproject/published_files/test/adjT1DplasmaLastVisitpaired_LOG-SCALED_04252023_edgelist.txt",
-                header = TRUE)
-ed <- ed[,c(1:4, 7)]
-ed2<-edgeList(object)
+#check correlations for TEDDY_groups
+dat_cor <- cor(t(dat))
+dat_cor <- tidyr::pivot_longer(data.frame(metab1 = rownames(dat_cor), dat_cor), cols = colnames(dat_cor), names_to = "metab2",)
+dat_cor <- dat_cor[dat_cor$value != 1, ]
+dat_cor <- dat_cor[abs(dat_cor$value) >= 0.7,]
+dat_cor <- dat_cor[order(dat_cor$metab1, dat_cor$metab2),]
 
 
 
-dat2<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/LIPID/TEDDY_POS_DM_LIPID_full_adjusted.csv')
-rownames(dat2) <- dat2$sample
-dat2<- dat2[,-1]
-object<- createDNEAobject(project_name = 'testing', expression_data = dat2, case = 'DM:case', control = 'DM:control')
-object<-reduceFeatures(object, method = 'correlation', correlation_threshold = 0.3)
-#scale TEDDY
-dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
-rownames(dat) <- dat$sample
-dat<- dat[,-1]
-conditions<- c(case = 'IA:case', control = 'IA:control')
-# dat_numeric <- data.frame(lapply(dat[,-1], as.numeric))
-for( i in conditions){
-  dat[which(dat$group == i),-1] <- scale(dat[which(dat$group == i),-1])
-}
-dat<-cbind.data.frame(rownames(dat),dat)
-rownames(dat) <- NULL
-colnames(dat)[1] <- 'sample'
-write.csv(dat,'~/Documents/Karnovsky_lab/DNEAdev/data/TEDDYplasmaIA.csv', row.names = FALSE)
 
-
-#stability selection, which requires lastar.guo from the previous step
-lastar <- object@BIC$optimizedLambda
-
-#split data by condition
-listX = lapply(split_by_condition(dat = scaledExpressionData(object),
-                                                    condition_levels = object@Dataset_summary[['condition_levels']],
-                                                    condition_by_sample = condition(object)), function(d) t(d))
-
-#initialize static variables to pass to workers
-init_param <- stabsel_init(listX = listX, nreps = nreps)
 
 
 
