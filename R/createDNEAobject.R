@@ -58,7 +58,7 @@
 #' names(group_labels) <- rownames(TEDDY)
 #'
 #' #remove group info and transpose expression data
-#' TEDDY <- t(TEDDY)
+#' TEDDY <- t(TEDDY[,-1])
 #'
 #' #initiate DNEAresults object
 #' DNEA <- createDNEAobject(expression_data = TEDDY,
@@ -72,7 +72,10 @@ createDNEAobject <- function(project_name,
 
 
   ##restructure data to initiate object
-  if(!missing(expression_data)){
+  if(!missing(expression_data) & !missing(group_labels)){
+
+    #check that order of group_labels matches data
+    if(!(all(names(group_labels) == colnames(expression_data)))) stop("Order of group labels does not match sample order in expression data!")
 
     ##turn condition into factor
     if(!is.factor(group_labels)){
@@ -182,7 +185,7 @@ restructure_input_data <- function(expression_data,
   scaled_expression_data <- lapply(split_by_condition(dat = expression_data,
                                                       condition_levels = levels(condition_values),
                                                       condition_by_sample = condition_values),
-                                   function(x) t(scale(t(x))))
+                                   function(x) t(scale(log(t(x)))))
 
   #combine scaled data into one matrix
   scaled_expression_data <- cbind(scaled_expression_data[[1]], scaled_expression_data[[2]])
@@ -326,6 +329,7 @@ metabDE <- function(mat,
   ##set necessary parameters and output
   num_features <- nrow(mat)
   num_samples <- ncol(mat)
+  mat <- log(mat)
   feature_info <- data.frame(clean_feature_names = rownames(mat))
 
   ##split data by condition
