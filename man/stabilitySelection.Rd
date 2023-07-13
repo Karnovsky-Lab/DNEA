@@ -61,11 +61,17 @@ models are fit in total \emph{without} sub-sampling, but 500 randomly sampled mo
 More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 }
 \examples{
+#import BiocParallel package
+library(BiocParallel)
+
 #import completed example data
 data(TEDDYresults)
 
 # perform stability selection
-TEDDYresults <- stabilitySelection(object = TEDDYresults, subSample = FALSE, nreps = 4, BPPARAM = bpparam())
+TEDDYresults <- stabilitySelection(object = TEDDYresults,
+                                   subSample = FALSE,
+                                   nreps = 4,
+                                   BPPARAM = bpparam())
 
 }
 \references{

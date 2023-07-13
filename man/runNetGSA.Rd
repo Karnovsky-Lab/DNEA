@@ -31,7 +31,7 @@ TEDDYresults <- runNetGSA(object = TEDDYresults, min_size = 5)
 netGSAresults(TEDDYresults)
 
 #save node and edge list for input to cytoscape
-getNetworkFiles(TEDDYresults)
+\donttest{getNetworkFiles(TEDDYresults)}
 
 }
 \references{

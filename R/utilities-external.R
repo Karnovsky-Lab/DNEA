@@ -22,9 +22,8 @@
 #' data(TEDDYresults)
 #'
 #' #create sample metadata file
-#' new_metadat <- data.frame(new_group = c(rep("group1", 72),
-#'                           rep("group2", 72)),
-#'                           row.names(sampleNames(TEDDYresults)))
+#' new_metadat <- data.frame(new_group = c(rep("group1", 50), rep('group2', 50)),
+#'                           row.names = sampleNames(TEDDYresults))
 #'
 #' #add new metadata to DNEAresults object
 #' TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = new_metadat)
@@ -80,7 +79,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' data(TEDDYresults)
 #'
 #' #save node and edge list for input to cytoscape
-#' getNetworkFiles(TEDDYresults)
+#' \donttest{getNetworkFiles(TEDDYresults)}
 #'
 #' @importFrom utils write.csv
 #' @export

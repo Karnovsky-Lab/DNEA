@@ -65,7 +65,7 @@ group_labels <- factor(TEDDY$group, levels = c("DM:control", "DM:case"))
 names(group_labels) <- rownames(TEDDY)
 
 #remove group info and transpose expression data
-TEDDY <- t(TEDDY)
+TEDDY <- t(TEDDY[,-1])
 
 #initiate DNEAresults object
 DNEA <- createDNEAobject(expression_data = TEDDY,

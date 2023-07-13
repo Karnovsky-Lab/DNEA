@@ -46,6 +46,9 @@ NULL
 #'         the optimized lambda value
 #'
 #' @examples
+#' #import BiocParallel package
+#' library(BiocParallel)
+#'
 #' #import completed example data
 #' data(TEDDYresults)
 #'
@@ -53,7 +56,7 @@ NULL
 #' TEDDYresults <- BICtune(object = TEDDYresults, BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @importFrom BiocParallel bplapply bpparam
+#' @importFrom BiocParallel bplapply bpparam bpoptions
 #' @export
 BICtune <- function(object,
                     lambda_values,
@@ -187,14 +190,20 @@ BICtune <- function(object,
 #' results from stability selection as well as the calculated selection probabilities
 #'
 #' @examples
+#' #import BiocParallel package
+#' library(BiocParallel)
+#'
 #' #import completed example data
 #' data(TEDDYresults)
 #'
 #' # perform stability selection
-#' TEDDYresults <- stabilitySelection(object = TEDDYresults, subSample = FALSE, nreps = 4, BPPARAM = bpparam())
+#' TEDDYresults <- stabilitySelection(object = TEDDYresults,
+#'                                    subSample = FALSE,
+#'                                    nreps = 4,
+#'                                    BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @importFrom BiocParallel bplapply bpparam
+#' @importFrom BiocParallel bplapply bpparam bpoptions
 #' @export
 stabilitySelection <- function(object,
                                subSample = FALSE,
@@ -660,7 +669,7 @@ clusterNet <- function(object,
 #' netGSAresults(TEDDYresults)
 #'
 #' #save node and edge list for input to cytoscape
-#' getNetworkFiles(TEDDYresults)
+#' \donttest{getNetworkFiles(TEDDYresults)}
 #'
 #' @importFrom stats p.adjust
 #' @import igraph

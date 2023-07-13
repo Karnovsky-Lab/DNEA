@@ -49,6 +49,9 @@ where c takes on 15 evenly spaced values between 0.01 and 0.3. More information 
 in the Guo et al. (2011) paper referenced below.
 }
 \examples{
+#import BiocParallel package
+library(BiocParallel)
+
 #import completed example data
 data(TEDDYresults)
 
