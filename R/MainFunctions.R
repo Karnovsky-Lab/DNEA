@@ -378,7 +378,7 @@ getNetworks <- function(object,
   num_samples <- numSamples(object)
   num_features <- numFeatures(object)
 
-  Ip <- diag(rep(1,num_features))
+  Ip <- diag(rep(1, num_features))
 
   ##set up output to save the weighted and unweighted adjacency matrices from each model
   #weighted
@@ -472,9 +472,9 @@ getNetworks <- function(object,
 
     #grab the adjacency matrices
     weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
-                                               nrow = 144, ncol = 144,
-                                               dimnames = list(featureNames(object),
-                                                               featureNames(object)))
+                                               nrow = num_features, ncol = num_features,
+                                               dimnames = list(featureNames(object, original = FALSE),
+                                                               featureNames(object, original = FALSE)))
   }
 
   ##input weighted_adjacency_matrices into object
