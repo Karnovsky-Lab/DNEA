@@ -39,6 +39,7 @@ use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv"
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow.R", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev.R", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/.gitignore", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting.R", escape = TRUE)
 
 devtools::document()
 devtools::build_manual()

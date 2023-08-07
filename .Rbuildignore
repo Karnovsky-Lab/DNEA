@@ -7,3 +7,4 @@ dev_files*
 ^~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow\.R$
 ^~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev\.R$
 ^~/Documents/Karnovsky_lab/DNEAdev/\.gitignore$
+^~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting\.R$
