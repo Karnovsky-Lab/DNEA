@@ -163,7 +163,7 @@ reduceFeatures <- function(object,
                           adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                           stable_networks = list(selection_results = NULL, selection_probabilities = NULL),
                           original_experiment = reduced_object,
-                          feature_membership = res[["final_membership"]])
+                          feature_membership = res[["feature_membership"]])
 
   #add diagnostics
   datasetSummary(collapsed_object) <- new("DNEAinputSummary",
