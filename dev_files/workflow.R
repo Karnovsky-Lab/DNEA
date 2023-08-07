@@ -24,11 +24,14 @@ object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPA
 
 object <- getNetworks(object = object)
 
-#object <- filterNetworks(object, pcor = 0.3)
+object <- filterNetworks(object, pcor = 0.166)
 # object <- filterNetworks(object, top_percent_edges = 0.2)
 object <- clusterNet(object = object, tau = 0.5)
 object <- runNetGSA(object)
-plotNetworks(object, type = "group_networks")
+plotNetworks(object, type = "group_networks", subtype = "DM:case", layout_func = layout_nicely,
+             label_font = 2, label_size = 0.5, node_size = 7)
+# plotNetworks(object, type = "subnetworks", subtype = 1, layout_func = layout_nicely,
+#              font = 2, label_size = 0.5, node_size = 20)
 plotNetworks(object, type = "subnetworks", subnetwork = 1)
 
 data(TEDDYresults)

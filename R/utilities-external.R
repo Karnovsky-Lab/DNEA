@@ -101,16 +101,26 @@ getNetworkFiles <- function(object, file_path=NULL){
 
 #' Visualize the biological networks identified via DNEA
 #'
-#' The function plots the condition networks as well as the specified subnetworks identified via DNEA
+#' This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are
+#' differential features, green indicates edges specific to group 1, and red indicates edges specific to group 2.
 #'
 #' @param object A DNEAresults object
-#' @param type "group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
-#' specified by teh subnetwork parameter
-#' @param subnetwork The subnetwork to plot
+#' @param type There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the total or condition networks.
+#' \emph{"subnetworks"} specifies one of the subnetworks should be plot. Additional input via the \strong{subtype} parameter is required
+#' @param subtype There are several possible arguments to \strong{subtype}. If \emph{type == "group_networks"}, \strong{subtype}
+#' can be \emph{"All"} to plot the total network, or one of the condition network names indicated by \code{\link{networkGroups}}
+#' to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
+#' numeric corresponding to the subnetwork to plot.
+#' @param layout_func The layout to plot the specified network by. Please see \code{\link{plot.igraph()}} for more information
+#' @param title A character string to use as the plot title
+#' @param node_size Please see \code{\link{plot.igraph}}
+#' @param edge_width Please see \code{\link{plot.igraph}}
+#' @param label_size Please see \code{\link{plot.igraph}}
+#' @param label_font Please see \code{\link{plot.igraph}}
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{getNetworks}}, \code{\link{clusterNet}}
+#' @seealso \code{\link{getNetworks}}, \code{\link{clusterNet}}, \code{\link{networkGroups}}
 #'
 #'
 #' @returns a plot of the specified network
@@ -121,17 +131,20 @@ getNetworkFiles <- function(object, file_path=NULL){
 
 #'
 #' #plot the networks
-#' plotNetworks(object = TEDDYresults, type = "group_networks")
+#' plotNetworks(object = TEDDYresults, type = "group_networks", subtype = "All")
 #' plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
 #'
 #' @import igraph
-#' @importFrom grDevices dev.off
-#' @importFrom graphics par
-#' @importFrom autoimage reset.par
 #' @export
 plotNetworks <- function(object,
                          type = c("group_networks", "subnetworks"),
-                         subnetwork){
+                         subtype = "All",
+                         layout_func,
+                         title = "",
+                         node_size = 15,
+                         edge_width = 1,
+                         label_size = 1,
+                         label_font = 1){
 
   #get type argument
   type <- match.arg(type)
@@ -144,54 +157,49 @@ plotNetworks <- function(object,
 
   if(type == "group_networks"){
 
-    #grab necessary info
+    #grab edge list
     edge_list <- edgeList(object)
-    group1_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == networkGroups(object)[[1]]],
-                             edge_list$Metabolite.B[edge_list$edge == networkGroups(object)[[1]]]))
 
-    group2_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == networkGroups(object)[[2]]],
-                             edge_list$Metabolite.B[edge_list$edge == networkGroups(object)[[2]]]))
+    if(subtype == "All"){
 
-    #graph for control network
-    cluster_c1 <- induced.subgraph(network_graph, V(network_graph)$name[match(group1_nodes, V(network_graph)$name)])
+      #graph for total network
+      subtype_network <- induced.subgraph(network_graph, V(network_graph)$name)
+    }else{
 
-    #graph for total network
-    cluster_c3 <- induced.subgraph(network_graph, V(network_graph)$name)
+      #grab metabolite names present in specified subtype
+      subgroup_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == subtype | edge_list$edge == "Both"],
+                                 edge_list$Metabolite.B[edge_list$edge == subtype | edge_list$edge == "Both"]))
 
-    #graph for case network
-    cluster_c2 <- induced.subgraph(network_graph, V(network_graph)$name[match(group2_nodes, V(network_graph)$name)])
+      #threshold network_graph network
+      subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[match(subgroup_nodes, V(network_graph)$name)])
+    }
 
-    ##plot
-    #set layout
-    par(mfrow = c(1,3))
-
-    #control network
-    plot(cluster_c1, vertex.label = V(cluster_c1)$name, vertex.label.cex = 1,
-         layout = layout.fruchterman.reingold(cluster_c1),
-         main = networkGroups(object)[[1]])
-
-    #total network
-    plot(cluster_c3, vertex.label = V(cluster_c3)$name, vertex.label.cex = 1,
-         layout = layout.fruchterman.reingold(cluster_c3),
-         main = "Total Network")
-
-    #case network
-    plot(cluster_c2, vertex.label = V(cluster_c2)$name, vertex.label.cex = 1,
-         layout = layout.fruchterman.reingold(cluster_c2),
-         main = networkGroups(object)[[2]])
-
-    reset.par()
   }else if(type == "subnetworks"){
 
     #check that subnetwork given is relevant
-    if(all(is.na(match(subnetwork, node_list$membership)))) stop("The subnetwork specified does not exist!\nPlease specify a value contained in the membership column of the node list")
-    cluster_c <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subnetwork])
+    if(all(is.na(match(subtype, node_list$membership)))) stop("The subnetwork specified does not exist!\nPlease specify a value contained in the membership column of the node list")
 
-    plot(cluster_c, vertex.label = V(cluster_c)$name, vertex.label.cex = 1,
-         layout = layout.fruchterman.reingold(cluster_c),
-         main = paste0("subnetwork: ", subnetwork))
+    #threshold network_graph network
+    subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subtype])
   }
+
+  #set graph layout
+  if(missing(layout_func)){
+
+    graph_layout <- layout.fruchterman.reingold(graph = subtype_network)
+  }else{
+
+    graph_layout <- layout_func(graph = subtype_network)
+  }
+
+  #plot the specified network
+  plot(subtype_network, main = title, layout = graph_layout, vertex.size = node_size, width = edge_width,
+       vertex.label = V(subtype_network)$name, vertex.label.cex = label_size, vertex.label.font = label_font)
+
 }
+
+#'
+#'
 filterNetworks.DNEAresults <- function(data,
                                        pcor,
                                        top_percent_edges){
