@@ -30,7 +30,7 @@
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{stabilitySelection}}
 #'
 #' @details
-#' Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases exponentially as the
+#' Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases dramatically as the
 #' number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
 #' parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
 #' limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can
