@@ -28,6 +28,7 @@ usethis::use_package("netgsa")
 usethis::use_package("BiocParallel")
 usethis::use_package("autoimage")
 usethis::use_package("utils")
+usethis::use_package("withr", type = "Suggests")
 # usethis::use_package("future")
 usethis::use_package()
 
@@ -46,7 +47,14 @@ use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/.gitignore", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting.R", escape = TRUE)
 
 #add tests
+
 usethis::use_testthat()
+mkdir("~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/")
+saveRDS(T1Dmeta, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-T1Dmeta.rds")
+saveRDS(TEDDY, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDY.rds")
+saveRDS(TEDDYresults, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDYresults.rds")
+usethis::use_test("test-utilities-internals.R")
+usethis::use_test("test-utilities-external.R")
 
 devtools::document()
 devtools::build_manual()
