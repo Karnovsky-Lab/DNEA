@@ -605,10 +605,35 @@ clusterNet <- function(object,
                                                sapply(1:length(joint_graph), function(x) names(joint_graph[[x]]))))
 
   #gather results
+  # for (j in 1:nrow(subnetwork_results)){
+  #   subnetwork_results[j, consensus_membership == j] <- 1
+  # }
   for (j in 1:nrow(subnetwork_results)){
-    subnetwork_results[j, which(consensus_membership == j)] <- 1
+
+    #grab features in this subnetwork
+    subnetwork_nodes <- consensus_membership == j
+
+
+    if(sum(subnetwork_nodes) == 1){
+
+      #if subnetwork is only one feature, relabel to "independent"
+      consensus_membership[consensus_membership == j] <- "independent"
+    }else{
+
+      #concatenate the results
+      subnetwork_results[j, consensus_membership == j] <- 1
+    }
   }
 
+  #remove empty rows
+  subnetwork_results <- subnetwork_results[rowSums(subnetwork_results) != 0, ]
+
+  #update consensus subnetworks
+  consensus_membership <- match(consensus_membership, as.numeric(gsub('subnetwork','',rownames(subnetwork_results))))
+  consensus_membership[is.na(consensus_membership)] <- "independent"
+
+  #update subnetwork_results rownames
+  rownames(subnetwork_results) <- paste0("subnetwork", seq(1, nrow(subnetwork_results)))
 
   #####################################
   #**Concatenate results for output **#
@@ -616,6 +641,7 @@ clusterNet <- function(object,
 
   summary_list <- list()
   for (loop_cluster in 1:nrow(subnetwork_results) ){
+
     cluster_c <- induced.subgraph(joint_graph, V(joint_graph)$name[(subnetwork_results[loop_cluster,] == 1)])
     summary_list[[loop_cluster]] <- data.frame("number_of_nodes"=length(V(cluster_c)),
                                                "number_of_edges"=length(E(cluster_c)),
@@ -626,6 +652,15 @@ clusterNet <- function(object,
 
   summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results), do.call(rbind, summary_list), check.names = FALSE)
 
+  #add independent features
+  summary_stat <- rbind(summary_stat,
+                        list("independent",
+                             sum(consensus_membership == "independent"),
+                             0,
+                             sum(nodeList(object)$DEstatus[consensus_membership == "independent"]),
+                             0))
+
+  #add results to DNEAresults object
   nodeList(object)[["membership"]] <- consensus_membership
   object@consensus_clustering <- new(Class = "consensusClusteringResults",
                                      summary = summary_stat,
@@ -684,13 +719,14 @@ runNetGSA <- function(object, min_size = 5){
   ##set input variables
   adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
                              list(adjacencyMatrix(x = object, weighted = TRUE)[[2]]))
+
   expression_data <- expressionData(object, normalized = FALSE)
   data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
   subnetworks <- as.matrix(subnetworkMembership(object))
 
   ##filter subnetworks to only include those greater than or equal to min_size
-  filtered_subnetworks <- subnetworkMembership(object)
-  filtered_subnetworks <- as.matrix(filtered_subnetworks[rowSums(filtered_subnetworks) >= min_size, ])
+  sub_membership <- subnetworkMembership(object)
+  filtered_subnetworks <- as.matrix(sub_membership[rowSums(sub_membership) >= min_size, ])
 
   ##run netgsa
   netgsa_results <- NetGSA(A = adjacency_matrices,
@@ -719,8 +755,34 @@ runNetGSA <- function(object, min_size = 5){
   #order netGSA results by FDR
   res <- res[order(res$NetGSA_pFDR),]
 
+
+  #rename subnetworks
+  cluster_names <- CCsummary(object)[-match("independent", CCsummary(object)$subnetworks), ]
+  new_cluster_order <- data.frame(subnetworks = c(res$subnetworks, cluster_names$subnetworks[!(cluster_names$subnetworks %in% res$subnetworks)]))
+
+  #update consensus subnetworks
+  nodeList(object)$membership <- match(nodeList(object)$membership, as.numeric(gsub('subnetwork','',new_cluster_order$subnetworks)))
+  nodeList(object)$membership[is.na(nodeList(object)$membership)] <- "independent"
+
+  #update res subnetwork names
+  res$subnetworks <- paste0("subnetwork", seq(1, nrow(res)))
+
+  #update cluster summary subnetwork names
+  cluster_names <- CCsummary(object)
+  rownames(cluster_names) <- cluster_names$subnetworks
+  cluster_names <- cluster_names[new_cluster_order$subnetworks, ]
+  rownames(cluster_names) <- NULL
+  cluster_names$subnetworks <- paste0("subnetwork", seq(1, nrow(cluster_names)))
+  cluster_names <- rbind(cluster_names, CCsummary(object)[match("independent", CCsummary(object)$subnetworks), ])
+
+  #update subnetwork_membership matrix
+  sub_membership <- sub_membership[new_cluster_order$subnetworks, ]
+  rownames(sub_membership) <- paste0("subnetwork", seq(1, nrow(sub_membership)))
+
   #update DNEAobject
   netGSAresults(object) <- res
+  CCsummary(object) <- cluster_names
+  subnetworkMembership(object) <- sub_membership
 
   #check valid object
   validObject(object)

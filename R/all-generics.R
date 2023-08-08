@@ -149,6 +149,10 @@ setGeneric("adjacencyMatrix<-", function(x, weighted, value) standardGeneric("ad
 #' @export
 setGeneric("subnetworkMembership", function(x) standardGeneric("subnetworkMembership"))
 
+#' @rdname subnetworkMembership
+#' @keywords internal
+setGeneric("subnetworkMembership<-", function(x, value) standardGeneric("subnetworkMembership<-"))
+
 #' @rdname adjacencyGraph
 #' @export
 setGeneric("adjacencyGraph", function(x, graph) standardGeneric("adjacencyGraph"))
@@ -163,6 +167,10 @@ setGeneric("adjacencyGraph<-", function(x, graph, value) standardGeneric("adjace
 #' @export
 setGeneric("CCsummary", function(x) standardGeneric("CCsummary"))
 
+#'
+#' @rdname CCsummary
+#' @keywords internal
+setGeneric("CCsummary<-", function(x, value) standardGeneric("CCsummary<-"))
 #'
 #' @rdname netGSAresults
 #' @export

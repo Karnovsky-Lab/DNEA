@@ -687,6 +687,14 @@ setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
   summary(x@consensus_clustering)
 })
 
+#' @rdname CCsummary
+#' @keywords internal
+setReplaceMethod("CCsummary", signature(x = "DNEAresults"), function(x, value){
+
+  x@consensus_clustering@summary <- value
+  validObject(x)
+  x
+})
 #' Retrieve the subnetwork membership for each feature
 #'
 #' The function takes as input a DNEAresults or consensusClusteringResults object
@@ -715,6 +723,14 @@ setMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x){
   x@consensus_clustering@subnetwork_membership
 })
 
+#' @rdname subnetworkMembership
+#' @keywords internal
+setReplaceMethod("subnetworkMembership", signature(x = "DNEAresults"), function(x, value){
+
+  x@consensus_clustering@subnetwork_membership <- value
+  validObject(x)
+  x
+})
 #' Access the netGSA slot of a DNEAresults object
 #'
 #' The function takes as input a DNEAresults object and returns the netGSA results in the netGSA slot. \cr
