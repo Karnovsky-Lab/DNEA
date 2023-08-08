@@ -15,6 +15,9 @@ test_that("getNetworkFiles", {
 
   dat <- readRDS(test_path("testdata", "test-TEDDYresults.rds"))
   expect_no_condition(getNetworkFiles(dat, file_path = test_path()))
+
+  withr::defer(unlink(paste0(test_path(),"/.", dat@project_name,'_edgelist_',Sys.Date(),'.csv')))
+  withr::defer(unlink(paste0(test_path(),"/.", dat@project_name,'_edgelist_',Sys.Date(),'.csv')))
 })
 
 test_that("plotNetworks", {
@@ -27,6 +30,8 @@ test_that("plotNetworks", {
 
   expect_no_condition(plotNetworks(dat, type = "group_networks", subtype = "All"))
   expect_no_condition(plotNetworks(dat, type = "subnetworks", subtype = 1))
+
+  withr::defer(unlink(paste0(test_path(),"/Rplots.pdf")))
 })
 
 test_that("filterNetworks", {
