@@ -5,10 +5,10 @@ BP_plan <- SerialParam(RNGseed = 417)
 set.seed(417)
 
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
-# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
+# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
 
-dat <- dat[, !grepl("nist", colnames(dat))]
+# dat <- dat[, !grepl("nist", colnames(dat))]
 rownames(dat) <- dat$sample
 group_labels <- dat$group
 names(group_labels) <- dat$sample

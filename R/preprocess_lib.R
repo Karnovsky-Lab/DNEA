@@ -122,6 +122,7 @@ run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
 
   message(paste0("Initiating consensus cluster with a maximum of ", max_iterations, " iterations!"))
   message("Constructing initial consensus matrix...")
+
   ##cluster the adjacency graph
   clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
 
@@ -133,7 +134,7 @@ run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
   iter <- 0
   for(x in seq(max_iterations)){
 
-    ##stop iterations if at max
+    ##stop iterations if consensus is reached
     if(length(table(consensus_matrix)) < 3){
 
       message(paste0("\nConsensus was reached in: ", iter, " iterations!"))
@@ -146,7 +147,7 @@ run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
     diag(consensus_matrix) <- 0
     threshold_consensus_matrix <- consensus_matrix * (consensus_matrix > tau)
 
-    ##great graph from consensus matrix
+    ##create graph from consensus matrix
     threshold_consensus_graph <- graph.adjacency(threshold_consensus_matrix,
                                                  mode="undirected",
                                                  weighted = TRUE)
@@ -163,7 +164,9 @@ run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
     iter <- iter + 1
   }
 
+  #new order
   new.order <- order(final_consensus_cluster[[1]]$membership)
+
   return(list(final_consensus_cluster = final_consensus_cluster[[1]]$membership,
               consensus_matrix = consensus_matrix,
               order = new.order,iter = iter))
