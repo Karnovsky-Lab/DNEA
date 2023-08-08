@@ -166,6 +166,9 @@ plotNetworks <- function(object,
       subtype_network <- induced.subgraph(network_graph, V(network_graph)$name)
     }else{
 
+      #check the subtype exists
+      if(!(subtype %in% c(networkGroups(object), "Both"))) stop("The subtype provided does not match a network within the data!")
+
       #grab metabolite names present in specified subtype
       subgroup_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == subtype | edge_list$edge == "Both"],
                                  edge_list$Metabolite.B[edge_list$edge == subtype | edge_list$edge == "Both"]))
@@ -218,12 +221,18 @@ filterNetworks.DNEAresults <- function(data,
     stop("Only pcor or top_percent_edges should be specified, not both!")
   }else if(!missing(pcor)){
 
+    #check for valid input
+    if(pcor <=0 | pcor >= 1) stop("the specified partial correlation threshold should be between 0 and 1!")
+
     #filter by pcor
     for(k in names(weighted_adjacency_matrices)){
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < pcor] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else if(!missing(top_percent_edges)){
+
+    #check for valid input
+    if(top_percent_edges <=0 | top_percent_edges >= 1) stop("the specified % threshold should be between 0 and 1!")
 
     #filter networks to top x% strongest edges
     for(k in names(weighted_adjacency_matrices)){
