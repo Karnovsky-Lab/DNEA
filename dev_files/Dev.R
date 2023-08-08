@@ -6,6 +6,7 @@ devtools::load_all("~/Documents/Karnovsky_lab/DNEAdev/", reset = TRUE, recompile
 #devtools::create('DNEAdev')
 available('DNEA')
 
+#add packages
 usethis::use_mit_license('DNEADEV')
 usethis::use_description()
 usethis:: use_mit_license()
@@ -30,16 +31,22 @@ usethis::use_package("utils")
 # usethis::use_package("future")
 usethis::use_package()
 
+#add data
 usethis::use_data(TEDDY, overwrite = TRUE)
 usethis::use_data(group_labels, overwrite = TRUE)
 usethis::use_data(TEDDYresults, overwrite = TRUE)
 usethis::use_data(T1Dmeta)
+
+#add to .Rbuildignore
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest.R", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow.R", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev.R", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/.gitignore", escape = TRUE)
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting.R", escape = TRUE)
+
+#add tests
+usethis::use_testthat()
 
 devtools::document()
 devtools::build_manual()
