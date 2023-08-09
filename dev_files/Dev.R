@@ -65,7 +65,7 @@ usethis::use_test("createDNEAobject.R")
 usethis::use_test("reduceFeatures.R")
 
 
-
+devtools::test()
 devtools::document()
 devtools::build_manual()
 devtools::check()
