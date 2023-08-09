@@ -61,6 +61,8 @@ usethis::use_test("stabilitySelection.R")
 usethis::use_test("getNetworks.R")
 usethis::use_test("clusterNet.R")
 usethis::use_test("runNetGSA.R")
+usethis::use_test("createDNEAobject.R")
+usethis::use_test("reduceFeatures.R")
 
 
 

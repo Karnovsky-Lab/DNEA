@@ -6,22 +6,37 @@ set.seed(417)
 
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
 
-dat <- dat[, !grepl("nist", colnames(dat))]
-rownames(dat) <- dat$sample
-group_labels <- dat$group
-names(group_labels) <- dat$sample
-group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
-group_labels[1:10]
-dat<- dat[,-c(1,2)]
-dat <- t(dat)
-TEDDY <- dat
+# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+#
+# dat <- dat[, !grepl("nist", colnames(dat))]
+# rownames(dat) <- dat$sample
+# group_labels <- dat$group
+# names(group_labels) <- dat$sample
+# group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
+# group_labels[1:10]
+# dat<- dat[,-c(1,2)]
+# dat <- t(dat)
+# TEDDY <- dat
+# object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
 
-object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
-# group_labels <- T1Dmeta$group
-# names(group_labels) <- rownames(T1Dmeta)
-# object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, group_labels = group_labels)
+data("TEDDY")
+data("T1Dmeta")
+if(!(all(rownames(T1Dmeta) == colnames(TEDDY)))) stop("problem!")
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, group_labels = group_labels)
+
+#test node collapsing
+TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYresults, normalized = FALSE)),
+                           groups = rownames(expressionData(TEDDYresults, normalized = FALSE)),
+                           row.names = rownames(expressionData(TEDDYresults, normalized = FALSE)))
+
+TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
+TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
+object <- reduceFeatures(object, method = "knowledge", correlation_threshold = 0.7, feature_groups = TEDDY_groups)
+object <- reduceFeatures(object, method = "correlation", correlation_threshold = 0.9)
+object <- reduceFeatures(object, method = "hybrid", correlation_threshold = 0.7, feature_groups = TEDDY_groups)
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
 
