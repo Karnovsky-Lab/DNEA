@@ -31,13 +31,13 @@ Only subnetworks with consensus that meets or exceeds tau are identified as real
 \details{
 Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
 \enumerate{
-\item \code{\link[igraph:cluster_edge_betweenness]{igraph::cluster_edge_betweenness()}}
-\item \code{\link[igraph:cluster_fast_greedy]{igraph::cluster_fast_greedy()}}
-\item \code{\link[igraph:cluster_infomap]{igraph::cluster_infomap()}}
-\item \code{\link[igraph:cluster_label_prop]{igraph::cluster_label_prop()}}
-\item \code{\link[igraph:cluster_louvain]{igraph::cluster_louvain()}}
-\item \code{\link[igraph:cluster_walktrap]{igraph::cluster_walktrap()}}
-\item \code{\link[igraph:cluster_leading_eigen]{igraph::cluster_leading_eigen()}}}
+\item \code{\link[igraph:cluster_edge_betweenness]{cluster_edge_betweenness}}
+\item \code{\link[igraph:cluster_fast_greedy]{cluster_fast_greedy}}
+\item \code{\link[igraph:cluster_infomap]{cluster_infomap}}
+\item \code{\link[igraph:cluster_label_prop]{cluster_label_prop}}
+\item \code{\link[igraph:cluster_louvain]{cluster_louvain}}
+\item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
+\item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 
 For each iteration, node membership in each respective cluster is compared across the algorithms, and only the clusters with \% agreement
 greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus

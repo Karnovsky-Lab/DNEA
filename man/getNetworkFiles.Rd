@@ -24,7 +24,6 @@ The files are already formatted for input into Cytoscape.
 data(TEDDYresults)
 
 #save node and edge list for input to cytoscape
-\donttest{getNetworkFiles(TEDDYresults)}
 
 }
 \seealso{
