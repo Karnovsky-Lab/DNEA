@@ -132,7 +132,7 @@ getNetworkFiles <- function(object, file_path=NULL){
 #'
 #' #plot the networks
 #' plotNetworks(object = TEDDYresults, type = "group_networks", subtype = "All")
-#' plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
+#' plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
 #'
 #' @import igraph
 #' @export

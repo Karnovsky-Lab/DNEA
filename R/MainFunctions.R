@@ -64,16 +64,16 @@ BICtune <- function(object,
                     eta_value = 0.1,
                     BPPARAM = bpparam()){
 
-  ############################################
-  #**Prepare data and initialize parameters**#
-  ############################################
 
-  ##split data by condition
+  ##test for proper input
+  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+
+  ##prepare data
   dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
                             condition_levels = networkGroups(object),
                             condition_by_sample = networkGroupIDs(object))
 
-  ##create input for model training
+  ##initialize input parameters
   n4cov <- max(sapply(dat, ncol))
   trainX <- t(do.call(cbind, dat))
   trainY <- c(rep(1, ncol(dat[[1]])),
@@ -92,10 +92,7 @@ BICtune <- function(object,
     if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
   }
 
-  #############################################
-  #**Initialize workers and optimize lambda **#
-  #############################################
-
+  ##call internal tuning function to optimize lambda
   message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)", appendLF = TRUE)
   message("A Link to this reference can be found in the function documentation by running ?BICtune() in the console", appendLF = TRUE)
 
@@ -217,7 +214,8 @@ stabilitySelection <- function(object,
                                optimal_lambda,
                                BPPARAM = bpparam()){
 
-  #check that nreps is valid
+  ##test for proper input
+  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
 
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
@@ -382,30 +380,23 @@ getNetworks <- function(object,
                        optimal_lambda,
                        eps_threshold = 1e-06){
 
-  ############################################
-  #**Prepare data and initialize parameters**#
-  ############################################
-
+  ##initialize input parameters
   num_samples <- numSamples(object)
   num_features <- numFeatures(object)
-
   Ip <- diag(rep(1, num_features))
 
-  if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
-
-  ##set up output to save the weighted and unweighted adjacency matrices from each model
-  #weighted
+  ##initiate output data structures
+  #weighted adjacency matrices list
   weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
   names(weighted_adjacency_matrices) <- networkGroups(object)
 
-  #unweighted
+  #unweighted adjacency matrices list
   unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
-  #separate the data by condition
-  data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
-                                                condition_levels = networkGroups(object),
-                                                condition_by_sample = networkGroupIDs(object))
+  ##test for proper input
+  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
 
   # getNetworks() requires lambda hyper-parameter. Will use optimal_lambda if
   # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -446,10 +437,13 @@ getNetworks <- function(object,
                    "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
                    "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis."))
   }
-
-
   #print lambda used
   message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+
+  ##separate the data by condition
+  data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
+                                                condition_levels = networkGroups(object),
+                                                condition_by_sample = networkGroupIDs(object))
 
   #model will used selection weights based on stability selection if provided
   if (!is.null(selectionProbabilities(object))){
@@ -553,7 +547,7 @@ getNetworks <- function(object,
 #' TEDDYresults <- clusterNet(object = TEDDYresults, tau = 0.5, max_iterations = 5)
 #'
 #' #we can also plot the subnetworks
-#' plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
+#' plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
 #'
 #' @import igraph
 #' @export
@@ -562,15 +556,14 @@ clusterNet <- function(object,
                        max_iterations = 5,
                        eps_threshold = 1e-06){
 
-
-  ###########################
-  #**tau must be above 0.5**#
-  ###########################
+  #test for proper inputs
+  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   if(tau < 0.5 | tau > 1.0) stop(paste0('tau corresponds to a percent agreement among the clustering methods. ',
                                         ' As such, tau must be greater than 0.5 and less than 1! ',
                                         'Clustering results below this threshold are not reliable -',
                                         'Please see user documentation for more information!'))
+
   if(max_iterations < 1) stop("max_iterations should be a positive integer!")
 
   #####################################
@@ -733,7 +726,7 @@ runNetGSA <- function(object, min_size = 5){
   #################################
 
   #test for proper input
-  if(class(object) != "DNEAresults") stop('the input object should be of class "DNEAresults"!')
+  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
   ##set input variables
