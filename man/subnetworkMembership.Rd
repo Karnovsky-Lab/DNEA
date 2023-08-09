@@ -2,15 +2,21 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{subnetworkMembership}
 \alias{subnetworkMembership}
+\alias{subnetworkMembership<-}
 \alias{subnetworkMembership,consensusClusteringResults-method}
 \alias{subnetworkMembership,DNEAresults-method}
+\alias{subnetworkMembership<-,DNEAresults-method}
 \title{Retrieve the subnetwork membership for each feature}
 \usage{
 subnetworkMembership(x)
 
+subnetworkMembership(x) <- value
+
 \S4method{subnetworkMembership}{consensusClusteringResults}(x)
 
 \S4method{subnetworkMembership}{DNEAresults}(x)
+
+\S4method{subnetworkMembership}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAresults object}
@@ -34,3 +40,4 @@ subnetworkMembership(TEDDYresults)
 \author{
 Christopher Patsalis
 }
+\keyword{internal}

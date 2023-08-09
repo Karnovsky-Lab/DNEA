@@ -4,33 +4,59 @@
 \alias{plotNetworks}
 \title{Visualize the biological networks identified via DNEA}
 \usage{
-plotNetworks(object, type = c("group_networks", "subnetworks"), subnetwork)
+plotNetworks(
+  object,
+  type = c("group_networks", "subnetworks"),
+  subtype = "All",
+  layout_func,
+  title = "",
+  node_size = 15,
+  edge_width = 1,
+  label_size = 1,
+  label_font = 1
+)
 }
 \arguments{
 \item{object}{A DNEAresults object}
 
-\item{type}{"group_networks" will plot the case, control, and total network. "subnetworks" will plot the subnetwork
-specified by teh subnetwork parameter}
+\item{type}{There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the total or condition networks.
+\emph{"subnetworks"} specifies one of the subnetworks should be plot. Additional input via the \strong{subtype} parameter is required}
 
-\item{subnetwork}{The subnetwork to plot}
+\item{subtype}{There are several possible arguments to \strong{subtype}. If \emph{type == "group_networks"}, \strong{subtype}
+can be \emph{"All"} to plot the total network, or one of the condition network names indicated by \code{\link{networkGroups}}
+to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
+numeric corresponding to the subnetwork to plot.}
+
+\item{layout_func}{The layout to plot the specified network by. Please see \code{\link{plot.igraph()}} for more information}
+
+\item{title}{A character string to use as the plot title}
+
+\item{node_size}{Please see \code{\link{plot.igraph}}}
+
+\item{edge_width}{Please see \code{\link{plot.igraph}}}
+
+\item{label_size}{Please see \code{\link{plot.igraph}}}
+
+\item{label_font}{Please see \code{\link{plot.igraph}}}
 }
 \value{
 a plot of the specified network
 }
 \description{
-The function plots the condition networks as well as the specified subnetworks identified via DNEA
+This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are
+differential features, green indicates edges specific to group 1, and red indicates edges specific to group 2.
 }
 \examples{
 #import example data
 data(TEDDYresults)
 
 #plot the networks
-plotNetworks(object = TEDDYresults, type = "group_networks")
+plotNetworks(object = TEDDYresults, type = "group_networks", subtype = "All")
 plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
 
 }
 \seealso{
-\code{\link{getNetworks}}, \code{\link{clusterNet}}
+\code{\link{getNetworks}}, \code{\link{clusterNet}}, \code{\link{networkGroups}}
 }
 \author{
 Christopher Patsalis

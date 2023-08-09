@@ -2,12 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{CCsummary}
 \alias{CCsummary}
+\alias{CCsummary<-}
 \alias{CCsummary,DNEAresults-method}
+\alias{CCsummary<-,DNEAresults-method}
 \title{Retrieves the summary results of consensus clustering}
 \usage{
 CCsummary(x)
 
+CCsummary(x) <- value
+
 \S4method{CCsummary}{DNEAresults}(x)
+
+\S4method{CCsummary}{DNEAresults}(x) <- value
 }
 \arguments{
 \item{x}{A DNEAresults object}
@@ -31,3 +37,4 @@ CCsummary(TEDDYresults)
 \author{
 Christopher Patsalis
 }
+\keyword{internal}
