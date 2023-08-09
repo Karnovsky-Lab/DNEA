@@ -108,6 +108,9 @@ createDNEAobject <- function(project_name,
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
                 stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
 
+  #check object
+  validObject(object)
+
   #perform diagnostic testing on dataset
   diagnostic_values <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),
                                        condition_values = networkGroups(object),
@@ -124,6 +127,9 @@ createDNEAobject <- function(project_name,
                        condition_values = networkGroups(object),
                        conditions = networkGroupIDs(object))
   nodeList(object) <- DEresults
+
+  #check for valid object once more
+  validObject(object)
 
   return(object)
 }
