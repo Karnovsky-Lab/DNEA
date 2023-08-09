@@ -56,7 +56,7 @@ NULL
 #' TEDDYresults <- BICtune(object = TEDDYresults, BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @importFrom BiocParallel bplapply bpparam bpoptions
+#' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
 #' @export
 BICtune <- function(object,
                     lambda_values,
@@ -82,9 +82,14 @@ BICtune <- function(object,
 
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
+
     lambda_values <- seq(0.01, 0.3, 0.02)*sqrt(log(numFeatures(object))/n4cov)
   }else{
+
     lambda_values <- unlist(lambda_values)
+
+    #check that lambda's are valid
+    if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
   }
   #############################################
   #**Initialize workers and optimize lambda **#
@@ -203,13 +208,16 @@ BICtune <- function(object,
 #'                                    BPPARAM = bpparam())
 #'
 #' @import glasso
-#' @importFrom BiocParallel bplapply bpparam bpoptions
+#' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
 #' @export
 stabilitySelection <- function(object,
                                subSample = FALSE,
                                nreps = 500,
                                optimal_lambda,
                                BPPARAM = bpparam()){
+
+  #check that nreps is valid
+  if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
 
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
   # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -229,6 +237,9 @@ stabilitySelection <- function(object,
       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
             already exists - optimal_lambda will be used in analysis')
     }else{
+
+      #check that lambda's are valid
+      if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
@@ -260,7 +271,7 @@ stabilitySelection <- function(object,
 
   #check that groups are sufficiently uneven if subSample selected
   if(subSample){
-    if((1.3* stabsel_init_param[["min_num_sample"]]) > max(stabsel_init_param[["num_samples"]])) stop(paste0("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
+    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])) stop(paste0("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
                                                                                                              "Please perform stability selection WITHOUT additional sub-sampling"))
   }
 
