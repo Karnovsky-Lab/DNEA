@@ -51,7 +51,7 @@ data(TEDDYresults)
 TEDDYresults <- clusterNet(object = TEDDYresults, tau = 0.5, max_iterations = 5)
 
 #we can also plot the subnetworks
-plotNetworks(object = TEDDYresults, type = "subnetworks", subnetwork = 1)
+plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
 
 }
 \references{
