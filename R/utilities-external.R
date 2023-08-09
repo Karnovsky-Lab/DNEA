@@ -86,6 +86,8 @@ getNetworkFiles <- function(object, file_path=NULL){
 
   if(missing(file_path)){
     file_path <- paste0(getwd(), "/")
+  }else{
+    if(!is.character(file_path)) stop("file_path should be a character string corresponding to the directory path in which to save the network files")
   }
   #save node list
   write.csv(object@node_list, paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),

@@ -14,6 +14,7 @@ test_that("includeMetadata", {
 test_that("getNetworkFiles", {
 
   dat <- readRDS(test_path("testdata", "test-TEDDYresults.rds"))
+  expect_error(withr::with_tempdir(getNetworkFiles(dat, file_path = 7), clean = TRUE))
   expect_no_condition(withr::with_tempdir(getNetworkFiles(dat), clean = TRUE))
 
 
