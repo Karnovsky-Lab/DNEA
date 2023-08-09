@@ -92,7 +92,7 @@ reduceFeatures <- function(object,
                            method = c("correlation",
                                       "knowledge",
                                       "hybrid"),
-                           correlation_threshold = 0.9,
+                           correlation_threshold = NULL,
                            feature_groups = NULL){
 
   ##set method
@@ -108,6 +108,10 @@ reduceFeatures <- function(object,
   #check that rownames of feature_groups match feature order
   if(!(all(rownames(expressionData(object, normalized = FALSE)) == rownames(feature_groups)))) stop("The feature order of feature_groups does not match the expression data!")
 
+  #warning if correlation_threshold was provided for knowledge-based collapsing
+  if(method == "knowledge" & !is.null(correlation_threshold)) warning(paste0("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
+                                                                             "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups. ",
+                                                                             'If you prefer that the correlation_threshold be taken into account as well, please change the method to "hybrid"'))
   ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
                              groups = networkGroupIDs(object),
