@@ -66,7 +66,7 @@ BICtune <- function(object,
 
 
   ##test for proper input
-  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   ##prepare data
   dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -215,7 +215,7 @@ stabilitySelection <- function(object,
                                BPPARAM = bpparam()){
 
   ##test for proper input
-  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
 
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
@@ -395,7 +395,7 @@ getNetworks <- function(object,
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##test for proper input
-  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
 
   # getNetworks() requires lambda hyper-parameter. Will use optimal_lambda if
@@ -557,7 +557,7 @@ clusterNet <- function(object,
                        eps_threshold = 1e-06){
 
   #test for proper inputs
-  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   if(tau < 0.5 | tau > 1.0) stop(paste0('tau corresponds to a percent agreement among the clustering methods. ',
                                         ' As such, tau must be greater than 0.5 and less than 1! ',
@@ -726,7 +726,7 @@ runNetGSA <- function(object, min_size = 5){
   #################################
 
   #test for proper input
-  if(inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
   ##set input variables
