@@ -416,7 +416,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
   ###subsampling
   #randomly sample 1.3x the samples in the smaller group from the larger group
-  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[match(max(init_param[['num_samples']]), init_param[['num_samples']])]), 1.3*init_param[['min_num_samples']], replace = FALSE)
+  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
 
   #subsample 90% of the smaller group and add an additional 10%
   temp90 = dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace = FALSE)
@@ -441,11 +441,13 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
   #zero out unstable edges and prepare output matrices
   for (k in 1:init_param[['num_conditions']]){
-    tmp_adjacency_mat = as(tmp_model$OMEGA[[k]], "sparseMatrix")
-    tmp_adjacency_mat[abs(tmp_adjacency_mat) > 1e-5] = 1
-    diag(tmp_adjacency_mat) = 0
-    selection_matrix[[k]] = selection_matrix[[k]] + tmp_adjacency_mat
-    edge_matrix[[k]][,X] = t(tmp_adjacency_mat)[lower.tri(tmp_adjacency_mat,diag=F)]
+
+    tmp_adjacency_mat <- tmp_model$OMEGA[[k]]
+    tmp_adjacency_mat[abs(tmp_adjacency_mat) > 1e-5] <- 1
+    diag(tmp_adjacency_mat) <- 0
+
+    selection_matrix[[k]] <- as(selection_matrix[[k]] + tmp_adjacency_mat, "sparseMatrix")
+    edge_matrix[[k]][,X] <- as(t(tmp_adjacency_mat)[lower.tri(tmp_adjacency_mat,diag=F)], "sparseMatrix")
   }
 
   return(list(mat = selection_matrix, edge_matrix = edge_matrix, stab_sel_rep = X))
