@@ -235,10 +235,10 @@ setValidity("DNEAresults", function(object){
   #check dataset summary
   if(all(dim(diagnostics(object)) != c(0, 0))){
 
-    if(numSamples(object) != nrow(expressionData(object, normalized = FALSE))){
+    if(numSamples(object) != ncol(expressionData(object, normalized = FALSE))){
       "There was a problem with the dataset summary"
     }
-    if(numFeatures(object) != ncol(expressionData(object, normalized = FALSE))){
+    if(numFeatures(object) != nrow(expressionData(object, normalized = FALSE))){
       "There was a problem with the dataset summary"
     }
     validObject(object@dataset_summary)
@@ -302,9 +302,10 @@ setValidity("DNEAresults", function(object){
   #check consensus_clustering
   if(all(CCsummary(object) != c(0, 0))){
 
-    if(sum(object@consensus_clustering@summary$number_of_nodes) != ncol(expressionData(object, normalized = FALSE))){
+    if(sum(CCsummary(object)$number_of_nodes) != nrow(expressionData(object, normalized = FALSE))){
       "There was a problem with consensus clustering"
     }
+
     validObject(object@consensus_clustering)
   }
 })
