@@ -110,7 +110,7 @@ reduceFeatures <- function(object,
 
   #warning if correlation_threshold was provided for knowledge-based collapsing
   if(method == "knowledge" & !is.null(correlation_threshold)) warning(paste0("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
-                                                                             "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups. ",
+                                                                             "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups.\n",
                                                                              'If you prefer that the correlation_threshold be taken into account as well, please change the method to "hybrid"'))
   ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
@@ -121,7 +121,7 @@ reduceFeatures <- function(object,
   if (method == "correlation") {
     res <- collapseNodes_cor(dat = collapse_dat,
                              correlation_threshold = correlation_threshold)
-  }else if (method == "knowedge") {
+  }else if (method == "knowledge") {
     res <- collapseNodes_knowledge(dat = collapse_dat,
                                    feature_groups = feature_groups)
   }else if (method == "hybrid") {
@@ -370,7 +370,7 @@ collapseNodes_knowledge <- function (dat,
   }
 
   return(list(feature_membership = feature_groups,
-              collapsed_data = do.call("rbind",newdat)))
+              collapsed_data = newdat))
 }
 
 
@@ -460,5 +460,5 @@ collapseNodes_hybrid <- function (dat,
   newdat <- cbind.data.frame(dat[,c(1:2)], newdat)
 
   return(list(feature_membership = final_membership,
-              collapsed_data=newdat))
+              collapsed_data = newdat))
 }
