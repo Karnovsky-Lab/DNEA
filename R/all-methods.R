@@ -28,7 +28,7 @@ setMethod("show", "DNEAresults", function(object) {
       "  Optimized Lambda - ", paste0("lambda: ",optimizedLambda(object),
                                       " will be used in analysis."), "\n",
       "  Metabolic modules: ", paste0("there are ", length(unique(nodeList(object)[["membership"]])),
-                                 " subnetworks."),
+                                 " subnetworks."), "\n",
       "  netGSA results", paste0(sum(netGSAresults(object)$NetGSA_pFDR <= 0.05),
                                  " of the metabolic modules are differentially enriched across experimental condition"),
       sep = ""
