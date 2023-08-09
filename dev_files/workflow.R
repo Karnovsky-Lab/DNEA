@@ -5,10 +5,10 @@ BP_plan <- SerialParam(RNGseed = 417)
 set.seed(417)
 
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
-dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
-# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
 
-# dat <- dat[, !grepl("nist", colnames(dat))]
+dat <- dat[, !grepl("nist", colnames(dat))]
 rownames(dat) <- dat$sample
 group_labels <- dat$group
 names(group_labels) <- dat$sample
@@ -17,7 +17,11 @@ group_labels[1:10]
 dat<- dat[,-c(1,2)]
 dat <- t(dat)
 TEDDY <- dat
+
 object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
+# group_labels <- T1Dmeta$group
+# names(group_labels) <- rownames(T1Dmeta)
+# object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, group_labels = group_labels)
 object <- BICtune(object = object, BPPARAM = BP_plan)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
 

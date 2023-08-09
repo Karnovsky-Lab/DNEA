@@ -53,8 +53,16 @@ mkdir("~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/")
 saveRDS(T1Dmeta, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-T1Dmeta.rds")
 saveRDS(TEDDY, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDY.rds")
 saveRDS(TEDDYresults, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDYresults.rds")
-usethis::use_test("test-utilities-internals.R")
-usethis::use_test("test-utilities-external.R")
+usethis::use_test("utilities-internals.R")
+usethis::use_test("utilities-external.R")
+# usethis::use_test("MainFunctions.R")
+usethis::use_test("BICtune.R")
+usethis::use_test("stabilitySelection.R")
+usethis::use_test("getNetworks.R")
+usethis::use_test("clusterNet.R")
+usethis::use_test("runNetGSA.R")
+
+
 
 devtools::document()
 devtools::build_manual()
