@@ -91,6 +91,7 @@ BICtune <- function(object,
     #check that lambda's are valid
     if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
   }
+
   #############################################
   #**Initialize workers and optimize lambda **#
   #############################################
@@ -231,15 +232,15 @@ stabilitySelection <- function(object,
   #    is used for analysis
   # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
   if(!missing(optimal_lambda)){
+
+    #check that lambda's are valid
+    if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
     if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
             already exists - optimal_lambda will be used in analysis')
     }else{
-
-      #check that lambda's are valid
-      if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
@@ -254,10 +255,9 @@ stabilitySelection <- function(object,
     # in adjDGlasso_minimal
     optimized_lambda = NULL
 
-    stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
-      used in the analyis. However, We highly recommend optimizing the lambda parameter by running
-      BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
-           analysis.')
+    warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+                   "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
+                   "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis."))
   }
 
   #split data by condition
@@ -391,6 +391,8 @@ getNetworks <- function(object,
 
   Ip <- diag(rep(1, num_features))
 
+  if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
+
   ##set up output to save the weighted and unweighted adjacency matrices from each model
   #weighted
   weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
@@ -417,6 +419,9 @@ getNetworks <- function(object,
   #    is used for analysis
   # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
   if(!missing(optimal_lambda)){
+
+    #check that lambda's are valid
+    if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
     if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
@@ -437,10 +442,9 @@ getNetworks <- function(object,
     # in adjDGlasso_minimal
     optimized_lambda = NULL
 
-    stop('No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be
-      used in the analyis. However, We highly recommend optimizing the lambda parameter by running
-      BICtune(), or providing a calibrated lambda value using the optimal_lambda parameter prior to
-           analysis.')
+    warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+                   "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
+                   "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis."))
   }
 
 
@@ -567,6 +571,7 @@ clusterNet <- function(object,
                                         ' As such, tau must be greater than 0.5 and less than 1! ',
                                         'Clustering results below this threshold are not reliable -',
                                         'Please see user documentation for more information!'))
+  if(max_iterations < 1) stop("max_iterations should be a positive integer!")
 
   #####################################
   #**Join the two condition networks**#
@@ -726,6 +731,10 @@ runNetGSA <- function(object, min_size = 5){
   #################################
   #**Prepare data and run netGSA**#
   #################################
+
+  #test for proper input
+  if(class(object) != "DNEAresults") stop('the input object should be of class "DNEAresults"!')
+  if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
   ##set input variables
   adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
