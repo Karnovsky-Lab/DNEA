@@ -365,7 +365,7 @@ collapseNodes_knowledge <- function (dat,
     newdat <- rbind(newdat, dat_by_cond)
   }
 
-  return(list(final_membership=feature_groups,
+  return(list(feature_membership = feature_groups,
               collapsed_data = do.call("rbind",newdat)))
 }
 
@@ -455,6 +455,6 @@ collapseNodes_hybrid <- function (dat,
   newdat <- do.call("cbind", lapply(newdat, function(x) x[-c(1,2)]))
   newdat <- cbind.data.frame(dat[,c(1:2)], newdat)
 
-  return(list(final_membership=final_membership,
+  return(list(feature_membership = final_membership,
               collapsed_data=newdat))
 }
