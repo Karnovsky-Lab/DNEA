@@ -27,17 +27,17 @@ can be \emph{"All"} to plot the total network, or one of the condition network n
 to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
 numeric corresponding to the subnetwork to plot.}
 
-\item{layout_func}{The layout to plot the specified network by. Please see \code{\link{igraph::plot.igraph}} for more information}
+\item{layout_func}{The layout to plot the specified network by. Please see \code{\link[igraph::plot.igraph]{plot.igraph}} for more information}
 
 \item{title}{A character string to use as the plot title}
 
-\item{node_size}{Please see \code{\link{igraph::plot.igraph}}}
+\item{node_size}{Please see \code{\link[igraph:plot.igraph]{plot.igraph}}}
 
-\item{edge_width}{Please see \code{\link{igraph::plot.igraph}}}
+\item{edge_width}{Please see \code{\link[igraph:plot.igraph]{plot.igraph}}}
 
-\item{label_size}{Please see \code{\link{igraph::plot.igraph}}}
+\item{label_size}{Please see \code{\link[igraph:plot.igraph]{plot.igraph}}}
 
-\item{label_font}{Please see \code{\link{igraph::plot.igraph}}}
+\item{label_font}{Please see \code{\link[igraph:plot.igraph]{plot.igraph}}}
 }
 \value{
 a plot of the specified network
