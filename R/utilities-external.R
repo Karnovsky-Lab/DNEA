@@ -112,12 +112,12 @@ getNetworkFiles <- function(object, file_path=NULL){
 #' can be \emph{"All"} to plot the total network, or one of the condition network names indicated by \code{\link{networkGroups}}
 #' to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
 #' numeric corresponding to the subnetwork to plot.
-#' @param layout_func The layout to plot the specified network by. Please see \code{\link[igraph::plot.igraph]{plot.igraph}} for more information
+#' @param layout_func The layout to plot the specified network by. Please see \code{\link[igraph]{plot.igraph}} for more information
 #' @param title A character string to use as the plot title
-#' @param node_size Please see \code{\link[igraph:plot.igraph]{plot.igraph}}
-#' @param edge_width Please see \code{\link[igraph:plot.igraph]{plot.igraph}}
-#' @param label_size Please see \code{\link[igraph:plot.igraph]{plot.igraph}}
-#' @param label_font Please see \code{\link[igraph:plot.igraph]{plot.igraph}}
+#' @param node_size Please see \code{\link[igraph]{plot.igraph}}
+#' @param edge_width Please see \code{\link[igraph]{plot.igraph}}
+#' @param label_size Please see \code{\link[igraph]{plot.igraph}}
+#' @param label_font Please see \code{\link[igraph]{plot.igraph}}
 #'
 #' @author Christopher Patsalis
 #'
