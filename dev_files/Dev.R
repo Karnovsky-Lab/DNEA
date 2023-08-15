@@ -8,7 +8,7 @@ devtools::load_all("~/Documents/Karnovsky_lab/DNEA/", reset = TRUE, recompile = 
 available('DNEA')
 
 #add packages
-usethis::use_mit_license('DNEADEV')
+usethis::use_mit_license('DNEA')
 usethis::use_description()
 usethis:: use_mit_license()
 usethis::use_package("Matrix")
@@ -74,9 +74,13 @@ devtools::check()
 devtools::build()
 
 
+datasetSummary(object) <- new("DNEAinputSummary",
+                              num_samples = diagnostic_values[[1]],
+                              num_features = diagnostic_values[[2]],
+                              diagnostic_values = diagnostic_values[[4]])
 
-
-
+return(list(num_samples = num_samples, num_features = num_features,
+            condition_levels = condition_values, diagnostic_values = diagnostic_values))
 
 
 message(paste0(names(unweighted_adjacency_matrices)[[1]]," network specific edges: ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
