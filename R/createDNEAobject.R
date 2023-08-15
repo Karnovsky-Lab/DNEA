@@ -78,12 +78,11 @@ createDNEAobject <- function(project_name,
     if(!is.factor(group_labels)){
 
       group_labels <- factor(group_labels)
-      message(paste0('Condition for expression_data should be of class factor. Converting Now. \n',
-                     'Condition is now a factor with levels:',
-                     '\n', '1. ',
-                     levels(group_labels)[1],
-                     '\n', '2. ',
-                     levels(group_labels)[2]))
+
+      message("Condition for expression_data should be of class factor. Converting Now.", appendLF = TRUE)
+      message("Condition is now a factor with levels:\n1. ", appendLF = FALSE)
+      message(levels(group_labels)[1], appendLF = TRUE)
+      message("2. ", appendLF = FALSE);message(levels(group_labels)[2], appendLF = TRUE)
     }
 
     #create data structures to initialize DNEAobject with un-scaled data
@@ -111,21 +110,18 @@ createDNEAobject <- function(project_name,
   validObject(object)
 
   #perform diagnostic testing on dataset
-  diagnostic_values <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),
+  datasetSummary(object) <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),
                                        condition_values = networkGroups(object),
                                        conditions = networkGroupIDs(object))
 
-  datasetSummary(object) <- new("DNEAinputSummary",
-                                num_samples = diagnostic_values[[1]],
-                                num_features = diagnostic_values[[2]],
-                                diagnostic_values = diagnostic_values[[4]])
-
+  #print dataset summary
+  message("Diagnostic criteria are as follows: ", appendLF = TRUE)
+  show(object@dataset_summary)
 
   ##perform differential expression on the features
-  DEresults <- metabDE(mat = expressionData(x = object, normalized = FALSE),
-                       condition_values = networkGroups(object),
-                       conditions = networkGroupIDs(object))
-  nodeList(object) <- DEresults
+  nodeList(object) <- metabDE(mat = expressionData(x = object, normalized = FALSE),
+                              condition_values = networkGroups(object),
+                              conditions = networkGroupIDs(object))
 
   #check for valid object once more
   validObject(object)
@@ -292,22 +288,21 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
   diagnostic_values <- data.frame(row.names = c("all_data",
                                                 condition_values[[1]],
                                                 condition_values[[2]]))
-  diagnostic_values$min_eigen <- list(min_eigen_3,min_eigen_1, min_eigen_2)
-  diagnostic_values$condition_num <- list(cond_number_3, cond_number_1, cond_number_2)
-
-  #print values and suggestions
-  cat('Diagnostic values are as follows: \n')
-  print(as.matrix(diagnostic_values))
-  cat('\n')
+  diagnostic_values$min_eigen <- c(min_eigen_3,min_eigen_1, min_eigen_2)
+  diagnostic_values$condition_num <- c(cond_number_3, cond_number_1, cond_number_2)
 
   if(any(diagnostic_values$min_eigen <= 1e-5)){
-    warning('One or more conditions look unstable. You should collapse features before continuing the analysis!\n')
+
+    warning("One or more conditions look unstable. You should collapse features before continuing the analysis!")
   } else{
-    cat('Diagnostic tests complete. You can proceed with the analysis!\n')
+
+    warning("Diagnostic tests complete. You can proceed with the analysis!", appendLF = TRUE)
   }
 
-  return(list(num_samples = num_samples, num_features = num_features,
-              condition_levels = condition_values, diagnostic_values = diagnostic_values))
+  return(new("DNEAinputSummary",
+             num_samples = num_samples, num_features = num_features,
+             diagnostic_values = diagnostic_values))
+
 }
 
 #' Perform differential expression analysis using students T-test
