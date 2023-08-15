@@ -180,7 +180,7 @@ setValidity("DNEAresults", function(object){
       "@assays must be an expression matrix"
     }
     if(length(rownames(object@assays[[i]])) != length(unique(rownames(object@assays[[i]])))){
-      "@assays must be an expression matrix where each column is a unique feature."
+      "@assays must be an expression matrix where each row is a unique feature."
     }
     if(!(is.numeric(object@assays[[i]]))){
       "@assays must be a matrix with numeric values."
