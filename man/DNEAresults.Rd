@@ -4,6 +4,9 @@
 \name{DNEAresults-class}
 \alias{DNEAresults-class}
 \title{DNEAresults}
+\value{
+A DNEAresults object
+}
 \description{
 An s4 class to represent the DNEA workflow
 }

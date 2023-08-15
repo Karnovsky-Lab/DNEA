@@ -24,12 +24,16 @@
 
 #' The example data from xxx
 #'
-#' This data is an \emph{n x m} expression matrix corresponding to a curated list of metabolites from "The Environmental Determinants of
+#' This data is an \emph{m x n} expression matrix corresponding to a curated list of metabolites from "The Environmental Determinants of
 #' Diabetes in the Young" clinical trial.
 #'
-#' @format ## `TEDDY`
-#' A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column corresponds to a metabolite.
-#'
+#' @returns An \emph{m x n} expression matrix of metabolomics data from the TEDDY dataset
+#' @docType data
+#' @keywords datasets
+#' @name TEDDY
+#' @usage data("TEDDY")
+#' @format ## `TEDDY` A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column
+#'         corresponds to a metabolite.
 #' @references Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K, Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B, Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study design for type 1 diabetes in The Environmental Determinants of Diabetes in the Young (TEDDY) study. Diabetes Metab Res Rev. 2014 Jul;30(5):424-34. doi: 10.1002/dmrr.2510. PMID: 24339168; PMCID: PMC4058423. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
 #' @source The raw data can be downloaded from the Metabolomics workbench under study ID \strong{ST001386}:
 #' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
@@ -40,8 +44,12 @@
 #' This data is a data frame containing metadata for the samples in the corresponding \code{\link{TEDDY}} example data from "The Environmental Determinants of
 #' Diabetes in the Young" clinical trial.
 #'
-#' @format ## `T1Dmeta`
-#' A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:
+#' @returns A data frame containing the metadata for the TEDDY metabolomics study
+#' @docType data
+#' @keywords datasets
+#' @name T1Dmeta
+#' @usage data("T1Dmeta")
+#' @format ## `T1Dmeta` A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:
 #' \describe{
 #'   \item{subject}{The individual patient}
 #'   \item{Endpoint1}{The age of the case subject in days when this sample was collected}
@@ -52,7 +60,6 @@
 #'   \item{Sex}{The sex of the subject}
 #'   \item{sample}{The name of this sample}
 #'   \item{group}{A variable indicating whether or not this sample is part of the T1D case or T1D control group}
-#'   ...
 #' }
 #'
 #' @references Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K, Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B, Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study design for type 1 diabetes in The Environmental Determinants of Diabetes in the Young (TEDDY) study. Diabetes Metab Res Rev. 2014 Jul;30(5):424-34. doi: 10.1002/dmrr.2510. PMID: 24339168; PMCID: PMC4058423. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
@@ -65,8 +72,12 @@
 #' This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
 #' data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
 #'
-#' @format ## `TEDDYresults`
-#' A DNEA results object after completing a DNEA experiment
+#' @returns A \code{\link{DNEAresults}} object containing the results of a DNEA experiment
+#' @docType data
+#' @keywords datasets
+#' @name TEDDYresults
+#' @usage data("TEDDYresults")
+#' @format ## `TEDDYresults` A DNEA results object after completing a DNEA experiment.
 #'
 #' @source The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(TEDDYresults) in the console.
 "TEDDYresults"

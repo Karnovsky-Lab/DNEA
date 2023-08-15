@@ -14,7 +14,8 @@
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{clusterNet}}
-#'
+#' @returns A consensusClusteringResults object
+#' @docType class
 #' @import methods
 #' @rdname consensusClusteringResults
 setClass(Class = "consensusClusteringResults",
@@ -33,7 +34,8 @@ setClass(Class = "consensusClusteringResults",
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{createDNEAobject}}
-#'
+#' @returns A DNEAinputSummary object
+#' @docType class
 #' @import methods
 #' @rdname DNEAinputSummary
 setClass(Class = "DNEAinputSummary",
@@ -88,7 +90,8 @@ setClass(Class = "DNEAinputSummary",
 #' \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
 #' \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{clusterNet}},
 #' \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
-#'
+#' @returns A DNEAresults object
+#' @docType class
 #' @import methods
 #' @rdname DNEAresults
 setClass(Class = "DNEAresults",
@@ -118,7 +121,8 @@ setClass(Class = "DNEAresults",
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
-#'
+#' @returns A collapsed_DNEAresults object
+#' @docType class
 #' @import methods
 #' @rdname collapse_DNEAresults
 setClass(Class = "collapsed_DNEAresults",
@@ -127,7 +131,7 @@ setClass(Class = "collapsed_DNEAresults",
          contains = "DNEAresults")
 
 #' check validity of "consensusClusteringResults"
-#'
+#' @docType methods
 #' @import methods
 #' @noRd
 setValidity("consensusClusteringResults", function(object){
@@ -148,7 +152,7 @@ setValidity("consensusClusteringResults", function(object){
   }
 })
 #' check validity of "DNEAinputSummary"
-#'
+#' @docType methods
 #' @import methods
 #' @noRd
 setValidity("DNEAinputSummary", function(object){
@@ -164,7 +168,7 @@ setValidity("DNEAinputSummary", function(object){
   }
 })
 #'Check Validity of "DNEAresults" object
-#'
+#' @docType methods
 #' @import methods
 #' @noRd
 setValidity("DNEAresults", function(object){

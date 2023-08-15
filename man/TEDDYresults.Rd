@@ -5,16 +5,17 @@
 \alias{TEDDYresults}
 \title{Example results for DNEA}
 \format{
-\subsection{\code{TEDDYresults}}{
-
-A DNEA results object after completing a DNEA experiment
+\subsection{\code{TEDDYresults} A DNEA results object after completing a DNEA experiment.}{
 }
 }
 \source{
 The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(TEDDYresults) in the console.
 }
 \usage{
-TEDDYresults
+data("TEDDYresults")
+}
+\value{
+A \code{\link{DNEAresults}} object containing the results of a DNEA experiment
 }
 \description{
 This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}

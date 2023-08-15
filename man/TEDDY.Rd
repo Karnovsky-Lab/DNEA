@@ -5,9 +5,10 @@
 \alias{TEDDY}
 \title{The example data from xxx}
 \format{
-\subsection{\code{TEDDY}}{
+\subsection{\code{TEDDY} A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column}{
 
-A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column corresponds to a metabolite.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{    corresponds to a metabolite.
+}\if{html}{\out{</div>}}
 }
 }
 \source{
@@ -15,10 +16,13 @@ The raw data can be downloaded from the Metabolomics workbench under study ID \s
 \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 }
 \usage{
-TEDDY
+data("TEDDY")
+}
+\value{
+An \emph{m x n} expression matrix of metabolomics data from the TEDDY dataset
 }
 \description{
-This data is an \emph{n x m} expression matrix corresponding to a curated list of metabolites from "The Environmental Determinants of
+This data is an \emph{m x n} expression matrix corresponding to a curated list of metabolites from "The Environmental Determinants of
 Diabetes in the Young" clinical trial.
 }
 \references{

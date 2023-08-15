@@ -4,6 +4,9 @@
 \name{collapsed_DNEAresults-class}
 \alias{collapsed_DNEAresults-class}
 \title{collapse_DNEAresults}
+\value{
+A collapsed_DNEAresults object
+}
 \description{
 An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
 \code{\link{DNEAresults-class}}

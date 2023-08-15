@@ -4,6 +4,9 @@
 \name{DNEAinputSummary-class}
 \alias{DNEAinputSummary-class}
 \title{DNEAinputSummary}
+\value{
+A DNEAinputSummary object
+}
 \description{
 An s4 class to represent the results from diagnostic testing on the input data
 }

@@ -4,6 +4,9 @@
 \name{consensusClusteringResults-class}
 \alias{consensusClusteringResults-class}
 \title{consensusClusteringResults}
+\value{
+A consensusClusteringResults object
+}
 \description{
 An s4 class to represent the results from consensus clustering within DNEA
 }

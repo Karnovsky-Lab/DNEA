@@ -5,9 +5,8 @@
 \alias{T1Dmeta}
 \title{The meta data file for the TEDDY metabolomics data}
 \format{
-\subsection{\code{T1Dmeta}}{
+\subsection{\code{T1Dmeta} A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:}{
 
-A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:
 \describe{
 \item{subject}{The individual patient}
 \item{Endpoint1}{The age of the case subject in days when this sample was collected}
@@ -18,7 +17,6 @@ A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and 
 \item{Sex}{The sex of the subject}
 \item{sample}{The name of this sample}
 \item{group}{A variable indicating whether or not this sample is part of the T1D case or T1D control group}
-...
 }
 }
 }
@@ -27,7 +25,10 @@ The raw data can be downloaded from the Metabolomics workbench under study ID \s
 \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 }
 \usage{
-T1Dmeta
+data("T1Dmeta")
+}
+\value{
+A data frame containing the metadata for the TEDDY metabolomics study
 }
 \description{
 This data is a data frame containing metadata for the samples in the corresponding \code{\link{TEDDY}} example data from "The Environmental Determinants of
