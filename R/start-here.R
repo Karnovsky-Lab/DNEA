@@ -102,7 +102,7 @@
 #'
 #' A more descriptive workflow can be viewed in the package vignette. This can be accessed by running \code{vignette("DNEA")} in the console. \cr
 #'
-#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEAdev}
+#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEA}
 #'
 #' @docType package
 #' @name DNEA
