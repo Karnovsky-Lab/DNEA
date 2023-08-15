@@ -304,7 +304,7 @@ setValidity("DNEAresults", function(object){
   }
 
   #check consensus_clustering
-  if(all(CCsummary(object) != c(0, 0))){
+  if(!is.null(dim(CCsummary(object)))){
 
     if(sum(CCsummary(object)$number_of_nodes) != nrow(expressionData(object, normalized = FALSE))){
       "There was a problem with consensus clustering"
