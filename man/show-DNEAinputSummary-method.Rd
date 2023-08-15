@@ -10,7 +10,7 @@
 \item{object}{A DNEAinputSummary object}
 }
 \value{
-A summary of the input data to \code{\link{createDNEAobject}}
+A summary of the input data to \code{\link{createDNEAobject}}.
 }
 \description{
 This function will display the number of samples, number of features, and diagnostics values of the input dataset to a

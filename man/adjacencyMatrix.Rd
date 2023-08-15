@@ -19,7 +19,7 @@ adjacencyMatrix(x, weighted) <- value
 \item{a}{\code{\link{DNEAresults}} object}
 }
 \value{
-A matrix corresponding to the adjacency matrix specified
+A matrix corresponding to the adjacency matrix specified.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the weighted or unweighted adjacency matrix

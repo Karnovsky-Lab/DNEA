@@ -25,7 +25,7 @@ methods}
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A \code{\link{collapsed_DNEAresults}} object
+A \code{\link{collapsed_DNEAresults}} object.
 }
 \description{
 This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,

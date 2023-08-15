@@ -28,7 +28,7 @@ adjacencyGraph(x, graph) <- value
 whole graph object, or one of the group values returned by \code{\link{networkGroups}}}
 }
 \value{
-An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
+An \code{\link{igraph}} graph object corresponding to the specified adjacency graph.
 }
 \description{
 The function  returns the adjacency graph made for the case, control, or joint network determined via

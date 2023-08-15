@@ -10,7 +10,7 @@
 \item{object}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A summary of the information stored in a \code{\link{DNEAresults}} object
+A summary of the information stored in a \code{\link{DNEAresults}} object.
 }
 \description{
 This function will display a summary of the information stored within a \code{\link{DNEAresults}} object

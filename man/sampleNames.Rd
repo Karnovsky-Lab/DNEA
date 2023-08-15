@@ -13,7 +13,7 @@ sampleNames(x)
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A character vector of sample names
+A character vector of sample names.
 }
 \description{
 This function accesses the sample names stored in the @metadata slot of the \code{\link{DNEAresults}} object.

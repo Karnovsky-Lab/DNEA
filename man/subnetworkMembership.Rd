@@ -22,7 +22,7 @@ subnetworkMembership(x) <- value
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A data.frame that corresponds to the results of consensus clustering
+A data frame that corresponds to the results of consensus clustering.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} or \code{\link{consensusClusteringResults}} object

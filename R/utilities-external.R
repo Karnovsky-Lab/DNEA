@@ -15,7 +15,7 @@
 #'
 #' @seealso \code{\link{featureNames}}, \code{\link{sampleNames}},
 #'
-#' @return A DNEAresults object with the specified additions
+#' @returns A DNEAresults object with the specified additions
 #'
 #' @examples
 #' #import example data
@@ -75,7 +75,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{DNEAresults}},
 #'
-#' @return A \code{\link{DNEAresults}} object with the added expression data in the @@assays slot
+#' @returns A \code{\link{DNEAresults}} object with the added expression data in the @@assays slot
 #'
 #' @examples
 #' #import example data
@@ -143,7 +143,7 @@ addExpressionData <- function(object, data){
 #'
 #' @seealso \code{\link{edgeList}}, \code{\link{nodeList}}
 #'
-#' @return Two .csv files, one for the node list and one for the edge list, saved to the specified file path.
+#' @returns Two .csv files, one for the node list and one for the edge list, saved to the specified file path
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -201,7 +201,7 @@ getNetworkFiles <- function(object, file_path = NULL){
 #' @seealso \code{\link{getNetworks}}, \code{\link{clusterNet}}, \code{\link{networkGroups}}
 #'
 #'
-#' @returns a plot of the specified network
+#' @returns A plot of the specified network
 #'
 #' @examples
 #' #import example data

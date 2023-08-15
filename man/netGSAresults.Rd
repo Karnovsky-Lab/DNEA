@@ -19,7 +19,7 @@ netGSAresults(x) <- value
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A data.frame of the results from netGSA
+A data frame of the results from netGSA.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the netGSA results in the netGSA slot. \cr

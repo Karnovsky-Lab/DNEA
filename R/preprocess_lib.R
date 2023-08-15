@@ -4,7 +4,7 @@
 #' the consensus matrix
 #'
 #' @param cl the results from the consensus clustering algorithm
-#' @return The corresponding consensus matrix
+#' @returns The corresponding consensus matrix
 #' @keywords internal
 #' @noRd
 getConsensusMatrix <- function(cluster_results){
@@ -113,7 +113,7 @@ ensembl_cluster <- function(adjacency_graph,
 #' @param adjacency_graph An adjacency matrix of the determined network
 #' @param tau The consensus probability threshold for agreement among clustering runs
 #' @param max_iterations Maximum number of iterations to perform trying to reach consensus.
-#' @return Sub-network determinations for the nodes within the input network
+#' @returns Sub-network determinations for the nodes within the input network
 #'
 #' @import igraph
 #' @keywords internal

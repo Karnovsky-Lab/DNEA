@@ -25,7 +25,7 @@ diagnostics(x) <- value
 \item{a}{\code{\link{DNEAresults}} object or \code{\link{DNEAinputSummary}} object}
 }
 \value{
-returns the diagnostic values for the input expression data
+Returns the diagnostic values for the input expression data.
 }
 \description{
 This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr

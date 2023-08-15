@@ -13,7 +13,7 @@ projectName(x)
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-The name of the DNEA experiment
+The name of the DNEA experiment.
 }
 \description{
 This function returns the name of the DNEA experiment

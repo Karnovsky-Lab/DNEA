@@ -19,7 +19,7 @@ CCsummary(x) <- value
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A data.frame summary of the consensus clustering results from DNEA
+A data frame summary of the consensus clustering results from DNEA.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns a summary

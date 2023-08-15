@@ -13,7 +13,7 @@ getNetworkFiles(object, file_path = NULL)
 directory}
 }
 \value{
-Two .csv files, one for the node list and one for the edge list, saved to the specified file path.
+Two .csv files, one for the node list and one for the edge list, saved to the specified file path
 }
 \description{
 This function will save the node and edge information as .csv files in the working directory.

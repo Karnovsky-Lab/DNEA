@@ -42,7 +42,7 @@ NULL
 #' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimization method deployed here can be found
 #' in the Guo et al. (2011) paper referenced below.
 #'
-#' @return A \code{\link{DNEAresults}} object containing the BIC and likelihood scores for every lambda value tested, as well as
+#' @returns A \code{\link{DNEAresults}} object containing the BIC and likelihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
 #'
 #' @examples
@@ -189,8 +189,8 @@ BICtune <- function(object,
 #' More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @return A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
-#' results from stability selection as well as the calculated selection probabilities
+#' @returns A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
+#' results from stability selection as well as the calculated selection probabilities.
 #'
 #' @examples
 #' #import BiocParallel package
@@ -360,7 +360,7 @@ stabilitySelection <- function(object,
 #'
 #' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020; 10(12):479. \url{https://doi.org/10.3390/metabo10120479}
 #'
-#' @return A \code{\link{DNEAresults}} object after populating the adjaceny_matrix and edge_list slots with the corresponding
+#' @returns A \code{\link{DNEAresults}} object after populating the adjaceny_matrix and edge_list slots with the corresponding
 #' adjacency_matrix for each sample condition as well as the network edge list.
 #'
 #' @examples
@@ -534,7 +534,7 @@ getNetworks <- function(object,
 #' greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
 #' on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
 #'
-#' @return A \code{\link{DNEAresults}} object containing sub-network determinations for the nodes within the input network.
+#' @returns A \code{\link{DNEAresults}} object containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
 #'        Sub-network membership for each node can be found in the "membership" column of the node list, which can be
 #'        viewed using \code{\link{nodeList}}.
@@ -797,16 +797,3 @@ runNetGSA <- function(object, min_size = 5){
 
   return(object)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

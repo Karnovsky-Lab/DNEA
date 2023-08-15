@@ -19,7 +19,8 @@ datasetSummary(x) <- value
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}
+The numbers of samples/features and diagnostic values of the input data calculated by
+\code{\link{createDNEAobject}}.
 }
 \description{
 This function prints to console the number of samples, number of features, and diagnostic values of the input data to

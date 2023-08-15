@@ -20,7 +20,7 @@ selectionResults(x) <- value
 }
 \value{
 A \code{\link{DNEAresults}} object after filling the
-selection_results section of the stable_networks slot
+selection_results section of the stable_networks slot.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns an m x m matrix of selection results for every

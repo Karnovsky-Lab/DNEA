@@ -21,7 +21,7 @@ optimizedLambda(x) <- value
 \item{value}{a single-value numeric vector corresponding to the lambda value to use in analysis}
 }
 \value{
-The optimized lambda hyperparameter
+The optimized lambda hyperparameter.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the hyperparameter (lambda) that is currently being

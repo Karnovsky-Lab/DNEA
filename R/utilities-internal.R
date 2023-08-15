@@ -7,7 +7,7 @@
 #' @param condition_levels A list or vector of the unique conditions present in dat
 #' @param condition_by_sample A list or vector of the condition value corresponding to each
 #'        sample.
-#' @return A list of expression matrices
+#' @returns A list of expression matrices
 #' @keywords internal
 #' @noRd
 split_by_condition <- function(dat, condition_levels, condition_by_sample){

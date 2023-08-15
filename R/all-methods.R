@@ -9,7 +9,7 @@
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
-#' @return A summary of the information stored in a \code{\link{DNEAresults}} object
+#' @returns A summary of the information stored in a \code{\link{DNEAresults}} object.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -44,7 +44,7 @@ setMethod("show", "DNEAresults", function(object) {
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
-#' @return A summary of the input data to \code{\link{createDNEAobject}}
+#' @returns A summary of the input data to \code{\link{createDNEAobject}}.
 #' @keywords internal
 #' @export
 setMethod("show", "DNEAinputSummary", function(object) {
@@ -60,7 +60,7 @@ setMethod("show", "DNEAinputSummary", function(object) {
 #' This function returns the name of the DNEA experiment
 #'
 #' @param x A \code{\link{DNEAresults}} object
-#' @return The name of the DNEA experiment
+#' @returns The name of the DNEA experiment.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -101,7 +101,7 @@ expressionData.DNEAresults <- function(x, normalized = TRUE){
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 
-#' @return The expression matrix specified by the user.
+#' @returns The expression matrix specified by the user.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -123,7 +123,7 @@ networkGroupIDs.DNEAresults <- function(x){
 #' @param value a character string name corresponding to a column name of the sample metadata data frame
 #' @author Christopher Patsalis
 #' @seealso \code{\link{includeMetadata}}
-#' @return A vector of the unique condition labels
+#' @returns A vector of the unique condition labels.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -140,7 +140,7 @@ setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAr
 #' @param x A DNEAobject, or DNEAobject_collapsed object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
-#' @return A vector of the condition values
+#' @returns A vector of the condition values.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -164,7 +164,7 @@ sampleNames.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
-#' @return A character vector of sample names
+#' @returns A character vector of sample names.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -191,7 +191,7 @@ featureNames.DNEAresults <- function(x, original = FALSE){
 #'  names that have been modified to avoid errors as a result of special characters.
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
-#' @return A character vector of feature names
+#' @returns A character vector of feature names.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -211,7 +211,7 @@ numFeatures.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
-#' @return The number of features in the dataset
+#' @returns The number of features in the dataset.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -236,7 +236,7 @@ numSamples.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
-#' @return The number of samples in the dataset
+#' @returns The number of samples in the dataset.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -266,7 +266,7 @@ optimizedLambda.DNEAresults <- function(x){
 #' @param value a single-value numeric vector corresponding to the lambda value to use in analysis
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
-#' @return The optimized lambda hyperparameter
+#' @returns The optimized lambda hyperparameter.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -298,7 +298,7 @@ lambdas2Test.DNEAresults <- function(x){
 #' @param x A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
-#' @return The lambda values to evaluate in optimization
+#' @returns The lambda values to evaluate in optimization.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -331,7 +331,7 @@ BICscores.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
-#' @return The optimized lambda hyperparameter
+#' @returns The optimized lambda hyperparameter.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -361,8 +361,8 @@ selectionResults.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}
-#' @return A \code{\link{DNEAresults}} object after filling the
-#' selection_results section of the stable_networks slot
+#' @returns A \code{\link{DNEAresults}} object after filling the
+#'         selection_results section of the stable_networks slot.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -394,8 +394,8 @@ selectionProbabilities.DNEAresults <- function(x){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionResults}}
-#' @return A \code{\link{DNEAresults}} object after filling the
-#' selection_probabilities section of the stable_networks slot
+#' @returns A \code{\link{DNEAresults}} object after filling the
+#'         selection_probabilities section of the stable_networks slot.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -427,7 +427,7 @@ edgeList.DNEAresults <- function(x){
 #' @param x a \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}
-#' @return a data.frame corresponding to the edge list determined by DNEA
+#' @returns A data frame corresponding to the edge list determined by DNEA.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -458,7 +458,7 @@ nodeList.DNEAresults <- function(x){
 #' @param x a \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}
-#' @return a data.frame corresponding to the node list determined by DNEA
+#' @returns A data frame corresponding to the node list determined by DNEA.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -489,7 +489,7 @@ diagnostics.DNEAresults <- function(x){
 #' @param a \code{\link{DNEAresults}} object or \code{\link{DNEAinputSummary}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
-#' @return returns the diagnostic values for the input expression data
+#' @returns Returns the diagnostic values for the input expression data.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -532,7 +532,8 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
-#' @returns The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}
+#' @returns The numbers of samples/features and diagnostic values of the input data calculated by
+#'          \code{\link{createDNEAobject}}.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -574,7 +575,7 @@ adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 #' @param a \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}
-#' @return A matrix corresponding to the adjacency matrix specified
+#' @returns A matrix corresponding to the adjacency matrix specified.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -612,7 +613,7 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
 #' whole graph object, or one of the group values returned by \code{\link{networkGroups}}
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
-#' @return An \code{\link{igraph}} graph object corresponding to the specified adjacency graph
+#' @returns An \code{\link{igraph}} graph object corresponding to the specified adjacency graph.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -658,7 +659,7 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
 #' @param object A consensusClusteringResults
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
-#' @return A data.frame that corresponds to a summary of the results of consensus clustering
+#' @returns A data frame that corresponds to a summary of the results of consensus clustering.
 #' @rdname summary
 #' @export
 setMethod("summary", signature(object = "consensusClusteringResults"), function(object){
@@ -674,7 +675,7 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
-#' @returns A data.frame summary of the consensus clustering results from DNEA
+#' @returns A data frame summary of the consensus clustering results from DNEA.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -703,7 +704,7 @@ setReplaceMethod("CCsummary", signature(x = "DNEAresults"), function(x, value){
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
-#' @return A data.frame that corresponds to the results of consensus clustering
+#' @returns A data frame that corresponds to the results of consensus clustering.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -738,7 +739,7 @@ setReplaceMethod("subnetworkMembership", signature(x = "DNEAresults"), function(
 #' @param x A \code{\link{DNEAresults}} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
-#' @returns A data.frame of the results from netGSA
+#' @returns A data frame of the results from netGSA.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)

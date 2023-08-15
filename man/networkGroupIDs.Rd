@@ -18,7 +18,7 @@ networkGroupIDs(x) <- value
 \item{value}{a character string name corresponding to a column name of the sample metadata data frame}
 }
 \value{
-A vector of the unique condition labels
+A vector of the unique condition labels.
 }
 \description{
 This function accesses the experimental group labels for each sample stored in the @metadata slot of a \code{\link{DNEAresults}} object.

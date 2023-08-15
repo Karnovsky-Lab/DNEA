@@ -44,7 +44,7 @@ should be a single-value numeric vector corresponding to the sub network to plot
 4 is bold- and italic-type. Please see the \emph{label.font} parameter in \code{\link[igraph]{plot.igraph}} for more details}
 }
 \value{
-a plot of the specified network
+A plot of the specified network
 }
 \description{
 This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are

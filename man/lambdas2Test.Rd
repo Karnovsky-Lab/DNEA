@@ -19,7 +19,7 @@ lambdas2Test(x) <- value
 \item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
 }
 \value{
-The lambda values to evaluate in optimization
+The lambda values to evaluate in optimization.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the lambda values that were testing

@@ -16,7 +16,7 @@ featureNames(x, original = TRUE)
 names that have been modified to avoid errors as a result of special characters.}
 }
 \value{
-A character vector of feature names
+A character vector of feature names.
 }
 \description{
 This function accesses the feature names stored in the @metadata slot of the \code{\link{DNEAresults}} object.

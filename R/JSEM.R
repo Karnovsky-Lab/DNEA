@@ -1,6 +1,6 @@
 #' maTr computes the trace of the matrix
 #' @param z square numerical matrix
-#' @return trace of the input matrix (scalar)
+#' @returns trace of the input matrix (scalar)
 #' @keywords internal
 #' @noRd
 matTr <- function(z){
@@ -19,17 +19,19 @@ matTr <- function(z){
 #' @param trainY a vector of corresponding conditions for samples in trainX
 #' @param lambda_value the lambda hyperparameter to use in the glasso model
 #' @param adaptive_weight default parameter used to calculate the penalty matrix
-#' @param eta default parameter ??. Default is 0.01
+#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
+#'        so that we can calculate its inverse. The default is 0.01.
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'        Default is 1e+6
 #'
 #' @author Jing Ma
 #'
-#' @return The ouput of a glasso model
+#' @returns The ouput of a glasso model
 #'
 #' @import glasso
 #' @importFrom stats cov
 #' @keywords internal
+#' @noRd
 CGM_AHP_train <- function(
   trainX,
   trainY,
@@ -114,10 +116,10 @@ CGM_AHP_train <- function(
 #' @param lambda a vector of supplied lambda values
 #'
 #' @author Christopher Patsalis
-#' @return A set of variables corresponding to the following variables regarding
+#' @returns A set of variables corresponding to the following variables regarding
 #'         the training_data: number of features (p), number of conditions (K), number of lambda
 #'         values being tested (N), an a vector containing the number of samples per condition (n),
-#'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
+#'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood).
 #'
 #' @keywords internal
 #' @noRd
@@ -164,12 +166,13 @@ tune_init <- function(
 #'        Default is FALSE.
 #' @param eps A significance cut-off for thresholding network interactions.
 #'        Default is 1e-06
-#' @param eta default parameter ??. Default is 0.01
+#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
+#'        so that we can calculate its inverse. The default is 0.01.
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'        Default is 1e+6
 #'
 #' @author Jing Ma
-#' @return A list containing the BIC and liklihood score for each lambda parameter evaluated.
+#' @returns A list containing the BIC and liklihood score for each lambda parameter evaluated.
 #'
 #' @importFrom stats cov
 #' @importFrom Matrix Matrix
@@ -236,13 +239,11 @@ CGM_AHP_tune <- function(
 #'
 #' @author Christopher Patsalis
 #'
-#' @return a set of variables corresponding to the following:
-#'         number of features (num_features), number of conditions (num_conditions),
-#'         a vector containing sample numbers by condition (num_samples),
-#'         number of samples in smallest condition (min_num_samples),
-#'         a matrix of stability selection results (selection_matrix), and a matrix containing
-#'         edge selection (edge_matrix)
-#'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood)
+#' @returns a set of variables corresponding to the following: number of features (num_features), number of
+#'         conditions (num_conditions), a vector containing sample numbers by condition (num_samples), number of
+#'         samples in smallest condition (min_num_samples), a matrix of stability selection results
+#'         (selection_matrix), and a matrix containing edge selection (edge_matrix) an initialized vector for BIC
+#'         scores (BIC_score), an initialized vector for likelihood (likelihood).
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -306,12 +307,13 @@ stabsel_init <- function(
 #' @param X A vector corresponding to the number of reps to be run in stability selection
 #' @param init_param static variables necessary for CGM_AHP_stabsel functioning
 #' @param lastar the optimized lambda parameter
-#' @param eta default parameter ??. Default is 0.01
+#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
+#'        so that we can calculate its inverse. The default is 0.01.
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6
 #'
 #' @author Jing Ma
-#' @return a precision matrix for the network corresponding to the input data created via that rep
+#' @returns A precision matrix for the network corresponding to the input data.
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -389,13 +391,14 @@ CGM_AHP_stabsel <- function(listX,
 #' @param X A vector corresponding to the number of reps to be run in stability selection
 #' @param init_param static variables necessary for CGM_AHP_stabsel_subsample functioning
 #' @param lastar the optimized lambda parameter
-#' @param eta default parameter ??. Default is 0.01
+#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
+#'        so that we can calculate its inverse. The default is 0.01.
 #' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
 #'       Default is 1e+6.
 #'
 #' @author Gayatri Iyer
 #'
-#' @return a precision matrix for the network corresponding to the input data created via that rep
+#' @returns A precision matrix for the network corresponding to the input data.
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -470,7 +473,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'
 #' @author Jing Ma
 #'
-#' @return An adjacency matrix for the data network estimated by the glasso model
+#' @returns An adjacency matrix for the data network estimated by the glasso model.
 #'
 #' @import glasso
 #' @importFrom stats cov2cor

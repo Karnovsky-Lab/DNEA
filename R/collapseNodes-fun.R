@@ -63,7 +63,7 @@
 #' experiments where the dataset contains many compounds of a similar class, but the user is unsure how correlated the features of
 #' said class will be. This method prevents poorly correlated or uncorrelated features from being collapsed into a single feature.}
 #'
-#' @returns A \code{\link{collapsed_DNEAresults}} object
+#' @returns A \code{\link{collapsed_DNEAresults}} object.
 #'
 #' @examples
 #' #import example data
@@ -200,7 +200,8 @@ reduceFeatures <- function(object,
 #'
 #' @seealso \code{\link{reduceFeatures}}
 #'
-#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
+#' @returns The collapsed expression data and a group table indicating which features were
+#'         collapsed into a given group.
 #'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
@@ -327,7 +328,8 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 #'
 #' @seealso \code{\link{reduceFeatures}}
 #'
-#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
+#' @returns The collapsed expression data and a group table indicating which features were collapsed into
+#'         a given group.
 #'
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
@@ -394,7 +396,8 @@ collapseNodes_knowledge <- function (dat,
 #'
 #' @seealso \code{\link{collapseNodes_cor}}, \code{\link{collapseNodes_knowlege}}, \code{\link{reduceFeatures}}
 #'
-#' @return The collapsed expression data and a group table indicating which features were collapsed into a given group
+#' @returns The collapsed expression data and a group table indicating which features were collapsed into a
+#'         given group.
 #' @import igraph
 #' @importFrom dplyr %>% summarise across everything group_by select
 #' @importFrom stringr str_detect

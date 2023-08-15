@@ -27,7 +27,7 @@ necessary if \code{\link{BICtune}} is not performed}
 }
 \value{
 A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
-results from stability selection as well as the calculated selection probabilities
+results from stability selection as well as the calculated selection probabilities.
 }
 \description{
 This function randomly samples the input data and fits a glasso model with the sampled data for \strong{\emph{nreps}} number of replicates.

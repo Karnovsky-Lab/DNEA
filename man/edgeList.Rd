@@ -19,7 +19,7 @@ edgeList(x) <- value
 \item{x}{a \code{\link{DNEAresults}} object}
 }
 \value{
-a data.frame corresponding to the edge list determined by DNEA
+A data frame corresponding to the edge list determined by DNEA.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the edge list created from \code{\link{getNetworks}}. \cr

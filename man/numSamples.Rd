@@ -16,7 +16,7 @@ numSamples(x)
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-The number of samples in the dataset
+The number of samples in the dataset.
 }
 \description{
 This function prints to console the total number of samples in the dataset

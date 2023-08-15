@@ -15,7 +15,7 @@ should be row names and the feature names should be column names}
 \item{group_labels}{A factor vector of experimental group labels named with the corresponding sample name}
 }
 \value{
-a \code{\link{DNEAresults}} object
+A \code{\link{DNEAresults}} object.
 }
 \description{
 This function takes as input a matrix of non-normalized, non-transformed expression data and the

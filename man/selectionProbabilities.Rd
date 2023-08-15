@@ -20,7 +20,7 @@ selectionProbabilities(x) <- value
 }
 \value{
 A \code{\link{DNEAresults}} object after filling the
-selection_probabilities section of the stable_networks slot
+selection_probabilities section of the stable_networks slot.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns an m x m matrix of selection probabilities for every

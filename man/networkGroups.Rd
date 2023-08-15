@@ -13,7 +13,7 @@ networkGroups(x)
 \item{x}{A DNEAobject, or DNEAobject_collapsed object}
 }
 \value{
-A vector of the condition values
+A vector of the condition values.
 }
 \description{
 This function takes in a \code{\link{DNEAresults}} object and returns the unique group values of the experimental condition in the dataset

@@ -2,9 +2,9 @@ Package: DNEAdev
 Title: Differential Network Enrichment Analysis for Biological Data
 Version: 0.99.0
 Authors@R: c(
-      person("Christopher", "Patsalis", email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
+      person(given = "Christopher", family = "Patsalis", email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
              comment = c(ORCID = "0009-0003-4585-0017")),
-      person("Gayatri", "Iyer", "griyer@umich.edu", role = c("aut")))
+      person(given = "Gayatri", family = "Iyer", email = "griyer@umich.edu", role = c("aut")))
 Description: The DNEA R package is the latest implementation of the Differential Network Enrichment Analysis 
              algorithm and is the predecessor to the Filigree Java-application described in Iyer et al. (2020). The package is 
              designed to take as input an m x n expression matrix for some -omics modality (ie. metabolomics, lipidomics, proteomics, etc.) 

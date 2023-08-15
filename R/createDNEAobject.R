@@ -46,7 +46,7 @@
 #' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
 #' information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
 #'
-#' @return a \code{\link{DNEAresults}} object
+#' @returns A \code{\link{DNEAresults}} object.
 #'
 #' @examples
 #' #import example data
@@ -143,7 +143,7 @@ createDNEAobject <- function(project_name,
 #'        the numeric expression data
 #' @param condition_values A factor vector of experimental group labels named with the corresponding sample name
 #'
-#' @return A list containing two lists. The first list, named assays, contains the uns-scaled data (if provided)
+#' @returns A list containing two lists. The first list, named assays, contains the uns-scaled data (if provided)
 #'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
 #'         from the input data.
 #'
@@ -322,7 +322,16 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{createDNEAobject}}
-#'
+#' @returns The differential expression results for the features in the input matrix. The returned object is a data
+#'          frame with the following columns: \itemize{
+#'          \item \strong{clean feauture names -} The feature names
+#'          \item \strong{foldchange -} The foldchange in expression across experimental conditions
+#'          \item \strong{fcdirection -} The direction of the foldchange, ie. upregulated or downregulated
+#'          \item \strong{t-statistic -} The T-statistic from the student's T-test used to perform Differential Expression
+#'          \item \strong{t-statistic direction -} The direction of the T-statistic
+#'          \item \strong{pvalue -} The associatated p-value for the differential expression test
+#'          \item \strong{qvalue -} The p-value after adjusting for multiple-testing using Benjamini-Hochberg
+#'          \item \strong{DEstatus -} Whether or not the features qvalue is less than or equal to alpha = 0.05}
 #' @keywords internal
 #' @noRd
 metabDE <- function(mat,

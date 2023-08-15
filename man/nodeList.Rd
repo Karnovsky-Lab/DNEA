@@ -19,7 +19,7 @@ nodeList(x) <- value
 \item{x}{a \code{\link{DNEAresults}} object}
 }
 \value{
-a data.frame corresponding to the node list determined by DNEA
+A data frame corresponding to the node list determined by DNEA.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the node list created from \code{\link{createDNEAobject}}. \cr

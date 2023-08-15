@@ -19,7 +19,7 @@ BICscores(x) <- value
 \item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
-The optimized lambda hyperparameter
+The optimized lambda hyperparameter.
 }
 \description{
 The function takes as input a \code{\link{DNEAresults}} object and returns the BIC values for each lambda tested during

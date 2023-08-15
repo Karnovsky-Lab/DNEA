@@ -35,7 +35,7 @@ dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
 #log-transform and median center the expression data without scaling
 newdat <- NULL
 for(cond in dat){
- for(i in 1:ncol(cond)){
+ for(i in seq(1, ncol(cond))){
   my_median = median(cond[, i], na.rm = TRUE)
    my_range = range(cond[, i], na.rm = TRUE)
     scale_factor = max(abs(my_range-my_median))

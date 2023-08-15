@@ -10,7 +10,7 @@
 \item{object}{A consensusClusteringResults}
 }
 \value{
-A data.frame that corresponds to a summary of the results of consensus clustering
+A data frame that corresponds to a summary of the results of consensus clustering.
 }
 \description{
 The function takes as input a consensusClusteringResults object and returns a summary of the results of
