@@ -13,7 +13,7 @@ An s4 class to represent the DNEA workflow, including collapsing features. This 
 \describe{
 \item{\code{original_experiment}}{The DNEAresults object input to \code{\link{reduceFeatures}}}
 
-\item{\code{feature_membership}}{A data.frame containing the all of the features from the original input data and their
+\item{\code{feature_membership}}{A data.frame containing all of the features from the original input data and their
 corresponding group membership in the collapsed data.}
 }}
 

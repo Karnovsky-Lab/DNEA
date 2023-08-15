@@ -16,13 +16,13 @@ CCsummary(x) <- value
 \S4method{CCsummary}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
 A data.frame summary of the consensus clustering results from DNEA
 }
 \description{
-The function takes as input a DNEAresults object and returns a summary
+The function takes as input a \code{\link{DNEAresults}} object and returns a summary
 of the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
 \examples{

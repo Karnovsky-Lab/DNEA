@@ -16,10 +16,9 @@
 #'
 #'
 #' @param project_name A character string name for the experiment
-#' @param expression_data A matrix or dataframe of un-scaled expression data. The sample names should be rownames
-#'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
-#'        the numeric expression data
-#' @param group_labels A numeric vector of experimental group labels named with the coresponding sample name
+#' @param expression_data A numeric matrix or data frame of un-transformed, un-scaled expression data. The sample names
+#'                        should be row names and the feature names should be column names
+#' @param group_labels A factor vector of experimental group labels named with the corresponding sample name
 #'
 #' @author Christopher Patsalis
 #'
@@ -34,20 +33,20 @@
 #' direction). \cr
 #'
 #' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
+#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
 #' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 #' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
 #' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
 #'
 #' ## Benefits of Feauture Collapsing
-#' In scenarios like this we recommend collapsing highly correlated features into a single group - particularly if the
-#' dataset contains many highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
+#' When your dataset contains highly correlated features, we recommend collapsing features into related groups - such as
+#' highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
 #' because the user then has more control over which variables are included in the model. Without collapsing, the model
 #' regularization may result in one of the features within a class being included and some or all of the remaining features
 #' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
-#' information pertaining to which features are highly correlated and as a result track each other.
+#' information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
 #'
-#' @return a DNEAresults object
+#' @return a \code{\link{DNEAresults}} object
 #'
 #' @examples
 #' #import example data
@@ -139,7 +138,7 @@ createDNEAobject <- function(project_name,
 #' This function takes as input a matrix of expression data and the experimental group labels in order to
 #' restructure the input as to prepare it for initiation of a DNEAresults object.
 #'
-#' @param expression_data A matrix or dataframe of expression data. The sample names should be rownames
+#' @param expression_data A matrix or data frame of expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
 #'        the numeric expression data
 #' @param condition_values A factor vector of experimental group labels named with the corresponding sample name

@@ -112,7 +112,7 @@ setClass(Class = "DNEAresults",
 #' \code{\link{DNEAresults-class}}
 #'
 #' @slot original_experiment The DNEAresults object input to \code{\link{reduceFeatures}}
-#' @slot feature_membership A data.frame containing the all of the features from the original input data and their
+#' @slot feature_membership A data.frame containing all of the features from the original input data and their
 #' corresponding group membership in the collapsed data.
 #'
 #' @author Christopher Patsalis

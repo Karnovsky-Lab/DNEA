@@ -22,7 +22,7 @@ diagnostics(x) <- value
 \S4method{diagnostics}{DNEAinputSummary}(x) <- value
 }
 \arguments{
-\item{a}{DNEAresults object or DNEAinputSummary object}
+\item{a}{\code{\link{DNEAresults}} object or \code{\link{DNEAinputSummary}} object}
 }
 \value{
 returns the diagnostic values for the input expression data

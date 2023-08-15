@@ -22,7 +22,7 @@ adjacencyGraph(x, graph) <- value
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph) <- value
 }
 \arguments{
-\item{x}{A DNEAresults or consensusClusteringResults object}
+\item{x}{A \code{\link{DNEAresults}} or \code{\link{consensusClusteringResults}} object}
 
 \item{graph}{A character string indicating which of the adjacency graphs to return. Values can be "joint_graph" for the
 whole graph object, or one of the group values returned by \code{\link{networkGroups}}}

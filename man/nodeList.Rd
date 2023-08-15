@@ -16,13 +16,13 @@ nodeList(x) <- value
 \S4method{nodeList}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{a DNEAresults object}
+\item{x}{a \code{\link{DNEAresults}} object}
 }
 \value{
 a data.frame corresponding to the node list determined by DNEA
 }
 \description{
-The function takes as input a DNEAresults object and returns the node list created from \code{\link{createDNEAobject}}. \cr
+The function takes as input a \code{\link{DNEAresults}} object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 }
 \examples{
 #import example data

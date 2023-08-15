@@ -14,7 +14,7 @@ A summary of the input data to \code{\link{createDNEAobject}}
 }
 \description{
 This function will display the number of samples, number of features, and diagnostics values of the input dataset to a
-DNEAresults object
+\code{\link{DNEAresults}} object
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}

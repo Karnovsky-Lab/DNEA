@@ -13,25 +13,25 @@ BICtune(
 )
 }
 \arguments{
-\item{object}{A DNEAresults object. See \code{\link{createDNEAobject}}}
+\item{object}{A \code{\link{DNEAresults}} object. See \code{\link{createDNEAobject}}}
 
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing the lambda parameter.
 If not provided, a set of lambda values are chosen based on the theoretical value for the
-asymptoticly valid lambda. More information about this can be found in the details section}
+asymptotically valid lambda. More information about this can be found in the details section}
 
-\item{eps_threshold}{A significance cut-off for thresholding network edges
+\item{eps_threshold}{A significance cut-off for thresholding network edges.
 The default value is 1e-06. This value generally should not change.}
 
 \item{eta_value}{default parameter ??. Default is 0.1}
 
-\item{BPPARAM}{A BiocParallel object}
+\item{BPPARAM}{A \code{\link{BiocParallel}} object}
 }
 \value{
-A DNEAresults object containing the BIC and liklihood scores for every lambda value tested, as well as
+A \code{\link{DNEAresults}} object containing the BIC and likelihood scores for every lambda value tested, as well as
 the optimized lambda value
 }
 \description{
-This function will calculate the Bayesian information criterion (BIC) and liklihood for a range of lambda values
+This function will calculate the Bayesian information criterion (BIC) and likelihood for a range of lambda values
 that are automatically generated (\emph{please see \strong{Details} for more info}) or that are user-specified.
 The lambda value with the minimum BIC score is the optimal lambda value for the dataset and is stored in the
 DNEAresults object for use in stability selection using \code{\link{stabilitySelection}} and network generation using

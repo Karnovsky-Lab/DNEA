@@ -13,7 +13,7 @@ stabilitySelection(
 )
 }
 \arguments{
-\item{object}{A DNEAresults object}
+\item{object}{A \code{\link{DNEAresults}} object}
 
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
@@ -26,7 +26,7 @@ necessary if \code{\link{BICtune}} is not performed}
 \item{BPPARAM}{a BiocParallel object}
 }
 \value{
-A DNEAresults object after populating the stable_networks slot of the object. It contains the selection
+A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
 results from stability selection as well as the calculated selection probabilities
 }
 \description{
@@ -46,12 +46,12 @@ the replicates over the total number of replicates. This results in a selection 
 that is used to modify the regularization parameter via the following equation:
 \deqn{\rho = \lambda*(1 / (0.0001 + selection.probability))}{ rho = lambda*(1 / (0.0001 + selection.probability))}
 
-However, when the sample groups are very unbalanced randomly sampling strongly favors the larger group, resulting in
+However, when the sample groups are very unbalanced, randomly sampling strongly favors the larger group, resulting in
 over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
 sample by sub-sampling the groups individually to even out the numbers. In this method, 90\% of the smaller group is randomly
-sampled without replacement, and an additional 10\% is randomly sampled without replacement and added together.
-The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
-each group is equally represented in stability selection.  \cr
+sampled without replacement, and an additional 10\% is randomly sampled without replacement from the entire group to preserve the
+variance. The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
+each group is equally represented in stability selection.\cr
 
 The principles of stability selection remain similar with both methods, however, there are a few small differences.
 Stability selection \emph{without} additional sub-sampling randomly samples 50\% of each group (without replacement) and fits a

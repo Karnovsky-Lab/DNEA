@@ -12,7 +12,7 @@ reduceFeatures(
 )
 }
 \arguments{
-\item{object}{A DNEAresults object}
+\item{object}{A \code{\link{DNEAresults}} object}
 
 \item{method}{A character string that dictates the collapsing method to use. The available methods are: "correlation",
 "knowledge", or "hybrid"}
@@ -25,7 +25,7 @@ methods}
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A collapsed_DNEAresults object
+A \code{\link{collapsed_DNEAresults}} object
 }
 \description{
 This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
@@ -56,7 +56,7 @@ important. Collapsing features would decrease the computing time without losing 
 behind collapsing highly correlated features). \cr
 
 Ultimately, this function allows the user to reduce the complexity of the dataset and reduce the computational power necessary
-for the analysis and/or also improve the quality of the results. The most appropriate method to use when collapsing data
+for the analysis and/or improve the quality of the results. The most appropriate method to use when collapsing data
 is dependent on the dataset and prior information known about the features. The following text explains more about each
 method and the best use cases:  \cr
 
@@ -69,10 +69,10 @@ are specified as a single group) and the features within each group are collapse
 experiments where the dataset contains many highly similar compounds, like fatty acids, carnitines, ceramides, etc. \cr
 
 \item \strong{hybrid - } The user specifies both a correlation threshold, like in the correlation-based approach, and feature groups
-based on a priori information similar to the knowledge-based approach. The features within each user-specified group that
+based on \emph{a priori} information similar to the knowledge-based approach. The features within each user-specified group that
 have a higher pearson correlation than the provided threshold are collapsed into one group. This approach is best in
-experiments where the dataset contains many highly similar compounds and prevents poorly correlated or uncorrelated
-features from being collapsed into a single feature.}
+experiments where the dataset contains many compounds of a similar class, but the user is unsure how correlated the features of
+said class will be. This method prevents poorly correlated or uncorrelated features from being collapsed into a single feature.}
 }
 \examples{
 #import example data

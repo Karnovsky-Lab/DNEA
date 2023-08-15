@@ -10,7 +10,7 @@ projectName(x)
 \S4method{projectName}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
 The name of the DNEA experiment

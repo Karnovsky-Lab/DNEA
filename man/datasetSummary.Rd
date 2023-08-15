@@ -16,7 +16,7 @@ datasetSummary(x) <- value
 \S4method{datasetSummary}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A DNEA results object}
+\item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
 The # of samples/features and diagnostic values of the input data calculated by \code{\link{createDNEAobject}}

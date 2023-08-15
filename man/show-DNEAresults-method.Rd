@@ -7,13 +7,13 @@
 \S4method{show}{DNEAresults}(object)
 }
 \arguments{
-\item{object}{A DNEAobject}
+\item{object}{A \code{\link{DNEAresults}} object}
 }
 \value{
-A summary of the information stored in a DNEAresults object
+A summary of the information stored in a \code{\link{DNEAresults}} object
 }
 \description{
-This function will display a summary of the information stored within a DNEAresults object
+This function will display a summary of the information stored within a \code{\link{DNEAresults}} object
 }
 \examples{
 #import example data

@@ -16,17 +16,13 @@ netGSAresults(x) <- value
 \S4method{netGSAresults}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{x}{A \code{\link{DNEAresults}} object}
 }
 \value{
 A data.frame of the results from netGSA
 }
 \description{
-The function takes as input a DNEAresults object and returns the netGSA results in the netGSA slot. \cr
-}
-\details{
-\emph{FOR INTERNAL USE ONLY -} This function is also used internally to input the netgsa results from
-\code{\link{runNetGSA}} into the netGSA slot of the DNEAresults object.
+The function takes as input a \code{\link{DNEAresults}} object and returns the netGSA results in the netGSA slot. \cr
 }
 \examples{
 #import example data

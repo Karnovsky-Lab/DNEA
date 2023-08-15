@@ -13,15 +13,15 @@ networkGroupIDs(x) <- value
 \S4method{networkGroupIDs}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A DNEAresults object}
+\item{x}{A \code{\link{DNEAresults}} object}
 
-\item{value}{a character string name corresponding to a column name of the sample metadata data.frame}
+\item{value}{a character string name corresponding to a column name of the sample metadata data frame}
 }
 \value{
 A vector of the unique condition labels
 }
 \description{
-This function accesses the experimental group labels for each sample stored in the @metadata slot of a DNEAresults object.
+This function accesses the experimental group labels for each sample stored in the @metadata slot of a \code{\link{DNEAresults}} object.
 }
 \examples{
 #import example data
