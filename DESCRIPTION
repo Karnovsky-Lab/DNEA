@@ -1,4 +1,4 @@
-Package: DNEAdev
+Package: DNEA
 Title: Differential Network Enrichment Analysis for Biological Data
 Version: 0.99.0
 Authors@R: c(
