@@ -519,8 +519,6 @@ getNetworks <- function(object,
 #' @param object A \code{\link{DNEAresults}} object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
-#' @param eps_threshold A cut-off value thresholding the adjacency matrix. Edges with a partial correlation value below this
-#' threshold will be removed.
 #'
 #' @author Christopher Patsalis
 #'
@@ -565,8 +563,7 @@ getNetworks <- function(object,
 #' @export
 clusterNet <- function(object,
                        tau = 0.5,
-                       max_iterations = 5,
-                       eps_threshold = 1e-06){
+                       max_iterations = 5){
 
   #test for proper inputs
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
@@ -653,10 +650,7 @@ clusterNet <- function(object,
   #update subnetwork_results rownames
   rownames(subnetwork_results) <- paste0("subnetwork", seq(1, nrow(subnetwork_results)))
 
-  #####################################
-  #**Concatenate results for output **#
-  #####################################
-
+  #concatenate the netGSA results table
   summary_list <- list()
   for (loop_cluster in seq(1, nrow(subnetwork_results))){
 

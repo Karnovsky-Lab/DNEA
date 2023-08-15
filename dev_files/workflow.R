@@ -74,7 +74,7 @@ plotNetworks(object, type = "group_networks", subtype = "DM:case", layout_func =
              label_font = 2, label_size = 0.5, node_size = 7)
 # plotNetworks(object, type = "subnetworks", subtype = 1, layout_func = layout_nicely,
 #              font = 2, label_size = 0.5, node_size = 20)
-plotNetworks(object, type = "subnetworks", subnetwork = 1)
+plotNetworks(object, type = "subnetworks", subtype = 1)
 
 data(TEDDYresults)
 
