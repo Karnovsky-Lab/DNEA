@@ -120,8 +120,9 @@ ensembl_cluster <- function(adjacency_graph,
 #' @noRd
 run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5){
 
-  message(paste0("Initiating consensus cluster with a maximum of ", max_iterations, " iterations!"))
-  message("Constructing initial consensus matrix...")
+  message("Initiating consensus cluster with a maximum of ", appendLF = FALSE)
+  message(max_iterations, appendLF = FALSE);message("iterations!", appendLF = TRUE)
+  message("Constructing initial consensus matrix...", appendLF = TRUE)
 
   ##cluster the adjacency graph
   clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
@@ -137,11 +138,15 @@ run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5
     ##stop iterations if consensus is reached
     if(length(table(consensus_matrix)) < 3){
 
-      message(paste0("\nConsensus was reached in: ", iter, " iterations!"))
+      message("\nConsensus was reached in: ", appendLF = FALSE)
+      message(iter, appendLF = FALSE);message("iterations!", appendLF = TRUE)
+
       break
     }
 
-    message(paste0("\n...starting iteration ", iter + 1, "..."))
+    message("\n...starting iteration ", appendLF = FALSE)
+    message(iter + 1, appendLF = FALSE)
+    message("...", appendLF = TRUE)
 
     ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0

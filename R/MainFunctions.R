@@ -111,7 +111,7 @@ BICtune <- function(object,
   message("", appendLF = TRUE)
 
   ##collect BIC scores
-  BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(length(BIC_guo))))
+  BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
 
   ##make sure all bic values are finite and remove those that are not
   if (max(is.infinite(BIC_scores)) == 1){
@@ -132,7 +132,8 @@ BICtune <- function(object,
   optimizedLambda(object) <- lastar_guo
   lambdas2Test(object) <- lambda_values
 
-  message(paste0('The optimal Lambda hyper-parameter has been set to: ', lastar_guo, '!'))
+  message("The optimal Lambda hyper-parameter has been set to: ", appendLF = FALSE)
+  message(lastar_guo, appendLF = FALSE); message("!", appendLF = TRUE)
 
   #check valid object
   validObject(object)
@@ -236,8 +237,8 @@ stabilitySelection <- function(object,
     if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
-      warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
-            already exists - optimal_lambda will be used in analysis')
+      warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]] already exists",
+              " - optimal_lambda will be used in analysis')
     }else{
 
       optimized_lambda <- optimal_lambda
@@ -253,9 +254,9 @@ stabilitySelection <- function(object,
     # in adjDGlasso_minimal
     optimized_lambda <- NULL
 
-    warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
-                   "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
-                   "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis."))
+    warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+            "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
+            "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
   }
 
   #split data by condition
@@ -269,14 +270,17 @@ stabilitySelection <- function(object,
 
   #check that groups are sufficiently uneven if subSample selected
   if(subSample){
-    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])) stop(paste0("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
-                                                                                                             "Please perform stability selection WITHOUT additional sub-sampling"))
+    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])) stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
+                                                                                                       "Please perform stability selection WITHOUT additional sub-sampling")
   }
 
   ##perform stability selection
   #print message to user
-  message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
-  message(paste0("stabilitySelection will be performed with ", nreps, " replicates"))
+  message("Using Lambda hyper-parameter: ", appendLF = FALSE)
+  message(optimized_lambda, appendLF = FALSE); message("!", appendLF = TRUE)
+
+  message("stabilitySelection will be performed with ", appendLF = FALSE)
+  message(nreps, appendLF = FALSE);message(" replicates", appendLF = TRUE)
 
   if(subSample){
 
@@ -318,10 +322,16 @@ stabilitySelection <- function(object,
     selection_results[[k]] <- Reduce("+", selection_results[[k]])
 
     if (subSample){
-      message(paste0("Calculating selection probabilities WITH subsampling for...", names(selection_results)[[k]],"..."), appendLF = TRUE)
+
+      message("Calculating selection probabilities WITH subsampling for...", appendLF = FALSE)
+      message(names(selection_results)[[k]], appendLF = FALSE);message("...", appendLF = TRUE)
+
       selection_probabilities[[k]] <- selection_results[[k]]/(nreps)
     } else {
-      message(paste0("Calculating selection probabilities WITHOUT subsampling for...",names(selection_results)[[k]],"..."), appendLF = TRUE)
+
+      message("Calculating selection probabilities WITHOUT subsampling for...", appendLF = FALSE)
+      message(names(selection_results)[[k]], appendLF = FALSE);message("...", appendLF = TRUE)
+
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
@@ -433,12 +443,13 @@ getNetworks <- function(object,
     # in adjDGlasso_minimal
     optimized_lambda <- NULL
 
-    warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
-                   "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
-                   "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis."))
+    warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+            "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
+            "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
   }
   #print lambda used
-  message(paste0('Using Lambda hyper-parameter: ', optimized_lambda,'!'))
+  message("Using Lambda hyper-parameter: ", appendLF = FALSE)
+  message(optimized_lambda, appendLF = FALSE);message("!", appendLF = TRUE)
 
   ##separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -472,7 +483,8 @@ getNetworks <- function(object,
 
   for (k in networkGroups(object)){
 
-    message(paste0('Estimating model for ', k, ' ...'), appendLF = TRUE)
+    message("Estimating model for ", appendLF = FALSE)
+    message(k, appendLF = FALSE);message("...", appendLF = TRUE)
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
@@ -559,10 +571,10 @@ clusterNet <- function(object,
   #test for proper inputs
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
-  if(tau < 0.5 | tau > 1.0) stop(paste0('tau corresponds to a percent agreement among the clustering methods. ',
-                                        ' As such, tau must be greater than 0.5 and less than 1! ',
-                                        'Clustering results below this threshold are not reliable -',
-                                        'Please see user documentation for more information!'))
+  if(tau < 0.5 | tau > 1.0) stop("tau corresponds to a percent agreement among the clustering methods. ",
+                                 "As such, tau must be greater than 0.5 and less than 1!",
+                                 "Clustering results below this threshold are not reliable -",
+                                 "Please see user documentation for more information!")
 
   if(max_iterations < 1) stop("max_iterations should be a positive integer!")
 
@@ -611,8 +623,8 @@ clusterNet <- function(object,
   #initiate output matrix
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
                                dimnames = list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
-                                               vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(length(joint_graph)))))
-
+                                               vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(1))))
+#####
   #gather results
   for (j in seq(1, nrow(subnetwork_results))){
 

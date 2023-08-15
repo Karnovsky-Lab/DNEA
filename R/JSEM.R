@@ -358,7 +358,7 @@ CGM_AHP_stabsel <- function(listX,
   group2_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample2), trainY=model2, lambda_value=lastar, limkappa=limkappa, eta=eta))
 
   if (inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
-    warning(paste0("glasso model for replicate: ", X, " failed!"))
+    warning("glasso model for replicate: ", X, " failed!")
   }
 
   #zero out unstable edges and combine model results
@@ -439,7 +439,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
 
   if (inherits(tmp_model, "try-error")){
-    warning(paste0("glasso model for replicate: ", X, " failed!"))
+    warning("glasso model for replicate: ", X, " failed!")
   }
 
   #zero out unstable edges and prepare output matrices

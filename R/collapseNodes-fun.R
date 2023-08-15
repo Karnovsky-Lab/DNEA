@@ -102,16 +102,16 @@ reduceFeatures <- function(object,
   feature_membership <- NULL
 
   ##Check to see if there is non-normalized, non-transformed expression data provided - Feature reduction requires this
-  if(is.null(expressionData(object, normalized = FALSE))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
-                                                  'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function', '\n'))
+  if(is.null(expressionData(object, normalized = FALSE))) stop("FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!",'\n',
+                                                               'To proceed, please insert un-scaled expression data into the DNEAobject using the Expression(x)<- function')
 
   #check that rownames of feature_groups match feature order
   if(!(all(rownames(expressionData(object, normalized = FALSE)) == rownames(feature_groups)))) stop("The feature order of feature_groups does not match the expression data!")
 
   #warning if correlation_threshold was provided for knowledge-based collapsing
-  if(method == "knowledge" & !is.null(correlation_threshold)) warning(paste0("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
-                                                                             "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups.\n",
-                                                                             'If you prefer that the correlation_threshold be taken into account as well, please change the method to "hybrid"'))
+  if(method == "knowledge" & !is.null(correlation_threshold)) warning("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
+                                                                      "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups.\n",
+                                                                      'If you prefer that the correlation_threshold be taken into account as well, please change the method to "hybrid"')
   ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
                              groups = networkGroupIDs(object),
@@ -131,15 +131,10 @@ reduceFeatures <- function(object,
   }
 
 
-  message(paste0('The un-normalized data from the Expression Assay was used for feature reduction.','\n',
-                                                              'The data in the NormalExpression Assay was replaced with log-scaled collapsed data.', '\n',
-                                                              'If you prefer another normalization method replace this data prior to proceeding!', '\n\n',
-                                                              '(orginal DNEAobject can be found in the original_experiment slot)', '\n'))
-
-  ##create new collapsed_DNEAresults object
-  # #convert reduced data to numeric
-  # res[["collapsed_data"]] <-cbind.data.frame(res[["collapsed_data"]][,c(1,2)],
-  #                                            apply(res[["collapsed_data"]][,-c(1,2)], 2, as.numeric))
+  message("The un-normalized data from the Expression Assay was used for feature reduction.", appendLF = TRUE)
+  message("The data in the scaled_expression_data @assay was replaced with log-scaled collapsed data.", appendLF = TRUE)
+  message("If you prefer another normalization method replace this data prior to proceeding!\n", appendLF = TRUE)
+  message("(The orginal DNEAobject can be found in the @original_experiment slot)", appendLF = TRUE)
 
   #new input
   new_dat <- t(res[["collapsed_data"]][,-c(1,2)])
@@ -435,7 +430,8 @@ collapseNodes_hybrid <- function (dat,
         collapseNodes_cor(feature_group_data,
                           correlation_threshold = correlation_threshold)
       }, error=function(e){
-        stop(paste0("Features in ", feature_group, " are not sufficiently correlated for collapsing...\n Try using a lower correlation coefficient threshold to collapse features or maintain them as independent features"))
+        stop("Features in ", feature_group, " are not sufficiently correlated for collapsing...\n",
+             "Try using a lower correlation coefficient threshold to collapse features or maintain them as independent features")
       })
 
       #add new data to final_membership and rename groups
