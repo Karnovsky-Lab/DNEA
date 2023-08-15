@@ -9,7 +9,7 @@ plotNetworks(
   type = c("group_networks", "subnetworks"),
   subtype = "All",
   layout_func,
-  title = "",
+  main = "",
   node_size = 15,
   edge_width = 1,
   label_size = 1,
@@ -17,27 +17,31 @@ plotNetworks(
 )
 }
 \arguments{
-\item{object}{A DNEAresults object}
+\item{object}{A \code{\link{DNEAresults}} object}
 
-\item{type}{There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the total or condition networks.
-\emph{"subnetworks"} specifies one of the subnetworks should be plot. Additional input via the \strong{subtype} parameter is required}
+\item{type}{There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the whole network or condition networks.
+\emph{"subnetworks"} specifies that one of the sub networks should be plot. Additional input via the \strong{subtype} parameter is required}
 
 \item{subtype}{There are several possible arguments to \strong{subtype}. If \emph{type == "group_networks"}, \strong{subtype}
-can be \emph{"All"} to plot the total network, or one of the condition network names indicated by \code{\link{networkGroups}}
-to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
-numeric corresponding to the subnetwork to plot.}
+can be \emph{"All"} to plot the whole network (ie. both conditions in the data returned by \code{\link{networkGroups}}), or one of the
+condition network names to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype}
+should be a single-value numeric vector corresponding to the sub network to plot.}
 
-\item{layout_func}{The layout to plot the specified network by. Please see \code{\link[igraph]{plot.igraph}} for more information}
+\item{layout_func}{The layout in which to plot the specified network. Please see \code{\link[igraph]{plot.igraph}} for more information}
 
-\item{title}{A character string to use as the plot title}
+\item{main}{A character string to use as the plot title}
 
-\item{node_size}{Please see \code{\link[igraph]{plot.igraph}}}
+\item{node_size}{The size of the nodes in the plot. The default is 15. Please see \emph{vertex.size} parameter in
+\code{\link[igraph]{plot.tkplot}} for more details}
 
-\item{edge_width}{Please see \code{\link[igraph]{plot.igraph}}}
+\item{edge_width}{The width of the edges in the plot. The default is 1. Please see \emph{width} parameter in
+\code{\link[igraph]{plot.tkplot}} for more details}
 
-\item{label_size}{Please see \code{\link[igraph]{plot.igraph}}}
+\item{label_size}{The size of the node labels in the plot. The default is 1. Please see \emph{label.size} in
+\code{\link[igraph]{plot.tkplot}} for more details.}
 
-\item{label_font}{Please see \code{\link[igraph]{plot.igraph}}}
+\item{label_font}{Specifies the font type to use in the plot. 1 is normal font, 2 is bold-type, 3 is italic-type,
+4 is bold- and italic-type. Please see the \emph{label.font} parameter in \code{\link[igraph]{plot.igraph}} for more details}
 }
 \value{
 a plot of the specified network

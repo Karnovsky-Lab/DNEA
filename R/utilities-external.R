@@ -31,6 +31,10 @@
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
+  ##test for proper input
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(metadata, "matrix") | !inherits(metadata, "data.frame")) stop('the input metadata should be of class "matrix" or "data.frame"!')
+
   type = match.arg(type)
   if(type == 'sample'){
     if(all(sampleNames(object) == rownames(metadata))){
@@ -60,12 +64,77 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
   return(object)
 }
 
+#' Include custom normalized data in the DNEAresults object
+#'
+#' This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
+#'
+#' @param object A \code{\link{DNEAresults}} object
+#' @param data An \emph{m x n} numeric matrix of custom-normalized expression expression data
+#'
+#' @author Christopher Patsalis
+#'
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{DNEAresults}},
+#'
+#' @return A \code{\link{DNEAresults}} object with the added expression data in the @@assays slot
+#'
+#' @examples
+#' #import example data
+#' data(TEDDY)
+#' data(TEDDYresults)
+#' data(T1Dmeta)
+#'
+#' #transpose TEDDY data
+#' TEDDY <- t(TEDDY)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[rownames(TEDDY),]
+#'
+#' dat <- list(DM:control = TEDDY[T1Dmeta$group = "DM:control",],
+#'             DM:case = TEDDY[T1Dmeta$group = "DM:case",])
+#'
+#' #log-transform and median center the expression data without scaling
+#' newdat <- NULL
+#' for(cond in dat){
+#'   for(i in 1:nrow(cond)){
+#'     my_median = median(cond[, i], na.rm = TRUE)
+#'     my_range = range(cond[, i], na.rm = TRUE)
+#'     scale_factor = max(abs(my_range-my_median))
+#'     cond[, i] <- (cond[, i] - my_median) / scale_factor
+#'   }
+#'   newdat <- rbind(newdat, cond)
+#' }
+#'
+#' #reorder to match TEDDYresults
+#' newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+#'
+#' #add data
+#' TEDDYresults <- addExpressionData(object = TEDDYresults, data = TEDDYnormalized)
+#'
+#' @rdname addExpressionData
+#' @export
+addExpressionData <- function(object, data){
+
+  ##test for proper input
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(metadata, "matrix")) stop('the input metadata should be of class "matrix"!')
+  if(rownames(data) != rownames(expressionData(object, normalized = TRUE))) stop("The feature order of new data does not match the feature order in the DNEAresults object!")
+  if(colnames(data) != colnames(expressionData(object, normalized = TRUE))) stop("The sample order of new data does not match the sample order in the DNEAresults object!")
+  if(!is.numeric(data)) stop("The new data should be a numeric matrix!")
+
+  object@assays@DNEA_scaled_data <- expressionData(object, normalized = TRUE)
+  expressionData(object, normalized = TRUE) <- data
+
+  validObject(object)
+  return(object)
+}
+
+
 #' Save network information for input to Cytoscape
 #'
 #' This function will save the node and edge information as .csv files in the working directory.
 #' The files are already formatted for input into Cytoscape.
 #'
-#' @param object A DNEAresults object
+#' @param object A \code{\link{DNEAresults}} object
 #' @param file_path The filepath to save the node and edge lists to. If **NULL**, the files will be saved to the working
 #' directory
 #'
@@ -83,6 +152,9 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' @importFrom utils write.csv
 #' @export
 getNetworkFiles <- function(object, file_path=NULL){
+
+  ##test for proper input
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   if(missing(file_path)){
     file_path <- paste0(getwd(), "/")
@@ -105,19 +177,23 @@ getNetworkFiles <- function(object, file_path=NULL){
 #' This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are
 #' differential features, green indicates edges specific to group 1, and red indicates edges specific to group 2.
 #'
-#' @param object A DNEAresults object
-#' @param type There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the total or condition networks.
-#' \emph{"subnetworks"} specifies one of the subnetworks should be plot. Additional input via the \strong{subtype} parameter is required
+#' @param object A \code{\link{DNEAresults}} object
+#' @param type There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the whole network or condition networks.
+#' \emph{"subnetworks"} specifies that one of the sub networks should be plot. Additional input via the \strong{subtype} parameter is required
 #' @param subtype There are several possible arguments to \strong{subtype}. If \emph{type == "group_networks"}, \strong{subtype}
-#' can be \emph{"All"} to plot the total network, or one of the condition network names indicated by \code{\link{networkGroups}}
-#' to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
-#' numeric corresponding to the subnetwork to plot.
-#' @param layout_func The layout to plot the specified network by. Please see \code{\link[igraph]{plot.igraph}} for more information
-#' @param title A character string to use as the plot title
-#' @param node_size Please see \code{\link[igraph]{plot.igraph}}
-#' @param edge_width Please see \code{\link[igraph]{plot.igraph}}
-#' @param label_size Please see \code{\link[igraph]{plot.igraph}}
-#' @param label_font Please see \code{\link[igraph]{plot.igraph}}
+#' can be \emph{"All"} to plot the whole network (ie. both conditions in the data returned by \code{\link{networkGroups}}), or one of the
+#' condition network names to plot the network corresponding to that condition. If \emph{type == "subnetworks"}, \strong{subtype}
+#' should be a single-value numeric vector corresponding to the sub network to plot.
+#' @param layout_func The layout in which to plot the specified network. Please see \code{\link[igraph]{plot.igraph}} for more information
+#' @param main A character string to use as the plot title
+#' @param node_size The size of the nodes in the plot. The default is 15. Please see \emph{vertex.size} parameter in
+#' \code{\link[igraph]{plot.tkplot}} for more details
+#' @param edge_width The width of the edges in the plot. The default is 1. Please see \emph{width} parameter in
+#' \code{\link[igraph]{plot.tkplot}} for more details
+#' @param label_size The size of the node labels in the plot. The default is 1. Please see \emph{label.size} in
+#' \code{\link[igraph]{plot.tkplot}} for more details.
+#' @param label_font Specifies the font type to use in the plot. 1 is normal font, 2 is bold-type, 3 is italic-type,
+#' 4 is bold- and italic-type. Please see the \emph{label.font} parameter in \code{\link[igraph]{plot.igraph}} for more details
 #'
 #' @author Christopher Patsalis
 #'
@@ -141,11 +217,14 @@ plotNetworks <- function(object,
                          type = c("group_networks", "subnetworks"),
                          subtype = "All",
                          layout_func,
-                         title = "",
+                         main = "",
                          node_size = 15,
                          edge_width = 1,
                          label_size = 1,
                          label_font = 1){
+
+  ##test for proper input
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   #get type argument
   type <- match.arg(type)
@@ -197,7 +276,7 @@ plotNetworks <- function(object,
   }
 
   #plot the specified network
-  plot(subtype_network, main = title, layout = graph_layout, vertex.size = node_size, width = edge_width,
+  plot(subtype_network, main = main, layout = graph_layout, vertex.size = node_size, width = edge_width,
        vertex.label = V(subtype_network)$name, vertex.label.cex = label_size, vertex.label.font = label_font)
 
 }
@@ -207,6 +286,9 @@ plotNetworks <- function(object,
 filterNetworks.DNEAresults <- function(data,
                                        pcor,
                                        top_percent_edges){
+
+  ##test for proper input
+  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
 
   ##grab adjacency matrices
   weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
@@ -290,7 +372,7 @@ filterNetworks.DNEAresults <- function(data,
 #' Filter the adjacency matrices to only the edges that meet the filter conditions
 #'
 #' @description
-#' This function takes as input a DNEAresults object and allows the user to filter the network edges by one of two methods:
+#' This function takes as input a \code{\link{DNEAresults}} object and allows the user to filter the network edges by one of two methods:
 #'
 #' \enumerate{
 #' \item \strong{Partial Correlation} - The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
@@ -298,7 +380,7 @@ filterNetworks.DNEAresults <- function(data,
 #'
 #' Filtering is performed on the case and control adjacency matrices separately. \cr
 #'
-#' @param data A DNEAresults object or list of adjacency matrices
+#' @param data A \code{\link{DNEAresults}} object or list of adjacency matrices
 #' @param pcor A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.
 #' @param top_percent_edges A value between 0-1 that corresponds to the top x% edges to keep in the networks
 #' ie. top_percent_edges = 0.1 will keep only the top 10% strongest edges in the networks.

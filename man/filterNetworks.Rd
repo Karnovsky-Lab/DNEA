@@ -13,7 +13,7 @@ filterNetworks(data, pcor, top_percent_edges)
 \S4method{filterNetworks}{list}(data, pcor, top_percent_edges)
 }
 \arguments{
-\item{data}{A DNEAresults object or list of adjacency matrices}
+\item{data}{A \code{\link{DNEAresults}} object or list of adjacency matrices}
 
 \item{pcor}{A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.}
 
@@ -24,7 +24,7 @@ ie. top_percent_edges = 0.1 will keep only the top 10\% strongest edges in the n
 The input object after filtering the egdes in the network according to the specified parameters
 }
 \description{
-This function takes as input a DNEAresults object and allows the user to filter the network edges by one of two methods:
+This function takes as input a \code{\link{DNEAresults}} object and allows the user to filter the network edges by one of two methods:
 
 \enumerate{
 \item \strong{Partial Correlation} - The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
