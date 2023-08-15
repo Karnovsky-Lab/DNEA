@@ -72,3 +72,14 @@ devtools::document()
 devtools::build_manual()
 devtools::check()
 devtools::build()
+
+
+
+
+
+
+
+message(paste0(names(unweighted_adjacency_matrices)[[1]]," network specific edges: ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
+message(paste0(names(unweighted_adjacency_matrices)[[2]]," network specific edges: ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
+message(paste0("Total number of edges in dataset: ", nrow(edge_list)))

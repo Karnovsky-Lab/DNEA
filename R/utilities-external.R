@@ -361,13 +361,25 @@ filterNetworks.DNEAresults <- function(data,
   edgeList(data) <- edge_list
 
 
-  #print message for total edges
-  message(paste0(names(unweighted_adjacency_matrices)[[1]]," network specific edges: ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-  message(paste0(names(unweighted_adjacency_matrices)[[2]]," network specific edges: ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
-  message(rep("-", 35), appendLF = TRUE)
-  message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
-  message(paste0("Total number of edges in dataset: ", nrow(edge_list)))
+  ##return to console messages for total edges
+  #control network
+  message(names(unweighted_adjacency_matrices)[[1]], appendLF = FALSE)
+  message(" network specific edges: ", appendLF = FALSE)
+  message((sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
 
+  #case network
+  message(names(unweighted_adjacency_matrices)[[2]], appendLF = FALSE)
+  message(" network specific edges: ", appendLF = FALSE)
+  message((sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+
+  #shared edges
+  message(rep("-", 35), appendLF = TRUE)
+  message("Number of edges shared by both networks: ", appendLF = FALSE)
+  message(sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message("Total number of edges in dataset: ", appendLF = FALSE)
+  message(nrow(edge_list), appendLF = TRUE)
+
+################################################################################
   return(data)
 }
 #' Filter the adjacency matrices to only the edges that meet the filter conditions
@@ -434,9 +446,23 @@ filterNetworks.list <- function(data, pcor, top_percent_edges){
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  ##print message for total edges
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[1]],": ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-  message(paste0("Number of edges in ", names(unweighted_adjacency_matrices)[[2]],": ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
+  ##return to console messages for total edges
+  #control network
+  message(names(unweighted_adjacency_matrices)[[1]], appendLF = FALSE)
+  message(" network specific edges: ", appendLF = FALSE)
+  message((sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+
+  #case network
+  message(names(unweighted_adjacency_matrices)[[2]], appendLF = FALSE)
+  message(" network specific edges: ", appendLF = FALSE)
+  message((sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+
+  #shared edges
+  message(rep("-", 35), appendLF = TRUE)
+  message("Number of edges shared by both networks: ", appendLF = FALSE)
+  message(sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message("Total number of edges in dataset: ", appendLF = FALSE)
+  message(nrow(edge_list), appendLF = TRUE)
 
   return(list(weighted = weighted_adjacency_matrices, unweighted = unweighted_adjacency_matrices))
 }
