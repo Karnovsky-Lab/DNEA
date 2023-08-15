@@ -4,3 +4,4 @@
 .Rproj.user
 .Rproj*
 .DS_Store
+inst/doc

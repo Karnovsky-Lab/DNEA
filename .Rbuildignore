@@ -2,9 +2,9 @@
 ^\.Rproj\.user$
 dev_files*
 ^LICENSE\.md$
-^~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest\.R$
-^~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA\.csv$
-^~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow\.R$
-^~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev\.R$
-^~/Documents/Karnovsky_lab/DNEAdev/\.gitignore$
-^~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting\.R$
+^~/Documents/Karnovsky_lab/DNEA/dev_files/parallelTest\.R$
+^~/Documents/Karnovsky_lab/DNEA/dev_files/TEDDYplasmaIA\.csv$
+^~/Documents/Karnovsky_lab/DNEA/dev_files/workflow\.R$
+^~/Documents/Karnovsky_lab/DNEA/dev_files/Dev\.R$
+^~/Documents/Karnovsky_lab/DNEA/\.gitignore$
+^~/Documents/Karnovsky_lab/DNEA/dev_files/DNEAdevTesting\.R$
