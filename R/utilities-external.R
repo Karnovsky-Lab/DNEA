@@ -89,15 +89,15 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' #make sure metadata and expression data are in same order
 #' T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 #'
-#' dat <- list(DM:control = TEDDY[T1Dmeta$group = "DM:control",],
-#'             DM:case = TEDDY[T1Dmeta$group = "DM:case",])
+#' dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
+#'             'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
 #'
 #' #log-transform and median center the expression data without scaling
 #' newdat <- NULL
 #' for(cond in dat){
-#'   for(i in 1:nrow(cond)){
-#'     my_median = median(cond[, i], na.rm = TRUE)
-#'     my_range = range(cond[, i], na.rm = TRUE)
+#'  for(i in 1:ncol(cond)){
+#'   my_median = median(cond[, i], na.rm = TRUE)
+#'    my_range = range(cond[, i], na.rm = TRUE)
 #'     scale_factor = max(abs(my_range-my_median))
 #'     cond[, i] <- (cond[, i] - my_median) / scale_factor
 #'   }
@@ -106,6 +106,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'
 #' #reorder to match TEDDYresults
 #' newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+#' newdat <- t(newdat)
 #'
 #' #add data
 #' TEDDYresults <- addExpressionData(object = TEDDYresults, data = TEDDYnormalized)
@@ -116,13 +117,13 @@ addExpressionData <- function(object, data){
 
   ##test for proper input
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
-  if(!inherits(metadata, "matrix")) stop('the input metadata should be of class "matrix"!')
-  if(rownames(data) != rownames(expressionData(object, normalized = TRUE))) stop("The feature order of new data does not match the feature order in the DNEAresults object!")
-  if(colnames(data) != colnames(expressionData(object, normalized = TRUE))) stop("The sample order of new data does not match the sample order in the DNEAresults object!")
+  if(!inherits(data, "matrix")) stop('the input metadata should be of class "matrix"!')
+  if(!all(rownames(data) == rownames(expressionData(object, normalized = TRUE)))) stop("The feature order of new data does not match the feature order in the DNEAresults object!")
+  if(!all(colnames(data) == colnames(expressionData(object, normalized = TRUE)))) stop("The sample order of new data does not match the sample order in the DNEAresults object!")
   if(!is.numeric(data)) stop("The new data should be a numeric matrix!")
 
-  object@assays@DNEA_scaled_data <- expressionData(object, normalized = TRUE)
-  expressionData(object, normalized = TRUE) <- data
+  object@assays[["DNEA_scaled_data"]] <- expressionData(object, normalized = TRUE)
+  object@assays[["scaled_expression_data"]] <- data
 
   validObject(object)
   return(object)

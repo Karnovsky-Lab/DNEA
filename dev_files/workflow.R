@@ -27,6 +27,29 @@ group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, group_labels = group_labels)
 
+#test addExpressionData
+TEDDY <- t(TEDDY)
+dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
+            'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
+
+#log-transform and median center the expression data without scaling
+newdat <- NULL
+for(cond in dat){
+  for(i in 1:ncol(cond)){
+    my_median = median(cond[, i], na.rm = TRUE)
+    my_range = range(cond[, i], na.rm = TRUE)
+    scale_factor = max(abs(my_range-my_median))
+    cond[, i] <- (cond[, i] - my_median) / scale_factor
+  }
+  newdat <- rbind(newdat, cond)
+}
+
+#reorder to match TEDDYresults
+newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+newdat <- t(newdat)
+#add data
+TEDDYresults <- addExpressionData(object = object, data = newdat)
+
 # #test node collapsing
 # TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYresults, normalized = FALSE)),
 #                            groups = rownames(expressionData(TEDDYresults, normalized = FALSE)),

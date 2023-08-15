@@ -29,15 +29,15 @@ TEDDY <- t(TEDDY)
 #make sure metadata and expression data are in same order
 T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 
-dat <- list(DM:control = TEDDY[T1Dmeta$group = "DM:control",],
-            DM:case = TEDDY[T1Dmeta$group = "DM:case",])
+dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
+            'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
 
 #log-transform and median center the expression data without scaling
 newdat <- NULL
 for(cond in dat){
-  for(i in 1:nrow(cond)){
-    my_median = median(cond[, i], na.rm = TRUE)
-    my_range = range(cond[, i], na.rm = TRUE)
+ for(i in 1:ncol(cond)){
+  my_median = median(cond[, i], na.rm = TRUE)
+   my_range = range(cond[, i], na.rm = TRUE)
     scale_factor = max(abs(my_range-my_median))
     cond[, i] <- (cond[, i] - my_median) / scale_factor
   }
@@ -46,6 +46,7 @@ for(cond in dat){
 
 #reorder to match TEDDYresults
 newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+newdat <- t(newdat)
 
 #add data
 TEDDYresults <- addExpressionData(object = TEDDYresults, data = TEDDYnormalized)
