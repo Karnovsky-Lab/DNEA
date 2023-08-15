@@ -35,10 +35,10 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
   if(!inherits(metadata, "matrix") | !inherits(metadata, "data.frame")) stop('the input metadata should be of class "matrix" or "data.frame"!')
 
-  type = match.arg(type)
+  type <- match.arg(type)
   if(type == 'sample'){
     if(all(sampleNames(object) == rownames(metadata))){
-      for(i in 1:length(colnames(metadata))){
+      for(i in seq(1, length(colnames(metadata)))){
 
 
         object@metadata[["samples"]][[colnames(metadata)[i]]] <- metadata[, i]
@@ -51,7 +51,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
   } else{
     if(all(featureNames(object) == rownames(metadata)) |
        all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))){
-      for(i in 1:length(colnames(metadata))){
+      for(i in seq(1, length(colnames(metadata)))){
 
         new_metadata_colname <- colnames(metadata)[i]
         object@metadata[["features"]][[metadata[, i]]] <- metadata[, i]
@@ -95,7 +95,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' #log-transform and median center the expression data without scaling
 #' newdat <- NULL
 #' for(cond in dat){
-#'  for(i in 1:ncol(cond)){
+#'  for(i in seq(1, ncol(cond))){
 #'   my_median = median(cond[, i], na.rm = TRUE)
 #'    my_range = range(cond[, i], na.rm = TRUE)
 #'     scale_factor = max(abs(my_range-my_median))
@@ -152,7 +152,7 @@ addExpressionData <- function(object, data){
 #'
 #' @importFrom utils write.csv
 #' @export
-getNetworkFiles <- function(object, file_path=NULL){
+getNetworkFiles <- function(object, file_path = NULL){
 
   ##test for proper input
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
@@ -163,11 +163,11 @@ getNetworkFiles <- function(object, file_path=NULL){
     if(!is.character(file_path)) stop("file_path should be a character string corresponding to the directory path in which to save the network files")
   }
   #save node list
-  write.csv(object@node_list, paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),
+  write.csv(nodeList(object), paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),
             row.names = FALSE)
 
   #save edge list
-  write.csv(object@edge_list, paste0(file_path, object@project_name,'_edgelist_',Sys.Date(),'.csv'),
+  write.csv(edgeList(object), paste0(file_path, object@project_name,'_edgelist_',Sys.Date(),'.csv'),
             row.names = FALSE)
 
   return(object)
@@ -347,7 +347,7 @@ filterNetworks.DNEAresults <- function(data,
                           check.names = FALSE)
 
   #concatenate results into dataframe
-  edge_list[,1:2] <- do.call(rbind, pairs)
+  edge_list[,c(1,2)] <- do.call(rbind, pairs)
   edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
   edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
   edge_list$edge <- rep(NA, length(pairs)) #non-edge

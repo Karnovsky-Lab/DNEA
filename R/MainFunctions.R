@@ -74,7 +74,7 @@ BICtune <- function(object,
                             condition_by_sample = networkGroupIDs(object))
 
   ##initialize input parameters
-  n4cov <- max(sapply(dat, ncol))
+  n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
   trainY <- c(rep(1, ncol(dat[[1]])),
               rep(2, ncol(dat[[2]])))
@@ -111,7 +111,7 @@ BICtune <- function(object,
   message("", appendLF = TRUE)
 
   ##collect BIC scores
-  BIC_scores = unlist(sapply(BIC_guo, function(a) a$BIC))
+  BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(length(BIC_guo))))
 
   ##make sure all bic values are finite and remove those that are not
   if (max(is.infinite(BIC_scores)) == 1){
@@ -251,7 +251,7 @@ stabilitySelection <- function(object,
 
     # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
     # in adjDGlasso_minimal
-    optimized_lambda = NULL
+    optimized_lambda <- NULL
 
     warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
                    "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
@@ -259,7 +259,7 @@ stabilitySelection <- function(object,
   }
 
   #split data by condition
-  data_split_by_condition = lapply(split_by_condition(dat = expressionData(object, normalized = TRUE),
+  data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE),
                                     condition_levels = networkGroups(object),
                                     condition_by_sample = networkGroupIDs(object)), function(d) t(d))
 
@@ -313,7 +313,7 @@ stabilitySelection <- function(object,
 
 
   #reduce results to one matrix and calculate selection probabilities
-  for (k in 1:length(selection_results)){
+  for (k in seq(1, length(selection_results))){
     selection_results[[k]] <- lapply(stab_sel, function(r) r$mat[[k]])
     selection_results[[k]] <- Reduce("+", selection_results[[k]])
 
@@ -431,7 +431,7 @@ getNetworks <- function(object,
 
     # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
     # in adjDGlasso_minimal
-    optimized_lambda = NULL
+    optimized_lambda <- NULL
 
     warning(paste0("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
                    "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
@@ -476,7 +476,7 @@ getNetworks <- function(object,
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
-                              weights= model_weight_values[[k]],
+                              weights = model_weight_values[[k]],
                               lambda = optimized_lambda)
 
     #grab the adjacency matrices
@@ -576,7 +576,7 @@ clusterNet <- function(object,
 
   for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
 
-    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode="undirected", weighted = TRUE)
+    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode = "undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -605,19 +605,16 @@ clusterNet <- function(object,
   ###########################################################
 
   #run consensus cluster algorithm
-  fit <- run_consensus_cluster(joint_graph, tau=tau, max_iterations = max_iterations)
+  fit <- run_consensus_cluster(joint_graph, tau = tau, max_iterations = max_iterations)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
-                               dimnames = list(paste0("subnetwork",1:length(unique(consensus_membership))),
-                                               sapply(1:length(joint_graph), function(x) names(joint_graph[[x]]))))
+                               dimnames = list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
+                                               vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(length(joint_graph)))))
 
   #gather results
-  # for (j in 1:nrow(subnetwork_results)){
-  #   subnetwork_results[j, consensus_membership == j] <- 1
-  # }
-  for (j in 1:nrow(subnetwork_results)){
+  for (j in seq(1, nrow(subnetwork_results))){
 
     #grab features in this subnetwork
     subnetwork_nodes <- consensus_membership == j
@@ -649,7 +646,7 @@ clusterNet <- function(object,
   #####################################
 
   summary_list <- list()
-  for (loop_cluster in 1:nrow(subnetwork_results) ){
+  for (loop_cluster in seq(1, nrow(subnetwork_results))){
 
     cluster_c <- induced.subgraph(joint_graph, V(joint_graph)$name[(subnetwork_results[loop_cluster,] == 1)])
     summary_list[[loop_cluster]] <- data.frame("number_of_nodes"=length(V(cluster_c)),

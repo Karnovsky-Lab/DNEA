@@ -15,10 +15,10 @@ getConsensusMatrix <- function(cluster_results){
   consensus_matrix <- matrix(0, num_features, num_features)
 
   #check consensus
-  for (feat1 in 1:(num_features-1)){
-    for (feat2 in (feat1+1):num_features){
-      for (algo_iter in 1:num_iters){
-        cluster_iteration = cluster_results[[algo_iter]]$membership
+  for (feat1 in seq(1, (num_features-1))){
+    for (feat2 in seq((feat1 + 1), num_features)){
+      for (algo_iter in seq(1, num_iters)){
+        cluster_iteration <- cluster_results[[algo_iter]]$membership
         consensus_matrix[feat1,feat2] <- consensus_matrix[feat1,feat2] + (length(unique(cluster_iteration[c(feat1,feat2)])) == 1)
       }
     }
@@ -118,7 +118,7 @@ ensembl_cluster <- function(adjacency_graph,
 #' @import igraph
 #' @keywords internal
 #' @noRd
-run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
+run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5){
 
   message(paste0("Initiating consensus cluster with a maximum of ", max_iterations, " iterations!"))
   message("Constructing initial consensus matrix...")
@@ -149,7 +149,7 @@ run_consensus_cluster <- function(adjacency_graph, tau=0.5, max_iterations = 5){
 
     ##create graph from consensus matrix
     threshold_consensus_graph <- graph.adjacency(threshold_consensus_matrix,
-                                                 mode="undirected",
+                                                 mode = "undirected",
                                                  weighted = TRUE)
 
     ##run clustering algorithms

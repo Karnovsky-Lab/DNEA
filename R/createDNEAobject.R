@@ -158,8 +158,8 @@ restructure_input_data <- function(expression_data,
 
   ##initialize output data structures
   #create metadata list and add names
-  meta_key<-c("samples", "features", "network_group_IDs", "network_groups")
-  metadata<-vector(mode = 'list', length = length(meta_key))
+  meta_key <- c("samples", "features", "network_group_IDs", "network_groups")
+  metadata <- vector(mode = 'list', length = length(meta_key))
   names(metadata) <- meta_key
 
   #create assays list of expression data
@@ -342,12 +342,12 @@ metabDE <- function(mat,
 
   ##perform Differential expression
   assign(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
-  feature_info$fcdirection <- sapply(1:num_features, function(i) ifelse(get(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]))[i] > 0, "Up", "Down"))
-  feature_info$t_statistic <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic)
-  feature_info$t_statistic_direction <- sapply(1:num_features, function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"))
-  feature_info$pvalue <- sapply(1:num_features, function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value)
+  feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(get(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]))[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
+  feature_info$t_statistic <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic, FUN.VALUE = numeric(length(num_features)))
+  feature_info$t_statistic_direction <- vapply(seq(1, num_features), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
+  feature_info$pvalue <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value, FUN.VALUE = numeric(length(num_features)))
   feature_info$qvalue <- p.adjust(feature_info$pvalue, "BH")
-  feature_info$DEstatus <- sapply(1:num_features, function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE))
+  feature_info$DEstatus <- vapply(seq(1, num_features), function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE), FUN.VALUE = logical(length(num_features)))
 
   return(feature_info)
 }

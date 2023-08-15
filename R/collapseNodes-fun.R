@@ -99,7 +99,7 @@ reduceFeatures <- function(object,
   method <- match.arg(method)
 
   ##bind local variables to function
-  feature_membership = NULL
+  feature_membership <- NULL
 
   ##Check to see if there is non-normalized, non-transformed expression data provided - Feature reduction requires this
   if(is.null(expressionData(object, normalized = FALSE))) stop(paste0('\n','FEATURE REDUCTION MUST BE DONE ON RAW EXPRESSION DATA!','\n',
@@ -211,12 +211,12 @@ reduceFeatures <- function(object,
 collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 
   ##bind local variables to function
-  feature_membership = NULL
+  feature_membership <- NULL
 
   ##set-up parameters and split data
   num_features <- ncol(dat)-2
   sample_groups <- unique(dat[,2])
-  metabs <- colnames(dat)[-c(1:2)]
+  metabs <- colnames(dat)[-c(1,2)]
 
   input_dat <- list()
   input_dat[[1]] <- dat[dat[,2] == sample_groups[1],]
@@ -226,8 +226,8 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
   cor_mat <- list()
   clust <- list()
   clust_groups <- list()
-  for (a in 1:length(input_dat)) {
-    cor_mat[[a]] <- cor(as.matrix(input_dat[[a]][,-c(1:2)]),
+  for (a in seq(1, length(input_dat))) {
+    cor_mat[[a]] <- cor(as.matrix(input_dat[[a]][,-c(1, 2)]),
                         use = "pairwise.complete.obs",
                         method = "pearson")
     clust[[a]] <- hclust(as.dist(1-abs(cor_mat[[a]])))
@@ -237,11 +237,11 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
   #create adjacency matrix
   group_matrix <- matrix(0, num_features, num_features)
   colnames(group_matrix) <- rownames(group_matrix) <- metabs
-  for (i in 1:(num_features-1)){
-    for (j in (i+1):num_features){
-      for (k in 1:length(clust_groups)){
-        temp_group = clust_groups[[k]]
-        group_matrix[i,j] <- group_matrix[i,j] + (length(unique(temp_group[c(i,j)]))==1)
+  for(i in seq(1, (num_features-1))){
+    for(j in seq((i+1), num_features)){
+      for(k in seq(1, length(clust_groups))){
+        temp_group <- clust_groups[[k]]
+        group_matrix[i,j] <- group_matrix[i,j] + (length(unique(temp_group[c(i,j)])) == 1)
       }
     }
   }
@@ -261,7 +261,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
   }
 
   #filter to features clustering in both sample conditions only
-  filtered_edge_list <- edge_list[edge_list[, 3] == 2,c(1:2)]
+  filtered_edge_list <- edge_list[edge_list[, 3] == 2,c(1, 2)]
 
   #if no correlation in shared by both conditions send error
   if(dim(filtered_edge_list)[1] == 0){
@@ -270,7 +270,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
   } else {
 
     #new graph from filtered edge list
-    filtered_adjacency_graph <- graph_from_edgelist(as.matrix(filtered_edge_list[,c(1:2)]))
+    filtered_adjacency_graph <- graph_from_edgelist(as.matrix(filtered_edge_list[,c(1, 2)]))
     graph_components <- components(filtered_adjacency_graph)$membership
 
     #combine new groups with independet features
@@ -283,7 +283,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
     final_membership <- rbind.data.frame(final_membership, independent_features)
 
     newdat <- NULL
-    for (a in 1:length(input_dat)) {
+    for (a in seq(1, length(input_dat))) {
 
       #reformat input data by condition
       dat_by_cond <- cbind.data.frame(data.frame(feature = colnames(input_dat[[a]])[-c(1,2)]),
@@ -300,7 +300,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
       rownames(dat_by_cond) <- dat_by_cond$feature_membership
       dat_by_cond <- t(dat_by_cond[,-1])
       dat_by_cond <- dat_by_cond[unlist(input_dat[[a]][1]), ]
-      dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1:2)], dat_by_cond)
+      dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1, 2)], dat_by_cond)
 
       #bind with data output
       newdat <- rbind(newdat, dat_by_cond)
@@ -347,7 +347,7 @@ collapseNodes_knowledge <- function (dat,
   input_dat[[2]] <- dat[dat[,2] == sample_groups[2],]
 
   newdat <- NULL
-  for (a in 1:length(input_dat)) {
+  for (a in seq(1, length(input_dat))) {
 
     #merge expression data with user-specified groups
     dat_by_cond <- cbind.data.frame(data.frame(metabolite = colnames(input_dat[[a]])[-c(1,2)]),
@@ -363,7 +363,7 @@ collapseNodes_knowledge <- function (dat,
     rownames(dat_by_cond) <- dat_by_cond$metab_group
     dat_by_cond <- t(dat_by_cond[,-1])
     dat_by_cond <- dat_by_cond[unlist(input_dat[[a]][1]), ]
-    dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1:2)],dat_by_cond)
+    dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1, 2)], dat_by_cond)
 
     #bind to output
     newdat <- rbind(newdat, dat_by_cond)
@@ -406,7 +406,7 @@ collapseNodes_hybrid <- function (dat,
                                   correlation_threshold = 0.9) {
 
   ##bind local variables to function
-  feature_membership = NULL
+  feature_membership <- NULL
 
   ##set parameters
   colnames(feature_groups) <- c("metabolite", "metab_group")
@@ -428,10 +428,10 @@ collapseNodes_hybrid <- function (dat,
     } else {
 
       #correlation-based collapsed within knowledge-based groups
-      correlation_based_collapse <- tryCatch(expr = {
+      correlation_based_collapse <- tryCatch(expr={
         collapseNodes_cor(feature_group_data,
                           correlation_threshold = correlation_threshold)
-      }, error = function(e){
+      }, error=function(e){
         stop(paste0("Features in ", feature_group, " are not sufficiently correlated for collapsing...\n Try using a lower correlation coefficient threshold to collapse features or maintain them as independent features"))
       })
 
@@ -457,7 +457,7 @@ collapseNodes_hybrid <- function (dat,
   #format newdat for output
   names(newdat) <- NULL
   newdat <- do.call("cbind", lapply(newdat, function(x) x[-c(1,2)]))
-  newdat <- cbind.data.frame(dat[,c(1:2)], newdat)
+  newdat <- cbind.data.frame(dat[,c(1, 2)], newdat)
 
   return(list(feature_membership = final_membership,
               collapsed_data = newdat))

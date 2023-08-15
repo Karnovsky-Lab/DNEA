@@ -1,14 +1,16 @@
 Package: DNEAdev
 Title: Differential Network Enrichment Analysis for Biological Data
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: c(
-      person("Christopher", "Patsalis", email = "patsalis@umich.edu", role = c("cre", "aut"),
-             comment = c(orcid = "0009-0003-4585-0017")),
-      person("Gayatri", "Iyer", ,"griyer@umich.edu", role = c("aut")))
-Maintainer: Christopher Patsalis <patsalis@umich.edu>
-Description: DNEA is designed to take as input -omics expression data (ie. metabolomics, lipidomics, proteomics) and 
-    jointly estimate the network associations across and within two user-specified experimental conditions 
-    in the dataset.
+      person("Christopher", "Patsalis", email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
+             comment = c(ORCID = "0009-0003-4585-0017")),
+      person("Gayatri", "Iyer", "griyer@umich.edu", role = c("aut")))
+Description: The DNEA R package is the latest implementation of the Differential Network Enrichment Analysis 
+             algorithm and is the predecessor to the Filigree Java-application described in Iyer et al. (2020). The package is 
+             designed to take as input an m x n expression matrix for some -omics modality (ie. metabolomics, lipidomics, proteomics, etc.) 
+             and jointly estimate the biological network associations of each condition using the DNEA algorithm described in Ma et al. (2019). 
+             Consensus clustering is then performed to identify metabolic modules within the larger networks and the netGSA algorithm, described in 
+             Hellstern et al. (2021) is used to test the identfied modules for differential enrichment across the two experimental conditions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -39,8 +41,8 @@ Collate:
     'collapseNodes-fun.R'
     'createDNEAobject.R'
 Depends: 
-    R (>= 2.10)
-LazyData: true
+    R (>= 4.3.0)
+LazyData: false
 Suggests: 
     testthat (>= 3.0.0),
     withr
