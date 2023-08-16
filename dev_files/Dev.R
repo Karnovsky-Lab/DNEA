@@ -41,9 +41,9 @@ usethis::use_package()
 
 #add data
 usethis::use_data(TEDDY, overwrite = TRUE)
-usethis::use_data(group_labels, overwrite = TRUE)
+# usethis::use_data(group_labels, overwrite = TRUE)
 usethis::use_data(TEDDYresults, overwrite = TRUE)
-usethis::use_data(T1Dmeta)
+usethis::use_data(T1Dmeta, overwrite = TRUE)
 
 #add to .Rbuildignore
 use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest.R", escape = TRUE)

@@ -7,18 +7,20 @@ set.seed(417)
 dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
 
-# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
-#
-# dat <- dat[, !grepl("nist", colnames(dat))]
-# rownames(dat) <- dat$sample
-# group_labels <- dat$group
-# names(group_labels) <- dat$sample
-# group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
-# group_labels[1:10]
-# dat<- dat[,-c(1,2)]
-# dat <- t(dat)
-# TEDDY <- dat
-# object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+
+dat <- dat[, !grepl("nist", colnames(dat))]
+rownames(dat) <- dat$sample
+group_labels <- dat$group
+names(group_labels) <- dat$sample
+group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
+group_labels[1:10]
+dat<- dat[,-c(1,2)]
+dat <- t(dat)
+TEDDY <- dat
+load("~/Documents/Karnovsky_lab/data/TEDDYresults.rda")
+load("~/Documents/Karnovsky_lab/data/T1Dmeta.rda")
+object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
 
 data("TEDDY")
 data("T1Dmeta")
