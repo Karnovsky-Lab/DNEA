@@ -3,13 +3,13 @@
 #'
 #' Display general information about the data present in the DNEAobject slots
 #'
-#' This function will display a summary of the information stored within a \code{\link{DNEAresults}} object
+#' This function will display a summary of the information stored within a \code{DNEAresults} object
 #'
-#' @param object A \code{\link{DNEAresults}} object
+#' @param object A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #'
-#' @returns A summary of the information stored in a \code{\link{DNEAresults}} object.
+#' @returns A summary of the information stored in a \code{DNEAresults} object.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -38,7 +38,7 @@ setMethod("show", "DNEAresults", function(object) {
 #' Display general information about the data present in the DNEAinputSummary slots
 #'
 #' This function will display the number of samples, number of features, and diagnostics values of the input dataset to a
-#' \code{\link{DNEAresults}} object
+#' \code{DNEAresults} object
 #'
 #' @param object A DNEAinputSummary object
 #' @author Christopher Patsalis
@@ -57,10 +57,10 @@ setMethod("show", "DNEAinputSummary", function(object) {
 
 #' Return the name of the current experiment
 #'
-#' This function returns the name of the DNEA experiment
+#' This function returns the name of the DNEAdev experiment
 #'
-#' @param x A \code{\link{DNEAresults}} object
-#' @returns The name of the DNEA experiment.
+#' @param x A \code{DNEAresults} object
+#' @returns The name of the DNEAdev experiment.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -91,11 +91,11 @@ expressionData.DNEAresults <- function(x, normalized = TRUE){
 }
 #' Access expression data within a DNEAresults object,
 #'
-#' This function accesses the expression data stored in the @@assays slot of the \code{\link{DNEAresults}} object. The output is an
+#' This function accesses the expression data stored in the @@assays slot of the \code{DNEAresults} object. The output is an
 #' \emph{n x m} matrix with one row for each sample and one column for each feature in the data.
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @param normalized A boolean indicating whether the normalized or original input data should be returned
 #'
 #' @author Christopher Patsalis
@@ -115,11 +115,11 @@ setMethod("expressionData",signature(x = "DNEAresults"), expressionData.DNEAresu
 networkGroupIDs.DNEAresults <- function(x){
   x@metadata$network_group_IDs
 }
-#' Access and set the experimental group labels utilized by DNEA
+#' Access and set the experimental group labels utilized by DNEAdev
 #'
-#' This function accesses the experimental group labels for each sample stored in the @@metadata slot of a \code{\link{DNEAresults}} object.
+#' This function accesses the experimental group labels for each sample stored in the @@metadata slot of a \code{DNEAresults} object.
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @param value a character string name corresponding to a column name of the sample metadata data frame
 #' @author Christopher Patsalis
 #' @seealso \code{\link{includeMetadata}}
@@ -135,7 +135,7 @@ setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAr
 
 #' Retrieve the unique group values of the experimental condition
 #'
-#' This function takes in a \code{\link{DNEAresults}} object and returns the unique group values of the experimental condition in the dataset
+#' This function takes in a \code{DNEAresults} object and returns the unique group values of the experimental condition in the dataset
 #'
 #' @param x A DNEAobject, or DNEAobject_collapsed object
 #' @author Christopher Patsalis
@@ -159,9 +159,9 @@ sampleNames.DNEAresults <- function(x){
 
 #' Retrieve the sample names from the metadata slot.
 #'
-#' This function accesses the sample names stored in the @@metadata slot of the \code{\link{DNEAresults}} object.
+#' This function accesses the sample names stored in the @@metadata slot of the \code{DNEAresults} object.
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @returns A character vector of sample names.
@@ -184,9 +184,9 @@ featureNames.DNEAresults <- function(x, original = FALSE){
 }
 #' Retrieve the feature names from the metadata slot.
 #'
-#' This function accesses the feature names stored in the @@metadata slot of the \code{\link{DNEAresults}} object.
+#' This function accesses the feature names stored in the @@metadata slot of the \code{DNEAresults} object.
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @param original "TRUE" returns the original feature names and "FALSE" returns the feature
 #'  names that have been modified to avoid errors as a result of special characters.
 #' @author Christopher Patsalis
@@ -208,7 +208,7 @@ numFeatures.DNEAresults <- function(x){
 #'
 #' This function prints to console the total number of features in the dataset
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @returns The number of features in the dataset.
@@ -233,7 +233,7 @@ numSamples.DNEAresults <- function(x){
 #' Retrieves the total number of samples in the dataset
 #'
 #' This function prints to console the total number of samples in the dataset
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #' @returns The number of samples in the dataset.
@@ -259,10 +259,10 @@ optimizedLambda.DNEAresults <- function(x){
 
 #' Access the lambda value used in analysis
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the hyperparameter (lambda) that is currently being
+#' The function takes as input a \code{DNEAresults} object and returns the hyperparameter (lambda) that is currently being
 #' used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @param value a single-value numeric vector corresponding to the lambda value to use in analysis
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
@@ -291,7 +291,7 @@ lambdas2Test.DNEAresults <- function(x){
 }
 #' Access the lambda values tested during hyperparameter optimization
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the lambda values that were testing
+#' The function takes as input a \code{DNEAresults} object and returns the lambda values that were testing
 #' during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
 #'
 #'
@@ -324,11 +324,11 @@ BICscores.DNEAresults <- function(x){
 }
 #' Access the BIC scores for each lambda value evaluated
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the BIC values for each lambda tested during
+#' The function takes as input a \code{DNEAresults} object and returns the BIC values for each lambda tested during
 #' hyperparameter optimization performed via BICtune(). \cr
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{BICtune}}
 #' @returns The optimized lambda hyperparameter.
@@ -354,14 +354,14 @@ selectionResults.DNEAresults <- function(x){
 }
 #' Access and set the edge selection results from stabilitySelection()
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns an m x m matrix of selection results for every
+#' The function takes as input a \code{DNEAresults} object and returns an m x m matrix of selection results for every
 #' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}
-#' @returns A \code{\link{DNEAresults}} object after filling the
+#' @returns A \code{DNEAresults} object after filling the
 #'         selection_results section of the stable_networks slot.
 #' @examples
 #' #import example data
@@ -387,14 +387,14 @@ selectionProbabilities.DNEAresults <- function(x){
 }
 #' Access and set the edge selection probabilities from stabilitySelection()
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns an m x m matrix of selection probabilities for every
+#' The function takes as input a \code{DNEAresults} object and returns an m x m matrix of selection probabilities for every
 #' possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{stabilitySelection}}, \code{\link{selectionResults}}
-#' @returns A \code{\link{DNEAresults}} object after filling the
+#' @returns A \code{DNEAresults} object after filling the
 #'         selection_probabilities section of the stable_networks slot.
 #' @examples
 #' #import example data
@@ -421,13 +421,13 @@ edgeList.DNEAresults <- function(x){
 }
 #' Access the edge list
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the edge list created from \code{\link{getNetworks}}. \cr
+#' The function takes as input a \code{DNEAresults} object and returns the edge list created from \code{\link{getNetworks}}. \cr
 #'
 #'
-#' @param x a \code{\link{DNEAresults}} object
+#' @param x a \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}
-#' @returns A data frame corresponding to the edge list determined by DNEA.
+#' @returns A data frame corresponding to the edge list determined by DNEAdev.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -452,13 +452,13 @@ nodeList.DNEAresults <- function(x){
 
 #' Access the node list
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the node list created from \code{\link{createDNEAobject}}. \cr
+#' The function takes as input a \code{DNEAresults} object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 #'
 #'
-#' @param x a \code{\link{DNEAresults}} object
+#' @param x a \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}
-#' @returns A data frame corresponding to the node list determined by DNEA.
+#' @returns A data frame corresponding to the node list determined by DNEAdev.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -486,7 +486,7 @@ diagnostics.DNEAresults <- function(x){
 #' This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
 #'
 #'
-#' @param a \code{\link{DNEAresults}} object or \code{\link{DNEAinputSummary}} object
+#' @param a \code{DNEAresults} object or \code{DNEAinputSummary} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #' @returns Returns the diagnostic values for the input expression data.
@@ -526,10 +526,10 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #' Access the dataset_summary slot of a DNEAresults object
 #'
 #' This function prints to console the number of samples, number of features, and diagnostic values of the input data to
-#' \code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
+#' \code{\link{createDNEAobject}} at initiation of the DNEAdev workflow. \cr
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
 #' @returns The numbers of samples/features and diagnostic values of the input data calculated by
@@ -568,11 +568,11 @@ adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 }
 #' Retrieve the weighted or unweighted adjacency matrix
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the weighted or unweighted adjacency matrix
+#' The function takes as input a \code{DNEAresults} object and returns the weighted or unweighted adjacency matrix
 #' determined via \code{\link{getNetworks}}. \cr
 #'
 #'
-#' @param a \code{\link{DNEAresults}} object
+#' @param a \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}
 #' @returns A matrix corresponding to the adjacency matrix specified.
@@ -608,7 +608,7 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
 #' \code{\link{clusterNet}}. \cr
 #'
 #'
-#' @param x A \code{\link{DNEAresults}} or \code{\link{consensusClusteringResults}} object
+#' @param x A \code{DNEAresults} or \code{consensusClusteringResults} object
 #' @param graph A character string indicating which of the adjacency graphs to return. Values can be "joint_graph" for the
 #' whole graph object, or one of the group values returned by \code{\link{networkGroups}}
 #' @author Christopher Patsalis
@@ -669,13 +669,13 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
 
 #' Retrieves the summary results of consensus clustering
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns a summary
+#' The function takes as input a \code{DNEAresults} object and returns a summary
 #' of the results of consensus clustering determined via \code{\link{clusterNet}}.
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
-#' @returns A data frame summary of the consensus clustering results from DNEA.
+#' @returns A data frame summary of the consensus clustering results from DNEAdev.
 #' @examples
 #' #import example data
 #' data(TEDDYresults)
@@ -698,10 +698,10 @@ setReplaceMethod("CCsummary", signature(x = "DNEAresults"), function(x, value){
 })
 #' Retrieve the subnetwork membership for each feature
 #'
-#' The function takes as input a \code{\link{DNEAresults}} or \code{\link{consensusClusteringResults}} object
+#' The function takes as input a \code{DNEAresults} or \code{consensusClusteringResults} object
 #' and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{clusterNet}}
 #' @returns A data frame that corresponds to the results of consensus clustering.
@@ -734,9 +734,9 @@ setReplaceMethod("subnetworkMembership", signature(x = "DNEAresults"), function(
 })
 #' Access the netGSA slot of a DNEAresults object
 #'
-#' The function takes as input a \code{\link{DNEAresults}} object and returns the netGSA results in the netGSA slot. \cr
+#' The function takes as input a \code{DNEAresults} object and returns the netGSA results in the netGSA slot. \cr
 #'
-#' @param x A \code{\link{DNEAresults}} object
+#' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
 #' @seealso \code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 #' @returns A data frame of the results from netGSA.

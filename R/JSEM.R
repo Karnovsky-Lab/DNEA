@@ -231,7 +231,7 @@ CGM_AHP_tune <- function(
 #' Initialize static tuning variables
 #'
 #' Initialize the static tuning variables necessary to perform stasbility selection
-#' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample) within the DNEA algorithm.
+#' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample) within the DNEAdev algorithm.
 #'
 #' @param listX A list containing matrices of the expression data split by condition. The samples
 #'        are in rows and the features are columns.

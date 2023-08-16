@@ -3,7 +3,7 @@
 #'
 #' consensusClusteringResults
 #'
-#' An s4 class to represent the results from consensus clustering within DNEA
+#' An s4 class to represent the results from consensus clustering within DNEAdev
 #'
 #' @slot summary a data frame containing the subnetworks as rows and summary information as columns. The columns include:
 #' number_of_nodes, number_of_edges, number_of_DE_nodes, number_of_DE_edges
@@ -45,7 +45,7 @@ setClass(Class = "DNEAinputSummary",
 
 #' DNEAresults
 #'
-#' An s4 class to represent the DNEA workflow
+#' An s4 class to represent the DNEAdev workflow
 #'
 #' @slot project_name A character string name for the experiment
 #'
@@ -59,7 +59,7 @@ setClass(Class = "DNEAinputSummary",
 #' number of samples corresponding to the group membership for each sample (the user may add additional metadata via
 #' \code{\link{includeMetadata}})
 #'
-#' @slot dataset_summary A DNEAinputSummary object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
+#' @slot dataset_summary A \code{DNEAinputSummary} object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
 #'
 #' @slot node_list A data.frame containing all of the features in the dataset as rows as well as the differential expression
 #' analysis results (can view the node list via \code{\link{nodeList}})
@@ -78,7 +78,7 @@ setClass(Class = "DNEAinputSummary",
 #' for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
 #' \code{\link{selectionProbabilities}})
 #'
-#' @slot consensus_clustering A consensusClusteringResults object containing the results from consensus clustering
+#' @slot consensus_clustering A \code{consensusClusteringResults} object containing the results from consensus clustering
 #' via \code{\link{clusterNet}}
 #'
 #' @slot netGSA a data.frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
@@ -91,7 +91,6 @@ setClass(Class = "DNEAinputSummary",
 #' \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{clusterNet}},
 #' \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
 #' @returns A DNEAresults object
-#' @docType class
 #' @import methods
 #' @rdname DNEAresults
 setClass(Class = "DNEAresults",
@@ -111,7 +110,7 @@ setClass(Class = "DNEAresults",
 
 #' collapse_DNEAresults
 #'
-#' An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
+#' An s4 class to represent the DNEAdev workflow, including collapsing features. This class inherits everything from
 #' \code{\link{DNEAresults-class}}
 #'
 #' @slot original_experiment The DNEAresults object input to \code{\link{reduceFeatures}}

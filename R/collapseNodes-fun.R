@@ -16,7 +16,7 @@
 #' \strong{\emph{NOTE:}} This method was developed using non-normalized, non-transformed data and this fact is critical for feature
 #' collapsing since the mean expression value is used for each group. Normalized data may alter the results of collapsing.
 #'
-#' @param object A \code{\link{DNEAresults}} object
+#' @param object A \code{DNEAresults} object
 #' @param method A character string that dictates the collapsing method to use. The available methods are: "correlation",
 #' "knowledge", or "hybrid"
 #' @param correlation_threshold A threshold wherein features correlated above correlation_threshold
@@ -30,7 +30,7 @@
 #' @seealso \code{\link{createDNEAobject}}, \code{\link{stabilitySelection}}
 #'
 #' @details
-#' Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases dramatically as the
+#' Due to the computational complexity of the DNEAdev algorithm, the processing time for a given dataset increases dramatically as the
 #' number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
 #' parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
 #' limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can
@@ -63,7 +63,7 @@
 #' experiments where the dataset contains many compounds of a similar class, but the user is unsure how correlated the features of
 #' said class will be. This method prevents poorly correlated or uncorrelated features from being collapsed into a single feature.}
 #'
-#' @returns A \code{\link{collapsed_DNEAresults}} object.
+#' @returns A \code{collapsed_DNEAresults} object.
 #'
 #' @examples
 #' #import example data

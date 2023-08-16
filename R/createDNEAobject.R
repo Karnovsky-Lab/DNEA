@@ -33,7 +33,7 @@
 #' direction). \cr
 #'
 #' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
+#' correlated group and removing the rest. We have developed DNEAdev to be very robust in situations where \strong{\emph{p >> n}}
 #' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 #' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
 #' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
@@ -46,7 +46,7 @@
 #' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
 #' information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
 #'
-#' @returns A \code{\link{DNEAresults}} object.
+#' @returns A \code{DNEAresults} object.
 #'
 #' @examples
 #' #import example data
@@ -58,7 +58,7 @@
 #'
 #'
 #' #initiate DNEAresults object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
+#' DNEAdev <- createDNEAobject(expression_data = TEDDY,
 #'                          project_name = "TEDDYmetabolomics",
 #'                          group_labels = group_labels)
 #'
@@ -94,7 +94,7 @@ createDNEAobject <- function(project_name,
     stop('Expression data must be provided to create DNEAobject')
   }
 
-  ##initiate DNEA object
+  ##initiate DNEAdev object
   object <- new("DNEAresults",
                 project_name = project_name,
                 assays =  restructured_data[[1]],
@@ -237,7 +237,7 @@ restructure_input_data <- function(expression_data,
 #' direction). \cr
 #'
 #' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
+#' correlated group and removing the rest. We have developed DNEAdev to be very robust in situations where \strong{\emph{p >>> n}}
 #' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 #' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
 #' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
@@ -250,7 +250,7 @@ restructure_input_data <- function(expression_data,
 #' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
 #' information pertaining to which features are highly correlated and as a result track each other.
 #'
-#' @returns A DNEA object containing an initialized node_list. Differential Expression is performed on
+#' @returns A DNEAdev object containing an initialized node_list. Differential Expression is performed on
 #'          the features if un-scaled data is provided. The min eigen value and condition number is also
 #'          printed for the whole dataset as well as each condition.
 #'

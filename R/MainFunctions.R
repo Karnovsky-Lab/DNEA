@@ -16,7 +16,7 @@ NULL
 #' DNEAresults object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
 #'  \code{\link{getNetworks}}
 #'
-#' @param object A \code{\link{DNEAresults}} object. See \code{\link{createDNEAobject}}
+#' @param object A \code{DNEAresults} object. See \code{\link{createDNEAobject}}
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing the lambda parameter.
 #'  If not provided, a set of lambda values are chosen based on the theoretical value for the
 #'  asymptotically valid lambda. More information about this can be found in the details section
@@ -33,7 +33,7 @@ NULL
 #'
 #' @details
 #' There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-#' DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
+#' DNEAdev because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
 #' need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
 #'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
 #' For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,
@@ -42,7 +42,7 @@ NULL
 #' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimization method deployed here can be found
 #' in the Guo et al. (2011) paper referenced below.
 #'
-#' @returns A \code{\link{DNEAresults}} object containing the BIC and likelihood scores for every lambda value tested, as well as
+#' @returns A \code{DNEAresults} object containing the BIC and likelihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
 #'
 #' @examples
@@ -149,7 +149,7 @@ BICtune <- function(object,
 #' exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
 #' found in the \strong{\emph{Details}} section.
 #'
-#' @param object A \code{\link{DNEAresults}} object
+#' @param object A \code{DNEAresults} object
 #' @param subSample A boolean that specifies whether the number of samples are unevenly split
 #'         by condition and, therefore, should be adjusted for when randomly sampling.
 #' @param nreps The total number of replicates to perform in stability selection. The default is 500.
@@ -190,7 +190,7 @@ BICtune <- function(object,
 #' More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
+#' @returns A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection
 #' results from stability selection as well as the calculated selection probabilities.
 #'
 #' @examples
@@ -354,7 +354,7 @@ stabilitySelection <- function(object,
 #' for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #' will be used as the regularization parameter.
 #'
-#' @param object A \code{\link{DNEAresults}} object
+#' @param object A \code{DNEAresults} object
 #' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
 #'        or \code{\link{stabilitySelection}} were already performed
 #' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
@@ -370,7 +370,7 @@ stabilitySelection <- function(object,
 #'
 #' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020; 10(12):479. \url{https://doi.org/10.3390/metabo10120479}
 #'
-#' @returns A \code{\link{DNEAresults}} object after populating the adjaceny_matrix and edge_list slots with the corresponding
+#' @returns A \code{DNEAresults} object after populating the adjaceny_matrix and edge_list slots with the corresponding
 #' adjacency_matrix for each sample condition as well as the network edge list.
 #'
 #' @examples
@@ -516,7 +516,7 @@ getNetworks <- function(object,
 #' information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
 #' Only subnetworks with consensus that meets or exceeds tau are identified as real.
 #'
-#' @param object A \code{\link{DNEAresults}} object
+#' @param object A \code{DNEAresults} object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
 #'
@@ -544,7 +544,7 @@ getNetworks <- function(object,
 #' greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
 #' on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{\link{DNEAresults}} object containing sub-network determinations for the nodes within the input network.
+#' @returns A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
 #'        Sub-network membership for each node can be found in the "membership" column of the node list, which can be
 #'        viewed using \code{\link{nodeList}}.
@@ -690,7 +690,7 @@ clusterNet <- function(object,
 #' This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
 #' using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{\link{DNEAresults}}
+#' @param object A \code{DNEAresults}
 #' @param min_size The minimum size of metabolic modules for enrichment analysis
 #'
 #' @author Christopher Patsalis
@@ -701,7 +701,7 @@ clusterNet <- function(object,
 #' Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol 17(6): e1008979. \url{https://doi.org/10.1371/journal.pcbi.1008979}
 #'
 #'
-#' @returns A \code{\link{DNEAresults}} object after populating the @@netGSA slot. Pathway expression differences for
+#' @returns A \code{DNEAresults} object after populating the @@netGSA slot. Pathway expression differences for
 #'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
 #'          using \code{\link{netGSAresults}}.
 #'
