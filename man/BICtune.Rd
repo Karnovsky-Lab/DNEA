@@ -13,7 +13,7 @@ BICtune(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object. See \code{\link{createDNEAobject}}}
+\item{object}{A \code{DNEAresults} object. See \code{\link{createDNEAobject}}}
 
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing the lambda parameter.
 If not provided, a set of lambda values are chosen based on the theoretical value for the
@@ -27,7 +27,7 @@ The default value is 1e-06. This value generally should not change.}
 \item{BPPARAM}{A \code{\link{BiocParallel}} object}
 }
 \value{
-A \code{\link{DNEAresults}} object containing the BIC and likelihood scores for every lambda value tested, as well as
+A \code{DNEAresults} object containing the BIC and likelihood scores for every lambda value tested, as well as
 the optimized lambda value
 }
 \description{
@@ -39,7 +39,7 @@ DNEAresults object for use in stability selection using \code{\link{stabilitySel
 }
 \details{
 There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
+DNEAdev because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
 need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
 \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
 For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,

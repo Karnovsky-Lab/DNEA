@@ -16,7 +16,7 @@ datasetSummary(x) <- value
 \S4method{datasetSummary}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 }
 \value{
 The numbers of samples/features and diagnostic values of the input data calculated by
@@ -24,7 +24,7 @@ The numbers of samples/features and diagnostic values of the input data calculat
 }
 \description{
 This function prints to console the number of samples, number of features, and diagnostic values of the input data to
-\code{\link{createDNEAobject}} at initiation of the DNEA workflow. \cr
+\code{\link{createDNEAobject}} at initiation of the DNEAdev workflow. \cr
 }
 \examples{
 #import example data

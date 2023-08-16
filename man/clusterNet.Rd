@@ -4,20 +4,17 @@
 \alias{clusterNet}
 \title{Identify metabolic modules within the biological networks using a consensus clustering approach}
 \usage{
-clusterNet(object, tau = 0.5, max_iterations = 5, eps_threshold = 1e-06)
+clusterNet(object, tau = 0.5, max_iterations = 5)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{tau}{The \% agreement threshold among the clustering algorithms for a node to be included in a subnetwork}
 
 \item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
-
-\item{eps_threshold}{A cut-off value thresholding the adjacency matrix. Edges with a partial correlation value below this
-threshold will be removed.}
 }
 \value{
-A \code{\link{DNEAresults}} object containing sub-network determinations for the nodes within the input network.
+A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
 A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
 Sub-network membership for each node can be found in the "membership" column of the node list, which can be
 viewed using \code{\link{nodeList}}.

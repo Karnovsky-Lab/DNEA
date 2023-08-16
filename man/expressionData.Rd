@@ -10,7 +10,7 @@ expressionData(x, normalized)
 \S4method{expressionData}{DNEAresults}(x, normalized = TRUE)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 
 \item{normalized}{A boolean indicating whether the normalized or original input data should be returned}
 }
@@ -18,7 +18,7 @@ expressionData(x, normalized)
 The expression matrix specified by the user.
 }
 \description{
-This function accesses the expression data stored in the @assays slot of the \code{\link{DNEAresults}} object. The output is an
+This function accesses the expression data stored in the @assays slot of the \code{DNEAresults} object. The output is an
 \emph{n x m} matrix with one row for each sample and one column for each feature in the data.
 }
 \examples{

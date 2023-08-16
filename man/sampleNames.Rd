@@ -10,13 +10,13 @@ sampleNames(x)
 \S4method{sampleNames}{DNEAresults}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 }
 \value{
 A character vector of sample names.
 }
 \description{
-This function accesses the sample names stored in the @metadata slot of the \code{\link{DNEAresults}} object.
+This function accesses the sample names stored in the @metadata slot of the \code{DNEAresults} object.
 }
 \examples{
 #import example data

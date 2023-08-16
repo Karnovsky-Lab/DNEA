@@ -7,15 +7,15 @@
 addExpressionData(object, data)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{data}{An \emph{m x n} numeric matrix of custom-normalized expression expression data}
 }
 \value{
-A \code{\link{DNEAresults}} object with the added expression data in the @assays slot
+A \code{DNEAresults} object with the added expression data in the @assays slot
 }
 \description{
-This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
+This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEAdev analysis.
 }
 \examples{
 #import example data
@@ -49,11 +49,11 @@ newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
 newdat <- t(newdat)
 
 #add data
-TEDDYresults <- addExpressionData(object = TEDDYresults, data = TEDDYnormalized)
+TEDDYresults <- addExpressionData(object = TEDDYresults, data = newdat)
 
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{DNEAresults}},
+\code{\link{createDNEAobject}}, \code{DNEAresults},
 }
 \author{
 Christopher Patsalis

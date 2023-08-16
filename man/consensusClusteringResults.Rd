@@ -8,7 +8,7 @@
 A consensusClusteringResults object
 }
 \description{
-An s4 class to represent the results from consensus clustering within DNEA
+An s4 class to represent the results from consensus clustering within DNEAdev
 }
 \section{Slots}{
 

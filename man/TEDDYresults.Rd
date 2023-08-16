@@ -3,22 +3,21 @@
 \docType{data}
 \name{TEDDYresults}
 \alias{TEDDYresults}
-\title{Example results for DNEA}
+\title{Example results for DNEAdev}
 \format{
-\subsection{\code{TEDDYresults} A DNEA results object after completing a DNEA experiment.}{
-}
+A DNEAdev results object after completing a DNEAdev experiment.
 }
 \source{
-The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(TEDDYresults) in the console.
+The data is stored in the \code{\link{DNEAdev}} package and can be accessed by running data(TEDDYresults) in the console.
 }
 \usage{
 data("TEDDYresults")
 }
 \value{
-A \code{\link{DNEAresults}} object containing the results of a DNEA experiment
+A \code{DNEAresults} object containing the results of a DNEAdev experiment
 }
 \description{
-This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
+This data is an example DNEAresults object after performing DNEAdev. The experiment was performed using the \code{\link{TEDDY}}
 data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
 }
 \keyword{datasets}

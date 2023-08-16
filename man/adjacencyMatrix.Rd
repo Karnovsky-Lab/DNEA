@@ -16,13 +16,13 @@ adjacencyMatrix(x, weighted) <- value
 \S4method{adjacencyMatrix}{DNEAresults}(x, weighted = FALSE) <- value
 }
 \arguments{
-\item{a}{\code{\link{DNEAresults}} object}
+\item{a}{\code{DNEAresults} object}
 }
 \value{
 A matrix corresponding to the adjacency matrix specified.
 }
 \description{
-The function takes as input a \code{\link{DNEAresults}} object and returns the weighted or unweighted adjacency matrix
+The function takes as input a \code{DNEAresults} object and returns the weighted or unweighted adjacency matrix
 determined via \code{\link{getNetworks}}. \cr
 }
 \examples{

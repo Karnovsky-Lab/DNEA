@@ -5,11 +5,8 @@
 \alias{TEDDY}
 \title{The example data from xxx}
 \format{
-\subsection{\code{TEDDY} A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column}{
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    corresponds to a metabolite.
-}\if{html}{\out{</div>}}
-}
+A data frame with 100 rows and 144 columns. Each row corresponds to a sample, and each column
+corresponds to a metabolite.
 }
 \source{
 The raw data can be downloaded from the Metabolomics workbench under study ID \strong{ST001386}:

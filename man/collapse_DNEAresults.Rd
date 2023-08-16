@@ -8,7 +8,7 @@
 A collapsed_DNEAresults object
 }
 \description{
-An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
+An s4 class to represent the DNEAdev workflow, including collapsing features. This class inherits everything from
 \code{\link{DNEAresults-class}}
 }
 \section{Slots}{

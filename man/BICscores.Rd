@@ -16,13 +16,13 @@ BICscores(x) <- value
 \S4method{BICscores}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 }
 \value{
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{\link{DNEAresults}} object and returns the BIC values for each lambda tested during
+The function takes as input a \code{DNEAresults} object and returns the BIC values for each lambda tested during
 hyperparameter optimization performed via BICtune(). \cr
 }
 \examples{

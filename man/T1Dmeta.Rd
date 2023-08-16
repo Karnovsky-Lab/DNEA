@@ -5,8 +5,7 @@
 \alias{T1Dmeta}
 \title{The meta data file for the TEDDY metabolomics data}
 \format{
-\subsection{\code{T1Dmeta} A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:}{
-
+A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:
 \describe{
 \item{subject}{The individual patient}
 \item{Endpoint1}{The age of the case subject in days when this sample was collected}
@@ -17,7 +16,6 @@
 \item{Sex}{The sex of the subject}
 \item{sample}{The name of this sample}
 \item{group}{A variable indicating whether or not this sample is part of the T1D case or T1D control group}
-}
 }
 }
 \source{

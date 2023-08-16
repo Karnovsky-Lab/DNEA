@@ -7,7 +7,7 @@
 getNetworks(object, optimal_lambda, eps_threshold = 1e-06)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{optimal_lambda}{\emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
 or \code{\link{stabilitySelection}} were already performed}
@@ -16,7 +16,7 @@ or \code{\link{stabilitySelection}} were already performed}
 Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.}
 }
 \value{
-A \code{\link{DNEAresults}} object after populating the adjaceny_matrix and edge_list slots with the corresponding
+A \code{DNEAresults} object after populating the adjaceny_matrix and edge_list slots with the corresponding
 adjacency_matrix for each sample condition as well as the network edge list.
 }
 \description{

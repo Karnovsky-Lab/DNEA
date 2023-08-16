@@ -16,14 +16,14 @@ selectionProbabilities(x) <- value
 \S4method{selectionProbabilities}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 }
 \value{
-A \code{\link{DNEAresults}} object after filling the
+A \code{DNEAresults} object after filling the
 selection_probabilities section of the stable_networks slot.
 }
 \description{
-The function takes as input a \code{\link{DNEAresults}} object and returns an m x m matrix of selection probabilities for every
+The function takes as input a \code{DNEAresults} object and returns an m x m matrix of selection probabilities for every
 possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
 \examples{

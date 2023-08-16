@@ -8,7 +8,7 @@
 A DNEAresults object
 }
 \description{
-An s4 class to represent the DNEA workflow
+An s4 class to represent the DNEAdev workflow
 }
 \section{Slots}{
 
@@ -25,7 +25,7 @@ data), a two-level factor corresponding to the two groups in the data, and a cha
 number of samples corresponding to the group membership for each sample (the user may add additional metadata via
 \code{\link{includeMetadata}})}
 
-\item{\code{dataset_summary}}{A DNEAinputSummary object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})}
+\item{\code{dataset_summary}}{A \code{DNEAinputSummary} object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})}
 
 \item{\code{node_list}}{A data.frame containing all of the features in the dataset as rows as well as the differential expression
 analysis results (can view the node list via \code{\link{nodeList}})}
@@ -44,7 +44,7 @@ optimized lambda for analysis (optimized lambda can be accessed or changed via \
 for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
 \code{\link{selectionProbabilities}})}
 
-\item{\code{consensus_clustering}}{A consensusClusteringResults object containing the results from consensus clustering
+\item{\code{consensus_clustering}}{A \code{consensusClusteringResults} object containing the results from consensus clustering
 via \code{\link{clusterNet}}}
 
 \item{\code{netGSA}}{a data.frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.

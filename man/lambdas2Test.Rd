@@ -22,7 +22,7 @@ lambdas2Test(x) <- value
 The lambda values to evaluate in optimization.
 }
 \description{
-The function takes as input a \code{\link{DNEAresults}} object and returns the lambda values that were testing
+The function takes as input a \code{DNEAresults} object and returns the lambda values that were testing
 during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
 }
 \examples{

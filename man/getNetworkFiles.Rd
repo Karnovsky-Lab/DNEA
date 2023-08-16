@@ -7,7 +7,7 @@
 getNetworkFiles(object, file_path = NULL)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{file_path}{The filepath to save the node and edge lists to. If \strong{NULL}, the files will be saved to the working
 directory}

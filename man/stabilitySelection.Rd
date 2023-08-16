@@ -13,7 +13,7 @@ stabilitySelection(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
@@ -26,7 +26,7 @@ necessary if \code{\link{BICtune}} is not performed}
 \item{BPPARAM}{a BiocParallel object}
 }
 \value{
-A \code{\link{DNEAresults}} object after populating the stable_networks slot of the object. It contains the selection
+A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection
 results from stability selection as well as the calculated selection probabilities.
 }
 \description{

@@ -12,7 +12,7 @@ reduceFeatures(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAresults}} object}
+\item{object}{A \code{DNEAresults} object}
 
 \item{method}{A character string that dictates the collapsing method to use. The available methods are: "correlation",
 "knowledge", or "hybrid"}
@@ -25,7 +25,7 @@ methods}
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A \code{\link{collapsed_DNEAresults}} object.
+A \code{collapsed_DNEAresults} object.
 }
 \description{
 This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
@@ -43,7 +43,7 @@ Highly correlated groups of features are collapsed by taking the mean expression
 collapsing since the mean expression value is used for each group. Normalized data may alter the results of collapsing.
 }
 \details{
-Due to the computational complexity of the DNEA algorithm, the processing time for a given dataset increases dramatically as the
+Due to the computational complexity of the DNEAdev algorithm, the processing time for a given dataset increases dramatically as the
 number of features increases. The ability to process each replicate performed in  \code{\link{stabilitySelection}} in
 parallel helps circumvent this issue, however, a user may still be constrained by the resources available to them (ie. a
 limited number of cpu cores or memory). Collapsing related features into groups is another method by which the user can

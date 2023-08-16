@@ -19,13 +19,13 @@ subnetworkMembership(x) <- value
 \S4method{subnetworkMembership}{DNEAresults}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAresults}} object}
+\item{x}{A \code{DNEAresults} object}
 }
 \value{
 A data frame that corresponds to the results of consensus clustering.
 }
 \description{
-The function takes as input a \code{\link{DNEAresults}} or \code{\link{consensusClusteringResults}} object
+The function takes as input a \code{DNEAresults} or \code{consensusClusteringResults} object
 and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
 \examples{
