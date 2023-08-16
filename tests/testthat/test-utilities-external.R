@@ -43,8 +43,3 @@ test_that("filterNetworks", {
   expect_error(filterNetworks(dat, top_percent_edges = -0.3))
   expect_s4_class(filterNetworks(dat, pcor = 0.3), "DNEAresults")
 })
-
-
-
-
-

@@ -10,4 +10,3 @@ test_that("split_by_condition fails", {
                                   condition_by_sample = c(rep("control", 10), rep("case", 10))),
                list(control = matrix(1, nrow = 5, ncol = 10), case = matrix(2, nrow = 5, ncol = 10)))
 })
-
