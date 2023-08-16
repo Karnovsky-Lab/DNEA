@@ -1,3 +1,3 @@
-# DNEAdev 0.99.0
+# DNEA 0.99.0
 
 * Initial CRAN submission.
