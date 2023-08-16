@@ -1,0 +1,24 @@
+---
+title: "Data-Driven Construction of Biological Networks with DNEAdev"
+subtitle: "With optional Metabolic Module Identification and Enrichment Analysis"
+author: "Christopher Patsalis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  BiocStyle::html_document:
+        toc: true
+vignette: >
+  %\VignetteIndexEntry{Constructing Biological Networks and Performing Enrichment Analysis with DNEAdev}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(DNEAdev)
+```
