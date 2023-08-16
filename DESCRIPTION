@@ -1,14 +1,14 @@
-Package: DNEA
+Package: DNEAdev
 Title: Differential Network Enrichment Analysis for Biological Data
 Version: 0.99.0
 Authors@R: c(
       person(given = "Christopher", family = "Patsalis", email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
              comment = c(ORCID = "0009-0003-4585-0017")),
       person(given = "Gayatri", family = "Iyer", email = "griyer@umich.edu", role = c("aut")))
-Description: The DNEA R package is the latest implementation of the Differential Network Enrichment Analysis 
+Description: The DNEAdev R package is the latest implementation of the Differential Network Enrichment Analysis 
              algorithm and is the predecessor to the Filigree Java-application described in Iyer et al. (2020). The package is 
              designed to take as input an m x n expression matrix for some -omics modality (ie. metabolomics, lipidomics, proteomics, etc.) 
-             and jointly estimate the biological network associations of each condition using the DNEA algorithm described in Ma et al. (2019). 
+             and jointly estimate the biological network associations of each condition using the DNEAdev algorithm described in Ma et al. (2019). 
              Consensus clustering is then performed to identify metabolic modules within the larger networks and the netGSA algorithm, described in 
              Hellstern et al. (2021) is used to test the identfied modules for differential enrichment across the two experimental conditions.
 License: MIT + file LICENSE
@@ -56,7 +56,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     withr
-URL: https://github.com/Karnovsky-Lab/DNEA
+URL: https://github.com/Karnovsky-Lab/DNEAdev
 biocViews: Metabolomics, Proteomics, Lipidomics, DifferentialExpression, NetworkEnrichment, Network,
            Clustering, DataImport
 Config/testthat/edition: 3
