@@ -368,7 +368,7 @@ stabilitySelection <- function(object,
 #' @references
 #' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
-#' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020; 10(12):479. \url{https://doi.org/10.3390/metabo10120479}
+#' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384; PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 #'
 #' @returns A \code{DNEAresults} object after populating the adjaceny_matrix and edge_list slots with the corresponding
 #' adjacency_matrix for each sample condition as well as the network edge list.
@@ -698,7 +698,7 @@ clusterNet <- function(object,
 #' @seealso \code{\link{netGSAresults}}, \code{\link{plotNetworks}}, \code{\link{nodeList}}
 #'
 #' @references
-#' Hellstern M, Ma J, Yue K, Shojaie A (2021) netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol 17(6): e1008979. \url{https://doi.org/10.1371/journal.pcbi.1008979}
+#' Hellstern M, Ma J, Yue K, Shojaie A. netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol. 2021 Jun 11;17(6):e1008979. doi: 10.1371/journal.pcbi.1008979. PMID: 34115744; PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 #'
 #'
 #' @returns A \code{DNEAresults} object after populating the @@netGSA slot. Pathway expression differences for
