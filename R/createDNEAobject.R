@@ -79,10 +79,10 @@ createDNEAobject <- function(project_name,
 
       group_labels <- factor(group_labels)
 
-      message("Condition for expression_data should be of class factor. Converting Now.", appendLF = TRUE)
-      message("Condition is now a factor with levels:\n1. ", appendLF = FALSE)
-      message(levels(group_labels)[1], appendLF = TRUE)
-      message("2. ", appendLF = FALSE);message(levels(group_labels)[2], appendLF = TRUE)
+      message("Condition for expression_data should be of class factor. Converting Now.\n",
+              "Condition is now a factor with levels:\n1. ",
+              levels(group_labels)[1], "\n",
+              "2. ", levels(group_labels)[2], appendLF = TRUE)
     }
 
     #create data structures to initialize DNEAobject with un-scaled data
@@ -115,7 +115,7 @@ createDNEAobject <- function(project_name,
                                        conditions = networkGroupIDs(object))
 
   #print dataset summary
-  message("Diagnostic criteria are as follows: ", appendLF = TRUE)
+  message("\nDiagnostic criteria are as follows: ", appendLF = TRUE)
   show(object@dataset_summary)
 
   ##perform differential expression on the features
