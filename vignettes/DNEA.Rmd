@@ -1,0 +1,184 @@
+---
+title: "Differential Network Expression Analysis (DNEA) for Metabolomics Data"
+subtitle: "A Data-Driven Approach to Network Analysis"
+author: "Christopher P. Patsalis"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Advancements in analytical methods, such as Liquid Chromatography- Mass Spectrometry (LC-MS) have enabled the
+  high-throughput identification of hundreds to thousands of metabolites in biological samples, thereby creating 
+  larger, more complex datasets that need to be analyzed. However, there are some challenges present when trying to 
+  use more traditional bioinformatics tools on these datasets.  
+  
+  
+  For instance, the emergence of Gene-set Enrichment Analysis @GSEA2005 enabled researchers to identify 
+  differentially enriched pathways within genetic data, however, this method translates poorly to metabolomics and 
+  lipidomics data due to de novo identification of the metabolome and poorly annotated metabolic pathway databases. 
+  In addition,  metabolomics studies often identify exogenous compounds in the sample that cannot be mapped to a 
+  human pathway. Until DNEA, data-driven approaches to network analysis of -omics data was un-feasible due to 
+  datasets having many more features than samples, also known as the ***p << n*** problem.
+  
+  
+  To combat this, our group has developed The Differential Network Expression Analysis (DNEA) algorithm outlined in 
+  @DNEA2019 and later implemented in the Filigree java-application outlined in @Filigree2021. DNEA is a data-driven 
+  network analysis tool for biologial data that utilizes the glasso R package written by @R-glasso package to 
+  jointly estimate the biological networks of two conditions based on the correlation structure of the data. Lasso 
+  regularization, in combination with a novel method for stability selection allows us to circumvent the 
+  ***p >> n*** problem by only keeping important features in the model. This data-driven approach provides more 
+  robust results and allows the user to identify feature-feature interactions otherwise lost by reference-based 
+  methods. In addition, the networks can be clustered in order to identify metabolic modules, or subnetworks, within
+  the data and subsequently test them for enrichment across experimental conditions using the netgsa R package 
+  described in @R-netgsa.  
+  
+  
+  The DNEA R package is the latest implementation of the DNEA algorithm, and implements several enhancements to the 
+  workflow. GLASSO models are computationally expensive and, as biological datasets grow, the required computational
+  resources for analysis can be prohibitive. The DNEA R package is designed to work on high-performance or 
+  cloud-computing machines and utilize all of the available computing cores through parallelization while keeping 
+  the memory footprint at a minimum. The algorithm has also been modularized into several key steps that now give 
+  the user more control over the analysis. This vignette aims to walk the user through a typical DNEA workflow, and 
+  describe the parameters a user may choose to modify to better fit their data.
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
+bibliography: DNEA_bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{DNEA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Downloading DNEA
+The DNEA R package is currrently available on the  [Karnovsky Lab github](https://www.github.com/Karnovsky-Lab/DNEA). Any troubleshooting issues or bug reports can be reported there. The package can be installed using devtools. We also recommend installing several package dependencies stored on Bioconductor via BiocManager. Let's download those packages if necessary and load them into R.
+
+```{r setup, eval=FALSE}
+#install BiocManager if not already
+if(!nzchar(system.file(package = "BiocManager"))){
+  install.packages("BiocManager")
+}
+
+#install devtools if not already
+if(!nzchar(system.file(package = "devtools"))){
+  install.packages("devtools")
+}
+
+#load packages
+library(devtools)
+library(BiocManager)
+
+
+```
+Now that those are loaded, we can install DNEA.
+```{r install DNEA, eval=FALSE}
+#install dependency packages
+BiocManager::install(c("RCy3", "org.Hs.eg.db", "graphite", "graph",
+                       "genefilter", "AnnotationDbi", "BiocParallel"))
+
+#install DNEA
+devtools::install_github("Karnovsky-Lab/DNEA")
+```
+# Basic DNEA workflow
+## Input data
+There are 3 inputs required for the DNEA workflow: a character string corresponding to the experiment name indicated by *project_name*, the expression data indicated by *expression_data*, and the experimental groups indicated by *group_labels*.  
+
+### expression_data
+The *expression_data* should be an *m x n* matrix wherein the features (metabolites, lipid molecules, proteins, etc.) each have a row, and the samples each have a column.  It is important that the data has not been transformed or normalized (ie. log transformed and auto-scaled) prior to analysis. *NOTE: it is okay if the data was adjusted for batch effect or confounding variables prior to analysis*.
+
+
+As an example, let's load the example data stored inside the DNEA package. This data, named TEDDY, comes from The Environmental Determinants of Diabetes in the Young cohort study described in @TEDDY. The original data can be accessed via [Metabolomics Workbench](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950). It is a numeric expression matrix where the metabolites are in rows and the samples are in 
+columns. The peak intensity data has been adjusted for age and sex to remove those confounding variables, ***but it has not been log-transformed or scaled.***
+```{r load example data, eval=TRUE}
+#first load DNEA into R
+library(DNEAdev)
+
+#load the example data
+data("TEDDY")
+TEDDY[1:10, 1:3]
+```
+
+### group_labels
+The *group_labels* should be a vector or list of values of class factor that correspond to the experimental condition of each sample. Each element should be named for its corresponding sample, and the order should match the order of the samples, ie the order of the column names in *expression_data*. We can create the *group_labels* object for the TEDDY data using the metadata, T1Dmeta, stored in DNEA. Each row is a different sample, and each column is a different variable. The only column we need is the "group" column which contains the experimental conditions for each sample, and the row names of the data frame which are named for each sample, respectively. More information can be found about the available metadata in the T1Dmeta documentation *(which you can access by running* `?DNEA::T1Dmeta()` *in the console)*.
+```{r load example metadata, eval=TRUE}
+#load T1Dmeta
+data("T1Dmeta")
+T1Dmeta[1:10, match("group", colnames(T1Dmeta))]
+```
+Our experimental condition has two possible values: "DM:control" and "DM:case". DNEA is designed to jointly estimate biological networks from only ***TWO*** experimental conditions at this time. If you have only one experimental condition, you should consider using another tool we developed, [CorrelationCalculator](http://metscape.ncibi.org/calculator.html). Now we can re-order the metadata to match the sample order of the expression data, and save the group labels as a new vector element.
+```{r create group_labels, eval=TRUE}
+#re-order the metadata to match the sample order of expression_data
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#save the group column to be used as group_labels
+group_labels <- T1Dmeta$group
+
+#name each element for its corresponding sample
+names(group_labels) <- rownames(T1Dmeta)
+```
+Finally, we can convert this character vector into factors. We will specify that "DM:control" is the reference.
+```{r convert group_labels to factor, eval=TRUE}
+#convert to factor
+group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
+```
+
+## STEP 1: Data pre-processing and feature aggregation
+### Data pre-processing
+DNEA is an object-oriented workflow that is built around a custom s4 object, DNEAresults. We have provided a wrapper function that encompasses several necessary steps into one user-friendly function. First, the input is restructured to initiate a DNEAresults object. Differential Expression analysis is then performed after log-transforming the expression data. Finally, the data is split by experimental condition before scaling. As a reminder, DNEA jointly-estimates the networks for each experimental condition, therefore the samples for each condition, respectively, must be normalized separately. Once the data is scaled, a diagnostics algorithm is performed to check the minimum eigenvalue and condition number of the correlation matrix for the whole dataset, as well as each experimental group individually.
+```{r start DNEA, eval=TRUE}
+#initiate DNEAresults object
+TEDDYdat <- createDNEAobject(project_name = "TEDDY", expression_data = TEDDY, group_labels = group_labels)
+```
+There are also several messages to look out for in the console: We are informed that the data has been log-scaled and stored under "scaled_expression_data" in the assays slot, and the dignostic criteria is returned. Our dataset has a negative eigenvalue for the "DM:case" experimental group, triggering a warning that recommends we collapse the features prior to analysis.
+
+**WHAT CAUSED THIS WARNING?**  
+
+
+Zero or negative eigenvalues in the data represent mathematic instability, potentially creating erroneous results. There is a number of reasons that instability may occur within a dataset; in the case of expression data, one of the most common we reasons we have encountered is highly correlated features. We can view this by plotting a heatmap of the pearson correlation matrix for the "DM:case" data. We can access the log-scaled data using the `expressionData()` function, and find the "DM:case" samples using the group labels accessed via `networkGroupIDs`.
+```{r correlation heatmap, eval=TRUE}
+#load the pheatmap and Hmisc packages
+library(pheatmap)
+library(Hmisc)
+
+#grab the data from the DNEAresults object
+expr_dat <- expressionData(TEDDYdat, normalized = TRUE)
+
+#only keep the "DM:case" data
+expr_dat <- expr_dat[, networkGroupIDs(TEDDYdat) == "DM:case"]
+
+#create a pearson correlation matrix - data should be transposed first so features are in columns
+cor_dat <- Hmisc::rcorr(t(expr_dat), type = "pearson")$r
+
+#cluster the correlations and reorder correlation matrix to better visualize
+  dd <- as.dist((1-cor_dat)/2)
+  hc <- hclust(dd)
+  cor_dat <-cor_dat[hc$order, hc$order]
+  
+  #create pheatmap
+  pheatmap(cor_dat, cluster_rows = FALSE,cluster_cols = FALSE,
+         legend = TRUE,annotation_legend = FALSE,
+         labels_row = '',labels_col = '',
+         main = 'Feature correlations in DM:case group'
+)
+
+```
+As you can see, there are some pockets of red and blue indicating highly correlated features in this dataset that may be causing the instability. Luckily, the regularization steps deployed in the DNEA algorithm should correct this issue without additional user-intervention by selecting a representative feature within a highly correlated group and removing the rest from the model. However, The user may decide to pre-emptively address this situation by collapsing highly-correlated features into a single group.  
+
+
+**WHY SHOULD WE COLLAPSE?**  
+
+
+Collapsing highly-correlated features into a single group prior to analysis may be of benefit for several reasons, particularly if the dataset contains many features of the same class of compounds (ie. fatty acids, carnitines, etc.). Doing so retains signal from all of the features in the analysis, as opposed to regularization arbitrarily choosing one feature as representation for the group and removing some or all of the remaining features. Pre-emptively collapsing gives the user additional control over network construction, and provides additional information regarding which features are highly correlated, and will therefore have similar network associations.
+
+Finally, we can view the differential expression results in the node list using the `nodeList()` function.
+```{r nodeList, eval=TRUE}
+nodeList(TEDDYdat)[1:5,]
+```
+
+### Feature aggregation
+
+

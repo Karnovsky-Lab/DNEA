@@ -5,6 +5,7 @@ library(usethis)
 library(BiocCheck)
 library(biocViews)
 library(BiocStyle)
+library(knitr)
 devtools::load_all("~/Documents/Karnovsky_lab/DNEAdev/", reset = TRUE, recompile = TRUE)
 #devtools::create('DNEAdev')
 available('DNEAdev')
@@ -35,10 +36,14 @@ usethis::use_package("withr", type = "Suggests")
 usethis::use_package("BiocStyle", type = "Suggests")
 usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("rmarkdown", type = "Suggests")
-usethis::use_vignette(name = "DNEAdev")
 # usethis::use_package("future")
 usethis::use_package()
 
+usethis::use_vignette(name = "DNEA")
+usethis::use_citation()
+knitr::write_bib(x = "glasso", file = "test.bib")
+knitr::write_bib(x = "netgsa", file = "test.bib")
+knitr::write_bib(x = "BiocManager", file = "test.bib")
 #add data
 usethis::use_data(TEDDY, overwrite = TRUE)
 # usethis::use_data(group_labels, overwrite = TRUE)
@@ -81,7 +86,7 @@ devtools::document()
 devtools::build_manual()
 devtools::check()
 devtools::build()
-
+devtools::install("~/Documents/Karnovsky_lab/DNEAdev/")
 
 datasetSummary(object) <- new("DNEAinputSummary",
                               num_samples = diagnostic_values[[1]],
