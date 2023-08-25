@@ -4,7 +4,7 @@
 \alias{getNetworks}
 \title{Construct the GLASSO-based biological Networks}
 \usage{
-getNetworks(object, optimal_lambda, eps_threshold = 1e-06)
+getNetworks(object, optimal_lambda, eps_threshold = 1e-06, verbose = TRUE)
 }
 \arguments{
 \item{object}{A \code{DNEAresults} object}
@@ -14,6 +14,9 @@ or \code{\link{stabilitySelection}} were already performed}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
 Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.}
+
+\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
+default is TRUE.}
 }
 \value{
 A \code{DNEAresults} object after populating the adjaceny_matrix and edge_list slots with the corresponding

@@ -9,7 +9,8 @@ stabilitySelection(
   subSample = FALSE,
   nreps = 500,
   optimal_lambda,
-  BPPARAM = bpparam()
+  BPPARAM = bpparam(),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ by condition and, therefore, should be adjusted for when randomly sampling.}
 necessary if \code{\link{BICtune}} is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
+
+\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
+default is TRUE.}
 }
 \value{
 A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection

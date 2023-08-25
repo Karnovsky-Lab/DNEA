@@ -9,7 +9,8 @@ BICtune(
   lambda_values,
   eps_threshold = 1e-06,
   eta_value = 0.1,
-  BPPARAM = bpparam()
+  BPPARAM = bpparam(),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ The default value is 1e-06. This value generally should not change.}
 \item{eta_value}{default parameter ??. Default is 0.1}
 
 \item{BPPARAM}{A \code{\link{BiocParallel}} object}
+
+\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
+default is TRUE.}
 }
 \value{
 A \code{DNEAresults} object containing the BIC and likelihood scores for every lambda value tested, as well as

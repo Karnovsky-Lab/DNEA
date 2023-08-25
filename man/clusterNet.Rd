@@ -4,7 +4,7 @@
 \alias{clusterNet}
 \title{Identify metabolic modules within the biological networks using a consensus clustering approach}
 \usage{
-clusterNet(object, tau = 0.5, max_iterations = 5)
+clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 }
 \arguments{
 \item{object}{A \code{DNEAresults} object}
@@ -12,6 +12,9 @@ clusterNet(object, tau = 0.5, max_iterations = 5)
 \item{tau}{The \% agreement threshold among the clustering algorithms for a node to be included in a subnetwork}
 
 \item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
+
+\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
+default is TRUE.}
 }
 \value{
 A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
