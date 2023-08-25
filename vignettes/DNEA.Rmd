@@ -1,5 +1,5 @@
 ---
-title: "Differential Network Expression Analysis (DNEA) for Metabolomics Data"
+title: "Differential Network Expression Analysis for Metabolomics Data"
 subtitle: "A Data-Driven Approach to Network Analysis"
 author: "Christopher P. Patsalis"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
@@ -84,10 +84,10 @@ BiocManager::install(c("RCy3", "org.Hs.eg.db", "graphite", "graph",
 devtools::install_github("Karnovsky-Lab/DNEA")
 ```
 # Basic DNEA workflow
-## Input data
+# Input data
 There are 3 inputs required for the DNEA workflow: a character string corresponding to the experiment name indicated by *project_name*, the expression data indicated by *expression_data*, and the experimental groups indicated by *group_labels*.  
 
-### expression_data
+## expression_data
 The *expression_data* should be an *m x n* matrix wherein the features (metabolites, lipid molecules, proteins, etc.) each have a row, and the samples each have a column.  It is important that the data has not been transformed or normalized (ie. log transformed and auto-scaled) prior to analysis. *NOTE: it is okay if the data was adjusted for batch effect or confounding variables prior to analysis*.
 
 
@@ -102,7 +102,7 @@ data("TEDDY")
 TEDDY[1:10, 1:3]
 ```
 
-### group_labels
+## group_labels
 The *group_labels* should be a vector or list of values of class factor that correspond to the experimental condition of each sample. Each element should be named for its corresponding sample, and the order should match the order of the samples, ie the order of the column names in *expression_data*. We can create the *group_labels* object for the TEDDY data using the metadata, T1Dmeta, stored in DNEA. Each row is a different sample, and each column is a different variable. The only column we need is the "group" column which contains the experimental conditions for each sample, and the row names of the data frame which are named for each sample, respectively. More information can be found about the available metadata in the T1Dmeta documentation *(which you can access by running* `?DNEA::T1Dmeta()` *in the console)*.
 ```{r load example metadata, eval=TRUE}
 #load T1Dmeta
@@ -126,8 +126,8 @@ Finally, we can convert this character vector into factors. We will specify that
 group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 ```
 
-## STEP 1: Data pre-processing and feature aggregation
-### Data pre-processing
+# STEP 1: Data pre-processing and feature aggregation
+## Data pre-processing
 DNEA is an object-oriented workflow that is built around a custom s4 object, DNEAresults. We have provided a wrapper function that encompasses several necessary steps into one user-friendly function. First, the input is restructured to initiate a DNEAresults object. Differential Expression analysis is then performed after log-transforming the expression data. Finally, the data is split by experimental condition before scaling. As a reminder, DNEA jointly-estimates the networks for each experimental condition, therefore the samples for each condition, respectively, must be normalized separately. Once the data is scaled, a diagnostics algorithm is performed to check the minimum eigenvalue and condition number of the correlation matrix for the whole dataset, as well as each experimental group individually.
 ```{r start DNEA, eval=TRUE}
 #initiate DNEAresults object
@@ -174,11 +174,79 @@ As you can see, there are some pockets of red and blue indicating highly correla
 
 Collapsing highly-correlated features into a single group prior to analysis may be of benefit for several reasons, particularly if the dataset contains many features of the same class of compounds (ie. fatty acids, carnitines, etc.). Doing so retains signal from all of the features in the analysis, as opposed to regularization arbitrarily choosing one feature as representation for the group and removing some or all of the remaining features. Pre-emptively collapsing gives the user additional control over network construction, and provides additional information regarding which features are highly correlated, and will therefore have similar network associations.
 
-Finally, we can view the differential expression results in the node list using the `nodeList()` function.
+Finally, we can view information about the object as well as the differential expression results in the node list using the `nodeList()` function.
 ```{r nodeList, eval=TRUE}
+
+#show summary of DNEAresults object
+TEDDYdat
+
+#access node list
 nodeList(TEDDYdat)[1:5,]
 ```
 
-### Feature aggregation
+## Feature aggregation
+As mentioned previously, glasso models, and therefore DNEA, are computationally expensive algorithms to perform. Adding additional samples to your dataset will have marginal effects on the memory and processing time required for analysis, however, as the number of features grows in your dataset the runtime will increase dramatically. The implementation of this R package and the ability to utilize the full resources of a high-performance machine (cluster or cloud resource) to perform stability selection embarassingly parallel helps tremendously with this issue.  
+
+
+Even so, a user may still find themselves constrained by the resources they have available to them. Moreover, the dataset may contain many compounds of the same class (ie. fatty acids in a lipidomics dataset) that are highly correlated or network resolution at the individual molecule level is not needed. In these cases, collapsing highly correlated features into a single node would decrease the complexity of the analysis without losing critical network information.
+
+Feature reduction is an optional step in the DNEA algorithm and the user may decide to completely skip this step - particulary when their dataset contains a diverse set of features and ***p >> n***. Should you decide to collapse correlated features prior to analysis, we have provided the `reduceFeatures()` function to do. This function will collapse the features based on the user specifications and re-run differential expression analysis and diagnostic testing before creating a `collapsed_DNEAresults` object with the new data.  
+
+To perform feature collapsing, we need to provide the algorithm with the DNEAresults object and a character string corresponding to the method used. If the "correlation" or "hybrid" method are chosen, we need to specify the `correlation threshold` parameter wherein metabolites above this threshold are collapsed into a single node. If the "knowledge" or "hybrid" method are chosen, we need to provide a data frame for `feature_groups` to specify the class of molecules to collapse within. More information about the three methods can be found in the function documentation accessed by running `?reduceFeatures()` in the console.  
+
+In this example, we're going to use the "hybrid" method and specify a `correlation_threshold` of 0.7.
+```{r setup input for reduceFeatures, eval=TRUE}
+#create molecule class labels for the metabolites
+TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYdat, normalized = FALSE)),
+                           groups = rownames(expressionData(TEDDYdat, normalized = FALSE)),
+                           row.names = rownames(expressionData(TEDDYdat, normalized = FALSE)))
+
+TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
+TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
+
+TEDDY_groups[1:10, ]
+```
+As you can see, the `feature_groups` input should be a data frame with the original feature names as the row names as well as the "features" column, and the class labels should be in the "groups" column. Independent molecules can retain their name. 
+```{r run reduceFeatures, eval=TRUE}
+#perform feature collapsing
+collapsed_TEDDY <- reduceFeatures(object = TEDDYdat,
+                                  method = "hybrid",
+                                  correlation_threshold = 0.7,
+                                  feature_groups = TEDDY_groups)
+
+collapsed_TEDDY
+```
+The output looks very similar to that of `createDNEAobject()`. Additionally, we see from the summary that we have reduced our total number of features from 134 to 130 using `reduceFeatures()`.
+
+# STEP 2: Model Optimization
+Model optimization contains two regularization methods: $\lambda$ tuning via Bayesian-information criterion (BIC), and stability selection. Depending on the dataset, it may be skipped but we highly recommend the user performs this step irrespective. Only in cases where **the number of features approaches or exceeds the number of samples** can this step be skipped. The $\lambda$ value in the model then defaults to $\lambda = \sqrt{ \ln (num. features) / num. samples}$ and all of the selection probabilities are set to 1.  
+
+## $\lambda$ tuning via BIC
+The `BICtune()` function optimizes the $\lambda$ parameter by calculating a BIC score and likelihood value for every tested value. We minimized the necessary computation to optimize the parameter by selecting values surrounding the asymptotically valid $\lambda$ for datasets with many samples and many features followin the equation: \lambda = c \sqrt{ \ln (num. features) / num. samples} where c takes on 15 evenly spaced values between 0.01 and 0.3. The user can also opt to provide a range of lambda values to test using the `lambda_values` parameter.  
+
+
+Each $\lambda$ value tested can be run embarrasingly parallel using the BiocParallel package. Creating Forked processes via the `MulticoreParam()` function is the most resource efficient parallelization method, however, there are several limitations: **1.** forked processes are not available on the Windows operating system, and **2.** forked processes can be unstable in Rstudio. For the sake of this vignette we're going to create parallel sockets. 
+```{r BiocParallel, eval=TRUE}
+#load in BiocParallel
+library(BiocParallel)
+
+#create parallel workers
+BPPARAM <- BiocParallel::SnowParam(RNGseed = 417)
+```
+We only need to create the workers once for this analysis, and they can be used for stability selection. However, `stabilitySelection()` uses random number generation to sample the expression data, so we'll have to set the seed now so we can reproduce the results.  
+
+
+Now that we have our workers set up, we can optimize $\lambda$
+```{r BICtune, eval=TRUE, echo=FALSE}
+
+#optimize lambda
+TEDDYdat <- BICtune(TEDDYdat, BPPARAM = BPPARAM)
+TEDDYdat
+```
+
+
+
+
+
 
 
