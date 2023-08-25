@@ -55,6 +55,8 @@ getConsensusMatrix <- function(cluster_results){
 #' @param adjacency_graph An igraph graph object created from an adjacency matrix
 #' @param graph_weights Edge weights to be used during clustering ie. the partial correlations for each feature-feature
 #' interaction
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #'
 #' @returns A list containing the clustering results from each of the seven algorithms
 #'
@@ -62,28 +64,29 @@ getConsensusMatrix <- function(cluster_results){
 #' @keywords internal
 #' @noRd
 ensembl_cluster <- function(adjacency_graph,
-                            graph_weights = NULL){
+                            graph_weights = NULL,
+                            verbose = TRUE){
 
 
   ##initiate list
   clustering_results <- vector("list", length = 7)
 
   #set progress bar
-  prog_bar <- txtProgressBar(min = 0, max = 7, style = 3, width = 50, char = "=")
+  if(verbose){prog_bar <- txtProgressBar(min = 0, max = 7, style = 3, width = 50, char = "=")}
 
   ##perform clustering
-  clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 1)
-  clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 2)
-  clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = graph_weights); setTxtProgressBar(prog_bar, 3)
-  clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 4)
-  clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 5)
-  clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = graph_weights); setTxtProgressBar(prog_bar, 6)
+  clustering_results[[1]] <- cluster_edge_betweenness(adjacency_graph, weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 1)}
+  clustering_results[[2]] <- cluster_fast_greedy(adjacency_graph, weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 2)}
+  clustering_results[[3]] <- cluster_infomap(adjacency_graph, e.weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 3)}
+  clustering_results[[4]] <- cluster_label_prop(adjacency_graph, weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 4)}
+  clustering_results[[5]] <- cluster_louvain(adjacency_graph, weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 5)}
+  clustering_results[[6]] <- cluster_walktrap(adjacency_graph, weights = graph_weights); if(verbose){setTxtProgressBar(prog_bar, 6)}
   clustering_results[[7]] <- tryCatch(cluster_leading_eigen(adjacency_graph, weights = graph_weights),
                                       error = function(some_error){
                                         message('cluster_leading_eigen() method failed and will be discarded from consensus clustering.')
                                         message('This is a known issue with a dependency and will not affect your results')
                                         return(NA)
-                                      }); setTxtProgressBar(prog_bar, 7)
+                                      }); if(verbose){setTxtProgressBar(prog_bar, 7)}
 
   return(clustering_results)
 }
@@ -113,19 +116,25 @@ ensembl_cluster <- function(adjacency_graph,
 #' @param adjacency_graph An adjacency matrix of the determined network
 #' @param tau The consensus probability threshold for agreement among clustering runs
 #' @param max_iterations Maximum number of iterations to perform trying to reach consensus.
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
+#'
 #' @returns Sub-network determinations for the nodes within the input network
 #'
 #' @import igraph
 #' @keywords internal
 #' @noRd
-run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5){
+run_consensus_cluster <- function(adjacency_graph,
+                                  tau = 0.5,
+                                  max_iterations = 5,
+                                  verbose = TRUE){
 
-  message("Initiating consensus cluster with a maximum of ", appendLF = FALSE)
-  message(max_iterations, appendLF = FALSE);message("iterations!", appendLF = TRUE)
-  message("Constructing initial consensus matrix...", appendLF = TRUE)
+  if(verbose) message("Initiating consensus cluster with a maximum of ", max_iterations, "iterations!\n",
+                              "Constructing initial consensus matrix...", appendLF = TRUE)
+
 
   ##cluster the adjacency graph
-  clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL)
+  clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL, verbose = verbose)
 
   ##get consensus matrix
   consensus_matrix <- getConsensusMatrix(clustering_results[!(is.na(clustering_results))])
@@ -138,15 +147,12 @@ run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5
     ##stop iterations if consensus is reached
     if(length(table(consensus_matrix)) < 3){
 
-      message("\nConsensus was reached in: ", appendLF = FALSE)
-      message(iter, appendLF = FALSE);message("iterations!", appendLF = TRUE)
+      if(verbose) message("\nConsensus was reached in: ", iter, " iterations", appendLF = TRUE)
 
       break
     }
 
-    message("\n...starting iteration ", appendLF = FALSE)
-    message(iter + 1, appendLF = FALSE)
-    message("...", appendLF = TRUE)
+    if(verbose) message("\n...starting iteration ", iter + 1, "...", appendLF = TRUE)
 
     ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0
@@ -159,7 +165,8 @@ run_consensus_cluster <- function(adjacency_graph, tau = 0.5, max_iterations = 5
 
     ##run clustering algorithms
     final_consensus_cluster <- ensembl_cluster(threshold_consensus_graph,
-                                               graph_weights = E(threshold_consensus_graph)$weight)
+                                               graph_weights = E(threshold_consensus_graph)$weight,
+                                               verbose = verbose)
 
 
     #get new consensus matrix

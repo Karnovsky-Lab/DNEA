@@ -466,8 +466,8 @@ CGM_AHP_stabsel_subsample <- function(listX,
 #'        into the model. Default is 1.
 #' @param theta_star The true precision matrix. Default is NULL
 #' @param lambda The optimized lambda hyper-parameter. The default is NULL
-#' @param quiet A boolean that indicates whether progress messages should be displayed. The default
-#'        value is FALSE
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #' @param zero.edge Indices of entries of inverse covariance to be constrained to zero (to be passed
 #'        to glasso). The default is NULL
 #'
@@ -484,8 +484,8 @@ adjDGlasso_minimal <- function(
     weights=1,
     theta_star=NULL,
     lambda = NULL,
-    quiet=FALSE,
-    zero.edge=NULL
+    verbose = TRUE,
+    zero.edge = NULL
 ){
 
   ##set static parameters
@@ -511,7 +511,7 @@ adjDGlasso_minimal <- function(
   }
   Theta.hat.from.Glasso <- (Theta.hat.from.Glasso + t(Theta.hat.from.Glasso))/2
 
-  if (!quiet){message("model estimated!\n", appendLF = TRUE)}
+  if(verbose) message("model estimated!\n", appendLF = TRUE)
 
   coeff <- diag(1,num_features) - cov2cor(Theta.hat.from.Glasso)
 

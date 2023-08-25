@@ -24,6 +24,8 @@ NULL
 #'        The default value is 1e-06. This value generally should not change.
 #' @param eta_value default parameter ??. Default is 0.1
 #' @param BPPARAM A \code{\link{BiocParallel}} object
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #'
 #' @author Christopher Patsalis
 #'
@@ -62,7 +64,8 @@ BICtune <- function(object,
                     lambda_values,
                     eps_threshold = 1e-06,
                     eta_value = 0.1,
-                    BPPARAM = bpparam()){
+                    BPPARAM = bpparam(),
+                    verbose = TRUE){
 
 
   ##test for proper input
@@ -93,8 +96,17 @@ BICtune <- function(object,
   }
 
   ##call internal tuning function to optimize lambda
-  message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)", appendLF = TRUE)
-  message("A Link to this reference can be found in the function documentation by running ?BICtune() in the console", appendLF = TRUE)
+  if(verbose){message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
+                             "A Link to this reference can be found in the function documentation by running ?BICtune() in the console",
+                             appendLF = TRUE)}
+
+  #set progress bar
+  if(verbose){
+
+    BPOPTIONS <- bpoptions(progressbar = TRUE, tasks = 5)
+  }else{
+    BPOPTIONS <- bpoptions()
+  }
 
   BIC_guo <- BiocParallel::bplapply(X = lambda_values,
                                     FUN = 'CGM_AHP_tune',
@@ -105,10 +117,10 @@ BICtune <- function(object,
                                     eps = eps_threshold,
                                     eta = eta_value,
                                     BPPARAM = BPPARAM,
-                                    BPOPTIONS = bpoptions(progressbar = TRUE, tasks = 10))
+                                    BPOPTIONS = BPOPTIONS)
 
   ##add empty line after progress bar
-  message("", appendLF = TRUE)
+  if(verbose){message("", appendLF = TRUE)}
 
   ##collect BIC scores
   BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
@@ -132,8 +144,7 @@ BICtune <- function(object,
   optimizedLambda(object) <- lastar_guo
   lambdas2Test(object) <- lambda_values
 
-  message("The optimal Lambda hyper-parameter has been set to: ", appendLF = FALSE)
-  message(lastar_guo, appendLF = FALSE); message("!", appendLF = TRUE)
+  if(verbose) message("The optimal Lambda hyper-parameter has been set to: ", lastar_guo, "!",appendLF = TRUE)
 
   #check valid object
   validObject(object)
@@ -156,6 +167,8 @@ BICtune <- function(object,
 #' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
 #'        necessary if \code{\link{BICtune}} is not performed
 #' @param BPPARAM a BiocParallel object
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #'
 #' @author Christopher Patsalis
 #'
@@ -213,7 +226,8 @@ stabilitySelection <- function(object,
                                subSample = FALSE,
                                nreps = 500,
                                optimal_lambda,
-                               BPPARAM = bpparam()){
+                               BPPARAM = bpparam(),
+                               verbose = TRUE){
 
   ##test for proper input
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
@@ -243,7 +257,7 @@ stabilitySelection <- function(object,
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+      if(verbose) message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
   }else if(!is.null(optimizedLambda(object))){
 
@@ -276,22 +290,27 @@ stabilitySelection <- function(object,
 
   ##perform stability selection
   #print message to user
-  message("Using Lambda hyper-parameter: ", appendLF = FALSE)
-  message(optimized_lambda, appendLF = FALSE); message("!", appendLF = TRUE)
-
-  message("stabilitySelection will be performed with ", appendLF = FALSE)
-  message(nreps, appendLF = FALSE);message(" replicates", appendLF = TRUE)
+  if(verbose) message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
+                              "stabilitySelection will be performed with ", nreps, " replicates!", appendLF = TRUE)
 
   if(subSample){
 
     #with additional sub-sampling
-    message("Additional sub-sampling will be performed on uneven groups")
+    if(verbose) message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
   }else if(!subSample){
 
     #without additional sub-sampling
-    message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
+    if(verbose) message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
+  }
+
+  #set progress bar
+  if(verbose){
+
+    BPOPTIONS <- bpoptions(progressbar = TRUE, tasks = 5)
+  }else{
+    BPOPTIONS <- bpoptions()
   }
 
   #run SS
@@ -301,10 +320,10 @@ stabilitySelection <- function(object,
                                       listX = data_split_by_condition,
                                       lastar = optimized_lambda,
                                       BPPARAM = BPPARAM,
-                                      BPOPTIONS = bpoptions(progressbar = TRUE, tasks = 10))
+                                      BPOPTIONS = BPOPTIONS)
 
   #add empty line after progress bar
-  message("", appendLF = TRUE)
+  if(verbose) message("", appendLF = TRUE)
 
   ##concatenate results for output
   #initiate list for stability selection raw results
@@ -323,15 +342,13 @@ stabilitySelection <- function(object,
 
     if (subSample){
 
-      message("Calculating selection probabilities WITH subsampling for...", appendLF = FALSE)
-      message(names(selection_results)[[k]], appendLF = FALSE);message("...", appendLF = TRUE)
-
+      if(verbose) message("Calculating selection probabilities WITH subsampling for...",
+                                  names(selection_results)[[k]], "...", appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(nreps)
     } else {
 
-      message("Calculating selection probabilities WITHOUT subsampling for...", appendLF = FALSE)
-      message(names(selection_results)[[k]], appendLF = FALSE);message("...", appendLF = TRUE)
-
+      if(verbose) message("Calculating selection probabilities WITHOUT subsampling for...",
+                                  names(selection_results)[[k]], "...", appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
@@ -359,6 +376,8 @@ stabilitySelection <- function(object,
 #'        or \code{\link{stabilitySelection}} were already performed
 #' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
 #' Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #'
 #' @author Christopher Patsalis
 #'
@@ -388,7 +407,8 @@ stabilitySelection <- function(object,
 #' @export
 getNetworks <- function(object,
                        optimal_lambda,
-                       eps_threshold = 1e-06){
+                       eps_threshold = 1e-06,
+                       verbose = TRUE){
 
   ##initialize input parameters
   num_samples <- numSamples(object)
@@ -432,7 +452,7 @@ getNetworks <- function(object,
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+      if(verbose) message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
   }else if(!is.null(optimizedLambda(object))){
 
@@ -448,8 +468,7 @@ getNetworks <- function(object,
             "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
   }
   #print lambda used
-  message("Using Lambda hyper-parameter: ", appendLF = FALSE)
-  message(optimized_lambda, appendLF = FALSE);message("!", appendLF = TRUE)
+  if(verbose) message("Using Lambda hyper-parameter: ", optimized_lambda, "!", appendLF = TRUE)
 
   ##separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -462,11 +481,11 @@ getNetworks <- function(object,
     model_weight_values <- lapply(selectionProbabilities(object),
                                   function(x) as.matrix(1/(1e-04 + x)))
 
-    message('selection_probabilites from stability selection will be used in glasso model!\n')
+    if(verbose) message('selection_probabilites from stability selection will be used in glasso model!\n')
 
   } else{
 
-    message("No selection_probabilities were found. We recommend running
+    if(verbose) message("No selection_probabilities were found. We recommend running
             stabilitySelection() prior to estimating the glasso model!\n")
 
     model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
@@ -483,13 +502,13 @@ getNetworks <- function(object,
 
   for (k in networkGroups(object)){
 
-    message("Estimating model for ", appendLF = FALSE)
-    message(k, appendLF = FALSE);message("...", appendLF = TRUE)
+    if(verbose) message("Estimating model for ", k, "...", appendLF = TRUE)
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                               weights = model_weight_values[[k]],
-                              lambda = optimized_lambda)
+                              lambda = optimized_lambda,
+                              verbose = verbose)
 
     #grab the adjacency matrices
     weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
@@ -519,6 +538,8 @@ getNetworks <- function(object,
 #' @param object A \code{DNEAresults} object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
+#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
+#'        default is TRUE.
 #'
 #' @author Christopher Patsalis
 #'
@@ -563,7 +584,8 @@ getNetworks <- function(object,
 #' @export
 clusterNet <- function(object,
                        tau = 0.5,
-                       max_iterations = 5){
+                       max_iterations = 5,
+                       verbose = TRUE){
 
   #test for proper inputs
   if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
@@ -614,7 +636,7 @@ clusterNet <- function(object,
   ###########################################################
 
   #run consensus cluster algorithm
-  fit <- run_consensus_cluster(joint_graph, tau = tau, max_iterations = max_iterations)
+  fit <- run_consensus_cluster(joint_graph, tau = tau, max_iterations = max_iterations, verbose = verbose)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix
