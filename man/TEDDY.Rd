@@ -9,8 +9,10 @@ A data frame with 100 rows and 144 columns. Each row corresponds to a sample, an
 corresponds to a metabolite.
 }
 \source{
-The raw data can be downloaded from the Metabolomics workbench under study ID \strong{ST001386}:
-\url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
+This data is available at the NIH Common Fund's National Metabolomics Data Repository (NMDR) website,
+the Metabolomics Workbench, \url{https://www.metabolomicsworkbench.org}, where it has been assigned
+Project ID PR000950 and Study ID ST001386. The data can be accessed directly via it's
+Project DOI: \url{10.21228/M8WM4P}. This work is supported by NIH grant, U2C- DK119886.
 }
 \usage{
 data("TEDDY")
