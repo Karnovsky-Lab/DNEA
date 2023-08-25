@@ -1,7 +1,7 @@
 #'
 #'
 #'
-#' Display general information about the data present in the DNEAobject slots
+#' Display general information about the data present in the DNEAresults object slots
 #'
 #' This function will display a summary of the information stored within a \code{DNEAresults} object
 #'

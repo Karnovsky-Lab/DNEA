@@ -2,7 +2,7 @@
 % Please edit documentation in R/all-methods.R
 \name{show,DNEAresults-method}
 \alias{show,DNEAresults-method}
-\title{Display general information about the data present in the DNEAobject slots}
+\title{Display general information about the data present in the DNEAresults object slots}
 \usage{
 \S4method{show}{DNEAresults}(object)
 }
