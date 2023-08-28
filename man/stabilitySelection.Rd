@@ -26,8 +26,7 @@ necessary if \code{\link{BICtune}} is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
 
-\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
-default is TRUE.}
+\item{verbose}{Whether or not a progress bar should be displayed in the console}
 }
 \value{
 A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection

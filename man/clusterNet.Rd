@@ -13,8 +13,7 @@ clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 
 \item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
 
-\item{verbose}{Whether or not progress output and additional function information should be printed to the console. The
-default is TRUE.}
+\item{verbose}{Whether or not a progress bar should be displayed in the console}
 }
 \value{
 A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
