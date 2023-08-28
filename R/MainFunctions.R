@@ -24,8 +24,7 @@ NULL
 #'        The default value is 1e-06. This value generally should not change.
 #' @param eta_value default parameter ??. Default is 0.1
 #' @param BPPARAM A \code{\link{BiocParallel}} object
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
+#' @param verbose Whether or not a progress bar should be displayed in the console
 #'
 #' @author Christopher Patsalis
 #'
@@ -96,9 +95,9 @@ BICtune <- function(object,
   }
 
   ##call internal tuning function to optimize lambda
-  if(verbose){message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
-                             "A Link to this reference can be found in the function documentation by running ?BICtune() in the console",
-                             appendLF = TRUE)}
+  message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
+          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console",
+          appendLF = TRUE)
 
   #set progress bar
   if(verbose){
@@ -144,7 +143,7 @@ BICtune <- function(object,
   optimizedLambda(object) <- lastar_guo
   lambdas2Test(object) <- lambda_values
 
-  if(verbose) message("The optimal Lambda hyper-parameter has been set to: ", lastar_guo, "!",appendLF = TRUE)
+  message("The optimal Lambda hyper-parameter has been set to: ", lastar_guo, "!",appendLF = TRUE)
 
   #check valid object
   validObject(object)
@@ -167,8 +166,7 @@ BICtune <- function(object,
 #' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
 #'        necessary if \code{\link{BICtune}} is not performed
 #' @param BPPARAM a BiocParallel object
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
+#' @param verbose Whether or not a progress bar should be displayed in the console
 #'
 #' @author Christopher Patsalis
 #'
@@ -257,7 +255,7 @@ stabilitySelection <- function(object,
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      if(verbose) message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
   }else if(!is.null(optimizedLambda(object))){
 
@@ -290,18 +288,18 @@ stabilitySelection <- function(object,
 
   ##perform stability selection
   #print message to user
-  if(verbose) message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
-                              "stabilitySelection will be performed with ", nreps, " replicates!", appendLF = TRUE)
+  message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
+          "stabilitySelection will be performed with ", nreps, " replicates!", appendLF = TRUE)
 
   if(subSample){
 
     #with additional sub-sampling
-    if(verbose) message("Additional sub-sampling will be performed on uneven groups")
+    message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
   }else if(!subSample){
 
     #without additional sub-sampling
-    if(verbose) message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
+    message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
   }
 
@@ -342,13 +340,13 @@ stabilitySelection <- function(object,
 
     if (subSample){
 
-      if(verbose) message("Calculating selection probabilities WITH subsampling for...",
-                                  names(selection_results)[[k]], "...", appendLF = TRUE)
+      message("Calculating selection probabilities WITH subsampling for...",
+              names(selection_results)[[k]], "...", appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(nreps)
     } else {
 
-      if(verbose) message("Calculating selection probabilities WITHOUT subsampling for...",
-                                  names(selection_results)[[k]], "...", appendLF = TRUE)
+      message("Calculating selection probabilities WITHOUT subsampling for...",
+              names(selection_results)[[k]], "...", appendLF = TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
@@ -376,8 +374,6 @@ stabilitySelection <- function(object,
 #'        or \code{\link{stabilitySelection}} were already performed
 #' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
 #' Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
 #'
 #' @author Christopher Patsalis
 #'
@@ -407,8 +403,7 @@ stabilitySelection <- function(object,
 #' @export
 getNetworks <- function(object,
                        optimal_lambda,
-                       eps_threshold = 1e-06,
-                       verbose = TRUE){
+                       eps_threshold = 1e-06){
 
   ##initialize input parameters
   num_samples <- numSamples(object)
@@ -452,7 +447,7 @@ getNetworks <- function(object,
 
       optimized_lambda <- optimal_lambda
       optimizedLambda(object) <- optimal_lambda
-      if(verbose) message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
   }else if(!is.null(optimizedLambda(object))){
 
@@ -468,7 +463,7 @@ getNetworks <- function(object,
             "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
   }
   #print lambda used
-  if(verbose) message("Using Lambda hyper-parameter: ", optimized_lambda, "!", appendLF = TRUE)
+  message("Using Lambda hyper-parameter: ", optimized_lambda, "!", appendLF = TRUE)
 
   ##separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -481,11 +476,11 @@ getNetworks <- function(object,
     model_weight_values <- lapply(selectionProbabilities(object),
                                   function(x) as.matrix(1/(1e-04 + x)))
 
-    if(verbose) message('selection_probabilites from stability selection will be used in glasso model!\n')
+    message('selection_probabilites from stability selection will be used in glasso model!\n')
 
   } else{
 
-    if(verbose) message("No selection_probabilities were found. We recommend running
+    message("No selection_probabilities were found. We recommend running
             stabilitySelection() prior to estimating the glasso model!\n")
 
     model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
@@ -502,13 +497,12 @@ getNetworks <- function(object,
 
   for (k in networkGroups(object)){
 
-    if(verbose) message("Estimating model for ", k, "...", appendLF = TRUE)
+    message("Estimating model for ", k, "...", appendLF = TRUE)
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                               weights = model_weight_values[[k]],
-                              lambda = optimized_lambda,
-                              verbose = verbose)
+                              lambda = optimized_lambda)
 
     #grab the adjacency matrices
     weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
@@ -538,8 +532,7 @@ getNetworks <- function(object,
 #' @param object A \code{DNEAresults} object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
+#' @param verbose Whether or not a progress bar should be displayed in the console
 #'
 #' @author Christopher Patsalis
 #'

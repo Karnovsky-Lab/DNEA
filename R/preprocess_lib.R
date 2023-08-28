@@ -55,8 +55,7 @@ getConsensusMatrix <- function(cluster_results){
 #' @param adjacency_graph An igraph graph object created from an adjacency matrix
 #' @param graph_weights Edge weights to be used during clustering ie. the partial correlations for each feature-feature
 #' interaction
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
+#' @param verbose Whether or not a progress bar should be displayed in the console
 #'
 #' @returns A list containing the clustering results from each of the seven algorithms
 #'
@@ -116,8 +115,7 @@ ensembl_cluster <- function(adjacency_graph,
 #' @param adjacency_graph An adjacency matrix of the determined network
 #' @param tau The consensus probability threshold for agreement among clustering runs
 #' @param max_iterations Maximum number of iterations to perform trying to reach consensus.
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
+#' @param verbose Whether or not a progress bar should be displayed in the console
 #'
 #' @returns Sub-network determinations for the nodes within the input network
 #'
@@ -129,9 +127,8 @@ run_consensus_cluster <- function(adjacency_graph,
                                   max_iterations = 5,
                                   verbose = TRUE){
 
-  if(verbose) message("Initiating consensus cluster with a maximum of ", max_iterations, "iterations!\n",
-                              "Constructing initial consensus matrix...", appendLF = TRUE)
-
+  message("Initiating consensus cluster with a maximum of ", max_iterations, "iterations!\n",
+          "Constructing initial consensus matrix...", appendLF = TRUE)
 
   ##cluster the adjacency graph
   clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL, verbose = verbose)
@@ -147,12 +144,12 @@ run_consensus_cluster <- function(adjacency_graph,
     ##stop iterations if consensus is reached
     if(length(table(consensus_matrix)) < 3){
 
-      if(verbose) message("\nConsensus was reached in: ", iter, " iterations", appendLF = TRUE)
+      message("\nConsensus was reached in: ", iter, " iterations", appendLF = TRUE)
 
       break
     }
 
-    if(verbose) message("\n...starting iteration ", iter + 1, "...", appendLF = TRUE)
+    message("\n...starting iteration ", iter + 1, "...", appendLF = TRUE)
 
     ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0
