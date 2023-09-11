@@ -3,5 +3,8 @@
 .Ruserdata
 .Rproj.user
 .Rproj*
+*.Rproj
 .DS_Store
 inst/doc
+/doc/
+/Meta/
