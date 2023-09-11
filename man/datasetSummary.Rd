@@ -28,9 +28,9 @@ This function prints to console the number of samples, number of features, and d
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-datasetSummary(TEDDYresults)
+datasetSummary(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}

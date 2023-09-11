@@ -30,9 +30,9 @@ and returns the results of consensus clustering determined via \code{\link{clust
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-subnetworkMembership(TEDDYresults)
+subnetworkMembership(dnw)
 }
 \seealso{
 \code{\link{clusterNet}}

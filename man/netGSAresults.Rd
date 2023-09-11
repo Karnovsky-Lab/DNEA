@@ -26,9 +26,9 @@ The function takes as input a \code{DNEAresults} object and returns the netGSA r
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-netGSAresults(TEDDYresults)
+netGSAresults(dnw)
 }
 \seealso{
 \code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}

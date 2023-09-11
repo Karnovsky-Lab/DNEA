@@ -26,9 +26,9 @@ The function takes as input a \code{DNEAresults} object and returns the edge lis
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-edgeList(TEDDYresults)
+edgeList(dnw)
 }
 \seealso{
 \code{\link{getNetworks}}, \code{\link{filterNetworks}}, \code{\link{getNetworkFiles}}

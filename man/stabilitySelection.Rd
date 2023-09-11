@@ -68,10 +68,10 @@ More details about the stability approach deployed in this function can be found
 library(BiocParallel)
 
 #import completed example data
-data(TEDDYresults)
+data(dnw)
 
 # perform stability selection
-TEDDYresults <- stabilitySelection(object = TEDDYresults,
+dnw <- stabilitySelection(object = dnw,
                                    subSample = FALSE,
                                    nreps = 4,
                                    BPPARAM = bpparam())

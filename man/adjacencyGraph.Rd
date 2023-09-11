@@ -36,9 +36,9 @@ The function  returns the adjacency graph made for the case, control, or joint n
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-adjacencyGraph(TEDDYresults, graph = "DM:case")
+adjacencyGraph(dnw, graph = "DM:case")
 }
 \seealso{
 \code{\link{clusterNet}}

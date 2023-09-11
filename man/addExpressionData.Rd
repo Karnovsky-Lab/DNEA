@@ -15,12 +15,12 @@ addExpressionData(object, data)
 A \code{DNEAresults} object with the added expression data in the @assays slot
 }
 \description{
-This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEAdev analysis.
+This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
 }
 \examples{
 #import example data
 data(TEDDY)
-data(TEDDYresults)
+data(dnw)
 data(T1Dmeta)
 
 #transpose TEDDY data
@@ -44,12 +44,12 @@ for(cond in dat){
   newdat <- rbind(newdat, cond)
 }
 
-#reorder to match TEDDYresults
-newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+#reorder to match dnw
+newdat <- newdat[sampleNames(dnw), featureNames(dnw)]
 newdat <- t(newdat)
 
 #add data
-TEDDYresults <- addExpressionData(object = TEDDYresults, data = newdat)
+dnw <- addExpressionData(object = dnw, data = newdat)
 
 }
 \seealso{

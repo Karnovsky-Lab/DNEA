@@ -42,7 +42,7 @@ DNEAresults object for use in stability selection using \code{\link{stabilitySel
 }
 \details{
 There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-DNEAdev because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
+DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
 need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
 \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
 For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,
@@ -56,10 +56,10 @@ in the Guo et al. (2011) paper referenced below.
 library(BiocParallel)
 
 #import completed example data
-data(TEDDYresults)
+data(dnw)
 
 #optimize lambda parameter
-TEDDYresults <- BICtune(object = TEDDYresults, BPPARAM = bpparam())
+dnw <- BICtune(object = dnw, BPPARAM = bpparam())
 
 }
 \references{

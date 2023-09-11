@@ -29,13 +29,13 @@ will be used as the regularization parameter.
 }
 \examples{
 #import completed example data
-data(TEDDYresults)
+data(dnw)
 
 #construct the networks
-TEDDYresults <- getNetworks(object = TEDDYresults)
+dnw <- getNetworks(object = dnw)
 
 #now we can plot the group networks
-plotNetworks(object = TEDDYresults, type = "group_networks")
+plotNetworks(object = dnw, type = "group_networks")
 
 }
 \references{

@@ -10,8 +10,6 @@ A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and 
 \item{subject}{The individual patient}
 \item{Endpoint1}{The age of the case subject in days when this sample was collected}
 \item{Endpoint2}{The age of the control subject in days when this sample was collected}
-\item{Ind1}{The pairing number for a case subject}
-\item{Ind2}{The pairing number for a control subject}
 \item{Age}{The age of the subject in days when this sample was collected}
 \item{Sex}{The sex of the subject}
 \item{sample}{The name of this sample}

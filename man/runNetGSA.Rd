@@ -22,13 +22,13 @@ using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 }
 \examples{
 #import completed example data
-data(TEDDYresults)
+data(dnw)
 
 #perform pathway enrichment analysis using netGSA
-TEDDYresults <- runNetGSA(object = TEDDYresults, min_size = 5)
+dnw <- runNetGSA(object = dnw, min_size = 5)
 
 #view the results
-netGSAresults(TEDDYresults)
+netGSAresults(dnw)
 
 
 }

@@ -29,9 +29,9 @@ used for the analysis. The user may also provide a single-value numeric vector t
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-optimizedLambda(TEDDYresults)
+optimizedLambda(dnw)
 }
 \seealso{
 \code{\link{BICtune}}

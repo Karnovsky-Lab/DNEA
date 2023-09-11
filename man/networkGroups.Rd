@@ -20,9 +20,9 @@ This function takes in a \code{DNEAresults} object and returns the unique group 
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-networkGroups(TEDDYresults)
+networkGroups(dnw)
 }
 \seealso{
 \code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}

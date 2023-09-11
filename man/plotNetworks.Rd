@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities-external.R
 \name{plotNetworks}
 \alias{plotNetworks}
-\title{Visualize the biological networks identified via DNEAdev}
+\title{Visualize the biological networks identified via DNEA}
 \usage{
 plotNetworks(
   object,
@@ -52,11 +52,11 @@ differential features, green indicates edges specific to group 1, and red indica
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
 #plot the networks
-plotNetworks(object = TEDDYresults, type = "group_networks", subtype = "All")
-plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
+plotNetworks(object = dnw, type = "group_networks", subtype = "All")
+plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
 
 }
 \seealso{

@@ -39,7 +39,7 @@ number of reasons, but one common cause is highly correlated features (in the po
 direction). \cr
 
 Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-correlated group and removing the rest. We have developed DNEAdev to be very robust in situations where \strong{\emph{p >> n}}
+correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
 by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
 the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
@@ -65,7 +65,7 @@ names(group_labels) <- rownames(T1Dmeta)
 
 
 #initiate DNEAresults object
-DNEAdev <- createDNEAobject(expression_data = TEDDY,
+DNEA <- createDNEAobject(expression_data = TEDDY,
                          project_name = "TEDDYmetabolomics",
                          group_labels = group_labels)
 

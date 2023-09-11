@@ -23,9 +23,9 @@ This function accesses the feature names stored in the @metadata slot of the \co
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-featureNames(TEDDYresults, original = TRUE)
+featureNames(dnw, original = TRUE)
 }
 \seealso{
 \code{\link{createDNEAobject}}

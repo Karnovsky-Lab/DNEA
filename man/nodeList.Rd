@@ -26,9 +26,9 @@ The function takes as input a \code{DNEAresults} object and returns the node lis
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-nodeList(TEDDYresults)
+nodeList(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{clusterNet}}, \code{\link{getNetworkFiles}}

@@ -32,9 +32,9 @@ This function retrieves teh diagnostic values calculated for the input expressio
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-diagnostics(TEDDYresults)
+diagnostics(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}

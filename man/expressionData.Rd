@@ -23,9 +23,9 @@ This function accesses the expression data stored in the @assays slot of the \co
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-expressionData(TEDDYresults, normalized = TRUE)
+expressionData(dnw, normalized = TRUE)
 
 }
 \seealso{

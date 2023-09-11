@@ -17,9 +17,9 @@ This function will display a summary of the information stored within a \code{DN
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-TEDDYresults
+dnw
 
 }
 \seealso{

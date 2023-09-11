@@ -20,9 +20,9 @@ This function accesses the sample names stored in the @metadata slot of the \cod
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-sampleNames(TEDDYresults)
+sampleNames(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}

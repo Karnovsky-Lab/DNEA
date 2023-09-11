@@ -20,9 +20,9 @@ This function returns the name of the DNEAdev experiment
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-projectName(TEDDYresults)
+projectName(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}

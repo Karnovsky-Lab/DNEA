@@ -8,7 +8,7 @@
 A DNEAresults object
 }
 \description{
-An s4 class to represent the DNEAdev workflow
+An s4 class to represent the DNEA workflow
 }
 \section{Slots}{
 

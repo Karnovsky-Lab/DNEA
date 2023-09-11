@@ -27,9 +27,9 @@ determined via \code{\link{getNetworks}}. \cr
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-adjacencyMatrix(TEDDYresults, weighted = TRUE)
+adjacencyMatrix(dnw, weighted = TRUE)
 }
 \seealso{
 \code{\link{getNetworks}}

@@ -23,14 +23,14 @@ respectively
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 data(T1Dmeta)
 
 #make sure metadata has same sample order as DNEAresults object
-T1Dmeta <- T1Dmeta[sampleNames(TEDDYresults), ]
+T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 
 #add new metadata to DNEAresults object
-TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = T1Dmeta)
+dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
 
 }
 \seealso{

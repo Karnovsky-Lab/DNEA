@@ -44,13 +44,13 @@ on stable subnetworks or the specified max_iterations is reached \emph{(Please s
 }
 \examples{
 #import completed example data
-data(TEDDYresults)
+data(dnw)
 
 #identify metabolic modules via consensus clustering
-TEDDYresults <- clusterNet(object = TEDDYresults, tau = 0.5, max_iterations = 5)
+dnw <- clusterNet(object = dnw, tau = 0.5, max_iterations = 5)
 
 #we can also plot the subnetworks
-plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
+plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
 
 }
 \references{

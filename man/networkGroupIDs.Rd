@@ -25,9 +25,9 @@ This function accesses the experimental group labels for each sample stored in t
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-networkGroupIDs(TEDDYresults)
+networkGroupIDs(dnw)
 }
 \seealso{
 \code{\link{includeMetadata}}

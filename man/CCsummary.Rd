@@ -27,9 +27,9 @@ of the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-CCsummary(TEDDYresults)
+CCsummary(dnw)
 }
 \seealso{
 \code{\link{clusterNet}}

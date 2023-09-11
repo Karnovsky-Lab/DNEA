@@ -27,9 +27,9 @@ during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-lambdas2Test(TEDDYresults)
+lambdas2Test(dnw)
 }
 \seealso{
 \code{\link{BICtune}}

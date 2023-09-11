@@ -28,9 +28,9 @@ possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-selectionResults(TEDDYresults)
+selectionResults(dnw)
 }
 \seealso{
 \code{\link{stabilitySelection}}, \code{\link{selectionProbabilities}}

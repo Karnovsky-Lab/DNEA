@@ -27,9 +27,9 @@ hyperparameter optimization performed via BICtune(). \cr
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-BICscores(TEDDYresults)
+BICscores(dnw)
 }
 \seealso{
 \code{\link{BICtune}}

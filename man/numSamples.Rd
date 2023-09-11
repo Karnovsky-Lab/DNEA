@@ -23,9 +23,9 @@ This function prints to console the total number of samples in the dataset
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
-numSamples(TEDDYresults)
+numSamples(dnw)
 }
 \seealso{
 \code{\link{createDNEAobject}}

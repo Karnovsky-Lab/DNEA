@@ -21,7 +21,7 @@ The files are already formatted for input into Cytoscape.
 }
 \examples{
 #import example data
-data(TEDDYresults)
+data(dnw)
 
 #save node and edge list for input to cytoscape
 
