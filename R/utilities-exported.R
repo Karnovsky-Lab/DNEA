@@ -380,7 +380,6 @@ filterNetworks.DNEAresults <- function(data,
   message("Total number of edges in dataset: ",
           nrow(edge_list), appendLF = TRUE)
 
-################################################################################
   return(data)
 }
 #' Filter the adjacency matrices to only the edges that meet the filter conditions
