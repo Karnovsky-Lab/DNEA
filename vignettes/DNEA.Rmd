@@ -4,60 +4,42 @@ subtitle: "A Data-Driven Approach to Network Analysis"
 author: "Christopher P. Patsalis"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: >
-  Advancements in analytical methods, such as Liquid Chromatography- Mass Spectrometry (LC-MS) have enabled the
-  high-throughput identification of hundreds to thousands of metabolites in biological samples, thereby creating 
-  larger, more complex datasets that need to be analyzed. However, there are some challenges present when trying to 
-  use more traditional bioinformatics tools on these datasets.  
+  Advancements in analytical methods, such as Liquid Chromatography- Mass Spectrometry (LC-MS) have enabled the high-throughput identification of hundreds to thousands of metabolites in biological samples, thereby creating larger, more complex datasets that need to be analyzed. However, there are some challenges present when trying to use more traditional bioinformatics tools on these datasets.  
   
   
-  For instance, the emergence of Gene-set Enrichment Analysis @GSEA2005 enabled researchers to identify 
-  differentially enriched pathways within genetic data, however, this method translates poorly to metabolomics and 
-  lipidomics data due to de novo identification of the metabolome and poorly annotated metabolic pathway databases. 
-  In addition,  metabolomics studies often identify exogenous compounds in the sample that cannot be mapped to a 
-  human pathway. Until DNEA, data-driven approaches to network analysis of -omics data was un-feasible due to 
-  datasets having many more features than samples, also known as the ***p << n*** problem.
+  For instance, the creation of gene-set enrichment analysis (@GSEA2005) enabled researchers to identify differentially enriched pathways within genetic data, however, this method translates poorly to metabolomics and lipidomics data due to de novo identification of the metabolome and poorly annotated metabolic pathway databases. In addition,  metabolomics studies often identify exogenous compounds in the sample that cannot be mapped to a human pathway. 
   
   
-  To combat this, our group has developed The Differential Network Expression Analysis (DNEA) algorithm outlined in 
-  @DNEA2019 and later implemented in the Filigree java-application outlined in @Filigree2021. DNEA is a data-driven 
-  network analysis tool for biologial data that utilizes the glasso R package written by @R-glasso package to 
-  jointly estimate the biological networks of two conditions based on the correlation structure of the data. Lasso 
-  regularization, in combination with a novel method for stability selection allows us to circumvent the 
-  ***p >> n*** problem by only keeping important features in the model. This data-driven approach provides more 
-  robust results and allows the user to identify feature-feature interactions otherwise lost by reference-based 
-  methods. In addition, the networks can be clustered in order to identify metabolic modules, or subnetworks, within
-  the data and subsequently test them for enrichment across experimental conditions using the netgsa R package 
-  described in @R-netgsa.  
+  Data-driven approaches to network analysis of -omics data have been difficult due to a huge imbalance between sample size and the number of features in -omics datasets, also known as the ***p >> n*** problem. To combat this, our group has developed ***The Differential Network Expression Analysis (DNEA)*** algorithm outlined in @DNEA2019 and later implemented in the Filigree java-application outlined in @Filigree2021. DNEA is a data-driven network analysis tool for biologial data that utilizes the [glasso R package](https://cran.r-project.org/web/packages/glasso/glasso.pdf) to jointly estimate the biological networks of two conditions. R1 regularization, in combination with a novel method for stability selection allows us to circumvent the ***p >> n*** problem by only keeping important features in the model. This data-driven approach provides more robust results and allows the user to identify feature-feature interactions otherwise lost by reference-based methods. The networks can also be clustered to identify metabolic modules, or subnetworks, within the data and subsequently test them for enrichment across experimental conditions using the [netgsa R package](https://cran.rstudio.com/web/packages/netgsa/index.html).  
   
   
-  The DNEA R package is the latest implementation of the DNEA algorithm, and implements several enhancements to the 
-  workflow. GLASSO models are computationally expensive and, as biological datasets grow, the required computational
-  resources for analysis can be prohibitive. The DNEA R package is designed to work on high-performance or 
-  cloud-computing machines and utilize all of the available computing cores through parallelization while keeping 
-  the memory footprint at a minimum. The algorithm has also been modularized into several key steps that now give 
-  the user more control over the analysis. This vignette aims to walk the user through a typical DNEA workflow, and 
-  describe the parameters a user may choose to modify to better fit their data.
+  The DNEA R package is the latest implementation of the DNEA algorithm, and implements several enhancements to the workflow. GLASSO models are computationally expensive and, as biological datasets grow, the required computational resources for analysis can be prohibitive. DNEA is designed to work on high-performance or cloud-computing machines and utilize all of the available computing cores through parallelization while keeping the memory footprint at a minimum. The algorithm has also been modularized into several key steps that now give the user more control over the analysis.
 output:
-  BiocStyle::html_document:
+  rmarkdown::html_document:
+    highlight: pygments
     toc: true
-    toc_depth: 2
+    fig_width: 5
 bibliography: DNEA_bibliography.bib
 vignette: >
   %\VignetteIndexEntry{DNEA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-```{r, include = FALSE}
+```{r, environment setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  prompt = TRUE
 )
-```
 
+library(dplyr)
+library(knitr)
+library(kableExtra)
+```
 # Downloading DNEA
 The DNEA R package is currrently available on the  [Karnovsky Lab github](https://www.github.com/Karnovsky-Lab/DNEA). Any troubleshooting issues or bug reports can be reported there. The package can be installed using devtools. We also recommend installing several package dependencies stored on Bioconductor via BiocManager. Let's download those packages if necessary and load them into R.
 
-```{r setup, eval=FALSE}
+```{r, install , eval=FALSE}
 #install BiocManager if not already
 if(!nzchar(system.file(package = "BiocManager"))){
   install.packages("BiocManager")
@@ -71,46 +53,50 @@ if(!nzchar(system.file(package = "devtools"))){
 #load packages
 library(devtools)
 library(BiocManager)
-
-
 ```
 Now that those are loaded, we can install DNEA.
-```{r install DNEA, eval=FALSE}
+```{r, install DNEA, eval=FALSE}
 #install dependency packages
-BiocManager::install(c("RCy3", "org.Hs.eg.db", "graphite", "graph",
-                       "genefilter", "AnnotationDbi", "BiocParallel"))
+BiocManager::install(c("BiocParallel","dplyr","gdata","glasso","igraph",
+                       "janitor","Matrix","stringr","netgsa"))
 
 #install DNEA
 devtools::install_github("Karnovsky-Lab/DNEA")
 ```
 # Basic DNEA workflow
+This package is the most customizable implementation of DNEA to date, allowing the user to create the best analysis for their data. This vignette aims to walk the user through a typical DNEA workflow, and describe the parameters a user may choose to modify to better fit their data. We will a subset of the metabolomics expression data derived from The Environmental Determinants of Type I Diabetes in the Young clinical trial (@TEDDY). The data was orignally accessed from Metaboolomics Workbench under Project ID: [PR000950](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950). Please visit the site for more information. The data we are using for this vignette is stored in the package, and instructions on how to accesss the data are below.
+
 # Input data
 There are 3 inputs required for the DNEA workflow: a character string corresponding to the experiment name indicated by *project_name*, the expression data indicated by *expression_data*, and the experimental groups indicated by *group_labels*.  
 
 ## expression_data
-The *expression_data* should be an *m x n* matrix wherein the features (metabolites, lipid molecules, proteins, etc.) each have a row, and the samples each have a column.  It is important that the data has not been transformed or normalized (ie. log transformed and auto-scaled) prior to analysis. *NOTE: it is okay if the data was adjusted for batch effect or confounding variables prior to analysis*.
+The *expression_data* should be an *m x n* numeric matrix wherein the features (metabolites, lipid molecules, proteins, etc.) each have a row, and the samples each have a column. It is important that the data is not transformed or normalized (ie. log transformed and auto-scaled) prior to analysis. *NOTE: It is okay if the data was adjusted for batch effect or confounding variables prior to analysis, and DNEA does log-transform prior to differential expression (DE) analysis*. DE analysis cannot be performed after the experimental groups have been normalized separately, and pathway enrichment at the end of the analysis will be greatly affected.
 
 
-As an example, let's load the example data stored inside the DNEA package. This data, named TEDDY, comes from The Environmental Determinants of Diabetes in the Young cohort study described in @TEDDY. The original data can be accessed via [Metabolomics Workbench](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950). It is a numeric expression matrix where the metabolites are in rows and the samples are in 
-columns. The peak intensity data has been adjusted for age and sex to remove those confounding variables, ***but it has not been log-transformed or scaled.***
-```{r load example data, eval=TRUE}
+As an example, let's load the example data stored inside the DNEA package. It is a numeric expression matrix where the metabolites are in rows and the samples are in columns. The peak intensity data has been adjusted for age and sex to remove those confounding variables, ***but it has not been log-transformed or scaled.***
+```{r, load example data, eval=1:5, echo=TRUE}
 #first load DNEA into R
-library(DNEAdev)
+library(DNEA)
 
 #load the example data
 data("TEDDY")
-TEDDY[1:10, 1:3]
-```
 
+TEDDY[1:10, 1:4]
+```
+```{r, TEDDY examine, echo=FALSE}
+netGSA_table <- knitr::kable(TEDDY[1:10, 1:4],
+                             caption = "TEDDY expression data")
+kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
+```
 ## group_labels
-The *group_labels* should be a vector or list of values of class factor that correspond to the experimental condition of each sample. Each element should be named for its corresponding sample, and the order should match the order of the samples, ie the order of the column names in *expression_data*. We can create the *group_labels* object for the TEDDY data using the metadata, T1Dmeta, stored in DNEA. Each row is a different sample, and each column is a different variable. The only column we need is the "group" column which contains the experimental conditions for each sample, and the row names of the data frame which are named for each sample, respectively. More information can be found about the available metadata in the T1Dmeta documentation *(which you can access by running* `?DNEA::T1Dmeta()` *in the console)*.
-```{r load example metadata, eval=TRUE}
+The *group_labels* should be a vector or list of values of class factor that correspond to the experimental condition of each sample. Each element should be named for its corresponding sample, and the order should match the order of the samples (ie. the order of the column names in *expression_data*). We can create the *group_labels* object for the TEDDY data using the metadata, *T1Dmeta*, stored in DNEA. Each row is a different sample, and each column is a different variable. The only column we need is the "group" column which contains the experimental conditions for each sample, and the row names of the data frame which are named for each sample, respectively. More information about the available metadata can be found in the T1Dmeta documentation *(which you can access by running* `?DNEA::T1Dmeta()` *in the console)*.
+```{r, load example metadata, eval=TRUE}
 #load T1Dmeta
 data("T1Dmeta")
 T1Dmeta[1:10, match("group", colnames(T1Dmeta))]
 ```
-Our experimental condition has two possible values: "DM:control" and "DM:case". DNEA is designed to jointly estimate biological networks from only ***TWO*** experimental conditions at this time. If you have only one experimental condition, you should consider using another tool we developed, [CorrelationCalculator](http://metscape.ncibi.org/calculator.html). Now we can re-order the metadata to match the sample order of the expression data, and save the group labels as a new vector element.
-```{r create group_labels, eval=TRUE}
+Our experimental condition has two possible values: "DM:control" and "DM:case". DNEA is designed to jointly estimate biological networks from ***TWO*** experimental conditions. If you have only one experimental condition, you should consider using another tool we developed, [CorrelationCalculator](http://metscape.ncibi.org/calculator.html). Now we can re-order the metadata to match the sample order of the expression data, and save the group labels as a new vector element. Finally, we can convert this character vector into factors. We will specify that "DM:control" is the reference.
+```{r, create group_labels, eval=TRUE}
 #re-order the metadata to match the sample order of expression_data
 T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 
@@ -119,27 +105,27 @@ group_labels <- T1Dmeta$group
 
 #name each element for its corresponding sample
 names(group_labels) <- rownames(T1Dmeta)
-```
-Finally, we can convert this character vector into factors. We will specify that "DM:control" is the reference.
-```{r convert group_labels to factor, eval=TRUE}
+
 #convert to factor
 group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 ```
 
 # STEP 1: Data pre-processing and feature aggregation
 ## Data pre-processing
-DNEA is an object-oriented workflow that is built around a custom s4 object, DNEAresults. We have provided a wrapper function that encompasses several necessary steps into one user-friendly function. First, the input is restructured to initiate a DNEAresults object. Differential Expression analysis is then performed after log-transforming the expression data. Finally, the data is split by experimental condition before scaling. As a reminder, DNEA jointly-estimates the networks for each experimental condition, therefore the samples for each condition, respectively, must be normalized separately. Once the data is scaled, a diagnostics algorithm is performed to check the minimum eigenvalue and condition number of the correlation matrix for the whole dataset, as well as each experimental group individually.
-```{r start DNEA, eval=TRUE}
+DNEA is an object-oriented workflow built around a custom s4 object, `DNEAresults.` We have provided an initiator function that encompasses several necessary steps to begin DNEA. First, the input is restructured to for input into a DNEAresults object. DE analysis is then performed after log-transforming the expression data. Finally, the data is split by experimental condition before scaling. DNEA jointly-estimates the networks for each experimental condition, therefore the samples for each condition must be normalized separately. Once the data is scaled, a diagnostics algorithm is performed to check the minimum eigenvalue and condition number of the correlation matrix for the whole dataset, as well as each experimental group individually.
+```{r, start DNEA, eval=TRUE}
 #initiate DNEAresults object
-TEDDYdat <- createDNEAobject(project_name = "TEDDY", expression_data = TEDDY, group_labels = group_labels)
+TEDDYdat <- createDNEAobject(project_name = "TEDDYmetabolomics",
+                             expression_data = TEDDY,
+                             group_labels = group_labels)
 ```
-There are also several messages to look out for in the console: We are informed that the data has been log-scaled and stored under "scaled_expression_data" in the assays slot, and the dignostic criteria is returned. Our dataset has a negative eigenvalue for the "DM:case" experimental group, triggering a warning that recommends we collapse the features prior to analysis.
+There are also several messages to look out for in the console. We are informed that the data has been log-scaled and stored under "scaled_expression_data" in the assays slot, and the diagnostic criteria is returned. Our dataset has a negative eigenvalue for the "DM:case" experimental group, triggering a warning that recommends we collapse the features prior to analysis.
 
 **WHAT CAUSED THIS WARNING?**  
 
 
 Zero or negative eigenvalues in the data represent mathematic instability, potentially creating erroneous results. There is a number of reasons that instability may occur within a dataset; in the case of expression data, one of the most common we reasons we have encountered is highly correlated features. We can view this by plotting a heatmap of the pearson correlation matrix for the "DM:case" data. We can access the log-scaled data using the `expressionData()` function, and find the "DM:case" samples using the group labels accessed via `networkGroupIDs`.
-```{r correlation heatmap, eval=TRUE}
+```{r, correlation heatmap, eval=TRUE}
 #load the pheatmap and Hmisc packages
 library(pheatmap)
 library(Hmisc)
@@ -166,7 +152,7 @@ cor_dat <- Hmisc::rcorr(t(expr_dat), type = "pearson")$r
 )
 
 ```
-As you can see, there are some pockets of red and blue indicating highly correlated features in this dataset that may be causing the instability. Luckily, the regularization steps deployed in the DNEA algorithm should correct this issue without additional user-intervention by selecting a representative feature within a highly correlated group and removing the rest from the model. However, The user may decide to pre-emptively address this situation by collapsing highly-correlated features into a single group.  
+As you can see, there are some pockets of red and blue indicating highly correlated features in this dataset that may be causing the instability. Luckily, the regularization steps deployed in the DNEA algorithm should correct this issue without additional user-intervention. However, The user may decide to pre-emptively address this situation by collapsing highly-correlated features into a single group.  
 
 
 **WHY SHOULD WE COLLAPSE?**  
@@ -175,7 +161,7 @@ As you can see, there are some pockets of red and blue indicating highly correla
 Collapsing highly-correlated features into a single group prior to analysis may be of benefit for several reasons, particularly if the dataset contains many features of the same class of compounds (ie. fatty acids, carnitines, etc.). Doing so retains signal from all of the features in the analysis, as opposed to regularization arbitrarily choosing one feature as representation for the group and removing some or all of the remaining features. Pre-emptively collapsing gives the user additional control over network construction, and provides additional information regarding which features are highly correlated, and will therefore have similar network associations.
 
 Finally, we can view information about the object as well as the differential expression results in the node list using the `nodeList()` function.
-```{r nodeList, eval=TRUE}
+```{r, DNEA summary, eval=TRUE}
 
 #show summary of DNEAresults object
 TEDDYdat
@@ -183,31 +169,48 @@ TEDDYdat
 #access node list
 nodeList(TEDDYdat)[1:5,]
 ```
+<div align = "center"><font size="4" color = red>If you do not want to perform node collapsing</font></div><br>
+<div align = "center"><font size="4" color = red>you can skip to the next section, [STEP 2: Model Optimization] </font></div><br>
 
 ## Feature aggregation
-As mentioned previously, glasso models, and therefore DNEA, are computationally expensive algorithms to perform. Adding additional samples to your dataset will have marginal effects on the memory and processing time required for analysis, however, as the number of features grows in your dataset the runtime will increase dramatically. The implementation of this R package and the ability to utilize the full resources of a high-performance machine (cluster or cloud resource) to perform stability selection embarassingly parallel helps tremendously with this issue.  
+As mentioned previously, glasso models, and therefore DNEA, are computationally expensive algorithms to perform. Adding additional samples to your dataset will have marginal effects on the memory and processing time required for analysis, however, as the number of features grows in your dataset the runtime will increase dramatically. The ability to utilize the full resources of a high-performance machine (cluster or cloud resource) to perform stability selection embarassingly parallel helps tremendously with this issue.  
 
 
 Even so, a user may still find themselves constrained by the resources they have available to them. Moreover, the dataset may contain many compounds of the same class (ie. fatty acids in a lipidomics dataset) that are highly correlated or network resolution at the individual molecule level is not needed. In these cases, collapsing highly correlated features into a single node would decrease the complexity of the analysis without losing critical network information.
 
-Feature reduction is an optional step in the DNEA algorithm and the user may decide to completely skip this step - particulary when their dataset contains a diverse set of features and ***p >> n***. Should you decide to collapse correlated features prior to analysis, we have provided the `reduceFeatures()` function to do. This function will collapse the features based on the user specifications and re-run differential expression analysis and diagnostic testing before creating a `collapsed_DNEAresults` object with the new data.  
+We have implemented an updated node collapsing feature similar to the feature described in @Filigree2021. We have provided the user the `reduceFeatures()` function that provides the **correlation-based**, **knowledge-based**, and **hybrid** collapsing methods from Filigree. The main difference being that the user specifies a pearson correlation threshold by which to collapse features with an absolute correlation above said value. The function then re-runs differential expression analysis and diagnostic testing before creating a `collapsed_DNEAresults` object with the new data.  
 
-To perform feature collapsing, we need to provide the algorithm with the DNEAresults object and a character string corresponding to the method used. If the "correlation" or "hybrid" method are chosen, we need to specify the `correlation threshold` parameter wherein metabolites above this threshold are collapsed into a single node. If the "knowledge" or "hybrid" method are chosen, we need to provide a data frame for `feature_groups` to specify the class of molecules to collapse within. More information about the three methods can be found in the function documentation accessed by running `?reduceFeatures()` in the console.  
+To perform feature collapsing, we need to provide the algorithm with the DNEAresults object and a character string corresponding to the method used. If the "correlation" or "hybrid" method are chosen, we need to specify the `correlation_threshold` parameter wherein metabolites above this threshold are collapsed into a single node. If the "knowledge" or "hybrid" method are chosen, we need to provide a data frame for `feature_groups` to specify the class of molecules to collapse within. More information about the three methods can be found in the function documentation accessed by running `?reduceFeatures()` in the console. As an example, we are going to use the "hybrid" approach to node collapsing. Let's create the `feature_groups` data frame, and group the branched chain amino acids into one class and all other acids into another.
+```{r, setup input for reduceFeatures, eval=TRUE}
+#save metabolite names
+metab_names <- rownames(expressionData(TEDDYdat, normalized = FALSE))
 
-In this example, we're going to use the "hybrid" method and specify a `correlation_threshold` of 0.7.
-```{r setup input for reduceFeatures, eval=TRUE}
-#create molecule class labels for the metabolites
-TEDDY_groups <- data.frame(features = rownames(expressionData(TEDDYdat, normalized = FALSE)),
-                           groups = rownames(expressionData(TEDDYdat, normalized = FALSE)),
-                           row.names = rownames(expressionData(TEDDYdat, normalized = FALSE)))
+#create feature_group data.frame
+TEDDY_groups <- data.frame(features = metab_names,
+                           groups = metab_names,
+                           row.names = metab_names)
 
-TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
-TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
+#create labels
+TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine",
+                                               "leucine",
+                                               "valine")] <- "BCAAs"
+TEDDY_groups$groups[grepl("acid",
+                          TEDDY_groups$groups)] <- "fatty_acids"
 
+
+```
+The `feature_groups` input should be a data frame with the original feature names as the row names and the "features" column. The class labels should be in the "groups" column. Independent molecules can retain their name. 
+```{r, node collapse groups show, eval = FALSE}
+#take a look at the group labels
 TEDDY_groups[1:10, ]
 ```
-As you can see, the `feature_groups` input should be a data frame with the original feature names as the row names as well as the "features" column, and the class labels should be in the "groups" column. Independent molecules can retain their name. 
-```{r run reduceFeatures, eval=TRUE}
+```{r, node collapse groups, echo=FALSE}
+netGSA_table <- knitr::kable(TEDDY_groups[1:10, ],
+                             caption = "Molecule Class Labels")
+kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
+```
+Now we can specify a `correlation_threshold` of 0.7 and perform node collapsing using `reduceFeatures()`.
+```{r, run reduceFeatures, eval=TRUE}
 #perform feature collapsing
 collapsed_TEDDY <- reduceFeatures(object = TEDDYdat,
                                   method = "hybrid",
@@ -216,37 +219,287 @@ collapsed_TEDDY <- reduceFeatures(object = TEDDYdat,
 
 collapsed_TEDDY
 ```
-The output looks very similar to that of `createDNEAobject()`. Additionally, we see from the summary that we have reduced our total number of features from 134 to 130 using `reduceFeatures()`.
+The output looks very similar to that of `createDNEAobject()`. Additionally, we see from the summary that we have reduced our total number of features from 134 to 130 using `reduceFeatures()`. To use the collapsed data, we would continue our anlaysis with the *collapsed_TEDDY* `DNEAresults` object. However, this dataset is a curated list of diverse metabolites, so it is better to continue without collapsing. Therefore, we will continue the analysis with the *TEDDYdat* object.
 
 # STEP 2: Model Optimization
-Model optimization contains two regularization methods: $\lambda$ tuning via Bayesian-information criterion (BIC), and stability selection. Depending on the dataset, it may be skipped but we highly recommend the user performs this step irrespective. Only in cases where **the number of features approaches or exceeds the number of samples** can this step be skipped. The $\lambda$ value in the model then defaults to $\lambda = \sqrt{ \ln (num. features) / num. samples}$ and all of the selection probabilities are set to 1.  
+Model optimization contains two regularization methods: $\lambda$ tuning via Bayesian-information criterion (BIC), and stability selection. Only in cases where **the number of features approaches or exceeds the number of samples** can STEP 2 theoretically be skipped, but we highly recommend the user performs this step irrespective. If tuning is not performed, the $\lambda$ value defaults to   
+
+<div align = "center">$\lambda = \sqrt{ \ln (num. features) / num. samples}$</div> 
+and all of the selection probabilities are set to 1.  
 
 ## $\lambda$ tuning via BIC
-The `BICtune()` function optimizes the $\lambda$ parameter by calculating a BIC score and likelihood value for every tested value. We minimized the necessary computation to optimize the parameter by selecting values surrounding the asymptotically valid $\lambda$ for datasets with many samples and many features followin the equation: \lambda = c \sqrt{ \ln (num. features) / num. samples} where c takes on 15 evenly spaced values between 0.01 and 0.3. The user can also opt to provide a range of lambda values to test using the `lambda_values` parameter.  
+The `BICtune()` function optimizes the $\lambda$ parameter by calculating a BIC score and likelihood value for every tested value, as described in @BIC2011. We minimized the necessary computation to optimize the parameter by selecting values surrounding the asymptotically valid $\lambda$ for datasets with many samples and many features following the equation:  
+
+<div align = "center>$\lambda = c \sqrt{ \ln (num. features) / num. samples}$</div> 
+where c takes on 15 evenly spaced values between 0.01 and 0.3. The user can also opt to provide a range of $\lambda$ values to test using the `lambda_values` parameter.
 
 
-Each $\lambda$ value tested can be run embarrasingly parallel using the BiocParallel package. Creating Forked processes via the `MulticoreParam()` function is the most resource efficient parallelization method, however, there are several limitations: **1.** forked processes are not available on the Windows operating system, and **2.** forked processes can be unstable in Rstudio. For the sake of this vignette we're going to create parallel sockets. 
-```{r BiocParallel, eval=TRUE}
+Each $\lambda$ value tested can be run embarrasingly parallel using the BiocParallel package. Creating Forked processes via the `MulticoreParam()` function is the most resource efficient parallelization method.
+```{r, BiocParallel MulticoreParam, eval=FALSE}
 #load in BiocParallel
 library(BiocParallel)
 
 #create parallel workers
-BPPARAM <- BiocParallel::SnowParam(RNGseed = 417)
+BPPARAM <- BiocParallel::MulticoreParam(workers = 2, RNGseed = 417)
 ```
-We only need to create the workers once for this analysis, and they can be used for stability selection. However, `stabilitySelection()` uses random number generation to sample the expression data, so we'll have to set the seed now so we can reproduce the results.  
+However, there are several limitations:  
+**1.** forked processes are not available on the Windows operating system.  
+**2.** forked processes can be unstable in Rstudio.  
+
+For the sake of this vignette we're going to create parallel sockets. 
+```{r, BiocParallel, eval=TRUE}
+#load in BiocParallel
+library(BiocParallel)
+
+#create parallel workers
+BPPARAM <- BiocParallel::SnowParam(workers = 2, RNGseed = 417)
+```
+We only need to create the workers once and they can be called for each parallel process. Since `stabilitySelection()` uses random number generation to sample the expression data, we will have to set the seed now so we can reproduce the results.  
 
 
-Now that we have our workers set up, we can optimize $\lambda$
-```{r BICtune, eval=TRUE, echo=FALSE}
+Now that we have our workers set up, we can optimize $\lambda$. If you are waiting for the analysis in real-time we have provided a progress bar to give you updates. If you are running the analysis on a cluster, you can set the `verbose` parameter to `FALSE` to silence it.
+
+```{r, BICtune, eval=TRUE}
 
 #optimize lambda
-TEDDYdat <- BICtune(TEDDYdat, BPPARAM = BPPARAM)
-TEDDYdat
+TEDDYdat <- BICtune(TEDDYdat, BPPARAM = BPPARAM, verbose = FALSE)
+```
+As you can see, our tuned lambda value is 0.03891489239239. This was selected by minimizing the BIC score. To illustrate BIC optimization, we can plot the BIC scores as a function of $\lambda$
+```{r, BIC plot, eval=TRUE}
+#load ggplot2
+library(ggplot2)
+#create data frame of values
+BICtuneData <- rbind(data.frame(lambda = unlist(lambdas2Test(TEDDYdat)),
+                          value = vapply(BICscores(TEDDYdat), function(x) x$BIC, double(1)),
+                          score = rep("BIC", length(lambdas2Test(TEDDYdat)))),
+                     data.frame(lambda = unlist(lambdas2Test(TEDDYdat)),
+                          value = vapply(BICscores(TEDDYdat), function(x) x$likelihood, double(1)),
+                          score = rep("likelihood", length(lambdas2Test(TEDDYdat)))))
+
+#create plot
+ggplot(data = BICtuneData, aes(x = lambda, y = value)) + 
+  geom_line(aes(linetype = score)) + 
+  geom_point(aes(shape = score)) +
+  geom_vline(xintercept = optimizedLambda(TEDDYdat), color = "red") +
+  ggtitle("BIC and Likelihood Scores with Respect to Lambda")
+
+```
+
+## Stability Selection
+The `stabilitySelection()` function calculates selection probabilities, or the estimated probability that an edge is identified in a randomly sampled subset of the input data, using the method outlined in @DNEA2019. The selection probability for each feature-feature interaction is then used to modify the lambda parameter following the equation:  
+
+<div align = "center">$\rho = \lambda*(1 / (1e-04 + selection.probability))$</div>  
+
+If stability selection is not performed, the selection probabilities default to 1.
+
+
+`stabilitySelection()` has several required parameters. We need to pass it the `DNEAresults` object, the number of replicates to perform, the BiocParallel object specifying our workers for parallelization, and whether or not additional sub sampling of the data should be performed. We recommend setting `nreps = 500`, which is the default value. Stability selection *without* additional sub-sampling randomly samples 50% of each group (without replacement) and fits a model for both halves of the sampled data. This means that at the default `nreps = 500`, 1000 replicates are actually performed.
+
+
+When the sample groups are very unbalanced randomly sampling strongly favors the larger group, resulting in
+over representation of the aforementioned group. In order to combat this, setting `subSample = TRUE` utilizes the sub-sampling protocol described in @Filigree2021 and modifies the random sample by sub-sampling the groups individually to even out the sample numbers. 90% of the smaller group is randomly sampled without replacement, and an additional 10% is randomly sampled without replacement from the entire group to preserve the variance. The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that each group is equally represented in stability selection. Since nearly all of the data for the smaller group is used *with* additional sub-sampling, only one model is fit per replicate.
+
+
+If you elect to optimize the $\lambda$ parameter using a different method than provided here, you can specify the value to use with the `optimal_lambda` parameter. Here, we will set `nreps` to 500 and `subSample = FALSE`. This is the most computationally expensive step in the algorithm. It takes ~25 minutes using 4 cores on a 2.5 GHz Quad-Core Intel Core i7 processor. If you're running DNEA locally, set `verbose = TRUE` to get real-time updates on the progress of stability selection.
+```{r, load processed data, include=FALSE}
+
+#load already processed results since 500 reps would take ~28 min
+data("dnw")
+TEDDYdat <- dnw
+rm(dnw)
+```
+
+```{r, stabsel show, eval = FALSE, echo = TRUE, strip.white=TRUE}
+#perform stability selection
+TEDDYdat <- stabilitySelection(TEDDYdat,
+                               subSample = FALSE,
+                               nreps = 500,
+                               BPPARAM = BPPARAM,
+                               verbose = FALSE)
+```
+```{r, stabsel code, eval=3, echo=1, strip.white=TRUE, prompt=FALSE}
+
+#return stabsel messages
+message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat), "!\n",
+        "stabilitySelection will be performed with 500 replicates!")
+```
+
+# Step 3: Constructing the Networks and Consensus Clustering
+Now that we have optimized the input parameters, we can jointly estimate the biological networks. We will construct a glasso model to calculate the partial correlation value for each feature-feature interaction in the network. After we have constructed the networks, we can perform consensus clustering to identify metabolic modules, or subnetworks, within the larger group networks.
+
+## Constructing the Networks
+We created a wrapper function, called `getNetworks()` to make jointly estimating the networks quick and easy. If you performed $\lambda$-tuning with `BICtune()` and calculated the selection probabilities using `stabilitySelection()`, the necessary inputs are already stored in the `DNEAresults` object. We just need to pass our object, *TEDDYdat*, to the `getNetworks()` function.
+```{r, getNetworks, eval = TRUE}
+#jointly estimate the biological networks
+TEDDYdat <- getNetworks(TEDDYdat)
+```
+Our dataset contains 134 metabolites, so a completely dense network has $134*134=17956$ possible edges. Needless to say, we do not expect every feature to be connected with every other feature and the regularization steps we performed in [Step 2: Model Optimization] have removed the irrelevant connections. As you can see, we have 1656 total edges in the networks: 373 edges specific to the "DM:control" network, 871 edges specific to the "DM:case" network, and 412 edges identified in both. We can view the edge list using the `edgeList()` function.
+```{r edgeList, eval=FALSE, echo=TRUE}
+#save edge list to new object
+edge_list <- edgeList(TEDDYdat)
+
+#access the edge list
+edge_list[1:10,]
+```
+
+```{r edge table, echo=FALSE}
+#save edge list to new object
+edge_list <- edgeList(TEDDYdat)
+
+#create kable
+edge_table <- knitr::kable(edge_list[1:10,],
+                           caption = "Network Edge List")
+kable_styling(edge_table, "striped", position = "left", full_width = TRUE)
+```
+
+Some of these edges are extremely weak and it would best suit our analysis to remove them. An abundance of weak edges disrupts the performance of consensus clustering, resulting in a small number of large networks. We can use `filterNetworks()` to remove weak edges. The user can filter edges less than a specified partial correlation value using the `pcor` parameter, or keep only the strongest *X%* of edges using the `top_percent_edges` parameter. 683 of the edges in "DM:control" network and 1103 of the edges in the "DM:case" network have partial correlation values between -0.166 and 0.166, so lets set that as the absolute threshold.
+```{r, filterNetworks, eval=TRUE}
+##edges between -0.166 and 0.166
+#control network
+sum(abs(edge_list$pcor.0[edge_list$pcor.0 != 0]) < 0.166)
+
+#case network
+sum(abs(edge_list$pcor.1[edge_list$pcor.1 != 0]) < 0.166)
+#filter networks based on an absolute threshold of pcor = 0.166
+TEDDYdat <- filterNetworks(TEDDYdat, pcor = 0.166)
+```
+After filtering, we now have 236 total edges in the networks: 56 edges specific to the "DM:control" network, 234 edges specific to the "DM:case" network, and 46 edges identified in both.
+
+## Consensus Clustering
+The consensus clustering algorithm described in @DNEA2019 and deployed here utilizes 7 common network clustering algorithms implemented in the igraph package. The algorithm works by clustering the data to identify subnetworks of highly inter-connected features within the networks. This is done iteratively until consensus among the algorithms is reached on the resulting sub networks. This allows us to then conduct a data-driven pathway enrichment analysis to identify sub networks that are differentially enriched across the two experimental conditions.  
+
+
+Consensus clustering can be performed by passing the `DNEAresults` object to `clusterNet()`. You may opt to specify the `tau` parameter, which corresponds to the percent agreement threshold (ie. tau% of the clustering algorithms must agree for a sub network to be identified). Tau can range from 0.5-1, and the default value is 0.5, or 4 of the 7 algorithms must be in agreement. Increasing the value of tau will increase the specificity of the analysis, and therefore decrease the number and size of the resulting sub networks.   
+
+
+Some of the clustering algorithms deployed in `clusterNet` utilize random number generation. Previously, we set the seed for random number generation for stability selection, however, `clusterNet()` does not use the BiocParallel framework. We will need to set the seed again to ensure reproducibility of our results.
+```{r, consensus cluster, eval = TRUE, warning=FALSE}
+#set the seed
+set.seed(417)
+
+#perform consensus clustering
+TEDDYdat <- clusterNet(TEDDYdat, tau = 0.5,
+                       max_iterations = 5,
+                       verbose = FALSE)
+```
+```{r, CCsummary show, eval = FALSE}
+#view subnetwork summary
+CCsummary(TEDDYdat)
+```
+We can view a summary of the sub networks with `CCsummary()`. The summary shows you the number of nodes and edges per network as well as how many were differentially expressed, respectively. All except one of the 134 metabolites clustered into the 13 sub networks.
+```{r, CCsummary kable, echo=FALSE}
+clust_table <- knitr::kable(CCsummary(TEDDYdat),
+                            caption = "Subnetwork summary table")
+kable_styling(clust_table, "striped", position = "left", full_width = TRUE)
 ```
 
 
+# Step 4: Pathway Enrichment via NetGSA and Network Visualization
+Now that we have constructed our biological networks and identified metabolic modules within them, we can perform additional analyses to help us derive biological insight from our data. Two common analyses are pathway enrichment and visualizing the networks.
+
+## Pathway Enrichment via NetGSA
+As mentioned previously, the data-driven approach to network construction circumvents challenges faced in more traditional pathway analyses of metabolomics and lipidomics data by using the correlation structure of the data to define our sub networks. We can then test these networks for enrichment across our experimental condition using netGSA. DNEA contains a wrapper function for the netgsa algorithm, `runNetGSA()`. Everything we need for the analysis is passed to the function with the `DNEAresults` object.
+```{r, runNetGSA, eval = 1:2, echo=TRUE}
+#perform pathway enrichment using netgsa
+TEDDYdat <- runNetGSA(TEDDYdat, min_size = 5)
+```
+We can then view the results using the `netGSAresults()` function.
+```{r, netGSAresults show, eval = FALSE}
+#access netGSA results
+netGSAresults(TEDDYdat)
+```
+```{r, netGSAresults kable, echo=FALSE}
+netGSA_table <- knitr::kable(netGSAresults(TEDDYdat),
+                             caption = "Pathway Enrichment Results")
+kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
+```
+Of the 13 subnetworks in our data, 9 contained 5 or more features and were tested for differential enrichment. Two of the 9 subnetworks are significantly enriched across diabetes status in this data. ***NOTE:*** *The subnetworks have been reordered by their fdr value from enrichment testing, so the numbering may look different now than it did in the previous section.*
+
+## Network Visualization
+There are several common methods to visualize biological networks, three of the most common being:  
+
+1. [Cytoscape](https://cytoscape.org/)  
+
+2. [Metscape](http://metscape.med.umich.edu/)  
+
+3. [igraph package in R](https://r.igraph.org/)  
+
+DNEA provides functionality that makes using all three easy.  
 
 
+<font size="3">**Visualizing Networks using DNEA and igraph**</font>  
+
+One very common method for visualizing biological networks is the igraph R package due to its customizability. DNEA contains a function, `plotNetworks()` that is built on igraph and provides the user an easy way to visualize networks and utilize some of the customizabilty of the igraph package. More information can be found in the function documentation. There are two parameters that are required in addition to the `DNEAresults` object . When the `type` parameter is set to "group_networks" we can specify the biological network we want to plot with `subtype`. We can plot each of the experimental conditions by providing its label, or "All" to plot both networks. Edges specific to group 1, in our case "DM:control", are colored <font color = green>green</font> and edges specific to group 2, or "DM:case" are colored <font color = red>red</font>. Common edges are black, and DE nodes are colored <font color = purple>purple</font>.
+```{r, plotNetworks biological networks}
+#names of our experimental conditions
+networkGroups(TEDDYdat)
+
+#create side by side plots
+par(mfrow = c(1,3))
+
+#plot networks
+plotNetworks(TEDDYdat, 
+             type = "group_networks",
+             subtype = "DM:control",
+             main = "DM:control Network")
+plotNetworks(TEDDYdat, 
+             type = "group_networks",
+             subtype = "All",
+             main = "Joint Network")
+plotNetworks(TEDDYdat, 
+             type = "group_networks", 
+             subtype = "DM:case",
+             main = "DM:case Network")
+```
+We can also plot the sub networks by setting `type` to "subnetworks" and specifying which sub network to plot. Sub networks 1 and 2 were both differentially enriched, so we can plot those by setting `subtype = 1` and `subtype = 2`. We can change the layout to a circle by providing the igraph `layout_in_circle()` function to the `layout_func` parameter.
+```{r, plotNetworks sub networks, message=FALSE}
+#load igraph
+library(igraph)
+#create side by side plots
+par(mfrow = c(1,2))
+
+#plot subnetworks
+plotNetworks(TEDDYdat, 
+             type = "subnetworks", 
+             subtype = 1, 
+             layout_func = layout_in_circle,
+             main = "Sub Network 1")
+plotNetworks(TEDDYdat, 
+             type = "subnetworks", 
+             subtype = 2, 
+             layout_func = layout_in_circle,
+             main = "Sub Network 2")
+```
+<font size="3">**Visualizing Networks using Metscape or Cytoscape**</font>  
 
 
+We made visualizing the network in third-party software easy by formatting the node and edge lists for input into Cytoscape or Metscape *(both can be downloaded from the links above)*. You can save these tables as files using the `getNetworkFiles()` function. If no file path is provided, the two files save to the working directory.
+```{r, getNetworkFiles, eval=FALSE}
+#save files for cytoscape
+getNetworkFiles(TEDDYdat)
+```
+Now that we have the files, we can open Cytoscape and read in the edge list. First we go to file in the top left corner, go down to import, and select import network. Select our edge list file.
+```{r, import network, echo=FALSE}
+knitr::include_graphics("./images/Cytoscape-importnetwork.jpg")
+```
+Next, we click on the small rectangle next to Metabolite A and select the green circle, making this the source node.
+```{r, metabA image, echo=FALSE}
+knitr::include_graphics("./images/Cytoscape-metabA.jpg")
+```
+We then click on the small rectangle next to Metabolite B and select the red target to make this the target node. Finally, we hit the **OK** button in the bottom right corner of the pop-up.
+```{r, metabB image, echo=FALSE}
+knitr::include_graphics("./images/Cytoscape-metabB.jpg")
+```
+Now that the edge list is imported, we can import the node list. First, let's switch to the node list by clicking on the dropdown arrow in the top left corner of the table and selecting node list. 
+Then, we click import table and select our node list file. 
+```{r, nodetable, echo=FALSE}
+knitr::include_graphics("./images/Cytoscape-nodetable.jpg")
+```
+We do not need to change anything here, so select **OK** in the bottom right corner of the pop-up.
+```{r, nodetable confirm, echo=FALSE}
+knitr::include_graphics("./images/cytoscape-nodetableconfirm.jpg")
+```
+Cytoscape and Metscape are both great visualization tools that provide the user a lot of functionality for visualization. More information as to what's available to you as the user can be found on their respective websites.
+
+# References
 
