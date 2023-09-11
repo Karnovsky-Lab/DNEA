@@ -19,14 +19,14 @@
 #'
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #' data(T1Dmeta)
 #'
 #' #make sure metadata has same sample order as DNEAresults object
-#' T1Dmeta <- T1Dmeta[sampleNames(TEDDYresults), ]
+#' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 #'
 #' #add new metadata to DNEAresults object
-#' TEDDYresults <- includeMetadata(object = TEDDYresults, type = "sample", metadata = T1Dmeta)
+#' dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
 #'
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
@@ -66,7 +66,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
 #' Include custom normalized data in the DNEAresults object
 #'
-#' This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEAdev analysis.
+#' This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
 #'
 #' @param object A \code{DNEAresults} object
 #' @param data An \emph{m x n} numeric matrix of custom-normalized expression expression data
@@ -80,7 +80,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #' @examples
 #' #import example data
 #' data(TEDDY)
-#' data(TEDDYresults)
+#' data(dnw)
 #' data(T1Dmeta)
 #'
 #' #transpose TEDDY data
@@ -104,12 +104,12 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'   newdat <- rbind(newdat, cond)
 #' }
 #'
-#' #reorder to match TEDDYresults
-#' newdat <- newdat[sampleNames(TEDDYresults), featureNames(TEDDYresults)]
+#' #reorder to match dnw
+#' newdat <- newdat[sampleNames(dnw), featureNames(dnw)]
 #' newdat <- t(newdat)
 #'
 #' #add data
-#' TEDDYresults <- addExpressionData(object = TEDDYresults, data = newdat)
+#' dnw <- addExpressionData(object = dnw, data = newdat)
 #'
 #' @rdname addExpressionData
 #' @export
@@ -146,7 +146,7 @@ addExpressionData <- function(object, data){
 #' @returns Two .csv files, one for the node list and one for the edge list, saved to the specified file path
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' #save node and edge list for input to cytoscape
 #'
@@ -173,7 +173,7 @@ getNetworkFiles <- function(object, file_path = NULL){
   return(object)
 }
 
-#' Visualize the biological networks identified via DNEAdev
+#' Visualize the biological networks identified via DNEA
 #'
 #' This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are
 #' differential features, green indicates edges specific to group 1, and red indicates edges specific to group 2.
@@ -205,12 +205,12 @@ getNetworkFiles <- function(object, file_path = NULL){
 #'
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 
 #'
 #' #plot the networks
-#' plotNetworks(object = TEDDYresults, type = "group_networks", subtype = "All")
-#' plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
+#' plotNetworks(object = dnw, type = "group_networks", subtype = "All")
+#' plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
 #'
 #' @import igraph
 #' @export
@@ -363,21 +363,22 @@ filterNetworks.DNEAresults <- function(data,
 
   ##return to console messages for total edges
   #control network
-  message(names(unweighted_adjacency_matrices)[[1]], appendLF = FALSE)
-  message(" network specific edges: ", appendLF = FALSE)
-  message((sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message(names(unweighted_adjacency_matrices)[[1]], " network specific edges: ",
+          (sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"),
+          appendLF = TRUE)
 
   #case network
-  message(names(unweighted_adjacency_matrices)[[2]], appendLF = FALSE)
-  message(" network specific edges: ", appendLF = FALSE)
-  message((sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message(names(unweighted_adjacency_matrices)[[2]],
+          " network specific edges: ",
+          (sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"),
+          appendLF = TRUE)
 
   #shared edges
   message(rep("-", 35), appendLF = TRUE)
-  message("Number of edges shared by both networks: ", appendLF = FALSE)
-  message(sum(edge_list$edge == "Both"), appendLF = TRUE)
-  message("Total number of edges in dataset: ", appendLF = FALSE)
-  message(nrow(edge_list), appendLF = TRUE)
+  message("Number of edges shared by both networks: ",
+          sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message("Total number of edges in dataset: ",
+          nrow(edge_list), appendLF = TRUE)
 
 ################################################################################
   return(data)
@@ -466,21 +467,22 @@ filterNetworks.list <- function(data, pcor, top_percent_edges){
 
   ##return to console messages for total edges
   #control network
-  message(names(unweighted_adjacency_matrices)[[1]], appendLF = FALSE)
-  message(" network specific edges: ", appendLF = FALSE)
-  message((sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message(names(unweighted_adjacency_matrices)[[1]], " network specific edges: ",
+          (sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"),
+          appendLF = TRUE)
 
   #case network
-  message(names(unweighted_adjacency_matrices)[[2]], appendLF = FALSE)
-  message(" network specific edges: ", appendLF = FALSE)
-  message((sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message(names(unweighted_adjacency_matrices)[[2]],
+          " network specific edges: ",
+          (sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"),
+          appendLF = TRUE)
 
   #shared edges
   message(rep("-", 35), appendLF = TRUE)
-  message("Number of edges shared by both networks: ", appendLF = FALSE)
-  message(sum(edge_list$edge == "Both"), appendLF = TRUE)
-  message("Total number of edges in dataset: ", appendLF = FALSE)
-  message(nrow(edge_list), appendLF = TRUE)
+  message("Number of edges shared by both networks: ",
+          sum(edge_list$edge == "Both"), appendLF = TRUE)
+  message("Total number of edges in dataset: ",
+          nrow(edge_list), appendLF = TRUE)
 
   return(list(weighted = weighted_adjacency_matrices, unweighted = unweighted_adjacency_matrices,
               edge_list = edge_list))

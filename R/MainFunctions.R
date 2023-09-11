@@ -34,7 +34,7 @@ NULL
 #'
 #' @details
 #' There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-#' DNEAdev because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
+#' DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
 #' need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
 #'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
 #' For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,
@@ -51,10 +51,10 @@ NULL
 #' library(BiocParallel)
 #'
 #' #import completed example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' #optimize lambda parameter
-#' TEDDYresults <- BICtune(object = TEDDYresults, BPPARAM = bpparam())
+#' dnw <- BICtune(object = dnw, BPPARAM = bpparam())
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
@@ -209,10 +209,10 @@ BICtune <- function(object,
 #' library(BiocParallel)
 #'
 #' #import completed example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' # perform stability selection
-#' TEDDYresults <- stabilitySelection(object = TEDDYresults,
+#' dnw <- stabilitySelection(object = dnw,
 #'                                    subSample = FALSE,
 #'                                    nreps = 4,
 #'                                    BPPARAM = bpparam())
@@ -390,13 +390,13 @@ stabilitySelection <- function(object,
 #'
 #' @examples
 #' #import completed example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' #construct the networks
-#' TEDDYresults <- getNetworks(object = TEDDYresults)
+#' dnw <- getNetworks(object = dnw)
 #'
 #' #now we can plot the group networks
-#' plotNetworks(object = TEDDYresults, type = "group_networks")
+#' plotNetworks(object = dnw, type = "group_networks")
 #'
 #' @importFrom gdata lowerTriangle
 #' @importFrom utils combn
@@ -473,11 +473,19 @@ getNetworks <- function(object,
   #model will used selection weights based on stability selection if provided
   if (!is.null(selectionProbabilities(object))){
 
-    model_weight_values <- lapply(selectionProbabilities(object),
-                                  function(x) as.matrix(1/(1e-04 + x)))
+    #grab selection probabilities
+    selection_prob <- selectionProbabilities(object)
 
+    #modify to create model weights
+    model_weight_values <- vector(mode = "list", length = 2)
+    for(x in 1:length(model_weight_values)){
+
+      model_weight_values[[x]] <- 1/(1e-04 + as.matrix(selection_prob[[x]]))
+    }
+
+    #name weight values
+    names(model_weight_values) <- names(selection_prob)
     message('selection_probabilites from stability selection will be used in glasso model!\n')
-
   } else{
 
     message("No selection_probabilities were found. We recommend running
@@ -565,13 +573,13 @@ getNetworks <- function(object,
 #'
 #' @examples
 #' #import completed example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' #identify metabolic modules via consensus clustering
-#' TEDDYresults <- clusterNet(object = TEDDYresults, tau = 0.5, max_iterations = 5)
+#' dnw <- clusterNet(object = dnw, tau = 0.5, max_iterations = 5)
 #'
 #' #we can also plot the subnetworks
-#' plotNetworks(object = TEDDYresults, type = "subnetworks", subtype = 1)
+#' plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
 #'
 #' @import igraph
 #' @export
@@ -722,13 +730,13 @@ clusterNet <- function(object,
 #'
 #' @examples
 #' #import completed example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
 #' #perform pathway enrichment analysis using netGSA
-#' TEDDYresults <- runNetGSA(object = TEDDYresults, min_size = 5)
+#' dnw <- runNetGSA(object = dnw, min_size = 5)
 #'
 #' #view the results
-#' netGSAresults(TEDDYresults)
+#' netGSAresults(dnw)
 #'
 #'
 #' @importFrom stats p.adjust

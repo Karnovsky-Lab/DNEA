@@ -12,9 +12,9 @@
 #' @returns A summary of the information stored in a \code{DNEAresults} object.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' TEDDYresults
+#' dnw
 #'
 #' @keywords internal
 #' @export
@@ -63,9 +63,9 @@ setMethod("show", "DNEAinputSummary", function(object) {
 #' @returns The name of the DNEAdev experiment.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' projectName(TEDDYresults)
+#' projectName(dnw)
 #' @author Christopher Patsalis
 #' @seealso \code{\link{createDNEAobject}}
 #'
@@ -104,9 +104,9 @@ expressionData.DNEAresults <- function(x, normalized = TRUE){
 #' @returns The expression matrix specified by the user.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' expressionData(TEDDYresults, normalized = TRUE)
+#' expressionData(dnw, normalized = TRUE)
 #'
 #' @rdname expressionData
 #' @export
@@ -126,9 +126,9 @@ networkGroupIDs.DNEAresults <- function(x){
 #' @returns A vector of the unique condition labels.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' networkGroupIDs(TEDDYresults)
+#' networkGroupIDs(dnw)
 #' @rdname networkGroupIDs
 #' @export
 setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAresults)
@@ -143,9 +143,9 @@ setMethod("networkGroupIDs", signature(x = "DNEAresults"), networkGroupIDs.DNEAr
 #' @returns A vector of the condition values.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' networkGroups(TEDDYresults)
+#' networkGroups(dnw)
 #' @rdname networkGroups
 #' @export
 setMethod("networkGroups", signature(x = "DNEAresults"), function(x){
@@ -167,9 +167,9 @@ sampleNames.DNEAresults <- function(x){
 #' @returns A character vector of sample names.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' sampleNames(TEDDYresults)
+#' sampleNames(dnw)
 #' @rdname sampleNames
 #' @export
 setMethod("sampleNames", signature(x = "DNEAresults"), sampleNames.DNEAresults)
@@ -194,9 +194,9 @@ featureNames.DNEAresults <- function(x, original = FALSE){
 #' @returns A character vector of feature names.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' featureNames(TEDDYresults, original = TRUE)
+#' featureNames(dnw, original = TRUE)
 #' @rdname featureNames
 #' @export
 setMethod("featureNames", signature(x = "DNEAresults"), featureNames.DNEAresults)
@@ -214,9 +214,9 @@ numFeatures.DNEAresults <- function(x){
 #' @returns The number of features in the dataset.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' numFeatures(TEDDYresults)
+#' numFeatures(dnw)
 #' @rdname numFeatures
 #' @export
 setMethod("numFeatures", signature(x = "DNEAresults"), numFeatures.DNEAresults)
@@ -239,9 +239,9 @@ numSamples.DNEAresults <- function(x){
 #' @returns The number of samples in the dataset.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' numSamples(TEDDYresults)
+#' numSamples(dnw)
 #' @rdname numSamples
 #' @export
 setMethod("numSamples", signature(x = "DNEAresults"), numSamples.DNEAresults)
@@ -269,9 +269,9 @@ optimizedLambda.DNEAresults <- function(x){
 #' @returns The optimized lambda hyperparameter.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' optimizedLambda(TEDDYresults)
+#' optimizedLambda(dnw)
 #' @rdname optimizedLambda
 #' @export
 setMethod("optimizedLambda", signature(x = "DNEAresults"), optimizedLambda.DNEAresults)
@@ -301,9 +301,9 @@ lambdas2Test.DNEAresults <- function(x){
 #' @returns The lambda values to evaluate in optimization.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' lambdas2Test(TEDDYresults)
+#' lambdas2Test(dnw)
 #' @rdname lambdas2Test
 #' @export
 setMethod("lambdas2Test", signature(x = "DNEAresults"), lambdas2Test.DNEAresults)
@@ -334,9 +334,9 @@ BICscores.DNEAresults <- function(x){
 #' @returns The optimized lambda hyperparameter.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' BICscores(TEDDYresults)
+#' BICscores(dnw)
 #' @rdname BICscores
 #' @export
 setMethod("BICscores", signature(x = "DNEAresults"), BICscores.DNEAresults)
@@ -365,9 +365,9 @@ selectionResults.DNEAresults <- function(x){
 #'         selection_results section of the stable_networks slot.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' selectionResults(TEDDYresults)
+#' selectionResults(dnw)
 #' @rdname selectionResults
 #' @export
 setMethod("selectionResults", signature(x = "DNEAresults"), selectionResults.DNEAresults)
@@ -398,9 +398,9 @@ selectionProbabilities.DNEAresults <- function(x){
 #'         selection_probabilities section of the stable_networks slot.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' selectionProbabilities(TEDDYresults)
+#' selectionProbabilities(dnw)
 #' @rdname selectionProbabilities
 #' @export
 setMethod("selectionProbabilities", signature(x = "DNEAresults"), selectionProbabilities.DNEAresults)
@@ -430,9 +430,9 @@ edgeList.DNEAresults <- function(x){
 #' @returns A data frame corresponding to the edge list determined by DNEAdev.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' edgeList(TEDDYresults)
+#' edgeList(dnw)
 #' @rdname edgeList
 #' @export
 setMethod("edgeList", signature(x = "DNEAresults"), edgeList.DNEAresults)
@@ -461,9 +461,9 @@ nodeList.DNEAresults <- function(x){
 #' @returns A data frame corresponding to the node list determined by DNEAdev.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' nodeList(TEDDYresults)
+#' nodeList(dnw)
 #' @rdname nodeList
 #' @export
 setMethod("nodeList", signature(x = "DNEAresults"), nodeList.DNEAresults)
@@ -492,9 +492,9 @@ diagnostics.DNEAresults <- function(x){
 #' @returns Returns the diagnostic values for the input expression data.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' diagnostics(TEDDYresults)
+#' diagnostics(dnw)
 #' @rdname diagnostics
 #' @export
 setMethod("diagnostics", signature(x = "DNEAresults"), diagnostics.DNEAresults)
@@ -536,9 +536,9 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #'          \code{\link{createDNEAobject}}.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' datasetSummary(TEDDYresults)
+#' datasetSummary(dnw)
 #' @rdname datasetSummary
 #' @export
 setMethod("datasetSummary", signature(x = "DNEAresults"), function(x){
@@ -578,9 +578,9 @@ adjacencyMatrix.DNEAresults <- function(x, weighted = FALSE){
 #' @returns A matrix corresponding to the adjacency matrix specified.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' adjacencyMatrix(TEDDYresults, weighted = TRUE)
+#' adjacencyMatrix(dnw, weighted = TRUE)
 #' @rdname adjacencyMatrix
 #' @export
 setMethod("adjacencyMatrix", signature(x = "DNEAresults"), adjacencyMatrix.DNEAresults)
@@ -616,9 +616,9 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAresults"), function(x, we
 #' @returns An \code{\link{igraph}} graph object corresponding to the specified adjacency graph.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' adjacencyGraph(TEDDYresults, graph = "DM:case")
+#' adjacencyGraph(dnw, graph = "DM:case")
 #' @rdname adjacencyGraph
 #' @export
 setMethod("adjacencyGraph", signature(x = "DNEAresults"), function(x, graph){
@@ -678,9 +678,9 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
 #' @returns A data frame summary of the consensus clustering results from DNEAdev.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' CCsummary(TEDDYresults)
+#' CCsummary(dnw)
 #' @rdname CCsummary
 #' @export
 setMethod("CCsummary", signature(x = "DNEAresults"), function(x){
@@ -707,9 +707,9 @@ setReplaceMethod("CCsummary", signature(x = "DNEAresults"), function(x, value){
 #' @returns A data frame that corresponds to the results of consensus clustering.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' subnetworkMembership(TEDDYresults)
+#' subnetworkMembership(dnw)
 #' @rdname subnetworkMembership
 #' @export
 setMethod("subnetworkMembership", signature(x = "consensusClusteringResults"), function(x){
@@ -742,9 +742,9 @@ setReplaceMethod("subnetworkMembership", signature(x = "DNEAresults"), function(
 #' @returns A data frame of the results from netGSA.
 #' @examples
 #' #import example data
-#' data(TEDDYresults)
+#' data(dnw)
 #'
-#' netGSAresults(TEDDYresults)
+#' netGSAresults(dnw)
 #' @rdname netGSAresults
 #' @export
 setMethod("netGSAresults", signature(x = "DNEAresults"), function(x){

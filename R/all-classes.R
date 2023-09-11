@@ -3,7 +3,7 @@
 #'
 #' consensusClusteringResults
 #'
-#' An s4 class to represent the results from consensus clustering within DNEAdev
+#' An s4 class to represent the results from consensus clustering within DNEA
 #'
 #' @slot summary a data frame containing the subnetworks as rows and summary information as columns. The columns include:
 #' number_of_nodes, number_of_edges, number_of_DE_nodes, number_of_DE_edges
@@ -45,7 +45,7 @@ setClass(Class = "DNEAinputSummary",
 
 #' DNEAresults
 #'
-#' An s4 class to represent the DNEAdev workflow
+#' An s4 class to represent the DNEA workflow
 #'
 #' @slot project_name A character string name for the experiment
 #'
@@ -110,7 +110,7 @@ setClass(Class = "DNEAresults",
 
 #' collapse_DNEAresults
 #'
-#' An s4 class to represent the DNEAdev workflow, including collapsing features. This class inherits everything from
+#' An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
 #' \code{\link{DNEAresults-class}}
 #'
 #' @slot original_experiment The DNEAresults object input to \code{\link{reduceFeatures}}

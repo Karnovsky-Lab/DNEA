@@ -56,8 +56,6 @@
 #'   \item{subject}{The individual patient}
 #'   \item{Endpoint1}{The age of the case subject in days when this sample was collected}
 #'   \item{Endpoint2}{The age of the control subject in days when this sample was collected}
-#'   \item{Ind1}{The pairing number for a case subject}
-#'   \item{Ind2}{The pairing number for a control subject}
 #'   \item{Age}{The age of the subject in days when this sample was collected}
 #'   \item{Sex}{The sex of the subject}
 #'   \item{sample}{The name of this sample}
@@ -76,11 +74,11 @@
 #' @returns A \code{DNEAresults} object containing the results of a DNEAdev experiment
 #' @docType data
 #' @keywords datasets
-#' @name TEDDYresults
-#' @usage data("TEDDYresults")
+#' @name dnw
+#' @usage data("dnw")
 #' @format A DNEAdev results object after completing a DNEAdev experiment.
-#' @source The data is stored in the \code{\link{DNEAdev}} package and can be accessed by running data(TEDDYresults) in the console.
-"TEDDYresults"
+#' @source The data is stored in the \code{\link{DNEAdev}} package and can be accessed by running data(dnw) in the console.
+"dnw"
 
 #' DNEAdev package for joint estimation of biological networks
 #'
