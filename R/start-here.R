@@ -1,6 +1,7 @@
 #################################################################################################################################################
 #* DNEAdev package organization *#                                                                                                                 #
-###############################                                                                                                                 #
+###############################
+################################################################################
 #                                                                                                                                               #
 # start-here.R.....................This file - contains the package legend as well as package and data documentation                            #
 # initiator.R......................contains the exported createDNEAobject() function that initiates the DNEAdev workflow. The internal helper      #

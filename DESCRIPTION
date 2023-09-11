@@ -36,17 +36,17 @@ Imports:
     stringr,
     utils
 Collate: 
-    'start-here.R'
-    'initiator.R'
-    'reduce-features.R'
-    'primary.R'
-    'utilities-internals.R'
-    'utilities-exported.R'
+    'JSEM-internals.R'
     'all-classes.R'
     'all-generics.R'
     'all-methods.R'
-    'JSEM-internals.R'
     'clustering-internals.R'
+    'initiator.R'
+    'start-here.R'
+    'utilities-internals.R'
+    'utilities-exported.R'
+    'primary.R'
+    'reduce-features.R'
 Depends: 
     R (>= 4.3.0)
 LazyData: false
