@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(DNEAdev)
+library(DNEA)
 
-test_check("DNEAdev")
+test_check("DNEA")
