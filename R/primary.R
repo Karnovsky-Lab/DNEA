@@ -1,7 +1,7 @@
-#' @include JSEM.R
-#' @include utilities-external.R
-#' @include utilities-internal.R
-#' @include preprocess_lib.R
+#' @include JSEM-internals.R
+#' @include utilities-exported.R
+#' @include utilities-internals.R
+#' @include clustering-internals.R
 #' @include all-methods.R
 #' @include all-generics.R
 #' @include all-classes.R
