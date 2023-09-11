@@ -3,23 +3,23 @@
 ###############################                                                                                                                 #
 #                                                                                                                                               #
 # start-here.R.....................This file - contains the package legend as well as package and data documentation                            #
-# createDNEAobject.R...............contains the exported createDNEAobject() function that initiates the DNEAdev workflow. The internal helper      #
+# initiator.R......................contains the exported createDNEAobject() function that initiates the DNEAdev workflow. The internal helper      #
 #                                  functions called by createDNEAobject (ie. restructure_input_data(), dataDiagnostics(), metabDE()) are also   #
 #                                  located in this file                                                                                         #
-# collapseNodes-fun.R..............contains the exported wrapper function(reduceFeatures()) for node collapsing as well as the internal         #
+# reduce-features.R................contains the exported wrapper function(reduceFeatures()) for node collapsing as well as the internal         #
 #                                  helper functions called by said function (ie. collapseNodes_cor(), collapseNodes_knowledge(),                #
 #                                  and collapseNodes_hybrid())                                                                                  #
-# MainFunctions.R..................contains the exported wrapper functions for each step of DNEAdev (ie. BICtune(), stabilitySelection(),          #
+# primary.R........................contains the exported wrapper functions for each step of DNEAdev (ie. BICtune(), stabilitySelection(),          #
 #                                  getNetworks(), clusterNet(), runNetGSA())                                                                    #
-# utilities-internal.R.............contains internal utility functions used by exported functions (ie. split_by_condition)                      #
-# utilities-external.R.............contains exported utility functions that adds functionality for the user but not part of                     #
+# utilities-internals.R............contains internal utility functions used by exported functions (ie. split_by_condition)                      #
+# utilities-exported.R.............contains exported utility functions that adds functionality for the user but not part of                     #
 #                                  the DNEAdev workflow (ie. includeMetadata(), plotNetworks(), getNetworkFiles(), filterNetworks())               #
 # all-classes.R....................contains the custom s4 classes and validator functions                                                       #
 # all-generics.R...................contains all s4 generics                                                                                     #
 # all-methods.R....................contains all s4 custom methods                                                                               #
-# JSEM.R...........................contains all of the internal functions for joint estimation of biological networks (ie. functions            #
+# JSEM-internals.R.................contains all of the internal functions for joint estimation of biological networks (ie. functions            #
 #                                  called by BICtune(), stabilitySelection(), and getNetworks())                                                #
-# preprocess_lib.R.................contains the internal functions necessary for consensus clustering                                           #
+# clustering-internals.R...........contains the internal functions necessary for consensus clustering                                           #
 #################################################################################################################################################
 
 #' The example data from xxx

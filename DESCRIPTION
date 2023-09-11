@@ -36,17 +36,17 @@ Imports:
     stringr,
     utils
 Collate: 
-    'JSEM.R'
     'start-here.R'
+    'initiator.R'
+    'reduce-features.R'
+    'primary.R'
+    'utilities-internals.R'
+    'utilities-exported.R'
     'all-classes.R'
     'all-generics.R'
     'all-methods.R'
-    'preprocess_lib.R'
-    'utilities-internal.R'
-    'utilities-external.R'
-    'MainFunctions.R'
-    'collapseNodes-fun.R'
-    'createDNEAobject.R'
+    'JSEM-internals.R'
+    'clustering-internals.R'
 Depends: 
     R (>= 4.3.0)
 LazyData: false
