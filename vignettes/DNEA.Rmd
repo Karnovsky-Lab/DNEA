@@ -196,14 +196,14 @@ rm(nodelist_table)
 GGM's require considerable computational power. Adding additional samples to your data set will have marginal effects on the memory and processing time required for analysis, however, as the number of features grows in your data set the run time will increase dramatically. The ability to parallelize tasks on a high-performance machine (cluster or cloud resource) to perform stability selection helps tremendously with this issue. Even so, a user may still find themselves constrained by the resources available to them. Moreover, the data set may contain many compounds of the same class that are highly correlated, and/or network resolution at the individual molecule level is not needed (i.e. fatty acids that vary by only a few bonds in a lipidomics study). In these cases, aggregating highly correlated metabolites into a single node decreases the complexity of the analysis without losing critical network information. Less compute resources are required for the analysis and the resulting networks are more interpretable.
 
 
-We have implemented an updated node aggregating algorithm similar to the one described in @Filigree2021. The `reduceFeatures()` function makes available the **correlation-based**, **knowledge-based**, and **hybrid** collapsing methods from Filigree. The main difference being that the user now specifies a pearson correlation threshold by which to collapse features with an absolute correlation above said value. The function then re-runs `createDNEAobject()` to create a `collapsed_DNEAresults` object with the new data.  
+We have implemented an updated node aggregating algorithm similar to the one described in @Filigree2021. The `aggregateFeatures()` function makes available the **correlation-based**, **knowledge-based**, and **hybrid** collapsing methods from Filigree. The main difference being that the user now specifies a pearson correlation threshold by which to collapse features with an absolute correlation above said value. The function then re-runs `createDNEAobject()` to create a `collapsed_DNEAresults` object with the new data.  
 
 
-To perform feature aggregation, we need to provide `reduceFeatures()` the `DNEAresults` object and a character string corresponding to the desired aggregation method. If the "correlation" or "hybrid" method is chosen, we specify the `correlation_threshold` parameter wherein metabolites with correlations stronger than this threshold are aggregated into a single node. If the "knowledge" or "hybrid" method is chosen, we need to provide a data frame for `feature_groups` to specify the class of each metabolite in our data set. Metabolite aggregation is then performed within each class. More information about the three methods as well as best use cases can be found in the function documentation and in @Filigree2021.  
+To perform feature aggregation, we need to provide `aggregateFeatures()` the `DNEAresults` object and a character string corresponding to the desired aggregation method. If the "correlation" or "hybrid" method is chosen, we specify the `correlation_threshold` parameter wherein metabolites with correlations stronger than this threshold are aggregated into a single node. If the "knowledge" or "hybrid" method is chosen, we need to provide a data frame for `feature_groups` to specify the class of each metabolite in our data set. Metabolite aggregation is then performed within each class. More information about the three methods as well as best use cases can be found in the function documentation and in @Filigree2021.  
 
 
 For demonstration purposes, we are going to use the "hybrid" approach for feature aggregation. The `feature_groups` input should be a data frame with the original metabolite names as the first column column and also the row names. The class labels should be in the second column. Independent metabolites can retain their name as its class label. Let's create the `feature_groups` data frame, and group the branched chain amino acids into one class and all other acids into another.
-```{r, setup input for reduceFeatures, eval=TRUE}
+```{r, setup input for aggregateFeatures, eval=TRUE}
 #save metabolite names
 metab_names <- rownames(expressionData(TEDDYdat, normalized = FALSE))
 
@@ -231,9 +231,9 @@ kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
 ```
 
 For the "hybrid" method we also have to provide a `correlation_threshold` value. The algorithm will only aggregate metabolites within the same class that have a stronger correlation than the value provided with this method.
-```{r, run reduceFeatures, eval=TRUE}
+```{r, run aggregateFeatures, eval=TRUE}
 #perform feature collapsing
-collapsed_TEDDY <- reduceFeatures(object = TEDDYdat,
+collapsed_TEDDY <- aggregateFeatures(object = TEDDYdat,
                                   method = "hybrid",
                                   correlation_threshold = 0.7,
                                   feature_groups = TEDDY_groups)
