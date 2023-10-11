@@ -16,7 +16,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 output: 
-    BiocStyle::pdf_document
+    BiocStyle::html_document
   vignette: >
     %\VignetteIndexEntry{Vignette Title}
     %\VignetteEngine{knitr::rmarkdown}
