@@ -3,21 +3,21 @@
 \docType{data}
 \name{dnw}
 \alias{dnw}
-\title{Example results for DNEAdev}
+\title{Example results for DNEA}
 \format{
-A DNEAdev results object after completing a DNEAdev experiment.
+A DNEA results object after completing a DNEA experiment.
 }
 \source{
-The data is stored in the \code{\link{DNEAdev}} package and can be accessed by running data(dnw) in the console.
+The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(dnw) in the console.
 }
 \usage{
 data("dnw")
 }
 \value{
-A \code{DNEAresults} object containing the results of a DNEAdev experiment
+A \code{DNEAresults} object containing the results of a DNEA experiment
 }
 \description{
-This data is an example DNEAresults object after performing DNEAdev. The experiment was performed using the \code{\link{TEDDY}}
+This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
 data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
 }
 \keyword{datasets}
