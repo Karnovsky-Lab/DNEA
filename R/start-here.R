@@ -7,7 +7,7 @@
 # initiator.R......................contains the exported createDNEAobject() function that initiates the DNEA workflow. The internal helper      #
 #                                  functions called by createDNEAobject (ie. restructure_input_data(), dataDiagnostics(), metabDE()) are also   #
 #                                  located in this file                                                                                         #
-# reduce-features.R................contains the exported wrapper function(reduceFeatures()) for node collapsing as well as the internal         #
+# reduce-features.R................contains the exported wrapper function(aggregateFeatures()) for node collapsing as well as the internal         #
 #                                  helper functions called by said function (ie. collapseNodes_cor(), collapseNodes_knowledge(),                #
 #                                  and collapseNodes_hybrid())                                                                                  #
 # primary.R........................contains the exported wrapper functions for each step of DNEA (ie. BICtune(), stabilitySelection(),          #

@@ -113,13 +113,13 @@ setClass(Class = "DNEAresults",
 #' An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
 #' \code{\link{DNEAresults-class}}
 #'
-#' @slot original_experiment The DNEAresults object input to \code{\link{reduceFeatures}}
+#' @slot original_experiment The DNEAresults object input to \code{\link{aggregateFeatures}}
 #' @slot feature_membership A data.frame containing all of the features from the original input data and their
 #' corresponding group membership in the collapsed data.
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{reduceFeatures}}, \code{\link{createDNEAobject}}
+#' @seealso \code{\link{aggregateFeatures}}, \code{\link{createDNEAobject}}
 #' @returns A collapsed_DNEAresults object
 #' @docType class
 #' @import methods

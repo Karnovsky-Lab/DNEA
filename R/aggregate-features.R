@@ -78,7 +78,7 @@
 #' TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
 #'
 #'
-#' collapsed_TEDDY <- reduceFeatures(object = dnw,
+#' collapsed_TEDDY <- aggregateFeatures(object = dnw,
 #'                                   method = "hybrid",
 #'                                   correlation_threshold = 0.7,
 #'                                   feature_groups = TEDDY_groups)
@@ -88,12 +88,12 @@
 #' @importFrom stringr str_detect
 #' @importFrom stats hclust cutree as.dist
 #' @export
-reduceFeatures <- function(object,
-                           method = c("correlation",
-                                      "knowledge",
-                                      "hybrid"),
-                           correlation_threshold = NULL,
-                           feature_groups = NULL){
+aggregateFeatures <- function(object,
+                              method = c("correlation",
+                                         "knowledge",
+                                         "hybrid"),
+                              correlation_threshold = NULL,
+                              feature_groups = NULL){
 
   ##set method
   method <- match.arg(method)
@@ -193,7 +193,7 @@ reduceFeatures <- function(object,
 #'
 #' @author Gayatri Iyer
 #'
-#' @seealso \code{\link{reduceFeatures}}
+#' @seealso \code{\link{aggregateFeatures}}
 #'
 #' @returns The collapsed expression data and a group table indicating which features were
 #'         collapsed into a given group.
@@ -321,7 +321,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 #'
 #' @author Gayatri Iyer
 #'
-#' @seealso \code{\link{reduceFeatures}}
+#' @seealso \code{\link{aggregateFeatures}}
 #'
 #' @returns The collapsed expression data and a group table indicating which features were collapsed into
 #'         a given group.
@@ -389,7 +389,7 @@ collapseNodes_knowledge <- function (dat,
 #'
 #' @author Gayatri Iyer
 #'
-#' @seealso \code{\link{collapseNodes_cor}}, \code{\link{collapseNodes_knowlege}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{collapseNodes_cor}}, \code{\link{collapseNodes_knowlege}}, \code{\link{aggregateFeatures}}
 #'
 #' @returns The collapsed expression data and a group table indicating which features were collapsed into a
 #'         given group.

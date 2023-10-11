@@ -7,7 +7,7 @@
 #'
 #' @param object A \code{DNEAresults} object
 #' @author Christopher Patsalis
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 #'
 #' @returns A summary of the information stored in a \code{DNEAresults} object.
 #' @examples
@@ -42,7 +42,7 @@ setMethod("show", "DNEAresults", function(object) {
 #'
 #' @param object A DNEAinputSummary object
 #' @author Christopher Patsalis
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 #'
 #' @returns A summary of the input data to \code{\link{createDNEAobject}}.
 #' @keywords internal
@@ -99,7 +99,7 @@ expressionData.DNEAresults <- function(x, normalized = TRUE){
 #' @param normalized A boolean indicating whether the normalized or original input data should be returned
 #'
 #' @author Christopher Patsalis
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 
 #' @returns The expression matrix specified by the user.
 #' @examples
@@ -488,7 +488,7 @@ diagnostics.DNEAresults <- function(x){
 #'
 #' @param a \code{DNEAresults} object or \code{DNEAinputSummary} object
 #' @author Christopher Patsalis
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 #' @returns Returns the diagnostic values for the input expression data.
 #' @examples
 #' #import example data
@@ -531,7 +531,7 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #'
 #' @param x A \code{DNEAresults} object
 #' @author Christopher Patsalis
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 #' @returns The numbers of samples/features and diagnostic values of the input data calculated by
 #'          \code{\link{createDNEAobject}}.
 #' @examples
