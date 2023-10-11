@@ -42,7 +42,7 @@ Regularization often takes care of this problem by arbitrarily selecting one of 
 correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
 by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
+the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
 }
 
 \subsection{Benefits of Feauture Collapsing}{

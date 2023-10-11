@@ -17,7 +17,7 @@ This function will display the number of samples, number of features, and diagno
 \code{DNEAresults} object
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+\code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 }
 \author{
 Christopher Patsalis

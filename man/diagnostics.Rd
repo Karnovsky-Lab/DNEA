@@ -37,7 +37,7 @@ data(dnw)
 diagnostics(dnw)
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+\code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 }
 \author{
 Christopher Patsalis
