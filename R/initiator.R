@@ -1,11 +1,11 @@
 #'
 #'
 #'
-#' Initialize DNEAresults object
+#' Initialize DNEAobj object
 #'
 #' @description
 #' This function takes as input a matrix of non-normalized, non-transformed expression data and the
-#' case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
+#' case/control group labels in order to initiate a DNEAobj object. Differential expression analysis using student's
 #' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
 #'
 #' ## IMPORTANT
@@ -46,7 +46,7 @@
 #' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
 #' information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
 #'
-#' @returns A \code{DNEAresults} object.
+#' @returns A \code{DNEAobj} object.
 #'
 #' @examples
 #' #import example data
@@ -57,7 +57,7 @@
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
 #'
-#' #initiate DNEAresults object
+#' #initiate DNEAobj object
 #' DNEA <- createDNEAobject(expression_data = TEDDY,
 #'                          project_name = "TEDDYmetabolomics",
 #'                          group_labels = group_labels)
@@ -95,7 +95,7 @@ createDNEAobject <- function(project_name,
   }
 
   ##initiate DNEA object
-  object <- new("DNEAresults",
+  object <- new("DNEAobj",
                 project_name = project_name,
                 assays =  restructured_data[[1]],
                 metadata = list(samples = restructured_data[[2]]$samples,
@@ -129,10 +129,10 @@ createDNEAobject <- function(project_name,
   return(object)
 }
 
-#' Restructure input data for initiation of DNEAresults object
+#' Restructure input data for initiation of DNEAobj object
 #'
 #' This function takes as input a matrix of expression data and the experimental group labels in order to
-#' restructure the input as to prepare it for initiation of a DNEAresults object.
+#' restructure the input as to prepare it for initiation of a DNEAobj object.
 #'
 #' @param expression_data A matrix or data frame of expression data. The sample names should be rownames
 #'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
@@ -215,7 +215,7 @@ restructure_input_data <- function(expression_data,
 
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
-#' This function takes as input a DNEAresults object and first splits the scaled data by condition. The minimum eigen
+#' This function takes as input a DNEAobj object and first splits the scaled data by condition. The minimum eigen
 #' value and condition number are then calculated for the whole dataset as well as for each condition to determine
 #' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
 #' found in \strong{\emph{Details}}.

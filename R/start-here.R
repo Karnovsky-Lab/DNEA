@@ -69,10 +69,10 @@
 
 #' Example results for DNEA
 #'
-#' This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
+#' This data is an example DNEAobj object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
 #' data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
 #'
-#' @returns A \code{DNEAresults} object containing the results of a DNEA experiment
+#' @returns A \code{DNEAobj} object containing the results of a DNEA experiment
 #' @docType data
 #' @keywords datasets
 #' @name dnw

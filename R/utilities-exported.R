@@ -1,13 +1,13 @@
 #'
 #'
 #'
-#' Add additional metadata to the DNEAresults object
+#' Add additional metadata to the DNEAobj object
 #'
 #' This function will take additional metadata and add it to the specified dataframe in the metadata
 #' slot. \strong{\emph{NOTE:}} The rownames of the new metadata must match the order of the input sample names or feature names,
 #' respectively
 #'
-#' @param object A DNEAresults object
+#' @param object A \code{\link{DNEAobj}} object
 #' @param type sample or feature metadata
 #' @param metadata a data.frame containing metadata to add
 #'
@@ -15,24 +15,24 @@
 #'
 #' @seealso \code{\link{featureNames}}, \code{\link{sampleNames}},
 #'
-#' @returns A DNEAresults object with the specified additions
+#' @returns A DNEAobj object with the specified additions
 #'
 #' @examples
 #' #import example data
 #' data(dnw)
 #' data(T1Dmeta)
 #'
-#' #make sure metadata has same sample order as DNEAresults object
+#' #make sure metadata has same sample order as DNEAobj object
 #' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 #'
-#' #add new metadata to DNEAresults object
+#' #add new metadata to DNEAobj object
 #' dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
 #'
 #' @export
 includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!any(inherits(metadata, "matrix") | inherits(metadata, "data.frame"))) stop('the input metadata should be of class "matrix" or "data.frame"!')
 
   type <- match.arg(type)
@@ -64,18 +64,18 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
   return(object)
 }
 
-#' Include custom normalized data in the DNEAresults object
+#' Include custom normalized data in the DNEAobj object
 #'
-#' This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
+#' This function allows the user to input custom-normalized data into the DNEAobj object for use in DNEA analysis.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param data An \emph{m x n} numeric matrix of custom-normalized expression expression data
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{DNEAresults},
+#' @seealso \code{\link{createDNEAobject}}, \code{DNEAobj},
 #'
-#' @returns A \code{DNEAresults} object with the added expression data in the @@assays slot
+#' @returns A \code{DNEAobj} object with the added expression data in the @@assays slot
 #'
 #' @examples
 #' #import example data
@@ -116,10 +116,10 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 addExpressionData <- function(object, data){
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!inherits(data, "matrix")) stop('the input metadata should be of class "matrix"!')
-  if(!all(rownames(data) == rownames(expressionData(object, normalized = TRUE)))) stop("The feature order of new data does not match the feature order in the DNEAresults object!")
-  if(!all(colnames(data) == colnames(expressionData(object, normalized = TRUE)))) stop("The sample order of new data does not match the sample order in the DNEAresults object!")
+  if(!all(rownames(data) == rownames(expressionData(object, normalized = TRUE)))) stop("The feature order of new data does not match the feature order in the DNEAobj object!")
+  if(!all(colnames(data) == colnames(expressionData(object, normalized = TRUE)))) stop("The sample order of new data does not match the sample order in the DNEAobj object!")
   if(!is.numeric(data)) stop("The new data should be a numeric matrix!")
 
   object@assays[["DNEA_scaled_data"]] <- expressionData(object, normalized = TRUE)
@@ -135,7 +135,7 @@ addExpressionData <- function(object, data){
 #' This function will save the node and edge information as .csv files in the working directory.
 #' The files are already formatted for input into Cytoscape.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param file_path The filepath to save the node and edge lists to. If **NULL**, the files will be saved to the working
 #' directory
 #'
@@ -155,7 +155,7 @@ addExpressionData <- function(object, data){
 getNetworkFiles <- function(object, file_path = NULL){
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
   if(missing(file_path)){
     file_path <- paste0(getwd(), "/")
@@ -178,7 +178,7 @@ getNetworkFiles <- function(object, file_path = NULL){
 #' This function plots the total network, condition networks, or subnetworks as specified by the user. Purple nodes are
 #' differential features, green indicates edges specific to group 1, and red indicates edges specific to group 2.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param type There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the whole network or condition networks.
 #' \emph{"subnetworks"} specifies that one of the sub networks should be plot. Additional input via the \strong{subtype} parameter is required
 #' @param subtype There are several possible arguments to \strong{subtype}. If \emph{type == "group_networks"}, \strong{subtype}
@@ -225,7 +225,7 @@ plotNetworks <- function(object,
                          label_font = 1){
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
   #get type argument
   type <- match.arg(type)
@@ -284,12 +284,12 @@ plotNetworks <- function(object,
 
 #'
 #'
-filterNetworks.DNEAresults <- function(data,
+filterNetworks.DNEAobj <- function(data,
                                        pcor,
                                        top_percent_edges){
 
   ##test for proper input
-  if(!inherits(data, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(data, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
   ##grab adjacency matrices
   weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
@@ -335,7 +335,7 @@ filterNetworks.DNEAresults <- function(data,
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  #store the adjacency matrices in DNEAresults object
+  #store the adjacency matrices in DNEAobj object
   adjacencyMatrix(x = data, weighted = TRUE) <- weighted_adjacency_matrices
   adjacencyMatrix(x = data, weighted = FALSE) <- unweighted_adjacency_matrices
 
@@ -385,7 +385,7 @@ filterNetworks.DNEAresults <- function(data,
 #' Filter the adjacency matrices to only the edges that meet the filter conditions
 #'
 #' @description
-#' This function takes as input a \code{DNEAresults} object and allows the user to filter the network edges by one of two methods:
+#' This function takes as input a \code{DNEAobj} object and allows the user to filter the network edges by one of two methods:
 #'
 #' \enumerate{
 #' \item \strong{Partial Correlation} - The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.
@@ -393,7 +393,7 @@ filterNetworks.DNEAresults <- function(data,
 #'
 #' Filtering is performed on the case and control adjacency matrices separately. \cr
 #'
-#' @param data A \code{DNEAresults} object or list of adjacency matrices
+#' @param data A \code{DNEAobj} object or list of adjacency matrices
 #' @param pcor A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.
 #' @param top_percent_edges A value between 0-1 that corresponds to the top x% edges to keep in the networks
 #' ie. top_percent_edges = 0.1 will keep only the top 10% strongest edges in the networks.
@@ -404,7 +404,7 @@ filterNetworks.DNEAresults <- function(data,
 #' @importFrom stats quantile
 #' @rdname filterNetworks
 #' @export
-setMethod("filterNetworks", signature(data = "DNEAresults"), filterNetworks.DNEAresults)
+setMethod("filterNetworks", signature(data = "DNEAobj"), filterNetworks.DNEAobj)
 
 filterNetworks.list <- function(data, pcor, top_percent_edges){
 

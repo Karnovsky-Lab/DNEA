@@ -558,5 +558,11 @@ knitr::include_graphics("./images/cytoscape-nodetableconfirm.jpg")
 ```
 Metscape is an app within Cytoscape that provides additional functionality for the visualization of metabolomics and lipidomics data. More information about these tools can be found on their respective websites linked at the top of [Network Visualization].
 
+# Session info
+
+```{r session info, eval=TRUE}
+sessionInfo()
+```
+
 # References
 

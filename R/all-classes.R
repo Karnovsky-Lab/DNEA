@@ -43,7 +43,7 @@ setClass(Class = "DNEAinputSummary",
                    num_features = "numeric",
                    diagnostic_values = "data.frame"))
 
-#' DNEAresults
+#' DNEAobj
 #'
 #' An s4 class to represent the DNEA workflow
 #'
@@ -90,10 +90,10 @@ setClass(Class = "DNEAinputSummary",
 #' \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
 #' \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{clusterNet}},
 #' \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
-#' @returns A DNEAresults object
+#' @returns A DNEAobj object
 #' @import methods
-#' @rdname DNEAresults
-setClass(Class = "DNEAresults",
+#' @rdname DNEAobj
+setClass(Class = "DNEAobj",
          slots = c(
            project_name = 'character',
            assays = 'list',
@@ -108,26 +108,26 @@ setClass(Class = "DNEAresults",
            netGSA = 'data.frame')
 )
 
-#' collapse_DNEAresults
+#' collapse_DNEAobj
 #'
 #' An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
-#' \code{\link{DNEAresults-class}}
+#' \code{\link{DNEAobj-class}}
 #'
-#' @slot original_experiment The DNEAresults object input to \code{\link{aggregateFeatures}}
+#' @slot original_experiment The DNEAobj object input to \code{\link{aggregateFeatures}}
 #' @slot feature_membership A data.frame containing all of the features from the original input data and their
 #' corresponding group membership in the collapsed data.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso \code{\link{aggregateFeatures}}, \code{\link{createDNEAobject}}
-#' @returns A collapsed_DNEAresults object
+#' @returns A collapsed_DNEAobj object
 #' @docType class
 #' @import methods
-#' @rdname collapse_DNEAresults
-setClass(Class = "collapsed_DNEAresults",
-         slots = c(original_experiment = "DNEAresults",
+#' @rdname collapse_DNEAobj
+setClass(Class = "collapsed_DNEAobj",
+         slots = c(original_experiment = "DNEAobj",
                    feature_membership = "data.frame"),
-         contains = "DNEAresults")
+         contains = "DNEAobj")
 
 #' check validity of "consensusClusteringResults"
 #' @docType methods
@@ -166,11 +166,11 @@ setValidity("DNEAinputSummary", function(object){
     "There was a problem with diagnostics"
   }
 })
-#'Check Validity of "DNEAresults" object
+#'Check Validity of "DNEAobj" object
 #' @docType methods
 #' @import methods
 #' @noRd
-setValidity("DNEAresults", function(object){
+setValidity("DNEAobj", function(object){
 
   #check project name
   if(!(is.character(projectName(object)))){

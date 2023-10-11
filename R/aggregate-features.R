@@ -1,7 +1,7 @@
 #' Collapse correlated features into a single goup
 #'
 #' @description
-#' This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
+#' This function takes as input a DNEAobj object and collapses highly correlated features within the non-normalized,
 #' non-transformed data using one of three methods:  \cr
 #'
 #'   \enumerate{
@@ -16,7 +16,7 @@
 #' \strong{\emph{NOTE:}} This method was developed using non-normalized, non-transformed data and this fact is critical for feature
 #' collapsing since the mean expression value is used for each group. Normalized data may alter the results of collapsing.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param method A character string that dictates the collapsing method to use. The available methods are: "correlation",
 #' "knowledge", or "hybrid"
 #' @param correlation_threshold A threshold wherein features correlated above correlation_threshold
@@ -63,7 +63,7 @@
 #' experiments where the dataset contains many compounds of a similar class, but the user is unsure how correlated the features of
 #' said class will be. This method prevents poorly correlated or uncorrelated features from being collapsed into a single feature.}
 #'
-#' @returns A \code{collapsed_DNEAresults} object.
+#' @returns A \code{collapsed_DNEAobj} object.
 #'
 #' @examples
 #' #import example data
@@ -141,12 +141,12 @@ aggregateFeatures <- function(object,
   new_group_labels <- res[["collapsed_data"]][["groups"]]
   names(new_group_labels) <- res[["collapsed_data"]][["samples"]]
 
-  #initialize new collapsed_DNEAresults object
+  #initialize new collapsed_DNEAobj object
   reduced_object <- createDNEAobject(project_name = projectName(object),
                                      expression_data = new_dat,
                                      group_labels = new_group_labels)
 
-  collapsed_object <- new("collapsed_DNEAresults",
+  collapsed_object <- new("collapsed_DNEAobj",
                           project_name = projectName(reduced_object),
                           assays =  list(expression_data = expressionData(reduced_object, normalized = FALSE),
                                          scaled_expression_data = expressionData(reduced_object, normalized = TRUE)),
