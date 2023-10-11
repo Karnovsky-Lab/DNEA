@@ -37,6 +37,7 @@ Imports:
     utils
 Collate: 
     'JSEM-internals.R'
+    'aggregate-features.R'
     'all-classes.R'
     'all-generics.R'
     'all-methods.R'
@@ -46,7 +47,6 @@ Collate:
     'utilities-internals.R'
     'utilities-exported.R'
     'primary.R'
-    'reduce-features.R'
 Depends: 
     R (>= 4.3.0)
 LazyData: false
