@@ -1,33 +1,35 @@
 #dat<- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
 #dat <- read.csv('~/Documents/Karnovsky_lab/Datasets/TEDDY/adjusted/PLASMA/IA_PLASMA_first_visit_adjusted_V2.csv')
+start <- Sys.time()
 library(BiocParallel)
-BP_plan <- SerialParam(RNGseed = 417)
+# BP_plan <- SerialParam(RNGseed = 417)
+BP_plan <- MulticoreParam(workers = 4, RNGseed = 417)
 set.seed(417)
 
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_04252023.csv')
 # dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitpaired_non-transformed_07122023.csv')
 #
-# dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
-#
-# dat <- dat[, !grepl("nist", colnames(dat))]
-# rownames(dat) <- dat$sample
-# group_labels <- dat$group
-# names(group_labels) <- dat$sample
-# group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
-# group_labels[1:10]
-# dat<- dat[,-c(1,2)]
-# dat <- t(dat)
-# TEDDY <- dat
+dat <- read.csv('~/Documents/Karnovsky_lab/DNEAproject/published_files/adjT1DplasmaLastVisitAll-nontransformed-07122023.csv')
+
+dat <- dat[, !grepl("nist", colnames(dat))]
+rownames(dat) <- dat$sample
+group_labels <- dat$group
+names(group_labels) <- dat$sample
+group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
+group_labels[1:10]
+dat<- dat[,-c(1,2)]
+dat <- t(dat)
+TEDDY <- dat
 # load("~/Documents/Karnovsky_lab/data/TEDDYresults.rda")
 # load("~/Documents/Karnovsky_lab/data/T1Dmeta.rda")
 # object<-createDNEAobject(project_name = 'testing', expression_data = dat, group_labels = group_labels)
 
-data("TEDDY")
-data("T1Dmeta")
-if(!(all(rownames(T1Dmeta) == colnames(TEDDY)))) stop("problem!")
-group_labels <- T1Dmeta$group
-names(group_labels) <- rownames(T1Dmeta)
-object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, group_labels = group_labels)
+# data("TEDDY")
+# data("T1Dmeta")
+# if(!(all(rownames(T1Dmeta) == colnames(TEDDY)))) stop("problem!")
+# group_labels <- T1Dmeta$group
+# names(group_labels) <- rownames(T1Dmeta)
+object <- createDNEAobject(project_name = 'TEDDY_metabolomics', expression_data = TEDDY, group_labels = group_labels)
 
 # #test addExpressionData
 # TEDDY <- t(TEDDY)
@@ -62,12 +64,13 @@ object <- createDNEAobject(project_name = 'testing', expression_data = TEDDY, gr
 # object <- reduceFeatures(object, method = "knowledge", correlation_threshold = 0.7, feature_groups = TEDDY_groups)
 # object <- reduceFeatures(object, method = "correlation", correlation_threshold = 0.9)
 # object <- reduceFeatures(object, method = "hybrid", correlation_threshold = 0.7, feature_groups = TEDDY_groups)
-object <- BICtune(object = object, BPPARAM = BP_plan)
+object <- BICtune(object = object, BPPARAM = BP_plan, verbose = TRUE)
 object <- stabilitySelection(object = object, subSample = FALSE, nreps = 4, BPPARAM = BP_plan)
 
 
 object <- getNetworks(object = object)
-
+end <- Sys.time()
+end - start
 object <- filterNetworks(object, pcor = 0.166)
 # object <- filterNetworks(object, top_percent_edges = 0.2)
 object <- clusterNet(object = object, tau = 0.5)
@@ -100,7 +103,7 @@ T1Dmeta <- T1Dmeta[colnames(dat),]
 all(rownames(T1Dmeta) == colnames(dat))
 
 
-
+object <- readRDS("~/Documents/Karnovsky_lab/DNEA/dev_files/unfilteredTEDDY.rds")
 
 
 

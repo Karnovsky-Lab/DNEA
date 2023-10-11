@@ -6,12 +6,13 @@ library(BiocCheck)
 library(biocViews)
 library(BiocStyle)
 library(knitr)
-devtools::load_all("~/Documents/Karnovsky_lab/DNEAdev/", reset = TRUE, recompile = TRUE)
-#devtools::create('DNEAdev')
-available('DNEAdev')
+library(tinytex)
+devtools::load_all("~/Documents/Karnovsky_lab/DNEA/", reset = TRUE, recompile = TRUE)
+#devtools::create('DNEA')
+available('DNEA')
 
 #add packages
-usethis::use_mit_license('DNEAdev')
+usethis::use_mit_license('DNEA')
 usethis::use_description()
 usethis:: use_mit_license()
 usethis::use_package("Matrix")
@@ -36,6 +37,10 @@ usethis::use_package("withr", type = "Suggests")
 usethis::use_package("BiocStyle", type = "Suggests")
 usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("rmarkdown", type = "Suggests")
+usethis::use_package("pheatmap", type = "Suggests")
+usethis::use_package("Hmisc", type = "Suggests")
+usethis::use_package("ggplot2", type = "Suggests")
+usethis::use_package("kableExtra", type = "Suggests")
 # usethis::use_package("future")
 usethis::use_package()
 
@@ -47,24 +52,25 @@ knitr::write_bib(x = "BiocManager", file = "test.bib")
 #add data
 usethis::use_data(TEDDY, overwrite = TRUE)
 # usethis::use_data(group_labels, overwrite = TRUE)
-usethis::use_data(TEDDYresults, overwrite = TRUE)
+usethis::use_data(dnw, overwrite = TRUE)
+
 usethis::use_data(T1Dmeta, overwrite = TRUE)
 
 #add to .Rbuildignore
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/parallelTest.R", escape = TRUE)
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/TEDDYplasmaIA.csv", escape = TRUE)
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/workflow.R", escape = TRUE)
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/Dev.R", escape = TRUE)
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/.gitignore", escape = TRUE)
-use_build_ignore("~/Documents/Karnovsky_lab/DNEAdev/dev_files/DNEAdevTesting.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/dev_files/parallelTest.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/dev_files/TEDDYplasmaIA.csv", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/dev_files/workflow.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/dev_files/Dev.R", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/.gitignore", escape = TRUE)
+use_build_ignore("~/Documents/Karnovsky_lab/DNEA/dev_files/DNEAdevTesting.R", escape = TRUE)
 
 #add tests
 
 usethis::use_testthat()
-dir.create("~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/")
-saveRDS(T1Dmeta, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-T1Dmeta.rds")
-saveRDS(TEDDY, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDY.rds")
-saveRDS(TEDDYresults, "~/Documents/Karnovsky_lab/DNEAdev/tests/testthat/testdata/test-TEDDYresults.rds")
+dir.create("~/Documents/Karnovsky_lab/DNEA/tests/testthat/testdata/")
+saveRDS(T1Dmeta, "~/Documents/Karnovsky_lab/DNEA/tests/testthat/testdata/test-T1Dmeta.rds")
+saveRDS(TEDDY, "~/Documents/Karnovsky_lab/DNEA/tests/testthat/testdata/test-TEDDY.rds")
+saveRDS(TEDDYresults, "~/Documents/Karnovsky_lab/DNEA/tests/testthat/testdata/test-TEDDYresults.rds")
 usethis::use_test("utilities-internals.R")
 usethis::use_test("utilities-external.R")
 # usethis::use_test("MainFunctions.R")
@@ -75,9 +81,9 @@ usethis::use_test("clusterNet.R")
 usethis::use_test("runNetGSA.R")
 usethis::use_test("createDNEAobject.R")
 usethis::use_test("reduceFeatures.R")
-
+saverds
 usethis::use_news_md()
-biocViews::recommendBiocViews("/Users/chrispatsalis/Documents/Karnovsky_lab/DNEAdev/", branch = "Software")
+biocViews::recommendBiocViews("/Users/chrispatsalis/Documents/Karnovsky_lab/DNEA/", branch = "Software")
 
 BiocCheck::BiocCheck()
 
@@ -86,18 +92,11 @@ devtools::document()
 devtools::build_manual()
 devtools::check()
 devtools::build()
-devtools::install("~/Documents/Karnovsky_lab/DNEAdev/")
-
-datasetSummary(object) <- new("DNEAinputSummary",
-                              num_samples = diagnostic_values[[1]],
-                              num_features = diagnostic_values[[2]],
-                              diagnostic_values = diagnostic_values[[4]])
-
-return(list(num_samples = num_samples, num_features = num_features,
-            condition_levels = condition_values, diagnostic_values = diagnostic_values))
+devtools::build_vignettes()
+devtools::install("~/Documents/Karnovsky_lab/DNEA/")
 
 
-message(paste0(names(unweighted_adjacency_matrices)[[1]]," network specific edges: ", sum(unweighted_adjacency_matrices[[1]])/2), appendLF = TRUE)
-message(paste0(names(unweighted_adjacency_matrices)[[2]]," network specific edges: ", sum(unweighted_adjacency_matrices[[2]])/2), appendLF = TRUE)
-message(paste0("Number of edges shared by both networks: ", sum(edge_list$edge == "Both")))
-message(paste0("Total number of edges in dataset: ", nrow(edge_list)))
+
+tinytex::parse_install(
+  text = "! LaTeX Error: Command \raggedtwoe@everyselectfont undefined."
+)
