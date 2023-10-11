@@ -1,20 +1,20 @@
 #################################################################################################################################################
-#* DNEAdev package organization *#                                                                                                                 #
+#* DNEA package organization *#                                                                                                                 #
 ###############################
 ################################################################################
 #                                                                                                                                               #
 # start-here.R.....................This file - contains the package legend as well as package and data documentation                            #
-# initiator.R......................contains the exported createDNEAobject() function that initiates the DNEAdev workflow. The internal helper      #
+# initiator.R......................contains the exported createDNEAobject() function that initiates the DNEA workflow. The internal helper      #
 #                                  functions called by createDNEAobject (ie. restructure_input_data(), dataDiagnostics(), metabDE()) are also   #
 #                                  located in this file                                                                                         #
 # reduce-features.R................contains the exported wrapper function(reduceFeatures()) for node collapsing as well as the internal         #
 #                                  helper functions called by said function (ie. collapseNodes_cor(), collapseNodes_knowledge(),                #
 #                                  and collapseNodes_hybrid())                                                                                  #
-# primary.R........................contains the exported wrapper functions for each step of DNEAdev (ie. BICtune(), stabilitySelection(),          #
+# primary.R........................contains the exported wrapper functions for each step of DNEA (ie. BICtune(), stabilitySelection(),          #
 #                                  getNetworks(), clusterNet(), runNetGSA())                                                                    #
 # utilities-internals.R............contains internal utility functions used by exported functions (ie. split_by_condition)                      #
 # utilities-exported.R.............contains exported utility functions that adds functionality for the user but not part of                     #
-#                                  the DNEAdev workflow (ie. includeMetadata(), plotNetworks(), getNetworkFiles(), filterNetworks())               #
+#                                  the DNEA workflow (ie. includeMetadata(), plotNetworks(), getNetworkFiles(), filterNetworks())               #
 # all-classes.R....................contains the custom s4 classes and validator functions                                                       #
 # all-generics.R...................contains all s4 generics                                                                                     #
 # all-methods.R....................contains all s4 custom methods                                                                               #
@@ -67,23 +67,23 @@
 #' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 "T1Dmeta"
 
-#' Example results for DNEAdev
+#' Example results for DNEA
 #'
-#' This data is an example DNEAresults object after performing DNEAdev. The experiment was performed using the \code{\link{TEDDY}}
+#' This data is an example DNEAresults object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
 #' data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
 #'
-#' @returns A \code{DNEAresults} object containing the results of a DNEAdev experiment
+#' @returns A \code{DNEAresults} object containing the results of a DNEA experiment
 #' @docType data
 #' @keywords datasets
 #' @name dnw
 #' @usage data("dnw")
-#' @format A DNEAdev results object after completing a DNEAdev experiment.
-#' @source The data is stored in the \code{\link{DNEAdev}} package and can be accessed by running data(dnw) in the console.
+#' @format A DNEA results object after completing a DNEA experiment.
+#' @source The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(dnw) in the console.
 "dnw"
 
-#' DNEAdev package for joint estimation of biological networks
+#' DNEA package for joint estimation of biological networks
 #'
-#' DNEAdev is designed to take as input non-normalized, non-transformed -omics data
+#' DNEA is designed to take as input non-normalized, non-transformed -omics data
 #' (ie. metabolomics, lipidomics, proteomics) and normalize the expression values, optimize the regularization
 #' parameter, and jointly estimate the biological networks across a user-specified experimental
 #' condition. The resulting networks may then be clustered to identify metabolic modules,
@@ -99,12 +99,12 @@
 #' \item \strong{\code{\link{clusterNet}}}
 #' \item \strong{\code{\link{runNetGSA}}}}
 #'
-#' A more descriptive workflow can be viewed in the package vignette. This can be accessed by running \code{vignette("DNEAdev")} in the console. \cr
+#' A more descriptive workflow can be viewed in the package vignette. This can be accessed by running \code{vignette("DNEA")} in the console. \cr
 #'
-#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEAdev}
+#' The source code is available at the Karnovsky lab Github page: \url{https://github.com/Karnovsky-Lab/DNEA}
 #'
 #' @docType package
-#' @name DNEAdev
-#' @aliases DNEAdev
+#' @name DNEA
+#' @aliases DNEA
 #' @keywords package
 NULL
