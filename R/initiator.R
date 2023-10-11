@@ -36,7 +36,7 @@
 #' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
 #' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 #' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
+#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
 #'
 #' ## Benefits of Feauture Collapsing
 #' When your dataset contains highly correlated features, we recommend collapsing features into related groups - such as
@@ -226,7 +226,7 @@ restructure_input_data <- function(expression_data,
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{reduceFeatures}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
 #'
 #' @details
 #' ## Diagnostics Motivation
@@ -240,7 +240,7 @@ restructure_input_data <- function(expression_data,
 #' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
 #' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
 #' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{reduceFeatures}}.
+#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
 #'
 #' ## Benefits of Feauture Collapsing
 #' In scenarios like this we recommend collapsing highly correlated features into a single group - particularly if the
