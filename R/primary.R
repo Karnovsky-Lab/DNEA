@@ -13,10 +13,10 @@ NULL
 #' This function will calculate the Bayesian information criterion (BIC) and likelihood for a range of lambda values
 #' that are automatically generated (\emph{please see \strong{Details} for more info}) or that are user-specified.
 #' The lambda value with the minimum BIC score is the optimal lambda value for the dataset and is stored in the
-#' DNEAresults object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
+#' DNEAobj object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
 #'  \code{\link{getNetworks}}
 #'
-#' @param object A \code{DNEAresults} object. See \code{\link{createDNEAobject}}
+#' @param object A \code{DNEAobj} object. See \code{\link{createDNEAobject}}
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing the lambda parameter.
 #'  If not provided, a set of lambda values are chosen based on the theoretical value for the
 #'  asymptotically valid lambda. More information about this can be found in the details section
@@ -43,7 +43,7 @@ NULL
 #' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimization method deployed here can be found
 #' in the Guo et al. (2011) paper referenced below.
 #'
-#' @returns A \code{DNEAresults} object containing the BIC and likelihood scores for every lambda value tested, as well as
+#' @returns A \code{DNEAobj} object containing the BIC and likelihood scores for every lambda value tested, as well as
 #'         the optimized lambda value
 #'
 #' @examples
@@ -68,7 +68,7 @@ BICtune <- function(object,
 
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
   ##prepare data
   dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -159,7 +159,7 @@ BICtune <- function(object,
 #' exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
 #' found in the \strong{\emph{Details}} section.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param subSample A boolean that specifies whether the number of samples are unevenly split
 #'         by condition and, therefore, should be adjusted for when randomly sampling.
 #' @param nreps The total number of replicates to perform in stability selection. The default is 500.
@@ -201,7 +201,7 @@ BICtune <- function(object,
 #' More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection
+#' @returns A \code{DNEAobj} object after populating the stable_networks slot of the object. It contains the selection
 #' results from stability selection as well as the calculated selection probabilities.
 #'
 #' @examples
@@ -228,7 +228,7 @@ stabilitySelection <- function(object,
                                verbose = TRUE){
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
 
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
@@ -369,7 +369,7 @@ stabilitySelection <- function(object,
 #' for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #' will be used as the regularization parameter.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
 #'        or \code{\link{stabilitySelection}} were already performed
 #' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
@@ -385,7 +385,7 @@ stabilitySelection <- function(object,
 #'
 #' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384; PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 #'
-#' @returns A \code{DNEAresults} object after populating the adjaceny_matrix and edge_list slots with the corresponding
+#' @returns A \code{DNEAobj} object after populating the adjaceny_matrix and edge_list slots with the corresponding
 #' adjacency_matrix for each sample condition as well as the network edge list.
 #'
 #' @examples
@@ -420,7 +420,7 @@ getNetworks <- function(object,
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
 
   # getNetworks() requires lambda hyper-parameter. Will use optimal_lambda if
@@ -478,7 +478,7 @@ getNetworks <- function(object,
 
     #modify to create model weights
     model_weight_values <- vector(mode = "list", length = 2)
-    for(x in 1:length(model_weight_values)){
+    for(x in seq(1, length(model_weight_values))){
 
       model_weight_values[[x]] <- 1/(1e-04 + as.matrix(selection_prob[[x]]))
     }
@@ -537,7 +537,7 @@ getNetworks <- function(object,
 #' information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
 #' Only subnetworks with consensus that meets or exceeds tau are identified as real.
 #'
-#' @param object A \code{DNEAresults} object
+#' @param object A \code{DNEAobj} object
 #' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
 #' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
 #' @param verbose Whether or not a progress bar should be displayed in the console
@@ -566,7 +566,7 @@ getNetworks <- function(object,
 #' greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
 #' on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
+#' @returns A \code{DNEAobj} object containing sub-network determinations for the nodes within the input network.
 #'        A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
 #'        Sub-network membership for each node can be found in the "membership" column of the node list, which can be
 #'        viewed using \code{\link{nodeList}}.
@@ -589,7 +589,7 @@ clusterNet <- function(object,
                        verbose = TRUE){
 
   #test for proper inputs
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
   if(tau < 0.5 | tau > 1.0) stop("tau corresponds to a percent agreement among the clustering methods. ",
                                  "As such, tau must be greater than 0.5 and less than 1!",
@@ -695,7 +695,7 @@ clusterNet <- function(object,
                              sum(nodeList(object)$DEstatus[consensus_membership == "independent"]),
                              0))
 
-  #add results to DNEAresults object
+  #add results to DNEAobj object
   nodeList(object)[["membership"]] <- consensus_membership
   object@consensus_clustering <- new(Class = "consensusClusteringResults",
                                      summary = summary_stat,
@@ -713,7 +713,7 @@ clusterNet <- function(object,
 #' This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
 #' using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{DNEAresults}
+#' @param object A \code{DNEAobj}
 #' @param min_size The minimum size of metabolic modules for enrichment analysis
 #'
 #' @author Christopher Patsalis
@@ -724,7 +724,7 @@ clusterNet <- function(object,
 #' Hellstern M, Ma J, Yue K, Shojaie A. netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol. 2021 Jun 11;17(6):e1008979. doi: 10.1371/journal.pcbi.1008979. PMID: 34115744; PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 #'
 #'
-#' @returns A \code{DNEAresults} object after populating the @@netGSA slot. Pathway expression differences for
+#' @returns A \code{DNEAobj} object after populating the @@netGSA slot. Pathway expression differences for
 #'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
 #'          using \code{\link{netGSAresults}}.
 #'
@@ -750,7 +750,7 @@ runNetGSA <- function(object, min_size = 5){
   #################################
 
   #test for proper input
-  if(!inherits(object, "DNEAresults")) stop('the input object should be of class "DNEAresults"!')
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
   ##set input variables
@@ -784,10 +784,10 @@ runNetGSA <- function(object, min_size = 5){
   nodeList(object)[["mc.notes"]] <- paste(networkGroups(object)[[2]], 'over', networkGroups(object)[[1]])
 
   #concatenate netGSA summary output
-  res <- data.frame(CCsummary(object)[CCsummary(object)$number_of_nodes >= min_size, ],
-                    "NetGSA_pval"= netgsa_results$results$pval,
-                    "NetGSA_pFDR"= netgsa_results$results$pFdr,
-                    check.names = FALSE)
+  res <- data.frame(CCsummary(object)[CCsummary(object)$number_of_nodes >= min_size, ])
+  res <- res[!grepl("independent", res$subnetworks),]
+  res[["NetGSA_pval"]] <- netgsa_results$results$pval
+  res[["NetGSA_pFDR"]] <- netgsa_results$results$pFdr
 
   #order netGSA results by FDR
   res <- res[order(res$NetGSA_pFDR),]
@@ -795,7 +795,7 @@ runNetGSA <- function(object, min_size = 5){
 
   #rename subnetworks
   cluster_names <- CCsummary(object)[-match("independent", CCsummary(object)$subnetworks), ]
-  new_cluster_order <- data.frame(subnetworks = c(res$subnetworks, cluster_names$subnetworks[!(cluster_names$subnetworks %in% res$subnetworks)]))
+  new_cluster_order <- data.frame(subnetworks = c(res$subnetworks, cluster_names$subnetworks[-match(res$subnetworks, cluster_names$subnetworks)]))
 
   #update consensus subnetworks
   nodeList(object)$membership <- match(nodeList(object)$membership, as.numeric(gsub('subnetwork','',new_cluster_order$subnetworks)))
