@@ -24,11 +24,15 @@ NULL
 #'        The default value is 1e-06. This value generally should not change.
 #' @param eta_value default parameter ??. Default is 0.1
 #' @param BPPARAM A \code{\link{BiocParallel}} object
-#' @param verbose Whether or not a progress bar should be displayed in the console
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}
+#' @seealso \code{\link{createDNEAobject}},
+#' \code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
+#' \code{\link[BiocParallel:SerialParam]{SerialParam}},
+#' \code{\link[BiocParallel:SnowParam]{SnowParam}}
 #'
 #' @references Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 #'
@@ -166,11 +170,16 @@ BICtune <- function(object,
 #' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
 #'        necessary if \code{\link{BICtune}} is not performed
 #' @param BPPARAM a BiocParallel object
-#' @param verbose Whether or not a progress bar should be displayed in the console
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}}
+#' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}},
+#' \code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
+#' \code{\link[BiocParallel:SerialParam]{SerialParam}},
+#' \code{\link[BiocParallel:SnowParam]{SnowParam}}
+#'
 #'
 #' @references Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
@@ -225,7 +234,7 @@ stabilitySelection <- function(object,
                                nreps = 500,
                                optimal_lambda,
                                BPPARAM = bpparam(),
-                               verbose = TRUE){
+                               BPOPTIONS = bpoptions()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -303,14 +312,6 @@ stabilitySelection <- function(object,
     ss_function <- "CGM_AHP_stabsel"
   }
 
-  #set progress bar
-  if(verbose){
-
-    BPOPTIONS <- bpoptions(progressbar = TRUE, tasks = 5)
-  }else{
-    BPOPTIONS <- bpoptions()
-  }
-
   #run SS
   stab_sel <- BiocParallel:: bplapply(X = seq(1, nreps),
                                       FUN = ss_function,
@@ -319,9 +320,6 @@ stabilitySelection <- function(object,
                                       lastar = optimized_lambda,
                                       BPPARAM = BPPARAM,
                                       BPOPTIONS = BPOPTIONS)
-
-  #add empty line after progress bar
-  if(verbose) message("", appendLF = TRUE)
 
   ##concatenate results for output
   #initiate list for stability selection raw results
