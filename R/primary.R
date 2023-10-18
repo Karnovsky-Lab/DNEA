@@ -64,7 +64,7 @@ BICtune <- function(object,
                     eps_threshold = 1e-06,
                     eta_value = 0.1,
                     BPPARAM = bpparam(),
-                    verbose = TRUE){
+                    BPOPTIONS = bpoptions()){
 
 
   ##test for proper input
@@ -80,10 +80,6 @@ BICtune <- function(object,
               rep(2, ncol(dat[[2]])))
   bic1 <- NULL
   bic2 <- NULL
-  BPOPTIONS <- NULL
-
-  #set progress bar
-  if(verbose){BPOPTIONS <- bpoptions(progressbar = TRUE, tasks = 5)}
 
   message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
           "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n",
@@ -92,7 +88,7 @@ BICtune <- function(object,
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
 
-    message("Estimating best lambda values to test...", appendLF = TRUE)
+    message("Estimating the c constant for asymptotic lambda...", appendLF = TRUE)
 
     #ballpark the c parameter
     constant_values <- seq(0.01, 0.51, 0.05)
@@ -112,9 +108,6 @@ BICtune <- function(object,
                         BPOPTIONS = BPOPTIONS)
     ballpark_c <- bic1$ballpark_c
 
-    ##add empty line after progress bar
-    if(verbose){message("", appendLF = TRUE)}
-
     fine_tuned_constants <- c(seq(ballpark_c - (10*0.02), ballpark_c, 0.02),
                               seq(ballpark_c + 0.02, ballpark_c + (11*0.02), 0.02))
     fine_tuned_constants <- fine_tuned_constants[fine_tuned_constants > 0]
@@ -128,7 +121,7 @@ BICtune <- function(object,
     if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
   }
 
-  message("Fine-tuning Lambda", appendLF = TRUE)
+  message("Fine-tuning Lambda...", appendLF = TRUE)
   bic2 <- tune_lambda(lambda_values = lambda_values,
                       constant_values = constant_values,
                       FUN = 'CGM_AHP_tune',
@@ -141,14 +134,9 @@ BICtune <- function(object,
                       BPPARAM = BPPARAM,
                       BPOPTIONS = BPOPTIONS)
 
-  ##add empty line after progress bar
-  if(verbose){message("", appendLF = TRUE)}
-
   ##concatenate tuning runs and reorder by lambda value
   lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
-  #lambda_tested <- lambda_tested[order(lambda_tested)]
   BIC_guo <- append(bic1[["BIC_guo"]], bic2[["BIC_guo"]])
-  #BIC_guo <- BIC_guo[order(lambda_tested)]
 
   ##update DNEA object
   BICscores(object) <- BIC_guo
