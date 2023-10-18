@@ -163,7 +163,7 @@ tune_init <- function(
 #' @param model a vector of corresponding conditions for samples in trainX
 #' @param X a vector of lambda values tested to find the optimal hyper-parameter
 #' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'        Default is FALSE.
+#'        Default is FALSE
 #' @param eps A significance cut-off for thresholding network interactions.
 #'        Default is 1e-06
 #' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
@@ -226,8 +226,122 @@ CGM_AHP_tune <- function(
 
   return(out)
 }
+#' Return the results of parameter tuning
+#'
+#' This function returns the results of hyperparameter tuning. Setting "ballpark" to TRUE returns only
+#' the c constant that resulted in the minimum BIC score. Setting "ballpark" to FALSE returns the results
+#' from tuning (the c constants tested, the lambda values derived from the c constants, the BIC scores,
+#' and the likelihood values).
+#'
+#' @param lambda_values A list of values to test while optimizing the lambda parameter
+#' @param constant_values A list of c constant values to test while optimizing the lambda parameter
+#' @param FUN A character vector corresponding to the name of the tuning function. the default is
+#' 'CGM_AHP_tune'
+#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
+#'        testX should be identical to trainX.
+#' @param trainY a vector of corresponding conditions for samples in trainX
+#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
+#'        Default is FALSE
+#' @param eps_threshold A significance cut-off for thresholding network edges
+#'        The default value is 1e-06. This value generally should not change
+#' @param eta_value default parameter ??. Default is 0.1
+#' @param BPPARAM A \code{\link{BiocParallel}} object
+#' @param verbose Whether or not a progress bar should be displayed in the console
+tune_lambda <- function(lambda_values,
+                        constant_values,
+                        FUN,
+                        trainX,
+                        testX,
+                        trainY,
+                        BIC,
+                        eps_threshold,
+                        eta_value,
+                        BPPARAM = bpparam(),
+                        BPOPTIONS = bpoptions()){
 
+  #run the tuning algorithm
+  BIC_guo <- BiocParallel::bplapply(X = lambda_values,
+                                    FUN = 'CGM_AHP_tune',
+                                    trainX = trainX,
+                                    testX = testX,
+                                    model = trainY,
+                                    BIC = TRUE,
+                                    eps = eps_threshold,
+                                    eta = eta_value,
+                                    BPPARAM = BPPARAM,
+                                    BPOPTIONS = BPOPTIONS)
 
+  ##collect BIC scores
+  BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
+
+  ##make sure all bic values are finite and remove those that are not
+  if (max(is.infinite(BIC_scores)) == 1){
+
+    keep <- is.finite(BIC_scores)
+    BIC_scores <- BIC_scores[keep]
+    BIC_guo <- BIC_guo[keep]
+    lambda_values <- lambda_values[keep]
+    constant_values <- constant_values[keep]
+  }
+
+  output <- list(BIC_guo = BIC_guo,
+                 lambda_values = lambda_values,
+                 lastar_guo = lambda_values[match(min(BIC_scores), BIC_scores)],
+                 ballpark_c = constant_values[match(min(BIC_scores), BIC_scores)])
+  return(output)
+}
+# tune_lambda <- function(lambda_values,
+#                         constant_values,
+#                         FUN,
+#                         trainX,
+#                         testX,
+#                         trainY,
+#                         BIC,
+#                         eps_threshold,
+#                         eta_value,
+#                         BPPARAM = bpparam(),
+#                         BPOPTIONS = bpoptions(),
+#                         ballpark = FALSE){
+#
+#   #run the tuning algorithm
+#   BIC_guo <- BiocParallel::bplapply(X = lambda_values,
+#                                     FUN = 'CGM_AHP_tune',
+#                                     trainX = trainX,
+#                                     testX = testX,
+#                                     model = trainY,
+#                                     BIC = TRUE,
+#                                     eps = eps_threshold,
+#                                     eta = eta_value,
+#                                     BPPARAM = BPPARAM,
+#                                     BPOPTIONS = BPOPTIONS)
+#
+#   ##collect BIC scores
+#   BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
+#
+#   ##make sure all bic values are finite and remove those that are not
+#   if (max(is.infinite(BIC_scores)) == 1){
+#
+#     keep <- is.finite(BIC_scores)
+#     BIC_scores <- BIC_scores[keep]
+#     BIC_guo <- BIC_guo[keep]
+#     lambda_values <- lambda_values[keep]
+#     constant_values <- constant_values[keep]
+#   }
+#
+#   #ballpark (TRUE) lambda or fine tune (FALSE)
+#   if(ballpark){
+#
+#     output <- list(ballpark_c = constant_values[match(min(BIC_scores), BIC_scores)])
+#   }else{
+#
+#     output <- list(BIC_guo = BIC_guo,
+#                    lambda_values = lambda_values,
+#                    lastar_guo = lambda_values[match(min(BIC_scores), BIC_scores)])
+#   }
+#
+#   return(output)
+# }
 #' Initialize static tuning variables
 #'
 #' Initialize the static tuning variables necessary to perform stasbility selection
