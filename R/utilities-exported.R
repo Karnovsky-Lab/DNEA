@@ -26,7 +26,9 @@
 #' dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
 #'
 #' @export
-includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
+includeMetadata <- function(object,
+                            type = c('sample', 'feature'),
+                            metadata){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -110,7 +112,8 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
 #'
 #' @rdname addExpressionData
 #' @export
-addExpressionData <- function(object, data){
+addExpressionData <- function(object,
+                              data){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -149,10 +152,12 @@ addExpressionData <- function(object, data){
 #' getNetworkFiles(dnw, file_path = tempdir())
 #' @importFrom utils write.csv
 #' @export
-getNetworkFiles <- function(object, file_path = getwd()){
+getNetworkFiles <- function(object,
+                            file_path = getwd()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!is.character(file_path)) stop('"file_path" should be a character string corresponding to the file path in which to save the node and edge lists!')
 
   #save node list
   write.csv(nodeList(object), paste0(file_path, "/", object@project_name,'_nodelist_',Sys.Date(),'.csv'),
@@ -277,8 +282,8 @@ plotNetworks <- function(object,
 #'
 #'
 filterNetworks.DNEAobj <- function(data,
-                                       pcor,
-                                       top_percent_edges){
+                                   pcor,
+                                   top_percent_edges){
 
   ##test for proper input
   if(!inherits(data, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -398,7 +403,9 @@ filterNetworks.DNEAobj <- function(data,
 #' @export
 setMethod("filterNetworks", signature(data = "DNEAobj"), filterNetworks.DNEAobj)
 
-filterNetworks.list <- function(data, pcor, top_percent_edges){
+filterNetworks.list <- function(data,
+                                pcor,
+                                top_percent_edges){
 
   ##rename input variable
   weighted_adjacency_matrices <- data
