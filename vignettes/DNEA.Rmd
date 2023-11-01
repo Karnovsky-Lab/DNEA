@@ -318,7 +318,7 @@ Now that we have our workers set up, we can optimize $\lambda$. If you are perfo
 ```{r, BICtune, eval=TRUE}
 
 #optimize lambda
-TEDDYdat <- BICtune(TEDDYdat, BPPARAM = BPPARAM, verbose = FALSE)
+TEDDYdat <- BICtune(TEDDYdat, BPPARAM = BPPARAM)
 ```
 Our tuned lambda value is 0.03891489239239. This was selected by minimizing the BIC score. To illustrate BIC optimization, we can plot the BIC scores as a function of $\lambda$
 ```{r, BIC plot, eval=TRUE}
@@ -364,8 +364,7 @@ rm(dnw)
 TEDDYdat <- stabilitySelection(TEDDYdat,
                                subSample = FALSE,
                                nreps = 500,
-                               BPPARAM = BPPARAM,
-                               verbose = FALSE)
+                               BPPARAM = BPPARAM)
 ```
 ```{r, stabsel code, eval=3, echo=FALSE, strip.white=TRUE, prompt=FALSE}
 #return stabsel messages
