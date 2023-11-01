@@ -7,6 +7,8 @@
 BICtune(
   object,
   lambda_values,
+  interval = 0.001,
+  informed = TRUE,
   eps_threshold = 1e-06,
   eta_value = 0.1,
   BPPARAM = bpparam(),
@@ -19,6 +21,12 @@ BICtune(
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing the lambda parameter.
 If not provided, a set of lambda values are chosen based on the theoretical value for the
 asymptotically valid lambda. More information about this can be found in the details section}
+
+\item{interval}{A numeric value indicating the specifity by which to optimize lambda. The default value
+is 1e-3, which indicates lambda will be optimized to 3 decimal places}
+
+\item{informed}{TRUE/FALSE whether or not to utilize the asymptotic properties of lambda for large data sets
+to tune the parameter. This reduces the necessary number of computations for optimization}
 
 \item{eps_threshold}{A significance cut-off for thresholding network edges.
 The default value is 1e-06. This value generally should not change.}
