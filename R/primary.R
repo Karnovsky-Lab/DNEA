@@ -23,7 +23,7 @@ NULL
 #' @param informed TRUE/FALSE whether or not to utilize the asymptotic properties of lambda for large data sets
 #' to tune the parameter. This reduces the necessary number of computations for optimization
 #' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
-#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
+#' is 1e-3, which indicates lambda will be optimized to 3 decimal places. The value should be between 0 and 0.1.
 #' @param eps_threshold A significance cut-off for thresholding network edges.
 #'        The default value is 1e-06. This value generally should not change.
 #' @param eta_value default parameter ??. Default is 0.1
@@ -81,6 +81,8 @@ BICtune <- function(object,
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
+  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
 
   ##initialize input parameters
   dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
@@ -250,6 +252,7 @@ stabilitySelection <- function(object,
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
+  if(!is.logical(subSample)) stop('"subSample" parameter should be TRUE or FALSE!')
 
   # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
   # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -599,13 +602,12 @@ clusterNet <- function(object,
 
   #test for proper inputs
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-
   if(tau < 0.5 | tau > 1.0) stop("tau corresponds to a percent agreement among the clustering methods. ",
                                  "As such, tau must be greater than 0.5 and less than 1!",
                                  "Clustering results below this threshold are not reliable -",
                                  "Please see user documentation for more information!")
-
   if(max_iterations < 1) stop("max_iterations should be a positive integer!")
+  if(!is.logical(verbose)) stop('"verbose" parameter should be TRUE or FALSE!')
 
   #####################################
   #**Join the two condition networks**#
@@ -752,11 +754,8 @@ clusterNet <- function(object,
 #' @import igraph
 #' @importFrom netgsa NetGSA
 #' @export
-runNetGSA <- function(object, min_size = 5){
-
-  #################################
-  #**Prepare data and run netGSA**#
-  #################################
+runNetGSA <- function(object,
+                      min_size = 5){
 
   #test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -781,10 +780,6 @@ runNetGSA <- function(object, min_size = 5){
                            pathways = filtered_subnetworks,
                            lklMethod = "REML",
                            minsize = min_size)
-
-  #####################################
-  #**Concatenate results for output **#
-  #####################################
 
   #add netGSA results to Node list
   nodeList(object)[["mean1"]] <- as.vector(netgsa_results$beta[[1]])
