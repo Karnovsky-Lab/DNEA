@@ -1,6 +1,3 @@
-#'
-#'
-#'
 #' Add additional metadata to the DNEAobj object
 #'
 #' This function will take additional metadata and add it to the specified dataframe in the metadata
@@ -45,7 +42,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
       }
     } else{
 
-      stop('new metadata order does not match sample order in DNEAobject')
+      stop('new metadata order does not match sample order')
 
     }
   } else{
@@ -57,7 +54,7 @@ includeMetadata <- function(object, type = c('sample', 'feature'), metadata){
         object@metadata[["features"]][[metadata[, i]]] <- metadata[, i]
       }
     } else{
-      stop('new metadata order does not match feature order in DNEAobject')
+      stop('new metadata order does not match feature order')
     }
   }
 
@@ -149,25 +146,20 @@ addExpressionData <- function(object, data){
 #' data(dnw)
 #'
 #' #save node and edge list for input to cytoscape
-#'
+#' getNetworkFiles(dnw, file_path = tempdir())
 #' @importFrom utils write.csv
 #' @export
-getNetworkFiles <- function(object, file_path = NULL){
+getNetworkFiles <- function(object, file_path = getwd()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
 
-  if(missing(file_path)){
-    file_path <- paste0(getwd(), "/")
-  }else{
-    if(!is.character(file_path)) stop("file_path should be a character string corresponding to the directory path in which to save the network files")
-  }
   #save node list
-  write.csv(nodeList(object), paste0(file_path, object@project_name,'_nodelist_',Sys.Date(),'.csv'),
+  write.csv(nodeList(object), paste0(file_path, "/", object@project_name,'_nodelist_',Sys.Date(),'.csv'),
             row.names = FALSE)
 
   #save edge list
-  write.csv(edgeList(object), paste0(file_path, object@project_name,'_edgelist_',Sys.Date(),'.csv'),
+  write.csv(edgeList(object), paste0(file_path, "/", object@project_name,'_edgelist_',Sys.Date(),'.csv'),
             row.names = FALSE)
 
   return(object)
