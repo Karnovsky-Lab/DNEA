@@ -23,7 +23,7 @@ If not provided, a set of lambda values are chosen based on the theoretical valu
 asymptotically valid lambda. More information about this can be found in the details section}
 
 \item{interval}{A numeric value indicating the specifity by which to optimize lambda. The default value
-is 1e-3, which indicates lambda will be optimized to 3 decimal places}
+is 1e-3, which indicates lambda will be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 
 \item{informed}{TRUE/FALSE whether or not to utilize the asymptotic properties of lambda for large data sets
 to tune the parameter. This reduces the necessary number of computations for optimization}
