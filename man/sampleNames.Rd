@@ -2,21 +2,21 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{sampleNames}
 \alias{sampleNames}
-\alias{sampleNames,DNEAresults-method}
+\alias{sampleNames,DNEAobj-method}
 \title{Retrieve the sample names from the metadata slot.}
 \usage{
 sampleNames(x)
 
-\S4method{sampleNames}{DNEAresults}(x)
+\S4method{sampleNames}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 A character vector of sample names.
 }
 \description{
-This function accesses the sample names stored in the @metadata slot of the \code{DNEAresults} object.
+This function accesses the sample names stored in the @metadata slot of the \code{DNEAobj} object.
 }
 \examples{
 #import example data

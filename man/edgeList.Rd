@@ -3,26 +3,26 @@
 \name{edgeList}
 \alias{edgeList}
 \alias{edgeList<-}
-\alias{edgeList,DNEAresults-method}
-\alias{edgeList<-,DNEAresults-method}
+\alias{edgeList,DNEAobj-method}
+\alias{edgeList<-,DNEAobj-method}
 \title{Access the edge list}
 \usage{
 edgeList(x)
 
 edgeList(x) <- value
 
-\S4method{edgeList}{DNEAresults}(x)
+\S4method{edgeList}{DNEAobj}(x)
 
-\S4method{edgeList}{DNEAresults}(x) <- value
+\S4method{edgeList}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{a \code{DNEAresults} object}
+\item{x}{a \code{DNEAobj} object}
 }
 \value{
 A data frame corresponding to the edge list determined by DNEAdev.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the edge list created from \code{\link{getNetworks}}. \cr
+The function takes as input a \code{DNEAobj} object and returns the edge list created from \code{\link{getNetworks}}. \cr
 }
 \examples{
 #import example data

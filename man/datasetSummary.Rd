@@ -3,20 +3,20 @@
 \name{datasetSummary}
 \alias{datasetSummary}
 \alias{datasetSummary<-}
-\alias{datasetSummary,DNEAresults-method}
-\alias{datasetSummary<-,DNEAresults-method}
-\title{Access the dataset_summary slot of a DNEAresults object}
+\alias{datasetSummary,DNEAobj-method}
+\alias{datasetSummary<-,DNEAobj-method}
+\title{Access the dataset_summary slot of a DNEAobj object}
 \usage{
 datasetSummary(x)
 
 datasetSummary(x) <- value
 
-\S4method{datasetSummary}{DNEAresults}(x)
+\S4method{datasetSummary}{DNEAobj}(x)
 
-\S4method{datasetSummary}{DNEAresults}(x) <- value
+\S4method{datasetSummary}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 The numbers of samples/features and diagnostic values of the input data calculated by

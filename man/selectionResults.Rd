@@ -3,27 +3,27 @@
 \name{selectionResults}
 \alias{selectionResults}
 \alias{selectionResults<-}
-\alias{selectionResults,DNEAresults-method}
-\alias{selectionResults<-,DNEAresults-method}
+\alias{selectionResults,DNEAobj-method}
+\alias{selectionResults<-,DNEAobj-method}
 \title{Access and set the edge selection results from stabilitySelection()}
 \usage{
 selectionResults(x)
 
 selectionResults(x) <- value
 
-\S4method{selectionResults}{DNEAresults}(x)
+\S4method{selectionResults}{DNEAobj}(x)
 
-\S4method{selectionResults}{DNEAresults}(x) <- value
+\S4method{selectionResults}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
-A \code{DNEAresults} object after filling the
+A \code{DNEAobj} object after filling the
 selection_results section of the stable_networks slot.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns an m x m matrix of selection results for every
+The function takes as input a \code{DNEAobj} object and returns an m x m matrix of selection results for every
 possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
 \examples{

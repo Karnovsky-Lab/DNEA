@@ -2,18 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{numSamples}
 \alias{numSamples}
-\alias{numSamples,DNEAresults-method}
+\alias{numSamples,DNEAobj-method}
 \alias{numSamples,DNEAinputSummary-method}
 \title{Retrieves the total number of samples in the dataset}
 \usage{
 numSamples(x)
 
-\S4method{numSamples}{DNEAresults}(x)
+\S4method{numSamples}{DNEAobj}(x)
 
 \S4method{numSamples}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 The number of samples in the dataset.

@@ -3,26 +3,26 @@
 \name{adjacencyMatrix}
 \alias{adjacencyMatrix}
 \alias{adjacencyMatrix<-}
-\alias{adjacencyMatrix,DNEAresults-method}
-\alias{adjacencyMatrix<-,DNEAresults-method}
+\alias{adjacencyMatrix,DNEAobj-method}
+\alias{adjacencyMatrix<-,DNEAobj-method}
 \title{Retrieve the weighted or unweighted adjacency matrix}
 \usage{
 adjacencyMatrix(x, weighted)
 
 adjacencyMatrix(x, weighted) <- value
 
-\S4method{adjacencyMatrix}{DNEAresults}(x, weighted = FALSE)
+\S4method{adjacencyMatrix}{DNEAobj}(x, weighted = FALSE)
 
-\S4method{adjacencyMatrix}{DNEAresults}(x, weighted = FALSE) <- value
+\S4method{adjacencyMatrix}{DNEAobj}(x, weighted = FALSE) <- value
 }
 \arguments{
-\item{a}{\code{DNEAresults} object}
+\item{a}{\code{DNEAobj} object}
 }
 \value{
 A matrix corresponding to the adjacency matrix specified.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the weighted or unweighted adjacency matrix
+The function takes as input a \code{DNEAobj} object and returns the weighted or unweighted adjacency matrix
 determined via \code{\link{getNetworks}}. \cr
 }
 \examples{

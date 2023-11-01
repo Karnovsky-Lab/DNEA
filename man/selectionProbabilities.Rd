@@ -3,27 +3,27 @@
 \name{selectionProbabilities}
 \alias{selectionProbabilities}
 \alias{selectionProbabilities<-}
-\alias{selectionProbabilities,DNEAresults-method}
-\alias{selectionProbabilities<-,DNEAresults-method}
+\alias{selectionProbabilities,DNEAobj-method}
+\alias{selectionProbabilities<-,DNEAobj-method}
 \title{Access and set the edge selection probabilities from stabilitySelection()}
 \usage{
 selectionProbabilities(x)
 
 selectionProbabilities(x) <- value
 
-\S4method{selectionProbabilities}{DNEAresults}(x)
+\S4method{selectionProbabilities}{DNEAobj}(x)
 
-\S4method{selectionProbabilities}{DNEAresults}(x) <- value
+\S4method{selectionProbabilities}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
-A \code{DNEAresults} object after filling the
+A \code{DNEAobj} object after filling the
 selection_probabilities section of the stable_networks slot.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns an m x m matrix of selection probabilities for every
+The function takes as input a \code{DNEAobj} object and returns an m x m matrix of selection probabilities for every
 possible network edge calculated via \code{\link{stabilitySelection}}. \cr
 }
 \examples{

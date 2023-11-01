@@ -10,11 +10,11 @@ BICtune(
   eps_threshold = 1e-06,
   eta_value = 0.1,
   BPPARAM = bpparam(),
-  verbose = TRUE
+  BPOPTIONS = bpoptions()
 )
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object. See \code{\link{createDNEAobject}}}
+\item{object}{A \code{DNEAobj} object. See \code{\link{createDNEAobject}}}
 
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing the lambda parameter.
 If not provided, a set of lambda values are chosen based on the theoretical value for the
@@ -27,17 +27,18 @@ The default value is 1e-06. This value generally should not change.}
 
 \item{BPPARAM}{A \code{\link{BiocParallel}} object}
 
-\item{verbose}{Whether or not a progress bar should be displayed in the console}
+\item{BPOPTIONS}{a list of options for BiocParallel created using
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
 }
 \value{
-A \code{DNEAresults} object containing the BIC and likelihood scores for every lambda value tested, as well as
+A \code{DNEAobj} object containing the BIC and likelihood scores for every lambda value tested, as well as
 the optimized lambda value
 }
 \description{
 This function will calculate the Bayesian information criterion (BIC) and likelihood for a range of lambda values
 that are automatically generated (\emph{please see \strong{Details} for more info}) or that are user-specified.
 The lambda value with the minimum BIC score is the optimal lambda value for the dataset and is stored in the
-DNEAresults object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
+DNEAobj object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
 \code{\link{getNetworks}}
 }
 \details{
@@ -63,10 +64,15 @@ dnw <- BICtune(object = dnw, BPPARAM = bpparam())
 
 }
 \references{
-Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
+Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models.
+Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124;
+PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 }
 \seealso{
-\code{\link{createDNEAobject}}
+\code{\link{createDNEAobject}},
+\code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
+\code{\link[BiocParallel:SerialParam]{SerialParam}},
+\code{\link[BiocParallel:SnowParam]{SnowParam}}
 }
 \author{
 Christopher Patsalis

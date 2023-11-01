@@ -2,12 +2,12 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{networkGroups}
 \alias{networkGroups}
-\alias{networkGroups,DNEAresults-method}
+\alias{networkGroups,DNEAobj-method}
 \title{Retrieve the unique group values of the experimental condition}
 \usage{
 networkGroups(x)
 
-\S4method{networkGroups}{DNEAresults}(x)
+\S4method{networkGroups}{DNEAobj}(x)
 }
 \arguments{
 \item{x}{A DNEAobject, or DNEAobject_collapsed object}
@@ -16,7 +16,7 @@ networkGroups(x)
 A vector of the condition values.
 }
 \description{
-This function takes in a \code{DNEAresults} object and returns the unique group values of the experimental condition in the dataset
+This function takes in a \code{DNEAobj} object and returns the unique group values of the experimental condition in the dataset
 }
 \examples{
 #import example data

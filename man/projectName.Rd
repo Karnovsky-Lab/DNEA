@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{projectName}
 \alias{projectName}
-\alias{projectName,DNEAresults-method}
+\alias{projectName,DNEAobj-method}
 \title{Return the name of the current experiment}
 \usage{
 projectName(x)
 
-\S4method{projectName}{DNEAresults}(x)
+\S4method{projectName}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 The name of the DNEAdev experiment.

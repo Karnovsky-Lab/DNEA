@@ -3,8 +3,8 @@
 \name{diagnostics}
 \alias{diagnostics}
 \alias{diagnostics<-}
-\alias{diagnostics,DNEAresults-method}
-\alias{diagnostics<-,DNEAresults-method}
+\alias{diagnostics,DNEAobj-method}
+\alias{diagnostics<-,DNEAobj-method}
 \alias{diagnostics,DNEAinputSummary-method}
 \alias{diagnostics<-,DNEAinputSummary-method}
 \title{Retrieve the diagnostic values for the input expression data}
@@ -13,16 +13,16 @@ diagnostics(x)
 
 diagnostics(x) <- value
 
-\S4method{diagnostics}{DNEAresults}(x)
+\S4method{diagnostics}{DNEAobj}(x)
 
-\S4method{diagnostics}{DNEAresults}(x) <- value
+\S4method{diagnostics}{DNEAobj}(x) <- value
 
 \S4method{diagnostics}{DNEAinputSummary}(x)
 
 \S4method{diagnostics}{DNEAinputSummary}(x) <- value
 }
 \arguments{
-\item{a}{\code{DNEAresults} object or \code{DNEAinputSummary} object}
+\item{a}{\code{DNEAobj} object or \code{DNEAinputSummary} object}
 }
 \value{
 Returns the diagnostic values for the input expression data.

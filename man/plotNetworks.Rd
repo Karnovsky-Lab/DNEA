@@ -17,7 +17,7 @@ plotNetworks(
 )
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{type}{There are two possible arguments to \strong{type}: \emph{"group_networks"} specifies the whole network or condition networks.
 \emph{"subnetworks"} specifies that one of the sub networks should be plot. Additional input via the \strong{subtype} parameter is required}

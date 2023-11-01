@@ -10,11 +10,11 @@ stabilitySelection(
   nreps = 500,
   optimal_lambda,
   BPPARAM = bpparam(),
-  verbose = TRUE
+  BPOPTIONS = bpoptions()
 )
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{subSample}{A boolean that specifies whether the number of samples are unevenly split
 by condition and, therefore, should be adjusted for when randomly sampling.}
@@ -26,10 +26,11 @@ necessary if \code{\link{BICtune}} is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
 
-\item{verbose}{Whether or not a progress bar should be displayed in the console}
+\item{BPOPTIONS}{a list of options for BiocParallel created using
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
 }
 \value{
-A \code{DNEAresults} object after populating the stable_networks slot of the object. It contains the selection
+A \code{DNEAobj} object after populating the stable_networks slot of the object. It contains the selection
 results from stability selection as well as the calculated selection probabilities.
 }
 \description{
@@ -83,7 +84,10 @@ Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Po
 Nicolai, M., & Peter, B. (2010). Stability selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 72(4), 417-473. \url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{BICtune}}
+\code{\link{createDNEAobject}}, \code{\link{BICtune}},
+\code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
+\code{\link[BiocParallel:SerialParam]{SerialParam}},
+\code{\link[BiocParallel:SnowParam]{SnowParam}}
 }
 \author{
 Christopher Patsalis

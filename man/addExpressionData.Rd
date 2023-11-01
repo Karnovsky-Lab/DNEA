@@ -2,20 +2,20 @@
 % Please edit documentation in R/utilities-exported.R
 \name{addExpressionData}
 \alias{addExpressionData}
-\title{Include custom normalized data in the DNEAresults object}
+\title{Include custom normalized data in the DNEAobj object}
 \usage{
 addExpressionData(object, data)
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{data}{An \emph{m x n} numeric matrix of custom-normalized expression expression data}
 }
 \value{
-A \code{DNEAresults} object with the added expression data in the @assays slot
+A \code{DNEAobj} object with the added expression data in the @assays slot
 }
 \description{
-This function allows the user to input custom-normalized data into the DNEAresults object for use in DNEA analysis.
+This function allows the user to input custom-normalized data into the DNEAobj object for use in DNEA analysis.
 }
 \examples{
 #import example data
@@ -53,7 +53,7 @@ dnw <- addExpressionData(object = dnw, data = newdat)
 
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{DNEAresults},
+\code{\link{createDNEAobject}}, \code{DNEAobj},
 }
 \author{
 Christopher Patsalis

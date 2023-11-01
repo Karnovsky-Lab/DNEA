@@ -7,7 +7,7 @@
 clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{tau}{The \% agreement threshold among the clustering algorithms for a node to be included in a subnetwork}
 
@@ -16,7 +16,7 @@ clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 \item{verbose}{Whether or not a progress bar should be displayed in the console}
 }
 \value{
-A \code{DNEAresults} object containing sub-network determinations for the nodes within the input network.
+A \code{DNEAobj} object containing sub-network determinations for the nodes within the input network.
 A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
 Sub-network membership for each node can be found in the "membership" column of the node list, which can be
 viewed using \code{\link{nodeList}}.

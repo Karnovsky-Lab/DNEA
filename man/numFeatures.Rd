@@ -2,18 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{numFeatures}
 \alias{numFeatures}
-\alias{numFeatures,DNEAresults-method}
+\alias{numFeatures,DNEAobj-method}
 \alias{numFeatures,DNEAinputSummary-method}
 \title{Retrieve the total number of features in the dataset}
 \usage{
 numFeatures(x)
 
-\S4method{numFeatures}{DNEAresults}(x)
+\S4method{numFeatures}{DNEAobj}(x)
 
 \S4method{numFeatures}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 The number of features in the dataset.

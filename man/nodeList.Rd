@@ -3,26 +3,26 @@
 \name{nodeList}
 \alias{nodeList}
 \alias{nodeList<-}
-\alias{nodeList,DNEAresults-method}
-\alias{nodeList<-,DNEAresults-method}
+\alias{nodeList,DNEAobj-method}
+\alias{nodeList<-,DNEAobj-method}
 \title{Access the node list}
 \usage{
 nodeList(x)
 
 nodeList(x) <- value
 
-\S4method{nodeList}{DNEAresults}(x)
+\S4method{nodeList}{DNEAobj}(x)
 
-\S4method{nodeList}{DNEAresults}(x) <- value
+\S4method{nodeList}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{a \code{DNEAresults} object}
+\item{x}{a \code{DNEAobj} object}
 }
 \value{
 A data frame corresponding to the node list determined by DNEAdev.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the node list created from \code{\link{createDNEAobject}}. \cr
+The function takes as input a \code{DNEAobj} object and returns the node list created from \code{\link{createDNEAobject}}. \cr
 }
 \examples{
 #import example data

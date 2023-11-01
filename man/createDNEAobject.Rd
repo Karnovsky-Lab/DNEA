@@ -2,7 +2,7 @@
 % Please edit documentation in R/initiator.R
 \name{createDNEAobject}
 \alias{createDNEAobject}
-\title{Initialize DNEAresults object}
+\title{Initialize DNEAobj object}
 \usage{
 createDNEAobject(project_name, expression_data, group_labels)
 }
@@ -15,11 +15,11 @@ should be row names and the feature names should be column names}
 \item{group_labels}{A factor vector of experimental group labels named with the corresponding sample name}
 }
 \value{
-A \code{DNEAresults} object.
+A \code{DNEAobj} object.
 }
 \description{
 This function takes as input a matrix of non-normalized, non-transformed expression data and the
-case/control group labels in order to initiate a DNEAresults object. Differential expression analysis using student's
+case/control group labels in order to initiate a DNEAobj object. Differential expression analysis using student's
 T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
 \subsection{IMPORTANT}{
 
@@ -64,7 +64,7 @@ group_labels <- factor(T1Dmeta$group, levels = c("DM:control", "DM:case"))
 names(group_labels) <- rownames(T1Dmeta)
 
 
-#initiate DNEAresults object
+#initiate DNEAobj object
 DNEA <- createDNEAobject(expression_data = TEDDY,
                          project_name = "TEDDYmetabolomics",
                          group_labels = group_labels)

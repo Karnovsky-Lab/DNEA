@@ -12,7 +12,7 @@ aggregateFeatures(
 )
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{method}{A character string that dictates the collapsing method to use. The available methods are: "correlation",
 "knowledge", or "hybrid"}
@@ -25,10 +25,10 @@ methods}
 indicated by the "knowledge" and "hybrid" methods}
 }
 \value{
-A \code{collapsed_DNEAresults} object.
+A \code{collapsed_DNEAobj} object.
 }
 \description{
-This function takes as input a DNEAresults object and collapses highly correlated features within the non-normalized,
+This function takes as input a DNEAobj object and collapses highly correlated features within the non-normalized,
 non-transformed data using one of three methods:  \cr
 
 \enumerate{

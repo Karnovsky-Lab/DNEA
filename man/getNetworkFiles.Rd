@@ -4,10 +4,10 @@
 \alias{getNetworkFiles}
 \title{Save network information for input to Cytoscape}
 \usage{
-getNetworkFiles(object, file_path = NULL)
+getNetworkFiles(object, file_path = getwd())
 }
 \arguments{
-\item{object}{A \code{DNEAresults} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{file_path}{The filepath to save the node and edge lists to. If \strong{NULL}, the files will be saved to the working
 directory}
@@ -24,7 +24,7 @@ The files are already formatted for input into Cytoscape.
 data(dnw)
 
 #save node and edge list for input to cytoscape
-
+getNetworkFiles(dnw, file_path = tempdir())
 }
 \seealso{
 \code{\link{edgeList}}, \code{\link{nodeList}}

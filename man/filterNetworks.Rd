@@ -2,18 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/utilities-exported.R
 \name{filterNetworks}
 \alias{filterNetworks}
-\alias{filterNetworks,DNEAresults-method}
+\alias{filterNetworks,DNEAobj-method}
 \alias{filterNetworks,list-method}
 \title{Filter the adjacency matrices to only the edges that meet the filter conditions}
 \usage{
 filterNetworks(data, pcor, top_percent_edges)
 
-\S4method{filterNetworks}{DNEAresults}(data, pcor, top_percent_edges)
+\S4method{filterNetworks}{DNEAobj}(data, pcor, top_percent_edges)
 
 \S4method{filterNetworks}{list}(data, pcor, top_percent_edges)
 }
 \arguments{
-\item{data}{A \code{DNEAresults} object or list of adjacency matrices}
+\item{data}{A \code{DNEAobj} object or list of adjacency matrices}
 
 \item{pcor}{A pcor value of which to threshold the adjacency matrices. Edges with pcor values <= to this value will be removed.}
 
@@ -24,7 +24,7 @@ ie. top_percent_edges = 0.1 will keep only the top 10\% strongest edges in the n
 The input object after filtering the egdes in the network according to the specified parameters
 }
 \description{
-This function takes as input a \code{DNEAresults} object and allows the user to filter the network edges by one of two methods:
+This function takes as input a \code{DNEAobj} object and allows the user to filter the network edges by one of two methods:
 
 \enumerate{
 \item \strong{Partial Correlation} - The networks can be filtered to only include edges greater than or equal to a specified partial correlation (pcor) value.

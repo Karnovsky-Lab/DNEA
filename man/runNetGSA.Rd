@@ -7,12 +7,12 @@
 runNetGSA(object, min_size = 5)
 }
 \arguments{
-\item{object}{A \code{DNEAresults}}
+\item{object}{A \code{DNEAobj}}
 
 \item{min_size}{The minimum size of metabolic modules for enrichment analysis}
 }
 \value{
-A \code{DNEAresults} object after populating the @netGSA slot. Pathway expression differences for
+A \code{DNEAobj} object after populating the @netGSA slot. Pathway expression differences for
 each node can be found in the node_list. A summary of the NetGSA results can be viewed
 using \code{\link{netGSAresults}}.
 }

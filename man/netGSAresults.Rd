@@ -3,26 +3,26 @@
 \name{netGSAresults}
 \alias{netGSAresults}
 \alias{netGSAresults<-}
-\alias{netGSAresults,DNEAresults-method}
-\alias{netGSAresults<-,DNEAresults-method}
-\title{Access the netGSA slot of a DNEAresults object}
+\alias{netGSAresults,DNEAobj-method}
+\alias{netGSAresults<-,DNEAobj-method}
+\title{Access the netGSA slot of a DNEAobj object}
 \usage{
 netGSAresults(x)
 
 netGSAresults(x) <- value
 
-\S4method{netGSAresults}{DNEAresults}(x)
+\S4method{netGSAresults}{DNEAobj}(x)
 
-\S4method{netGSAresults}{DNEAresults}(x) <- value
+\S4method{netGSAresults}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 A data frame of the results from netGSA.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the netGSA results in the netGSA slot. \cr
+The function takes as input a \code{DNEAobj} object and returns the netGSA results in the netGSA slot. \cr
 }
 \examples{
 #import example data

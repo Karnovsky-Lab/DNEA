@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{expressionData}
 \alias{expressionData}
-\alias{expressionData,DNEAresults-method}
-\title{Access expression data within a DNEAresults object,}
+\alias{expressionData,DNEAobj-method}
+\title{Access expression data within a DNEAobj object,}
 \usage{
 expressionData(x, normalized)
 
-\S4method{expressionData}{DNEAresults}(x, normalized = TRUE)
+\S4method{expressionData}{DNEAobj}(x, normalized = TRUE)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 
 \item{normalized}{A boolean indicating whether the normalized or original input data should be returned}
 }
@@ -18,7 +18,7 @@ expressionData(x, normalized)
 The expression matrix specified by the user.
 }
 \description{
-This function accesses the expression data stored in the @assays slot of the \code{DNEAresults} object. The output is an
+This function accesses the expression data stored in the @assays slot of the \code{DNEAobj} object. The output is an
 \emph{n x m} matrix with one row for each sample and one column for each feature in the data.
 }
 \examples{

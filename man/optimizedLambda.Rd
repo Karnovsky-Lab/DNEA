@@ -3,20 +3,20 @@
 \name{optimizedLambda}
 \alias{optimizedLambda}
 \alias{optimizedLambda<-}
-\alias{optimizedLambda,DNEAresults-method}
-\alias{optimizedLambda<-,DNEAresults-method}
+\alias{optimizedLambda,DNEAobj-method}
+\alias{optimizedLambda<-,DNEAobj-method}
 \title{Access the lambda value used in analysis}
 \usage{
 optimizedLambda(x)
 
 optimizedLambda(x) <- value
 
-\S4method{optimizedLambda}{DNEAresults}(x)
+\S4method{optimizedLambda}{DNEAobj}(x)
 
-\S4method{optimizedLambda}{DNEAresults}(x) <- value
+\S4method{optimizedLambda}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 
 \item{value}{a single-value numeric vector corresponding to the lambda value to use in analysis}
 }
@@ -24,7 +24,7 @@ optimizedLambda(x) <- value
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the hyperparameter (lambda) that is currently being
+The function takes as input a \code{DNEAobj} object and returns the hyperparameter (lambda) that is currently being
 used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
 }
 \examples{

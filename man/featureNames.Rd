@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{featureNames}
 \alias{featureNames}
-\alias{featureNames,DNEAresults-method}
+\alias{featureNames,DNEAobj-method}
 \title{Retrieve the feature names from the metadata slot.}
 \usage{
 featureNames(x, original = TRUE)
 
-\S4method{featureNames}{DNEAresults}(x, original = FALSE)
+\S4method{featureNames}{DNEAobj}(x, original = FALSE)
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 
 \item{original}{"TRUE" returns the original feature names and "FALSE" returns the feature
 names that have been modified to avoid errors as a result of special characters.}
@@ -19,7 +19,7 @@ names that have been modified to avoid errors as a result of special characters.
 A character vector of feature names.
 }
 \description{
-This function accesses the feature names stored in the @metadata slot of the \code{DNEAresults} object.
+This function accesses the feature names stored in the @metadata slot of the \code{DNEAobj} object.
 }
 \examples{
 #import example data

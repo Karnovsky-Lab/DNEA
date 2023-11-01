@@ -3,8 +3,8 @@
 \name{adjacencyGraph}
 \alias{adjacencyGraph}
 \alias{adjacencyGraph<-}
-\alias{adjacencyGraph,DNEAresults-method}
-\alias{adjacencyGraph<-,DNEAresults-method}
+\alias{adjacencyGraph,DNEAobj-method}
+\alias{adjacencyGraph<-,DNEAobj-method}
 \alias{adjacencyGraph,consensusClusteringResults-method}
 \alias{adjacencyGraph<-,consensusClusteringResults-method}
 \title{Retrieve the adjacency graph for the case, control, or joint network}
@@ -13,16 +13,16 @@ adjacencyGraph(x, graph)
 
 adjacencyGraph(x, graph) <- value
 
-\S4method{adjacencyGraph}{DNEAresults}(x, graph)
+\S4method{adjacencyGraph}{DNEAobj}(x, graph)
 
-\S4method{adjacencyGraph}{DNEAresults}(x, graph) <- value
+\S4method{adjacencyGraph}{DNEAobj}(x, graph) <- value
 
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph)
 
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} or \code{consensusClusteringResults} object}
+\item{x}{A \code{DNEAobj} or \code{consensusClusteringResults} object}
 
 \item{graph}{A character string indicating which of the adjacency graphs to return. Values can be "joint_graph" for the
 whole graph object, or one of the group values returned by \code{\link{networkGroups}}}

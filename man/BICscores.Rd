@@ -3,26 +3,26 @@
 \name{BICscores}
 \alias{BICscores}
 \alias{BICscores<-}
-\alias{BICscores,DNEAresults-method}
-\alias{BICscores<-,DNEAresults-method}
+\alias{BICscores,DNEAobj-method}
+\alias{BICscores<-,DNEAobj-method}
 \title{Access the BIC scores for each lambda value evaluated}
 \usage{
 BICscores(x)
 
 BICscores(x) <- value
 
-\S4method{BICscores}{DNEAresults}(x)
+\S4method{BICscores}{DNEAobj}(x)
 
-\S4method{BICscores}{DNEAresults}(x) <- value
+\S4method{BICscores}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns the BIC values for each lambda tested during
+The function takes as input a \code{DNEAobj} object and returns the BIC values for each lambda tested during
 hyperparameter optimization performed via BICtune(). \cr
 }
 \examples{

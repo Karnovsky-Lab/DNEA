@@ -3,26 +3,26 @@
 \name{CCsummary}
 \alias{CCsummary}
 \alias{CCsummary<-}
-\alias{CCsummary,DNEAresults-method}
-\alias{CCsummary<-,DNEAresults-method}
+\alias{CCsummary,DNEAobj-method}
+\alias{CCsummary<-,DNEAobj-method}
 \title{Retrieves the summary results of consensus clustering}
 \usage{
 CCsummary(x)
 
 CCsummary(x) <- value
 
-\S4method{CCsummary}{DNEAresults}(x)
+\S4method{CCsummary}{DNEAobj}(x)
 
-\S4method{CCsummary}{DNEAresults}(x) <- value
+\S4method{CCsummary}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAresults} object}
+\item{x}{A \code{DNEAobj} object}
 }
 \value{
 A data frame summary of the consensus clustering results from DNEAdev.
 }
 \description{
-The function takes as input a \code{DNEAresults} object and returns a summary
+The function takes as input a \code{DNEAobj} object and returns a summary
 of the results of consensus clustering determined via \code{\link{clusterNet}}.
 }
 \examples{
