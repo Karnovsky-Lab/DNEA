@@ -234,7 +234,6 @@ CGM_AHP_tune <- function(
 #' and the likelihood values).
 #'
 #' @param lambda_values A list of values to test while optimizing the lambda parameter
-#' @param constant_values A list of c constant values to test while optimizing the lambda parameter
 #' @param FUN A character vector corresponding to the name of the tuning function. the default is
 #' 'CGM_AHP_tune'
 #' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
@@ -243,20 +242,32 @@ CGM_AHP_tune <- function(
 #' @param trainY a vector of corresponding conditions for samples in trainX
 #' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
 #'        Default is FALSE
-#' @param eps_threshold A significance cut-off for thresholding network edges
+#' @param eps A significance cut-off for thresholding network edges
 #'        The default value is 1e-06. This value generally should not change
-#' @param eta_value default parameter ??. Default is 0.1
+#' @param eta default parameter ??. Default is 0.1
 #' @param BPPARAM A \code{\link{BiocParallel}} object
-#' @param verbose Whether or not a progress bar should be displayed in the console
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#'
+#' @author Christopher Patsalis
+#'
+#' @returns A list containing the following items:
+#' \enumerate{
+#' \item \strong{BIC_guo}: A list of the BIC scores and likelihood value for each lambda tested}
+#' \item \strong{lambda_values}: The lambda values tested
+#' \item \strong{lastar_guo}: The lambda value with the minimum BIC score
+#' \item \strong{ballpark_c}: The value for c constant for the lambda value with the
+#' minimum BIC score
+#' @keywords internal
+#' @noRd
 tune_lambda <- function(lambda_values,
-                        constant_values,
                         FUN,
                         trainX,
                         testX,
                         trainY,
                         BIC,
-                        eps_threshold,
-                        eta_value,
+                        eps,
+                        eta,
                         BPPARAM = bpparam(),
                         BPOPTIONS = bpoptions()){
 
@@ -267,8 +278,8 @@ tune_lambda <- function(lambda_values,
                                     testX = testX,
                                     model = trainY,
                                     BIC = TRUE,
-                                    eps = eps_threshold,
-                                    eta = eta_value,
+                                    eps = eps,
+                                    eta = eta,
                                     BPPARAM = BPPARAM,
                                     BPOPTIONS = BPOPTIONS)
 
@@ -276,72 +287,164 @@ tune_lambda <- function(lambda_values,
   BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
 
   ##make sure all bic values are finite and remove those that are not
-  if (max(is.infinite(BIC_scores)) == 1){
+  keep <- is.finite(BIC_scores)
+  BIC_scores <- BIC_scores[keep]
+  BIC_guo <- BIC_guo[keep]
+  lambda_values <- lambda_values[keep]
 
-    keep <- is.finite(BIC_scores)
-    BIC_scores <- BIC_scores[keep]
-    BIC_guo <- BIC_guo[keep]
-    lambda_values <- lambda_values[keep]
-    constant_values <- constant_values[keep]
-  }
-
-  output <- list(BIC_guo = BIC_guo,
+  output <- list(optimal = match(min(BIC_scores), BIC_scores),
+                 BIC_guo = BIC_guo,
                  lambda_values = lambda_values,
                  lastar_guo = lambda_values[match(min(BIC_scores), BIC_scores)],
-                 ballpark_c = constant_values[match(min(BIC_scores), BIC_scores)])
+                 finite = keep)
   return(output)
 }
-# tune_lambda <- function(lambda_values,
-#                         constant_values,
-#                         FUN,
-#                         trainX,
-#                         testX,
-#                         trainY,
-#                         BIC,
-#                         eps_threshold,
-#                         eta_value,
-#                         BPPARAM = bpparam(),
-#                         BPOPTIONS = bpoptions(),
-#                         ballpark = FALSE){
-#
-#   #run the tuning algorithm
-#   BIC_guo <- BiocParallel::bplapply(X = lambda_values,
-#                                     FUN = 'CGM_AHP_tune',
-#                                     trainX = trainX,
-#                                     testX = testX,
-#                                     model = trainY,
-#                                     BIC = TRUE,
-#                                     eps = eps_threshold,
-#                                     eta = eta_value,
-#                                     BPPARAM = BPPARAM,
-#                                     BPOPTIONS = BPOPTIONS)
-#
-#   ##collect BIC scores
-#   BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
-#
-#   ##make sure all bic values are finite and remove those that are not
-#   if (max(is.infinite(BIC_scores)) == 1){
-#
-#     keep <- is.finite(BIC_scores)
-#     BIC_scores <- BIC_scores[keep]
-#     BIC_guo <- BIC_guo[keep]
-#     lambda_values <- lambda_values[keep]
-#     constant_values <- constant_values[keep]
-#   }
-#
-#   #ballpark (TRUE) lambda or fine tune (FALSE)
-#   if(ballpark){
-#
-#     output <- list(ballpark_c = constant_values[match(min(BIC_scores), BIC_scores)])
-#   }else{
-#
-#     output <- list(BIC_guo = BIC_guo,
-#                    lambda_values = lambda_values,
-#                    lastar_guo = lambda_values[match(min(BIC_scores), BIC_scores)])
-#   }
-#
-#   return(output)
-# }
+#' Estimate a range of c constant's for the optimal lambda value
+#'
+#' This function estimates a ballpark range of c constant for the optimal lambda value. Values for c from 0 to
+#' 0.05 in increments of 0.02 are tested and BIC scores calculated. The value with the minimum BIC score
+#' becomes the reference value, and then values between the reference - 0.02 and the reference + 0.02 in
+#' increments of the specified interval are tested. The corresponding lambda value with the minimum BIC
+#' score is the optimized lambda for analysis.
+#'
+#' @param FUN A character vector corresponding to the name of the tuning function. the default is
+#' 'CGM_AHP_tune'
+#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
+#'        testX should be identical to trainX.
+#' @param trainY a vector of corresponding conditions for samples in trainX
+#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
+#'        Default is FALSE
+#' @param asymptotic_lambda The aymptotic lambda value for large datasets, as defined by:
+#' \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
+#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
+#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
+#' @param eps A significance cut-off for thresholding network edges
+#'        The default value is 1e-06. This value generally should not change
+#' @param eta default parameter ??. Default is 0.1
+#' @param BPPARAM A \code{\link{BiocParallel}} object
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#'
+#' @author Christopher Patsalis
+#'
+#' @returns A list containing the following items:
+#' \enumerate{
+#' \item \strong{bic}: the output from \code{\link{tune_lambda}}
+#' \item \strong{new_lambda_values}: The new lambda values, defined by the estimated reference, to test}
+#' @keywords internal
+#' @noRd
+estimate_c <- function(FUN,
+                       trainX,
+                       testX,
+                       trainY,
+                       BIC,
+                       asymptotic_lambda,
+                       interval,
+                       eps,
+                       eta,
+                       BPPARAM = bpparam(),
+                       BPOPTIONS = bpoptions()){
+
+  #ballpark the c parameter
+  constant_values <- seq(0, 0.5, 0.02)
+  lambda_values <- constant_values * asymptotic_lambda
+
+  bic <- tune_lambda(lambda_values = lambda_values,
+                     FUN = 'CGM_AHP_tune',
+                     trainX = trainX,
+                     testX = trainX,
+                     trainY = trainY,
+                     BIC = TRUE,
+                     eps = eps,
+                     eta = eta,
+                     BPPARAM = BPPARAM,
+                     BPOPTIONS = BPOPTIONS)
+
+  #remove c constants leading to non-finite values and collect ballparked c value
+  constant_values <- constant_values[bic$finite]
+  ballpark_c <- constant_values[bic$optimal]
+
+  #create new interval
+  fine_tuned_constants <- c(seq(ballpark_c - 0.02, ballpark_c, interval),
+                            seq(ballpark_c + interval, ballpark_c + 0.02, interval))
+  fine_tuned_constants <- fine_tuned_constants[fine_tuned_constants > 0]
+
+  #find new lambda values
+  lambda_values <- fine_tuned_constants * asymptotic_lambda
+
+  return(list(bic = bic, new_lambda_values = lambda_values))
+}
+
+#' Estimate a range for the optimal lambda value
+#'
+  #' This function estimates a ballpark range for the optimal lambda value. Values from 0 to 1
+#' in increments of 0.05 are tested and BIC scores calculated. The value with the minimum BIC score becomes the
+#' reference value, and then values between the reference - 0.05 and the reference + 0.05 in increments of the
+#' specified interval are tested. The corresponding lambda value with the minimum BIC score is the optimized
+#' lambda for analysis.
+#'
+#' @param FUN A character vector corresponding to the name of the tuning function. the default is
+#' 'CGM_AHP_tune'
+#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
+#'        testX should be identical to trainX.
+#' @param trainY a vector of corresponding conditions for samples in trainX
+#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
+#'        Default is FALSE
+#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
+#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
+#' @param eps A significance cut-off for thresholding network edges
+#'        The default value is 1e-06. This value generally should not change
+#' @param eta default parameter ??. Default is 0.1
+#' @param BPPARAM A \code{\link{BiocParallel}} object
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#'
+#' @author Christopher Patsalis
+#'
+#' @returns A list containing the following items:
+#' \enumerate{
+#' \item \strong{bic}: the output from \code{\link{tune_lambda}}
+#' \item \strong{new_lambda_values}: The new lambda values, defined by the estimated reference, to test}
+#' @keywords internal
+#' @noRd
+estimate_lambda <- function(FUN,
+                            trainX,
+                            testX,
+                            trainY,
+                            BIC,
+                            eps,
+                            eta,
+                            interval,
+                            BPPARAM = bpparam(),
+                            BPOPTIONS = bpoptions()){
+
+  #ballpark lambda
+  lambda_values <- seq(0.0, 1, 0.05)
+
+  bic <- tune_lambda(lambda_values = lambda_values,
+                     FUN = 'CGM_AHP_tune',
+                     trainX = trainX,
+                     testX = trainX,
+                     trainY = trainY,
+                     BIC = TRUE,
+                     eps = eps,
+                     eta = eta,
+                     BPPARAM = BPPARAM,
+                     BPOPTIONS = BPOPTIONS)
+
+
+  #ballpark'd lambda value
+  ballpark_lambda <- bic$lastar_guo
+
+  #find new lambda values
+  lambda_values <- c(seq(ballpark_lambda - 0.05, ballpark_lambda, interval),
+                     seq(ballpark_lambda + interval, ballpark_lambda + 0.05, interval))
+  lambda_values <- lambda_values[lambda_values > 0]
+
+  return(list(bic = bic, new_lambda_values = lambda_values))
+}
 #' Initialize static tuning variables
 #'
 #' Initialize the static tuning variables necessary to perform stasbility selection

@@ -20,6 +20,10 @@ NULL
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing the lambda parameter.
 #'  If not provided, a set of lambda values are chosen based on the theoretical value for the
 #'  asymptotically valid lambda. More information about this can be found in the details section
+#' @param informed TRUE/FALSE whether or not to utilize the asymptotic properties of lambda for large data sets
+#' to tune the parameter. This reduces the necessary number of computations for optimization
+#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
+#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
 #' @param eps_threshold A significance cut-off for thresholding network edges.
 #'        The default value is 1e-06. This value generally should not change.
 #' @param eta_value default parameter ??. Default is 0.1
@@ -34,7 +38,9 @@ NULL
 #' \code{\link[BiocParallel:SerialParam]{SerialParam}},
 #' \code{\link[BiocParallel:SnowParam]{SnowParam}}
 #'
-#' @references Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models. Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
+#' @references Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models.
+#' Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124;
+#' PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 #'
 #' @details
 #' There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
@@ -65,6 +71,8 @@ NULL
 #' @export
 BICtune <- function(object,
                     lambda_values,
+                    interval = 1e-3,
+                    informed = TRUE,
                     eps_threshold = 1e-06,
                     eta_value = 0.1,
                     BPPARAM = bpparam(),
@@ -91,43 +99,46 @@ BICtune <- function(object,
 
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
+    if(informed){
 
-    message("Estimating the c constant for asymptotic lambda...", appendLF = TRUE)
+      message("Estimating optimal c constant range for asymptotic lambda...", appendLF = TRUE)
+      bic1 <- estimate_c(FUN = 'CGM_AHP_tune',
+                         trainX = trainX,
+                         testX = trainX,
+                         trainY = trainY,
+                         BIC = TRUE,
+                         eps = eps_threshold,
+                         eta = eta_value,
+                         asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
+                         interval = interval,
+                         BPPARAM = BPPARAM,
+                         BPOPTIONS = BPOPTIONS)
+    }else{
 
-    #ballpark the c parameter
-    constant_values <- seq(0.01, 0.51, 0.05)
-    lambda_values <- constant_values * sqrt(log(numFeatures(object))/n4cov)
+      message("Estimating optimal lambda range...", appendLF = TRUE)
+      bic1 <- estimate_lambda(FUN = 'CGM_AHP_tune',
+                              trainX = trainX,
+                              testX = trainX,
+                              trainY = trainY,
+                              BIC = TRUE,
+                              eps = eps_threshold,
+                              eta = eta_value,
+                              interval = interval,
+                              BPPARAM = BPPARAM,
+                              BPOPTIONS = BPOPTIONS)
+    }
 
-
-    bic1 <- tune_lambda(lambda_values = lambda_values,
-                        constant_values = constant_values,
-                        FUN = 'CGM_AHP_tune',
-                        trainX = trainX,
-                        testX = trainX,
-                        trainY = trainY,
-                        BIC = TRUE,
-                        eps = eps_threshold,
-                        eta = eta_value,
-                        BPPARAM = BPPARAM,
-                        BPOPTIONS = BPOPTIONS)
-    ballpark_c <- bic1$ballpark_c
-
-    fine_tuned_constants <- c(seq(ballpark_c - (10*0.02), ballpark_c, 0.02),
-                              seq(ballpark_c + 0.02, ballpark_c + (11*0.02), 0.02))
-    fine_tuned_constants <- fine_tuned_constants[fine_tuned_constants > 0]
-
-    #find new lambda values
-    lambda_values <- fine_tuned_constants * sqrt(log(numFeatures(object))/n4cov)
+    new_lambda_values <- bic1$new_lambda_values
+    bic1 <- bic1$bic
   }else{
 
+    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
     lambda_values <- unlist(lambda_values)
-    #check that lambda's are valid
     if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
   }
 
   message("Fine-tuning Lambda...", appendLF = TRUE)
-  bic2 <- tune_lambda(lambda_values = lambda_values,
-                      constant_values = constant_values,
+  bic2 <- tune_lambda(lambda_values = new_lambda_values,
                       FUN = 'CGM_AHP_tune',
                       trainX = trainX,
                       testX = trainX,
