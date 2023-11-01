@@ -10,5 +10,5 @@ test_that("getNetworks", {
   expect_error(getNetworks(dat, eps_threshold = 1.2))
   expect_error(getNetworks(fake_dat))
 
-  expect_s4_class(getNetworks(dat), "DNEAresults")
+  expect_s4_class(getNetworks(dat), "DNEAobj")
 })

@@ -3,9 +3,11 @@ test_that("BICtune", {
   library(BiocParallel)
   BP_plan <- BiocParallel::SerialParam(RNGseed = 417)
   dat <- readRDS(test_path("testdata", "test-TEDDYresults.rds"))
+  fakedat <- matrix(1, nrow = 10, ncol = 10)
 
-  expect_error(BICtune(dat, lambda_values = list(0, 0.5, 0.2, 1.2), BPPARAM = BP_plan))
-  expect_error(BICtune(dat, lambda_values = list(0, 0.5, 0.2, -0.2), BPPARAM = BP_plan))
-
-  expect_output(BICtune(dat, lambda_values = list(0.0391997757765919), BPPARAM = BP_plan))
+  expect_error(clusterNet(object = object, tau = 0.3))
+  expect_error(clusterNet(object = object, tau = 1.2))
+  expect_error(clusterNet(object = object, tau = 0.5, max_iterations = -5))
+  expect_error(clusterNet(object = object, tau = 0.5, max_iterations = 5, verbose = 7))
+  expect_error(clusterNet(object = fakedat))
 })

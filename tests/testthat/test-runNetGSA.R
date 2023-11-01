@@ -6,6 +6,6 @@ test_that("runNetGSA", {
   expect_error(runNetGSA(dat, min_size = -5))
   expect_error(runNetGSA(fake_dat))
 
-  expect_s4_class(runNetGSA(dat), "DNEAresults")
+  expect_s4_class(runNetGSA(dat), "DNEAobj")
 
 })

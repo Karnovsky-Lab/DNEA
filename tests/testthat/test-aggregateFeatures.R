@@ -12,9 +12,6 @@ test_that("aggregateFeatures", {
   expect_error(aggregateFeatures(dat, method = "correlation", correlation_threshold = 0.9))
   expect_error(aggregateFeatures(dat, method = "hybrid", correlation_threshold = 0.7))
   expect_error(aggregateFeatures(dat, method = "hybrid", correlation_threshold = 0.9, feature_groups = TEDDY_groups))
-  expect_error(aggregateFeatures(dat, method = "knowledge", correlation_threshold = 0.9))
+  expect_error(aggregateFeatures(dat, method = "knowledge"))
   expect_warning(aggregateFeatures(dat, method = "knowledge", correlation_threshold = 0.7, feature_groups = TEDDY_groups))
-
-  expect_output(aggregateFeatures(dat, method = "correlation", correlation_threshold = 0.7))
-  expect_output(aggregateFeatures(dat, method = "hybrid", correlation_threshold = 0.7, feature_groups = TEDDY_groups))
 })

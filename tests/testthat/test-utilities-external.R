@@ -8,7 +8,7 @@ test_that("includeMetadata", {
   expect_error(includeMetadata(dat, type = "feature", metadata = metadat))
   expect_error(includeMetadata(dat, type = "sample", metadata = metadat2))
 
-  expect_s4_class(includeMetadata(dat, type = "sample", metadata = metadat), "DNEAresults")
+  expect_s4_class(includeMetadata(dat, type = "sample", metadata = metadat), "DNEAobj")
 })
 
 test_that("getNetworkFiles", {
@@ -41,5 +41,5 @@ test_that("filterNetworks", {
   expect_error(filterNetworks(dat, pcor = -0.3))
   expect_error(filterNetworks(dat, top_percent_edges = 1.2))
   expect_error(filterNetworks(dat, top_percent_edges = -0.3))
-  expect_s4_class(filterNetworks(dat, pcor = 0.3), "DNEAresults")
+  expect_s4_class(filterNetworks(dat, pcor = 0.3), "DNEAobj")
 })

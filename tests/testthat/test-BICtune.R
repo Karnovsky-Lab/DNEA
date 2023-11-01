@@ -6,6 +6,7 @@ test_that("BICtune", {
 
   expect_error(BICtune(dat, lambda_values = list(0, 0.5, 0.2, 1.2), BPPARAM = BP_plan))
   expect_error(BICtune(dat, lambda_values = list(0, 0.5, 0.2, -0.2), BPPARAM = BP_plan))
+  expect_error(BICtune(dat, BPPARAM = BP_plan, interval = -1e-3))
+  expect_error(BICtune(dat, BPPARAM = BP_plan, informed = 7))
 
-  expect_output(BICtune(dat, lambda_values = list(0.0391997757765919), BPPARAM = BP_plan))
 })

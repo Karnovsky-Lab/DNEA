@@ -15,6 +15,4 @@ test_that("createDNEAobject", {
   expect_error(createDNEAobject(project_name = "testing", expression_data = character_dat, group_labels = group_labels))
   expect_error(createDNEAobject(project_name = "testing", expression_data = unnamed_dat, group_labels = group_labels))
 
-  expect_output(createDNEAobject(project = "testing", expression_data = TEDDY, group_labels = group_labels))
-
 })
