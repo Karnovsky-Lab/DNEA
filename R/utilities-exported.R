@@ -4,7 +4,7 @@
 #' slot. \strong{\emph{NOTE:}} The rownames of the new metadata must match the order of the input sample names or feature names,
 #' respectively
 #'
-#' @param object A \code{\link{DNEAobj}} object
+#' @param object A \code{DNEAobj} object
 #' @param type sample or feature metadata
 #' @param metadata a data.frame containing metadata to add
 #'
@@ -148,8 +148,11 @@ addExpressionData <- function(object,
 #' #import example data
 #' data(dnw)
 #'
+#' #filepath wherein to save the networks files
+#' filepath <- tempdir()
 #' #save node and edge list for input to cytoscape
-#' getNetworkFiles(dnw, file_path = tempdir())
+#' getNetworkFiles(dnw, file_path = filepath)
+#'
 #' @importFrom utils write.csv
 #' @export
 getNetworkFiles <- function(object,
