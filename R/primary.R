@@ -64,7 +64,7 @@ NULL
 #' data(dnw)
 #'
 #' #optimize lambda parameter
-#' dnw <- BICtune(object = dnw, BPPARAM = bpparam())
+#' dnw <- BICtune(object = dnw, informed = TRUE, interval = 1e-2)
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
