@@ -7,7 +7,7 @@
 includeMetadata(object, type = c("sample", "feature"), metadata)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{DNEAobj} object}
 
 \item{type}{sample or feature metadata}
 
