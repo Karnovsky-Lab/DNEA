@@ -23,8 +23,11 @@ The files are already formatted for input into Cytoscape.
 #import example data
 data(dnw)
 
+#filepath wherein to save the networks files
+filepath <- tempdir()
 #save node and edge list for input to cytoscape
-getNetworkFiles(dnw, file_path = tempdir())
+getNetworkFiles(dnw, file_path = filepath)
+
 }
 \seealso{
 \code{\link{edgeList}}, \code{\link{nodeList}}
