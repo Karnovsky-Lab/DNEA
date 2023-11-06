@@ -206,7 +206,6 @@ getNetworkFiles <- function(object,
 #' @examples
 #' #import example data
 #' data(dnw)
-
 #'
 #' #plot the networks
 #' plotNetworks(object = dnw, type = "group_networks", subtype = "All")
@@ -400,6 +399,16 @@ filterNetworks.DNEAobj <- function(data,
 #' @author Christopher Patsalis
 #' @seealso \code{\link{getNetworks}}, \code{\link{adjacencyMatrix}}
 #' @returns The input object after filtering the egdes in the network according to the specified parameters
+#'
+#' @examples
+#' #import example data
+#' data(dnw)
+#'
+#' #filter the networks by a correlation threshold of 0.166
+#' dnw <- filterNetworks(dnw, pcor = 0.166)
+#'
+#' #filter networks for the top 40% strongest correlations
+#' dnw <- filterNetworks(dnw, top_percent_edges = 0.4)
 #'
 #' @importFrom stats quantile
 #' @rdname filterNetworks
