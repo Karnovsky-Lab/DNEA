@@ -366,7 +366,7 @@ We provide a function, called `getNetworks()`, to perform joint-estimation of th
 #jointly estimate the biological networks
 TEDDYdat <- getNetworks(TEDDYdat)
 ```
-The TEDDY data set contains 134 metabolites, so a completely dense network has 134 * 134 = 17956 possible edges. For obvious reasons, we do not expect every feature to be connected with every other feature and the regularization steps we performed in [Step 2: Model Optimization] have removed the non-connections. There are 1656 total edges remaining in the networks: 373 edges specific to the "DM:control" network, 871 edges specific to the "DM:case" network, and 412 edges identified in both. We can access the edge list using the `edgeList()` function.
+The TEDDY data set contains 134 metabolites, so a completely dense network has 134 * 134 = 17956 possible edges. For obvious reasons, we do not expect every feature to be connected with every other feature and the regularization steps we performed in [Step 2: Model Optimization] have removed the non-connections. There are 1038 total edges in the networks: 179 edges specific to the "DM:control" network, 580 edges specific to the "DM:case" network, and 279 edges identified in both. We can access the edge list using the `edgeList()` function.
 ```{r edgeList, eval=FALSE, echo=TRUE}
 #save edge list to new object
 edge_list <- edgeList(TEDDYdat)
@@ -390,7 +390,7 @@ rm(edge_table)
 Some of the edges are extremely weak and it would best suit our analysis to remove them. Weak interactions are not as interesting from a biological perspective, and they disrupt the performance of consensus clustering resulting in a small number of large networks. They may also clutter the network, making it difficult to derive meaningful biological insight. The function `filterNetworks()` can be used to remove weak edges. Filtering edges is accomplished by either providing a partial correlation value using the `pcor` parameter, or a percentage using the `top_percent_edges` parameter. If `pcor` is provided, all edges with an absolute partial correlation less than the specified value are removed. If `top_percent_edges` is provided, only the strongest *X%* of edges in the network are retained.  
 
 
-683 of the edges in "DM:control" network and 1103 of the edges in the "DM:case" network have a partial correlation value between -0.166 and 0.166.  We will set 0.166 as the absolute threshold.
+944 of the edges in "DM:control" network and 809 of the edges in the "DM:case" network have a partial correlation value between -0.166 and 0.166.  We will set 0.166 as the absolute threshold.
 ```{r, filterNetworks, eval=TRUE}
 ##edges between -0.166 and 0.166
 #control network
