@@ -16,14 +16,17 @@ lambdas2Test(x) <- value
 \S4method{lambdas2Test}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A pcorNetwork, DNEAobjct, or DNEAobject_collapsed object}
+\item{x}{A \code{\link{DNEAobj}} or \code{\link{collapsed_DNEAobj}} object}
+
+\item{value}{A list or numeric vector}
 }
 \value{
 The lambda values to evaluate in optimization.
 }
 \description{
-The function takes as input a \code{DNEAobj} object and returns the lambda values that were testing
-during hyperparameter optimization performed via \code{\link{BICtune}}. \cr
+The function takes as input a \code{\link{DNEAobj}} object and returns the
+lambda values that were testing during hyperparameter optimization
+performed via \code{\link{BICtune}}.
 }
 \examples{
 #import example data
@@ -37,4 +40,3 @@ lambdas2Test(dnw)
 \author{
 Christopher Patsalis
 }
-\keyword{internal}

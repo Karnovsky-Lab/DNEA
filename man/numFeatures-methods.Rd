@@ -13,13 +13,14 @@ numFeatures(x)
 \S4method{numFeatures}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
 The number of features in the dataset.
 }
 \description{
-This function prints to console the total number of features in the dataset
+This function prints to console the total number of features
+in the dataset
 }
 \examples{
 #import example data

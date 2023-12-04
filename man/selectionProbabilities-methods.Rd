@@ -2,29 +2,24 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{selectionProbabilities}
 \alias{selectionProbabilities}
-\alias{selectionProbabilities<-}
 \alias{selectionProbabilities,DNEAobj-method}
-\alias{selectionProbabilities<-,DNEAobj-method}
 \title{Access and set the edge selection probabilities from stabilitySelection()}
 \usage{
 selectionProbabilities(x)
 
-selectionProbabilities(x) <- value
-
 \S4method{selectionProbabilities}{DNEAobj}(x)
-
-\S4method{selectionProbabilities}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
-A \code{DNEAobj} object after filling the
+A \code{\link{DNEAobj}} object after filling the
 selection_probabilities section of the stable_networks slot.
 }
 \description{
-The function takes as input a \code{DNEAobj} object and returns an m x m matrix of selection probabilities for every
-possible network edge calculated via \code{\link{stabilitySelection}}. \cr
+The function takes as input a \code{\link{DNEAobj}} object and returns an
+m x m matrix of selection probabilities for every possible network
+edge calculated via \code{\link{stabilitySelection}}.
 }
 \examples{
 #import example data
@@ -33,9 +28,8 @@ data(dnw)
 selectionProbabilities(dnw)
 }
 \seealso{
-\code{\link{stabilitySelection}}, \code{\link{selectionResults}}
+\code{\link{stabilitySelection}},\code{\link{selectionResults}}
 }
 \author{
 Christopher Patsalis
 }
-\keyword{internal}

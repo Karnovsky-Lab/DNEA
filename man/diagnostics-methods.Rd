@@ -2,33 +2,25 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{diagnostics}
 \alias{diagnostics}
-\alias{diagnostics<-}
 \alias{diagnostics,DNEAobj-method}
-\alias{diagnostics<-,DNEAobj-method}
 \alias{diagnostics,DNEAinputSummary-method}
-\alias{diagnostics<-,DNEAinputSummary-method}
 \title{Retrieve the diagnostic values for the input expression data}
 \usage{
 diagnostics(x)
 
-diagnostics(x) <- value
-
 \S4method{diagnostics}{DNEAobj}(x)
 
-\S4method{diagnostics}{DNEAobj}(x) <- value
-
 \S4method{diagnostics}{DNEAinputSummary}(x)
-
-\S4method{diagnostics}{DNEAinputSummary}(x) <- value
 }
 \arguments{
-\item{a}{\code{DNEAobj} object or \code{DNEAinputSummary} object}
+\item{x}{\code{\link{DNEAobj}} object or \code{DNEAinputSummary} object}
 }
 \value{
 Returns the diagnostic values for the input expression data.
 }
 \description{
-This function retrieves teh diagnostic values calculated for the input expression data to \code{\link{createDNEAobject}} \cr
+This function retrieves teh diagnostic values calculated for
+the input expression data to \code{\link{createDNEAobject}}
 }
 \examples{
 #import example data
@@ -42,4 +34,3 @@ diagnostics(dnw)
 \author{
 Christopher Patsalis
 }
-\keyword{internal}

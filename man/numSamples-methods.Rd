@@ -13,13 +13,14 @@ numSamples(x)
 \S4method{numSamples}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
 The number of samples in the dataset.
 }
 \description{
-This function prints to console the total number of samples in the dataset
+This function prints to console the total number of
+samples in the dataset
 }
 \examples{
 #import example data

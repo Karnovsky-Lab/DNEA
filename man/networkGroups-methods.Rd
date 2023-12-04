@@ -16,7 +16,8 @@ networkGroups(x)
 A vector of the condition values.
 }
 \description{
-This function takes in a \code{DNEAobj} object and returns the unique group values of the experimental condition in the dataset
+This function takes in a \code{\link{DNEAobj}} object and returns the
+unique group values of the experimental condition in the dataset
 }
 \examples{
 #import example data
@@ -25,7 +26,8 @@ data(dnw)
 networkGroups(dnw)
 }
 \seealso{
-\code{\link{networkGroupIDs}}, \code{\link{createDNEAobject}}
+\code{\link{networkGroupIDs}},
+\code{\link{createDNEAobject}}
 }
 \author{
 Christopher Patsalis

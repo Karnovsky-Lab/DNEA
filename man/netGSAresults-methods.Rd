@@ -2,27 +2,22 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{netGSAresults}
 \alias{netGSAresults}
-\alias{netGSAresults<-}
 \alias{netGSAresults,DNEAobj-method}
-\alias{netGSAresults<-,DNEAobj-method}
 \title{Access the netGSA slot of a DNEAobj object}
 \usage{
 netGSAresults(x)
 
-netGSAresults(x) <- value
-
 \S4method{netGSAresults}{DNEAobj}(x)
-
-\S4method{netGSAresults}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
 A data frame of the results from netGSA.
 }
 \description{
-The function takes as input a \code{DNEAobj} object and returns the netGSA results in the netGSA slot. \cr
+The function takes as input a \code{\link{DNEAobj}} object and returns
+the netGSA results in the netGSA slot.
 }
 \examples{
 #import example data
@@ -31,9 +26,9 @@ data(dnw)
 netGSAresults(dnw)
 }
 \seealso{
-\code{\link{runNetGSA}}, \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
+\code{\link{runNetGSA}},
+\code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 }
 \author{
 Christopher Patsalis
 }
-\keyword{internal}

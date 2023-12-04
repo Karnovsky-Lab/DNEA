@@ -2,6 +2,7 @@
 % Please edit documentation in R/all-methods.R
 \name{summary,consensusClusteringResults-method}
 \alias{summary,consensusClusteringResults-method}
+\alias{summary.consensusClusteringResults}
 \title{Retrieve a summary of a consensusClusteringResults object}
 \usage{
 \S4method{summary}{consensusClusteringResults}(object)
@@ -10,11 +11,13 @@
 \item{object}{A consensusClusteringResults}
 }
 \value{
-A data frame that corresponds to a summary of the results of consensus clustering.
+A data frame that corresponds to a summary of the results
+of consensus clustering.
 }
 \description{
-The function takes as input a consensusClusteringResults object and returns a summary of the results of
-consensus clustering determined via \code{\link{clusterNet}}.
+The function takes as input a consensusClusteringResults object and
+returns a summary of the results of consensus clustering determined
+via \code{\link{clusterNet}}.
 }
 \seealso{
 \code{\link{clusterNet}}

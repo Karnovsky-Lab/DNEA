@@ -10,13 +10,13 @@ projectName(x)
 \S4method{projectName}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
-The name of the DNEAdev experiment.
+The name of the DNEA experiment.
 }
 \description{
-This function returns the name of the DNEAdev experiment
+This function returns the name of the DNEA experiment
 }
 \examples{
 #import example data

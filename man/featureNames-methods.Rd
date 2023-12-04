@@ -10,16 +10,18 @@ featureNames(x, original = TRUE)
 \S4method{featureNames}{DNEAobj}(x, original = FALSE)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 
-\item{original}{"TRUE" returns the original feature names and "FALSE" returns the feature
-names that have been modified to avoid errors as a result of special characters.}
+\item{original}{"TRUE" returns the original feature names and "FALSE"
+returns the feature names that have been modified to avoid errors as
+a result of special characters.}
 }
 \value{
 A character vector of feature names.
 }
 \description{
-This function accesses the feature names stored in the @metadata slot of the \code{DNEAobj} object.
+This function accesses the feature names stored in the @metadata
+slot of the \code{\link{DNEAobj}} object.
 }
 \examples{
 #import example data

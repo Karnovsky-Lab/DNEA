@@ -3,30 +3,29 @@
 \name{subnetworkMembership}
 \alias{subnetworkMembership}
 \alias{subnetworkMembership<-}
-\alias{subnetworkMembership,consensusClusteringResults-method}
 \alias{subnetworkMembership,DNEAobj-method}
-\alias{subnetworkMembership<-,DNEAobj-method}
+\alias{subnetworkMembership,consensusClusteringResults-method}
 \title{Retrieve the subnetwork membership for each feature}
 \usage{
 subnetworkMembership(x)
 
 subnetworkMembership(x) <- value
 
-\S4method{subnetworkMembership}{consensusClusteringResults}(x)
-
 \S4method{subnetworkMembership}{DNEAobj}(x)
 
-\S4method{subnetworkMembership}{DNEAobj}(x) <- value
+\S4method{subnetworkMembership}{consensusClusteringResults}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 }
 \value{
-A data frame that corresponds to the results of consensus clustering.
+A data frame that corresponds to the results of
+consensus clustering.
 }
 \description{
-The function takes as input a \code{DNEAobj} or \code{consensusClusteringResults} object
-and returns the results of consensus clustering determined via \code{\link{clusterNet}}.
+The function takes as input a \code{\link{DNEAobj}} or
+\code{consensusClusteringResults} object and returns the results of
+consensus clustering determined via \code{\link{clusterNet}}.
 }
 \examples{
 #import example data
@@ -40,4 +39,3 @@ subnetworkMembership(dnw)
 \author{
 Christopher Patsalis
 }
-\keyword{internal}

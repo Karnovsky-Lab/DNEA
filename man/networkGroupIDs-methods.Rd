@@ -4,7 +4,7 @@
 \alias{networkGroupIDs}
 \alias{networkGroupIDs<-}
 \alias{networkGroupIDs,DNEAobj-method}
-\title{Access and set the experimental group labels utilized by DNEAdev}
+\title{Access and set the experimental group labels}
 \usage{
 networkGroupIDs(x)
 
@@ -13,15 +13,17 @@ networkGroupIDs(x) <- value
 \S4method{networkGroupIDs}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 
-\item{value}{a character string name corresponding to a column name of the sample metadata data frame}
+\item{value}{a character string name corresponding to a column
+name of the sample metadata data frame}
 }
 \value{
 A vector of the unique condition labels.
 }
 \description{
-This function accesses the experimental group labels for each sample stored in the @metadata slot of a \code{DNEAobj} object.
+This function accesses the experimental group labels for each sample
+stored in the @metadata slot of a \code{\link{DNEAobj}} object.
 }
 \examples{
 #import example data

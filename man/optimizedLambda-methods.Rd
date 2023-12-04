@@ -16,16 +16,19 @@ optimizedLambda(x) <- value
 \S4method{optimizedLambda}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{DNEAobj} object}
+\item{x}{A \code{\link{DNEAobj}} object}
 
-\item{value}{a single-value numeric vector corresponding to the lambda value to use in analysis}
+\item{value}{a single-value numeric vector corresponding to the lambda
+value to use in analysis}
 }
 \value{
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{DNEAobj} object and returns the hyperparameter (lambda) that is currently being
-used for the analysis. The user may also provide a single-value numeric vector to change the lambda value for analysis
+The function takes as input a \code{\link{DNEAobj}} object and returns
+the hyperparameter (lambda) that is currently being used for the analysis.
+The user may also provide a single-value numeric vector to change the
+lambda value for analysis
 }
 \examples{
 #import example data
