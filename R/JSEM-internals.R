@@ -12,17 +12,21 @@ matTr <- function(z){
 
 #' CGM_AHP_train will train a glasso model
 #'
-#' This function takes the data and corresponding condition, as well as a lambda value as input and
-#' trains a glasso model, outputting the results. This code comes from Guo et al. (2011)
+#' This function takes the data and corresponding condition, as well as a
+#' lambda value as input and  trains a glasso model, outputting the results.
+#' This code comes from Guo et al. (2011)
 #'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
+#' @param trainX a matrix of expression data wherein the samples are rows
+#' and features are columns.
 #' @param trainY a vector of corresponding conditions for samples in trainX
 #' @param lambda_value the lambda hyperparameter to use in the glasso model
-#' @param adaptive_weight default parameter used to calculate the penalty matrix
-#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
-#'        so that we can calculate its inverse. The default is 0.01.
-#' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'        Default is 1e+6
+#' @param adaptive_weight default parameter used to calculate the
+#' penalty matrix
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
+#' @param limkappa default parameter that acts as the limit for the
+#' condition number of the sample cov. The default value is 1e+6.
 #'
 #' @author Jing Ma
 #'
@@ -108,18 +112,21 @@ CGM_AHP_train <- function(
 
   return(output)
 }
-
+################################################################################
 #'initialize static tuning variables to pass to CGM_AHP_tune
 #'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns
+#' @param trainX a matrix of expression data wherein the samples are
+#' rows and features are columns
 #' @param model A list of corresponding conditions for the training_data
 #' @param lambda a vector of supplied lambda values
 #'
 #' @author Christopher Patsalis
-#' @returns A set of variables corresponding to the following variables regarding
-#'         the training_data: number of features (p), number of conditions (K), number of lambda
-#'         values being tested (N), an a vector containing the number of samples per condition (n),
-#'         an initialized vector for BIC scores (BIC_score), an initialized vector for likelihood (likelihood).
+#' @returns A set of variables corresponding to the following variables
+#' regarding the training_data: number of features (p), number of
+#' conditions (K), number of lambda values being tested (N), an a vector
+#' containing the number of samples per condition (n), an initialized vector
+#' for BIC scores (BIC_score), an initialized vector for
+#' likelihood (likelihood).
 #'
 #' @keywords internal
 #' @noRd
@@ -131,7 +138,9 @@ tune_init <- function(
 
   ##initiate output list
   init_param <- vector(mode = 'list', length = 6)
-  names(init_param) <- c('num_features','num_conditions','len_lambda','num_samples_by_cond', 'bic_score', 'likelihood')
+  names(init_param) <- c('num_features', 'num_conditions',
+                         'len_lambda','num_samples_by_cond',
+                         'bic_score', 'likelihood')
 
 
   ##set necessary parameters
@@ -154,25 +163,29 @@ tune_init <- function(
 
 #' Optimize the tuning parameter
 #'
-#' This function takes the data and corresponding condition, as well as a list of lambda values
-#' as input in order to optimize the lambda hyper-parameter. From Guo et al. (2011)
+#' This function takes the data and corresponding condition, as well as a
+#' list of lambda values as input in order to optimize the lambda
+#' hyper-parameter. From Guo et al. (2011)
 #'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
-#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
-#'        testX should be identical to trainX.
+#' @param trainX a matrix of expression data wherein the samples are rows
+#' and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and
+#' features are columns. testX should be identical to trainX.
 #' @param model a vector of corresponding conditions for samples in trainX
 #' @param X a vector of lambda values tested to find the optimal hyper-parameter
-#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'        Default is FALSE
+#' @param BIC a boolean indicating whether or not to calculate the BIC
+#' score for each lambda. The default value is FALSE.
 #' @param eps A significance cut-off for thresholding network interactions.
-#'        Default is 1e-06
-#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
-#'        so that we can calculate its inverse. The default is 0.01.
-#' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'        Default is 1e+6
+#' The default value is 1e-06.
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
+#' @param limkappa default parameter that acts as the limit for the
+#' condition number of the sample cov. The default value is 1e+6.
 #'
 #' @author Jing Ma
-#' @returns A list containing the BIC and liklihood score for each lambda parameter evaluated.
+#' @returns A list containing the BIC and liklihood score for each
+#' lambda parameter evaluated.
 #'
 #' @importFrom stats cov
 #' @importFrom Matrix Matrix
@@ -202,7 +215,8 @@ CGM_AHP_tune <- function(
   likelihood <- 0
 
 
-  Omega.hat <- CGM_AHP_train(trainX = trainX, trainY = model, lambda_value = X, eta = eta)$OMEGA
+  Omega.hat <- CGM_AHP_train(trainX = trainX, trainY = model,
+                             lambda_value = X, eta = eta)$OMEGA
 
   for (k in seq(1, num_conditions)){
     data <- testX[which(model == k), ]
@@ -226,25 +240,30 @@ CGM_AHP_tune <- function(
 
   return(out)
 }
+
 #' Return the results of parameter tuning
 #'
-#' This function returns the results of hyperparameter tuning. Setting "ballpark" to TRUE returns only
-#' the c constant that resulted in the minimum BIC score. Setting "ballpark" to FALSE returns the results
-#' from tuning (the c constants tested, the lambda values derived from the c constants, the BIC scores,
-#' and the likelihood values).
+#' This function is a wrapper for hyperparameter tuning. It will first
+#' estimate the neighborhood of lambda by testing values between 0-1 in 0.05
+#' increments. Values between the estimated limits are then chosen in the
+#' specified interval.
 #'
-#' @param lambda_values A list of values to test while optimizing the lambda parameter
-#' @param FUN A character vector corresponding to the name of the tuning function. the default is
-#' 'CGM_AHP_tune'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
-#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
-#'        testX should be identical to trainX.
+#' @param lambda_values A list of values to test while optimizing the
+#' lambda parameter
+#' @param FUN A character vector corresponding to the name of the tuning
+#' function. the default is "CGM_AHP_tune".
+#' @param trainX a matrix of expression data wherein the samples are rows
+#' and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows
+#' and features are columns. testX should be identical to trainX.
 #' @param trainY a vector of corresponding conditions for samples in trainX
-#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'        Default is FALSE
-#' @param eps A significance cut-off for thresholding network edges
-#'        The default value is 1e-06. This value generally should not change
-#' @param eta default parameter ??. Default is 0.1
+#' @param BIC a boolean indicating whether or not to calculate the BIC
+#' score for each lambda. The default value is FALSE.
+#' @param eps A significance cut-off for thresholding network edges.
+#' The default value is 1e-06. This value generally should not change.
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
 #' @param BPPARAM A \code{\link{BiocParallel}} object
 #' @param BPOPTIONS a list of options for BiocParallel created using
 #' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
@@ -253,11 +272,15 @@ CGM_AHP_tune <- function(
 #'
 #' @returns A list containing the following items:
 #' \enumerate{
-#' \item \strong{BIC_guo}: A list of the BIC scores and likelihood value for each lambda tested}
+#' \item \strong{optimal}: The index position of the optimal lambda
+#' \item \strong{BIC_guo}: A list of the BIC scores and likelihood
+#' value for each lambda tested}
 #' \item \strong{lambda_values}: The lambda values tested
-#' \item \strong{lastar_guo}: The lambda value with the minimum BIC score
-#' \item \strong{ballpark_c}: The value for c constant for the lambda value with the
+#' \item \strong{lastar_guo}: The lambda value with the
 #' minimum BIC score
+#' \item \strong{finite}: A boolean vector indicating whether the
+#' BIC scores calculated from each lambda are finite.
+#'
 #' @keywords internal
 #' @noRd
 tune_lambda <- function(lambda_values,
@@ -299,29 +322,37 @@ tune_lambda <- function(lambda_values,
                  finite = keep)
   return(output)
 }
+
 #' Estimate a range of c constant's for the optimal lambda value
 #'
-#' This function estimates a ballpark range of c constant for the optimal lambda value. Values for c from 0 to
-#' 0.05 in increments of 0.02 are tested and BIC scores calculated. The value with the minimum BIC score
-#' becomes the reference value, and then values between the reference - 0.02 and the reference + 0.02 in
-#' increments of the specified interval are tested. The corresponding lambda value with the minimum BIC
-#' score is the optimized lambda for analysis.
+#' This function estimates a ballpark range of c constant for the optimal
+#' lambda value. Values for c from 0 to 0.05 in increments of 0.02 are tested
+#' and BIC scores calculated. The value with the minimum BIC score becomes the
+#' reference value, and then values between the reference - 0.02 and the
+#' reference + 0.02 in increments of the specified interval are tested. The
+#' corresponding lambda value with the minimum BIC score is the optimized
+#' lambda for analysis.
 #'
-#' @param FUN A character vector corresponding to the name of the tuning function. the default is
-#' 'CGM_AHP_tune'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
-#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
-#'        testX should be identical to trainX.
+#' @param FUN A character vector corresponding to the name of the tuning
+#' function. the default is "CGM_AHP_tune"
+#' @param trainX a matrix of expression data wherein the samples are rows
+#' and features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows
+#' and features are columns. testX should be identical to trainX.
 #' @param trainY a vector of corresponding conditions for samples in trainX
-#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'        Default is FALSE
-#' @param asymptotic_lambda The aymptotic lambda value for large datasets, as defined by:
+#' @param BIC a boolean indicating whether or not to calculate the BIC
+#' score for each lambda. The default value is FALSE.
+#' @param asymptotic_lambda The aymptotic lambda value for large datasets,
+#' as defined by:
 #' \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
-#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
-#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
-#' @param eps A significance cut-off for thresholding network edges
-#'        The default value is 1e-06. This value generally should not change
-#' @param eta default parameter ??. Default is 0.1
+#' @param interval A numeric value indicating the specifity by which to
+#' optimize lambda. The default value is 1e-3, which indicates lambda
+#' will be optimized to 3 decimal places
+#' @param eps A significance cut-off for thresholding network edges.
+#' The default value is 1e-06. This value generally should not change.
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
 #' @param BPPARAM A \code{\link{BiocParallel}} object
 #' @param BPOPTIONS a list of options for BiocParallel created using
 #' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
@@ -331,7 +362,8 @@ tune_lambda <- function(lambda_values,
 #' @returns A list containing the following items:
 #' \enumerate{
 #' \item \strong{bic}: the output from \code{\link{tune_lambda}}
-#' \item \strong{new_lambda_values}: The new lambda values, defined by the estimated reference, to test}
+#' \item \strong{new_lambda_values}: The new lambda values, defined by
+#' the estimated reference, to test}
 #' @keywords internal
 #' @noRd
 estimate_c <- function(FUN,
@@ -378,25 +410,30 @@ estimate_c <- function(FUN,
 
 #' Estimate a range for the optimal lambda value
 #'
-  #' This function estimates a ballpark range for the optimal lambda value. Values from 0 to 1
-#' in increments of 0.05 are tested and BIC scores calculated. The value with the minimum BIC score becomes the
-#' reference value, and then values between the reference - 0.05 and the reference + 0.05 in increments of the
-#' specified interval are tested. The corresponding lambda value with the minimum BIC score is the optimized
-#' lambda for analysis.
+#' This function estimates a ballpark range for the optimal lambda value.
+#' Values from 0 to 1 in increments of 0.05 are tested and BIC scores
+#' calculated. The value with the minimum BIC score becomes the reference
+#' value, and then values between the reference - 0.05 and the reference +
+#' 0.05 in increments of the specified interval are tested. The corresponding
+#' lambda value with the minimum BIC score is the optimized lambda for analysis.
 #'
-#' @param FUN A character vector corresponding to the name of the tuning function. the default is
-#' 'CGM_AHP_tune'
-#' @param trainX a matrix of expression data wherein the samples are rows and features are columns.
-#' @param testX a matrix of expression data wherein the samples are rows and features are columns.
-#'        testX should be identical to trainX.
+#' @param FUN A character vector corresponding to the name of the tuning
+#' function. the default is "CGM_AHP_tune"
+#' @param trainX a matrix of expression data wherein the samples are rows and
+#' features are columns.
+#' @param testX a matrix of expression data wherein the samples are rows and
+#' features are columns. testX should be identical to trainX.
 #' @param trainY a vector of corresponding conditions for samples in trainX
-#' @param BIC a boolean indicating whether or not to calculate the BIC score for each lambda.
-#'        Default is FALSE
-#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
-#' is 1e-3, which indicates lambda will be optimized to 3 decimal places
-#' @param eps A significance cut-off for thresholding network edges
-#'        The default value is 1e-06. This value generally should not change
-#' @param eta default parameter ??. Default is 0.1
+#' @param BIC a boolean indicating whether or not to calculate the BIC
+#' score for each lambda. The default value is FALSE.
+#' @param interval A numeric value indicating the specificity by which to
+#' optimize lambda. The default value is 1e-3, which indicates lambda
+#' will be optimized to 3 decimal places
+#' @param eps A significance cut-off for thresholding network edges.
+#' The default value is 1e-06. This value generally should not change
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
 #' @param BPPARAM A \code{\link{BiocParallel}} object
 #' @param BPOPTIONS a list of options for BiocParallel created using
 #' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
@@ -406,7 +443,8 @@ estimate_c <- function(FUN,
 #' @returns A list containing the following items:
 #' \enumerate{
 #' \item \strong{bic}: the output from \code{\link{tune_lambda}}
-#' \item \strong{new_lambda_values}: The new lambda values, defined by the estimated reference, to test}
+#' \item \strong{new_lambda_values}: The new lambda values, defined
+#' by the estimated reference, to test}
 #' @keywords internal
 #' @noRd
 estimate_lambda <- function(FUN,
@@ -445,22 +483,26 @@ estimate_lambda <- function(FUN,
 
   return(list(bic = bic, new_lambda_values = lambda_values))
 }
+
 #' Initialize static tuning variables
 #'
-#' Initialize the static tuning variables necessary to perform stasbility selection
-#' (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample) within the DNEA algorithm.
+#' Initialize the static tuning variables necessary to perform stasbility
+#' selection (CGM_AHP_stabsel | CGM_AHP_stabsel_subsample) within
+#' the DNEA algorithm.
 #'
-#' @param listX A list containing matrices of the expression data split by condition. The samples
-#'        are in rows and the features are columns.
+#' @param listX A list containing matrices of the expression data split
+#' by condition. The samples are in rows and the features are columns.
 #' @param nreps The number of reps performed in stability selection
 #'
 #' @author Christopher Patsalis
 #'
-#' @returns a set of variables corresponding to the following: number of features (num_features), number of
-#'         conditions (num_conditions), a vector containing sample numbers by condition (num_samples), number of
-#'         samples in smallest condition (min_num_samples), a matrix of stability selection results
-#'         (selection_matrix), and a matrix containing edge selection (edge_matrix) an initialized vector for BIC
-#'         scores (BIC_score), an initialized vector for likelihood (likelihood).
+#' @returns a set of variables corresponding to the following: number of
+#' features (num_features), number of conditions (num_conditions), a vector
+#' containing sample numbers by condition (num_samples), number of samples in
+#' smallest condition (min_num_samples), a matrix of stability selection
+#' results (selection_matrix), and a matrix containing edge selection
+#' (edge_matrix) an initialized vector for BIC scores (BIC_score), an
+#' initialized vector for likelihood (likelihood).
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -497,8 +539,14 @@ stabsel_init <- function(
   edge_matrix <- vector("list", num_conditions)
 
   for (k in seq(1, num_conditions)){
-    selection_matrix[[k]] <- Matrix(data = 0, nrow = num_features, ncol = num_features, sparse = TRUE)
-    edge_matrix[[k]] <- Matrix(data = 0, nrow = num_features*(num_features-1)/2, ncol = nreps, sparse = TRUE)
+    selection_matrix[[k]] <- Matrix(data = 0,
+                                    nrow = num_features,
+                                    ncol = num_features,
+                                    sparse = TRUE)
+    edge_matrix[[k]] <- Matrix(data = 0,
+                               nrow = num_features*(num_features-1)/2,
+                               ncol = nreps,
+                               sparse = TRUE)
   }
 
   #set output results
@@ -515,22 +563,26 @@ stabsel_init <- function(
 
 #' Perform stability selection WITHOUT additional subsampling
 #'
-#' This function will take as input the expression data and optimized lambda in order to randomly sample
-#' the data to perform stability selection. The function is based on the method described by Guo et al.
-#' (2011) and is designed to be run with some variation of the lapply family of functions.
+#' This function will take as input the expression data and optimized
+#' lambda in order to randomly sample the data to perform stability selection.
+#' The function is based on the method described by Guo et al. (2011) and is
+#' designed to be run with some variation of the lapply family of functions.
 #'
-#' @param listX A list containing matrices of the expression data split by condition. The samples
-#'        are in rows and the features are columns.
-#' @param X A vector corresponding to the number of reps to be run in stability selection
+#' @param listX A list containing matrices of the expression data split by
+#' condition. The samples are in rows and the features are columns.
+#' @param X A vector corresponding to the number of reps to be run in
+#' stability selection
 #' @param init_param static variables necessary for CGM_AHP_stabsel functioning
 #' @param lastar the optimized lambda parameter
-#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
-#'        so that we can calculate its inverse. The default is 0.01.
-#' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'       Default is 1e+6
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
+#' @param limkappa default parameter that acts as the limit for the
+#' condition number of the sample cov. The default value is 1e+6.
 #'
 #' @author Jing Ma
-#' @returns A precision matrix for the network corresponding to the input data.
+#' @returns A precision matrix for the network corresponding
+#' to the input data.
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -555,7 +607,9 @@ CGM_AHP_stabsel <- function(listX,
   for(k in seq(1, init_param[['num_conditions']])){
 
     #create index to randomly sample half of the available samples
-    ind1 <- sample(x = seq(1, init_param[['num_samples']][[k]]), size = init_param[['num_samples']][[k]]/2, replace = FALSE)
+    ind1 <- sample(x = seq(1, init_param[['num_samples']][[k]]),
+                   size = init_param[['num_samples']][[k]]/2,
+                   replace = FALSE)
 
     #collect the other half of samples not in index1
     ind2 <- seq(1, init_param[['num_samples']][[k]])[is.na(match(seq(1, init_param[['num_samples']][[k]]), ind1, nomatch = NA))]
@@ -571,8 +625,12 @@ CGM_AHP_stabsel <- function(listX,
   }
 
   #fit two glasso models
-  group1_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample1), trainY=model1, lambda_value=lastar, limkappa=limkappa, eta=eta))
-  group2_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample2), trainY=model2, lambda_value=lastar, limkappa=limkappa, eta=eta))
+  group1_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample1),
+                                    trainY=model1, lambda_value=lastar,
+                                    limkappa=limkappa, eta=eta))
+  group2_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample2),
+                                    trainY=model2, lambda_value=lastar,
+                                    limkappa=limkappa, eta=eta))
 
   if (inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
     warning("glasso model for replicate: ", X, " failed!")
@@ -595,27 +653,34 @@ CGM_AHP_stabsel <- function(listX,
 
   return(list(mat = selection_matrix, stab_sel_rep = X))
 }
+
 #' Perform stability selection WITH additional subsampling
 #'
-#' This function will take as input the expression data and optimized lambda in order to randomly sample
-#' the data to perform stability selection. The function is based on the method described by Guo et al.
-#' (2011) and is designed to be run with some variation of the lapply family of functions. A key
-#' difference between this function and the related CGM_AHP_stabsel is that random sampling is done
-#' in a way that evens out sample distribution across the two conditions
+#' This function will take as input the expression data and optimized
+#' lambda in order to randomly sample the data to perform stability selection.
+#' The function is based on the method described by Guo et al. (2011) and is
+#' designed to be run with some variation of the lapply family of functions.
+#' A key difference between this function and the related CGM_AHP_stabsel
+#' is that random sampling is done in a way that evens out sample distribution
+#' across the two conditions
 #'
-#' @param listX A list containing matrices of the expression data split by condition. The samples
-#'        are in rows and the features are columns.
-#' @param X A vector corresponding to the number of reps to be run in stability selection
-#' @param init_param static variables necessary for CGM_AHP_stabsel_subsample functioning
+#' @param listX A list containing matrices of the expression data split by
+#' condition. The samples  are in rows and the features are columns.
+#' @param X A vector corresponding to the number of reps to be run in
+#' stability selection
+#' @param init_param static variables necessary for
+#' CGM_AHP_stabsel_subsample functioning
 #' @param lastar the optimized lambda parameter
-#' @param eta A tuning parameter that that ensures that the empirical covariance matrix of the data is positive definite
-#'        so that we can calculate its inverse. The default is 0.01.
-#' @param limkappa default parameter that acts as the limit for the condition number of the sample cov.
-#'       Default is 1e+6.
+#' @param eta A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
+#' @param limkappa default parameter that acts as the limit for the
+#' condition number of the sample cov. The default value is 1e+6.
 #'
 #' @author Gayatri Iyer
 #'
-#' @returns A precision matrix for the network corresponding to the input data.
+#' @returns A precision matrix for the network corresponding
+#' to the input data.
 #'
 #' @importFrom Matrix Matrix
 #' @keywords internal
@@ -660,7 +725,9 @@ CGM_AHP_stabsel_subsample <- function(listX,
   }
 
   ##train glasso model
-  tmp_model <- try(CGM_AHP_train(trainX=scale(do.call(rbind, subsampled_listX)), trainY=modelY, lambda_value=lastar, limkappa = limkappa, eta=eta))
+  tmp_model <- try(CGM_AHP_train(trainX=scale(do.call(rbind, subsampled_listX)),
+                                 trainY=modelY, lambda_value=lastar,
+                                 limkappa = limkappa, eta=eta))
 
 
   if (inherits(tmp_model, "try-error")){
@@ -683,22 +750,28 @@ CGM_AHP_stabsel_subsample <- function(listX,
 
 #' Construct the debiased glasso model
 #'
-#' This function takes the expression data, and rho regularization parameter (defined by the optimized lambda and
-#' selection probabilities) as input and fits the glasso model
+#' This function takes the expression data, and rho regularization
+#' parameter (defined by the optimized lambda and selection probabilities) as
+#' input and fits the glasso model
 #'
-#' @param data A matrix of expression data wherein the samples are rows and features are columns.
-#' @param weights A matrix of selection weights determined via stability selection to be integrated
-#'        into the model. Default is 1.
-#' @param theta_star The true precision matrix. Default is NULL
-#' @param lambda The optimized lambda hyper-parameter. The default is NULL
-#' @param verbose Whether or not progress output and additional function information should be printed to the console. The
-#'        default is TRUE.
-#' @param zero.edge Indices of entries of inverse covariance to be constrained to zero (to be passed
-#'        to glasso). The default is NULL
+#' @param data A matrix of expression data wherein the samples are rows and
+#' features are columns.
+#' @param weights A matrix of selection weights determined via stability
+#' selection to be integrated into the model. The default value is 1.
+#' @param theta_star The true precision matrix. The default value is NULL.
+#' @param lambda The optimized lambda hyper-parameter.
+#' sqrt(ln(# features)/# samples)
+#' @param verbose Whether or not progress output and additional
+#' function information should be printed to the console. The
+#' default is TRUE.
+#' @param zero.edge Indices of entries of inverse covariance to be
+#' constrained to zero (to be passed to glasso).
+#' The default value is NULL.
 #'
 #' @author Jing Ma
 #'
-#' @returns An adjacency matrix for the data network estimated by the glasso model.
+#' @returns An adjacency matrix for the data network
+#' estimated by the glasso model.
 #'
 #' @import glasso
 #' @importFrom stats cov2cor
@@ -718,7 +791,8 @@ adjDGlasso_minimal <- function(
   num_features <- ncol(data)
   empcov <- (1/num_samples) * (t(data) %*% data) #empirical cov
 
-  #if no lambda provided default to theoretical asymptotically valid lambda for large p and large n
+  #if no lambda provided default to theoretical asymptotically
+  #valid lambda for large p and large n
   if (is.null(lambda)){
     lambda <- sqrt(log(num_features)/num_samples)
   }
