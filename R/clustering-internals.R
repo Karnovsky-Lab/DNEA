@@ -1,6 +1,7 @@
 #' Calculate the consensus matrix of the network
 #'
-#' The function takes as input the results from the consensus clustering algorithm and calculates
+#' The function takes as input the results from the consensus clustering
+#' algorithm and calculates
 #' the consensus matrix
 #'
 #' @param cl the results from the consensus clustering algorithm
@@ -33,31 +34,29 @@ getConsensusMatrix <- function(cluster_results){
 
 #' Cluster an adjacency graph to identify metabolic modules
 #'
-#' This function takes as input an igraph graph object made from an adjacency matrix performs seven clustering
-#' algorithms from the \code{\link{igraph}} package:
+#' This function takes as input an igraph graph object made from an
+#' adjacency matrix performs seven clustering algorithms from the
+#' \code{\link{igraph}} package:
 #'
-#' 1. \code{\link{igraph::cluster_edge_betweenness}}
-#'
-#' 2. \code{\link{igraph::cluster_fast_greedy}}
-#'
-#' 3. \code{\link{igraph::cluster_infomap}}
-#'
-#' 4. \code{\link{igraph::cluster_label_prop}}
-#'
-#' 5. \code{\link{igraph::cluster_louvain}}
-#'
-#' 6. \code{\link{igraph::cluster_walktrap}}
-#'
-#' 7. \code{\link{igraph::cluster_leading_eigen}}
-#'
+#' \enumerate{
+#' \item \code{\link[igraph:cluster_edge_betweenness]{cluster_edge_betweenness}}
+#' \item \code{\link[igraph:cluster_fast_greedy]{cluster_fast_greedy}}
+#' \item \code{\link[igraph:cluster_infomap]{cluster_infomap}}
+#' \item \code{\link[igraph:cluster_label_prop]{cluster_label_prop}}
+#' \item \code{\link[igraph:cluster_louvain]{cluster_louvain}}
+#' \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
+#' \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 #' and outputs a list of the results
 #'
-#' @param adjacency_graph An igraph graph object created from an adjacency matrix
-#' @param graph_weights Edge weights to be used during clustering ie. the partial correlations for each feature-feature
-#' interaction
-#' @param verbose Whether or not a progress bar should be displayed in the console
+#' @param adjacency_graph An igraph graph object created
+#' from an adjacency matrix
+#' @param graph_weights Edge weights to be used during clustering ie. the
+#' partial correlations for each feature-feature interaction
+#' @param verbose Whether or not a progress bar should be
+#' displayed in the console
 #'
-#' @returns A list containing the clustering results from each of the seven algorithms
+#' @returns A list containing the clustering results from each
+#' of the seven algorithms
 #'
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @keywords internal
@@ -89,35 +88,39 @@ ensembl_cluster <- function(adjacency_graph,
 
   return(clustering_results)
 }
+
 #' Perform consensus clustering
 #'
-#' This function clusters the biological networks constructed using \code{\link{getNetworks}} using a consensus clustering
-#' approach described in Ma et al. *(Please see references for more details)*
+#' This function clusters the biological networks constructed using
+#' \code{\link{getNetworks}} using a consensus clustering approach
+#' described in Ma et al. *(Please see references for more details)* \cr
 #'
 #' Seven clustering algorithms from the \code{\link{igraph}} package:
-#' 1. \code{\link{igraph::cluster_edge_betweenness}}
+#' \enumerate{
+#' \item \code{\link[igraph:cluster_edge_betweenness]{cluster_edge_betweenness}}
+#' \item \code{\link[igraph:cluster_fast_greedy]{cluster_fast_greedy}}
+#' \item \code{\link[igraph:cluster_infomap]{cluster_infomap}}
+#' \item \code{\link[igraph:cluster_label_prop]{cluster_label_prop}}
+#' \item \code{\link[igraph:cluster_louvain]{cluster_louvain}}
+#' \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
+#' \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 #'
-#' 2. \code{\link{igraph::cluster_fast_greedy}}
+#' are performed iteratively on the adjacency matrix constructed
+#' using \code{\link{getNetworks}} until a consensus is reached on
+#' resulting subnetwork membership, or the specified
+#' max_iterations is reached.
 #'
-#' 3. \code{\link{igraph::cluster_infomap}}
+#' @param adjacency_graph An adjacency matrix of the
+#' determined network
+#' @param tau The consensus probability threshold for agreement
+#' among clustering runs
+#' @param max_iterations Maximum number of iterations to perform
+#' trying to reach consensus.
+#' @param verbose Whether or not a progress bar should be
+#' displayed in the console
 #'
-#' 4. \code{\link{igraph::cluster_label_prop}}
-#'
-#' 5. \code{\link{igraph::cluster_louvain}}
-#'
-#' 6. \code{\link{igraph::cluster_walktrap}}
-#'
-#' 7. \code{\link{igraph::cluster_leading_eigen}}
-#'
-#' are performed iteratively on the adjacency matrix constructed using \code{\link{getNetworks}} until a consensus
-#' is reached on resulting subnetwork membership, or the specified max_iterations is reached.
-#'
-#' @param adjacency_graph An adjacency matrix of the determined network
-#' @param tau The consensus probability threshold for agreement among clustering runs
-#' @param max_iterations Maximum number of iterations to perform trying to reach consensus.
-#' @param verbose Whether or not a progress bar should be displayed in the console
-#'
-#' @returns Sub-network determinations for the nodes within the input network
+#' @returns Sub-network determinations for the nodes
+#' within the input network
 #'
 #' @import igraph
 #' @keywords internal
@@ -127,11 +130,14 @@ run_consensus_cluster <- function(adjacency_graph,
                                   max_iterations = 5,
                                   verbose = TRUE){
 
-  message("Initiating consensus cluster with a maximum of ", max_iterations, "iterations!\n",
-          "Constructing initial consensus matrix...", appendLF = TRUE)
+  message("Initiating consensus cluster with a maximum of ",
+          max_iterations, "iterations!\n",
+          "Constructing initial consensus matrix...")
 
   ##cluster the adjacency graph
-  clustering_results <- ensembl_cluster(adjacency_graph, graph_weights = NULL, verbose = verbose)
+  clustering_results <- ensembl_cluster(adjacency_graph,
+                                        graph_weights = NULL,
+                                        verbose = verbose)
 
   ##get consensus matrix
   consensus_matrix <- getConsensusMatrix(clustering_results[!(is.na(clustering_results))])
@@ -144,12 +150,12 @@ run_consensus_cluster <- function(adjacency_graph,
     ##stop iterations if consensus is reached
     if(length(table(consensus_matrix)) < 3){
 
-      message("\nConsensus was reached in: ", iter, " iterations", appendLF = TRUE)
+      message("\nConsensus was reached in: ", iter, " iterations")
 
       break
     }
 
-    message("\n...starting iteration ", iter + 1, "...", appendLF = TRUE)
+    message("\n...starting iteration ", iter + 1, "...")
 
     ##get thresholded consensus matrix
     diag(consensus_matrix) <- 0
