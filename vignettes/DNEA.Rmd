@@ -12,7 +12,7 @@ abstract: >
   
   The DNEA R package is the latest implementation of the algorithm and implements several enhancements to the workflow. GGM's require considerably more compute power and, as biological datasets grow, the available resources on the typical personal computer can be constraining. DNEA is designed to work on high-performance or cloud-computing machines to utilize all of the available computing cores through parallelization and keep the memory footprint at a minimum. The algorithm has also been modularized into several key steps. The user now has more control over model tuning and edge inclusion through filtering of the resulting networks based on the strength of the metabolite-metabolite associations. This enables tailoring of the analysis to their data. While we have only tested DNEA on metabolomics and lipidomics data, theoretically it is applicable to any continuous data type that is aproximately normal (i.e. proteomics expression data).
 output:
-  BiocStyle::html_document:
+  BiocStyle::pdf_document:
     toc: true
 bibliography: DNEA_bibliography.bib
 vignette: >
