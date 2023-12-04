@@ -7,24 +7,34 @@
 getNetworks(object, optimal_lambda, eps_threshold = 1e-06)
 }
 \arguments{
-\item{object}{A \code{DNEAobj} object}
+\item{object}{A \code{\link{DNEAobj}} object}
 
-\item{optimal_lambda}{\emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
-or \code{\link{stabilitySelection}} were already performed}
+\item{optimal_lambda}{\emph{OPTIONAL} - The lambda value to be used
+in analysis. Not necessary if \code{\link{BICtune}} or
+\code{\link{stabilitySelection}} were already performed}
 
-\item{eps_threshold}{A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
-Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.}
+\item{eps_threshold}{A numeric value between 0 and 1 by which to
+threshold the partial correlation values for edge identification.
+Edges with an absolute partial correlation value below this threshold
+will be zero'd out from the adjacency matrix.}
 }
 \value{
-A \code{DNEAobj} object after populating the adjaceny_matrix and edge_list slots with the corresponding
-adjacency_matrix for each sample condition as well as the network edge list.
+A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
+and edge_list slots with the corresponding adjacency_matrix for each
+sample condition as well as the network edge list.
 }
 \description{
-This function constructs the biological network for each experimental condition using the joint estimation method described
-in Ma et al. (2019) (\emph{please see references below}). If \code{\link{BICtune}} and \code{\link{stabilitySelection}}
-were already run, the optimized lambda and selection probabilities from each function, respectively, will be used to
-add regularization when constructing the networks (please see the \strong{\emph{Details}} section of \code{\link{stabilitySelection}}
-for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+This function constructs the biological network for each experimental
+condition using the joint estimation method described
+in Ma et al. (2019) (\emph{please see references below}). If
+\code{\link{BICtune}} and \code{\link{stabilitySelection}} were already run,
+the optimized lambda and selection probabilities from each function,
+respectively, will be used to add regularization when constructing the
+networks (please see the \strong{\emph{Details}} section of
+\code{\link{stabilitySelection}} for more information). Otherwise,
+\deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+}
+\details{
 will be used as the regularization parameter.
 }
 \examples{
@@ -39,13 +49,22 @@ plotNetworks(object = dnw, type = "group_networks")
 
 }
 \references{
-Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L,
+Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D,
+Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+Differential network enrichment analysis reveals novel lipid pathways in
+chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452.
+doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777.
+\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 
-Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384; PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
+Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C,
+Michailidis G, Karnovsky A. Application of Differential Network
+Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites.
+2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384;
+PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-\code{\link{edgeList}}, \code{\link{adjacencyMatrix}}
+\code{\link{edgeList}},\code{\link{adjacencyMatrix}}
 }
 \author{
 Christopher Patsalis
