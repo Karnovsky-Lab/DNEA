@@ -8,16 +8,20 @@
 A DNEA results object after completing a DNEA experiment.
 }
 \source{
-The data is stored in the \code{\link{DNEA}} package and can be accessed by running data(dnw) in the console.
+The data is stored in the \code{\link{DNEA}} package and
+can be accessed by running data(dnw) in the console.
 }
 \usage{
 data("dnw")
 }
 \value{
-A \code{DNEAobj} object containing the results of a DNEA experiment
+A \code{\link{DNEAobj}} object containing the results of a
+DNEA experiment
 }
 \description{
-This data is an example DNEAobj object after performing DNEA. The experiment was performed using the \code{\link{TEDDY}}
-data with 4 reps of stability selection, no subsampling, and default parameters everywhere else. The seed was set to 417.
+This data is an example DNEAobj object after performing DNEA. The
+experiment was performed using the \code{\link{TEDDY}} data with
+4 reps of stability selection, no subsampling, and default parameters
+everywhere else. The seed was set to 417.
 }
 \keyword{datasets}

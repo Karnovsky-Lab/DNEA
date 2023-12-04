@@ -5,32 +5,46 @@
 \alias{T1Dmeta}
 \title{The meta data file for the TEDDY metabolomics data}
 \format{
-A data frame with 322 rows and 9 columns. Each row corresponds to a sample, and each column corresponds to:
+A data frame with 322 rows and 9 columns. Each row corresponds
+to a sample, and each column corresponds to:
 \describe{
 \item{subject}{The individual patient}
-\item{Endpoint1}{The age of the case subject in days when this sample was collected}
-\item{Endpoint2}{The age of the control subject in days when this sample was collected}
-\item{Age}{The age of the subject in days when this sample was collected}
+\item{Endpoint1}{The age of the case subject in days when this
+sample was collected}
+\item{Endpoint2}{The age of the control subject in days when
+this sample was collected}
+\item{Age}{The age of the subject in days when this sample
+was collected}
 \item{Sex}{The sex of the subject}
 \item{sample}{The name of this sample}
-\item{group}{A variable indicating whether or not this sample is part of the T1D case or T1D control group}
-}
+\item{group}{A variable indicating whether or not this sample
+is part of the T1D case or T1D control group}}
 }
 \source{
-The raw data can be downloaded from the Metabolomics workbench under study ID \strong{ST001386}:
+The raw data can be downloaded from the Metabolomics workbench
+under study ID \strong{ST001386}:
 \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 }
 \usage{
 data("T1Dmeta")
 }
 \value{
-A data frame containing the metadata for the TEDDY metabolomics study
+A data frame containing the metadata for the TEDDY
+metabolomics study
 }
 \description{
-This data is a data frame containing metadata for the samples in the corresponding \code{\link{TEDDY}} example data from "The Environmental Determinants of
-Diabetes in the Young" clinical trial.
+This data is a data frame containing metadata for the samples
+in the corresponding \code{\link{TEDDY}} example data from
+"The Environmental Determinants of Diabetes in the Young" clinical trial.
 }
 \references{
-Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K, Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B, Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study design for type 1 diabetes in The Environmental Determinants of Diabetes in the Young (TEDDY) study. Diabetes Metab Res Rev. 2014 Jul;30(5):424-34. doi: 10.1002/dmrr.2510. PMID: 24339168; PMCID: PMC4058423. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
+Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C,
+Lynch K, Hadley D, Rewers M, Simell O, She JX, Hagopian B,
+Lernmark A, Akolkar B, Ziegler AG, Krischer JP; TEDDY study group.
+Biomarker discovery study design for type 1 diabetes in The
+Environmental Determinants of Diabetes in the Young (TEDDY) study.
+Diabetes Metab Res Rev. 2014 Jul;30(5):424-34. doi: 10.1002/dmrr.2510.
+PMID: 24339168; PMCID: PMC4058423.
+\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
 }
 \keyword{datasets}
