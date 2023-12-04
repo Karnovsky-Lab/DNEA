@@ -2,33 +2,41 @@
 % Please edit documentation in R/primary.R
 \name{clusterNet}
 \alias{clusterNet}
-\title{Identify metabolic modules within the biological networks using a consensus clustering approach}
+\title{Identify metabolic modules within the biological networks using a
+consensus clustering approach}
 \usage{
 clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 }
 \arguments{
-\item{object}{A \code{DNEAobj} object}
+\item{object}{A \code{\link{DNEAobj}} object}
 
-\item{tau}{The \% agreement threshold among the clustering algorithms for a node to be included in a subnetwork}
+\item{tau}{The \% agreement threshold among the clustering algorithms
+for a node to be included in a subnetwork}
 
-\item{max_iterations}{The maximum number of replicates of the clustering algorithms to perform before consensus is reached}
+\item{max_iterations}{The maximum number of replicates of the clustering
+algorithms to perform before consensus is reached}
 
-\item{verbose}{Whether or not a progress bar should be displayed in the console}
+\item{verbose}{Whether or not a progress bar should be displayed
+in the console}
 }
 \value{
-A \code{DNEAobj} object containing sub-network determinations for the nodes within the input network.
-A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
-Sub-network membership for each node can be found in the "membership" column of the node list, which can be
-viewed using \code{\link{nodeList}}.
+A \code{\link{DNEAobj}} object containing sub-network determinations for
+the nodes within the input network. A summary of the consensus clustering
+results can be viewed using \code{\link{CCsummary}}. Sub-network membership
+for each node can be found in the "membership" column of the node list,
+which can be viewed using \code{\link{nodeList}}.
 }
 \description{
-This function clusters the jointly estimated adjacency matrix constructed using \code{\link{getNetworks}} via
-the consensus clustering approach described in Ma et al (\emph{Please see the \strong{\emph{Details}} section for more
-information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
-Only subnetworks with consensus that meets or exceeds tau are identified as real.
+This function clusters the jointly estimated adjacency matrix
+constructed using \code{\link{getNetworks}} via the consensus clustering
+approach described in Ma et al (\emph{Please see the \strong{\emph{Details}}
+section for more information}) to identify metabolic modules, aka
+sub networks, present in the larger networks. Only subnetworks with
+consensus that meets or exceeds tau are identified as real.
 }
 \details{
-Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
+Seven clustering algorithms from the \code{\link{igraph}} package
+are utilized in this consensus clustering approach:
 \enumerate{
 \item \code{\link[igraph:cluster_edge_betweenness]{cluster_edge_betweenness}}
 \item \code{\link[igraph:cluster_fast_greedy]{cluster_fast_greedy}}
@@ -38,9 +46,12 @@ Seven clustering algorithms from the \code{\link{igraph}} package are utilized i
 \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
 \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 
-For each iteration, node membership in each respective cluster is compared across the algorithms, and only the clusters with \% agreement
-greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
-on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
+For each iteration, node membership in each respective cluster is
+compared across the algorithms, and only the clusters with \% agreement
+greater than tau are kept. A new adjacency graph is then created and
+clustering is performed again. This occurs iteratively until consensus on
+stable subnetworks or the specified max_iterations is reached
+\emph{(Please see references for more details)}.
 }
 \examples{
 #import completed example data
@@ -54,12 +65,16 @@ plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
 
 }
 \references{
-Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L,
+Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D,
+Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+Differential network enrichment analysis reveals novel lipid pathways
+in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452.
+doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777.
+\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-\code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
-\code{\link{filterNetworks}}, \code{\link{plotNetworks}}
+\code{\link{plotNetworks}}
 }
 \author{
 Christopher Patsalis

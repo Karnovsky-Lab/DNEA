@@ -7,18 +7,21 @@
 runNetGSA(object, min_size = 5)
 }
 \arguments{
-\item{object}{A \code{DNEAobj}}
+\item{object}{A \code{\link{DNEAobj}}}
 
-\item{min_size}{The minimum size of metabolic modules for enrichment analysis}
+\item{min_size}{The minimum size of metabolic modules for
+enrichment analysis}
 }
 \value{
-A \code{DNEAobj} object after populating the @netGSA slot. Pathway expression differences for
-each node can be found in the node_list. A summary of the NetGSA results can be viewed
+A \code{\link{DNEAobj}} object after populating the @netGSA
+slot. Pathway expression differences for each node can be found
+in the node_list. A summary of the NetGSA results can be viewed
 using \code{\link{netGSAresults}}.
 }
 \description{
-This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
-using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
+This function performs pathway enrichment analysis on the metabolic
+modules identified via \code{\link{clusterNet}} using the
+\code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 }
 \examples{
 #import completed example data
@@ -33,10 +36,15 @@ netGSAresults(dnw)
 
 }
 \references{
-Hellstern M, Ma J, Yue K, Shojaie A. netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol. 2021 Jun 11;17(6):e1008979. doi: 10.1371/journal.pcbi.1008979. PMID: 34115744; PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
+Hellstern M, Ma J, Yue K, Shojaie A.
+netgsa: Fast computation and interactive visualization for
+topology-based pathway enrichment analysis.
+PLoS Comput Biol. 2021 Jun 11;17(6):e1008979.
+doi: 10.1371/journal.pcbi.1008979. PMID: 34115744;
+PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 }
 \seealso{
-\code{\link{netGSAresults}}, \code{\link{plotNetworks}}, \code{\link{nodeList}}
+\code{\link{netGSAresults}}
 }
 \author{
 Christopher Patsalis

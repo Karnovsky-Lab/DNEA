@@ -1,59 +1,77 @@
-#'
-#'
-#'
+#' @include all-methods.R
+NULL
+
 #' Initialize DNEAobj object
 #'
 #' @description
-#' This function takes as input a matrix of non-normalized, non-transformed expression data and the
-#' case/control group labels in order to initiate a DNEAobj object. Differential expression analysis using student's
-#' T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
+#' This function takes as input a matrix of non-normalized, non-transformed
+#' expression data and the case/control group labels in order to initiate a
+#' DNEAobj object. Differential expression analysis using student's T-test and
+#' Benjamini-Hochberg for multiple-testing corrections as well as diagnostic
+#' testing are also performed on the data.
 #'
 #' ## IMPORTANT
-#' Special attention should be given to the diagnostic criteria that is output. The minimum eigen
-#' value and condition number are calculated for the whole dataset as well as for each condition to determine
-#' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-#' found in \strong{\emph{Details}}.
+#' Special attention should be given to the diagnostic criteria that is
+#' output. The minimum eigen value and condition number are calculated for
+#' the whole dataset as well as for each condition to determine mathematic
+#' stability of the dataset and subsequent results from a GGM model. More
+#' information about interpretation can be found in \strong{\emph{Details}}.
 #'
 #'
 #' @param project_name A character string name for the experiment
-#' @param expression_data A numeric matrix or data frame of un-transformed, un-scaled expression data. The sample names
-#'                        should be row names and the feature names should be column names
-#' @param group_labels A factor vector of experimental group labels named with the corresponding sample name
+#' @param expression_data A numeric matrix or data frame of un-transformed,
+#' un-scaled expression data. The sample names should be row names and the
+#' feature names should be column names
+#' @param group_labels A factor vector of experimental group labels
+#' named with the corresponding sample name
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{BICtune}}, \code{\link{stabilitySelection}}
+#' @seealso
+#' \code{\link{BICtune}},\code{\link{stabilitySelection}}
 #'
 #' @details
 #' ## Diagnostics Motivation
-#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, thereby invalidating
-#' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
-#' is calculated by first creating a pearson correlation matrix of the data. Instability may then occur for a
-#' number of reasons, but one common cause is highly correlated features (in the positive and negative
-#' direction). \cr
+#' Negative or zero eigenvalues in a dataset can represent
+#' instability in that portion of the matrix, thereby invalidating
+#' parametric statistical methods and creating unreliable results. In this
+#' function, the minimum eigenvalue of the dataset is calculated by first
+#' creating a pearson correlation matrix of the data. Instability may then
+#' occur for a number of reasons, but one common cause is highly correlated
+#' features (in the positive and negative direction). \cr
 #'
-#' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
-#' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
-#' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
+#' Regularization often takes care of this problem by arbitrarily
+#' selecting one of the variables in a highly correlated group and removing
+#' the rest. We have developed DNEA to be very robust in situations where
+#' \strong{\emph{p >> n}} by optimizing the model via several regularization
+#' steps (\emph{please see} \code{\link{BICtune}} \emph{and}
+#' \code{\link{stabilitySelection}}) that may handle such problems without
+#' intervention, however, the user can also pre-emptively collapse
+#' highly-correlated features into a single group via
+#' \code{\link{aggregateFeatures}}.
 #'
-#' ## Benefits of Feauture Collapsing
-#' When your dataset contains highly correlated features, we recommend collapsing features into related groups - such as
-#' highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
-#' because the user then has more control over which variables are included in the model. Without collapsing, the model
-#' regularization may result in one of the features within a class being included and some or all of the remaining features
-#' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
-#' information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
+#' ## Benefits of Feature Aggregation
+#' When your dataset contains highly correlated features, we recommend
+#' aggregating features into related groups - such as highly-correlated
+#' features of a given class of molecules (ie. many fatty acids,
+#' carnitines, etc.) - because the user then has more control over which
+#' variables are included in the model. Without collapsing, the model
+#' regularization may result in one of the features within a class being
+#' included and some or all of the remaining features being removed. By
+#' collapsing first, you retain the signal from all of the features in the
+#' collapsed group and also have information pertaining to which features
+#' are highly correlated and will therefore have similar
+#' feature-feature associations.
 #'
-#' @returns A \code{DNEAobj} object.
+#' @returns A \code{\link{DNEAobj}} object.
 #'
 #' @examples
 #' #import example data
 #' data(TEDDY)
 #' data(T1Dmeta)
 #' #create group labels
-#' group_labels <- factor(T1Dmeta$group, levels = c("DM:control", "DM:case"))
+#' group_labels <- factor(T1Dmeta$group,
+#'                        levels = c("DM:control", "DM:case"))
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
 #'
@@ -72,17 +90,21 @@ createDNEAobject <- function(project_name,
   if(!missing(expression_data) & !missing(group_labels)){
 
     #check that order of group_labels matches data
-    if(!(all(names(group_labels) == colnames(expression_data)))) stop("Order of group labels does not match sample order in expression data!")
+    if(!(all(names(group_labels) == colnames(expression_data)))){
+
+      stop("Group labels do not match sample order in expression data!")
+    }
 
     ##turn condition into factor
     if(!is.factor(group_labels)){
 
       group_labels <- factor(group_labels)
 
-      message("Condition for expression_data should be of class factor. Converting Now.\n",
+      message("Condition for expression_data should be of class factor. ",
+              "Converting now.\n",
               "Condition is now a factor with levels:\n1. ",
-              levels(group_labels)[1], "\n",
-              "2. ", levels(group_labels)[2], appendLF = TRUE)
+              levels(group_labels)[1],"\n2. ",
+              levels(group_labels)[2])
     }
 
     #create data structures to initialize DNEAobject with un-scaled data
@@ -115,7 +137,7 @@ createDNEAobject <- function(project_name,
                                        conditions = networkGroupIDs(object))
 
   #print dataset summary
-  message("\nDiagnostic criteria are as follows: ", appendLF = TRUE)
+  message("\nDiagnostic criteria are as follows: ")
   show(object@dataset_summary)
 
   ##perform differential expression on the features
@@ -128,20 +150,24 @@ createDNEAobject <- function(project_name,
 
   return(object)
 }
-
+################################################################################
 #' Restructure input data for initiation of DNEAobj object
 #'
-#' This function takes as input a matrix of expression data and the experimental group labels in order to
-#' restructure the input as to prepare it for initiation of a DNEAobj object.
+#' This function takes as input a matrix of expression data and the
+#' experimental group labels in order to restructure the input as to prepare
+#' it for initiation of a DNEAobj object.
 #'
-#' @param expression_data A matrix or data frame of expression data. The sample names should be rownames
-#'        and the feature names should be column names. Column 1 should be a factor of the two conditions, followed by
-#'        the numeric expression data
-#' @param condition_values A factor vector of experimental group labels named with the corresponding sample name
+#' @param expression_data A matrix or data frame of expression data.
+#' The sample names should be rownames and the feature names should be
+#' column names. Column 1 should be a factor of the two conditions, followed by
+#' the numeric expression data
+#' @param condition_values A factor vector of experimental group labels named
+#' with the corresponding sample name
 #'
-#' @returns A list containing two lists. The first list, named assays, contains the uns-scaled data (if provided)
-#'         in position 1 and the scaled data in position 2. The second list, named metadata, contains the metadata parsed
-#'         from the input data.
+#' @returns A list containing two lists. The first list, named assays,
+#' contains the uns-scaled data (if provided) in position 1 and the
+#' scaled data in position 2. The second list, named metadata, contains
+#' the metadata parsed from the input data.
 #'
 #' @author Christopher Patsalis
 #'
@@ -195,7 +221,8 @@ restructure_input_data <- function(expression_data,
   #order group_labels to make sure that still matches
   condition_values <- condition_values[colnames(expression_data)]
 
-  message('Data has been normalized for further analysis. New data can be found in the scaled_expression_data assay!\n')
+  message("Data has been normalized for further analysis.",
+  " New data can be found in the scaled_expression_data assay!\n")
 
   ##concatenate output
   #add scaled data to assays list
@@ -215,44 +242,60 @@ restructure_input_data <- function(expression_data,
 
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
-#' This function takes as input a DNEAobj object and first splits the scaled data by condition. The minimum eigen
-#' value and condition number are then calculated for the whole dataset as well as for each condition to determine
-#' mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-#' found in \strong{\emph{Details}}.
+#' This function takes as input a DNEAobj object and first splits the
+#' scaled data by condition. The minimum eigen value and condition number
+#' are then calculated for the whole dataset as well as for each condition to
+#' determine mathematic stability of the dataset and subsequent results from
+#' a GGM model. More information about interpretation can be found in
+#' \strong{\emph{Details}}.
 #'
 #' @param mat A matrix of expression data
-#' @param condition_values A vector of condition names present in the dataset
-#' @param conditions A vector of condition labels corresponding to the samples in mat
+#' @param condition_values A vector of condition names present
+#' in the dataset
+#' @param conditions A vector of condition labels corresponding to
+#' the samples in mat
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
+#' @seealso
+#' \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}
 #'
 #' @details
 #' ## Diagnostics Motivation
-#' Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, thereby invalidating
-#' parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
-#' is calculated by first creating a pearson correlation matrix of the data. Instability may then occur for a
-#' number of reasons, but one common cause is highly correlated features (in the positive and negative
-#' direction). \cr
+#' Negative or zero eigenvalues in a dataset can represent instability
+#' in that portion of the matrix, thereby invalidating parametric
+#' statistical methods and creating unreliable results. In this function,
+#' the minimum eigenvalue of the dataset is calculated by first creating
+#' a pearson correlation matrix of the data. Instability may then occur
+#' for a number of reasons, but one common cause is highly correlated
+#' features (in the positive and negative direction). \cr
 #'
-#' Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-#' correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >>> n}}
-#' by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
-#' \code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-#' the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
+#' Regularization often takes care of this problem by arbitrarily
+#' selecting one of the variables in a highly correlated group and
+#' removing the rest. We have developed DNEA to be very robust in
+#' situations where \strong{\emph{p >>> n}} by optimizing the model via
+#' several regularization steps (\emph{please see} \code{\link{BICtune}}
+#' \emph{and} \code{\link{stabilitySelection}}) that may handle such
+#' problems without intervention, however, the user can also pre-emptively
+#' collapse highly-correlated features into a single group via
+#' \code{\link{aggregateFeatures}}.
 #'
 #' ## Benefits of Feauture Collapsing
-#' In scenarios like this we recommend collapsing highly correlated features into a single group - particularly if the
-#' dataset contains many highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
-#' because the user then has more control over which variables are included in the model. Without collapsing, the model
-#' regularization may result in one of the features within a class being included and some or all of the remaining features
-#' being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
-#' information pertaining to which features are highly correlated and as a result track each other.
+#' In scenarios like this we recommend collapsing highly correlated
+#' features into a single group - particularly if the dataset contains
+#' many highly-correlated features of a given class of molecules
+#' (ie. many fatty acids, carnitines, etc.) - because the user then has
+#' more control over which variables are included in the model. Without
+#' collapsing, the model regularization may result in one of the features
+#' within a class being included and some or all of the remaining features
+#' being removed. By collapsing first, you retain the signal from all of
+#' the features in the collapsed group and also have information pertaining
+#' to which features are highly correlated and as a result track each other.
 #'
-#' @returns A DNEA object containing an initialized node_list. Differential Expression is performed on
-#'          the features if un-scaled data is provided. The min eigen value and condition number is also
-#'          printed for the whole dataset as well as each condition.
+#' @returns A DNEA object containing an initialized node_list. Differential
+#' Expression is performed on the features if un-scaled data is provided.
+#' The min eigen value and condition number is also printed for the whole
+#' dataset as well as each condition.
 #'
 #' @importFrom stats t.test cor p.adjust
 #' @keywords internal
@@ -293,10 +336,11 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
 
   if(any(diagnostic_values$min_eigen <= 1e-5)){
 
-    warning("One or more conditions look unstable. You should collapse features before continuing the analysis!")
+    warning("One or more condition(s) look unstable. ",
+            "We reccomend you aggregate features features before continuing!")
   } else{
 
-    warning("Diagnostic tests complete. You can proceed with the analysis!", appendLF = TRUE)
+    warning("Diagnostic tests complete. You can proceed with the analysis!")
   }
 
   return(new("DNEAinputSummary",
@@ -307,26 +351,36 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
 
 #' Perform differential expression analysis using students T-test
 #'
-#' Performs differential expression on features of the input data provided using student's T-Test and multiple hypothesis
-#' correction via Benjamini-Hochberg
+#' Performs differential expression on features of the input data provided
+#' using student's T-Test and multiple hypothesiscorrection
+#' via Benjamini-Hochberg
 #'
 #' @param mat An m x n expression matrix with features as columns
 #' @param condition_values a vector of the two possible condition values
-#' @param conditions a vector containing the condition labels corresponding to the samples in mat
+#' @param conditions a vector containing the condition labels corresponding
+#' to the samples in mat
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}
-#' @returns The differential expression results for the features in the input matrix. The returned object is a data
-#'          frame with the following columns: \itemize{
-#'          \item \strong{clean feauture names -} The feature names
-#'          \item \strong{foldchange -} The foldchange in expression across experimental conditions
-#'          \item \strong{fcdirection -} The direction of the foldchange, ie. upregulated or downregulated
-#'          \item \strong{t-statistic -} The T-statistic from the student's T-test used to perform Differential Expression
-#'          \item \strong{t-statistic direction -} The direction of the T-statistic
-#'          \item \strong{pvalue -} The associatated p-value for the differential expression test
-#'          \item \strong{qvalue -} The p-value after adjusting for multiple-testing using Benjamini-Hochberg
-#'          \item \strong{DEstatus -} Whether or not the features qvalue is less than or equal to alpha = 0.05}
+#' @seealso
+#' \code{\link{createDNEAobject}}
+#' @returns The differential expression results for the features in the
+#' input matrix. The returned object is a data frame with the following
+#' columns: \itemize{
+#' \item \strong{clean feauture names -} The feature names
+#' \item \strong{foldchange -} The foldchange in expression across
+#' experimental conditions
+#' \item \strong{fcdirection -} The direction of the foldchange,
+#' ie. upregulated or downregulated
+#' \item \strong{t-statistic -} The T-statistic from the student's
+#' T-test used to perform Differential Expression
+#' \item \strong{t-statistic direction -} The direction of the T-statistic
+#' \item \strong{pvalue -} The associatated p-value for the differential
+#' expression test
+#' \item \strong{qvalue -} The p-value after adjusting for multiple-testing
+#' using Benjamini-Hochberg
+#' \item \strong{DEstatus -} Whether or not the features qvalue is less
+#' than or equal to alpha = 0.05}
 #' @keywords internal
 #' @noRd
 metabDE <- function(mat,
@@ -345,8 +399,12 @@ metabDE <- function(mat,
                                   condition_by_sample = conditions)
 
   ##perform Differential expression
+  # feature_info$comparison <- rep(condition_values[2], '/', condition_values[1], nrow(feature_info))
+  # feature_info$foldchange <- rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]])
   assign(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
   feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(get(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]))[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
+  #assign(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
+  #feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(feature_info$foldchange[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
   feature_info$t_statistic <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic, FUN.VALUE = numeric(length(num_features)))
   feature_info$t_statistic_direction <- vapply(seq(1, num_features), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
   feature_info$pvalue <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value, FUN.VALUE = numeric(length(num_features)))

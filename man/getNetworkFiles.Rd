@@ -7,17 +7,19 @@
 getNetworkFiles(object, file_path = getwd())
 }
 \arguments{
-\item{object}{A \code{DNEAobj} object}
+\item{object}{A \code{\link{DNEAobj}} object}
 
-\item{file_path}{The filepath to save the node and edge lists to. If \strong{NULL}, the files will be saved to the working
-directory}
+\item{file_path}{The filepath to save the node and edge lists to.
+If \strong{NULL}, the files will be saved to the working directory.}
 }
 \value{
-Two .csv files, one for the node list and one for the edge list, saved to the specified file path
+Two .csv files, one for the node list and one for the edge
+list, saved to the specified file path
 }
 \description{
-This function will save the node and edge information as .csv files in the working directory.
-The files are already formatted for input into Cytoscape.
+This function will save the node and edge information as .csv files
+in the working directory. The files are already formatted for input
+into Cytoscape.
 }
 \examples{
 #import example data
@@ -30,7 +32,7 @@ getNetworkFiles(dnw, file_path = filepath)
 
 }
 \seealso{
-\code{\link{edgeList}}, \code{\link{nodeList}}
+\code{\link{edgeList}},\code{\link{nodeList}}
 }
 \author{
 Christopher Patsalis

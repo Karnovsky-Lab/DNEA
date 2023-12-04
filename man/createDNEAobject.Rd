@@ -9,50 +9,66 @@ createDNEAobject(project_name, expression_data, group_labels)
 \arguments{
 \item{project_name}{A character string name for the experiment}
 
-\item{expression_data}{A numeric matrix or data frame of un-transformed, un-scaled expression data. The sample names
-should be row names and the feature names should be column names}
+\item{expression_data}{A numeric matrix or data frame of un-transformed,
+un-scaled expression data. The sample names should be row names and the
+feature names should be column names}
 
-\item{group_labels}{A factor vector of experimental group labels named with the corresponding sample name}
+\item{group_labels}{A factor vector of experimental group labels
+named with the corresponding sample name}
 }
 \value{
-A \code{DNEAobj} object.
+A \code{\link{DNEAobj}} object.
 }
 \description{
-This function takes as input a matrix of non-normalized, non-transformed expression data and the
-case/control group labels in order to initiate a DNEAobj object. Differential expression analysis using student's
-T-test and Benjamini-Hochberg for multiple-testing corrections as well as diagnostic testing are also performed on the data.
+This function takes as input a matrix of non-normalized, non-transformed
+expression data and the case/control group labels in order to initiate a
+DNEAobj object. Differential expression analysis using student's T-test and
+Benjamini-Hochberg for multiple-testing corrections as well as diagnostic
+testing are also performed on the data.
 \subsection{IMPORTANT}{
 
-Special attention should be given to the diagnostic criteria that is output. The minimum eigen
-value and condition number are calculated for the whole dataset as well as for each condition to determine
-mathematic stability of the dataset and subsequent results from a GGM model. More information about interpretation can be
-found in \strong{\emph{Details}}.
+Special attention should be given to the diagnostic criteria that is
+output. The minimum eigen value and condition number are calculated for
+the whole dataset as well as for each condition to determine mathematic
+stability of the dataset and subsequent results from a GGM model. More
+information about interpretation can be found in \strong{\emph{Details}}.
 }
 }
 \details{
 \subsection{Diagnostics Motivation}{
 
-Negative or zero eigenvalues in a dataset can represent instability in that portion of the matrix, thereby invalidating
-parametric statistical methods and creating unreliable results. In this function, the minimum eigenvalue of the dataset
-is calculated by first creating a pearson correlation matrix of the data. Instability may then occur for a
-number of reasons, but one common cause is highly correlated features (in the positive and negative
-direction). \cr
+Negative or zero eigenvalues in a dataset can represent
+instability in that portion of the matrix, thereby invalidating
+parametric statistical methods and creating unreliable results. In this
+function, the minimum eigenvalue of the dataset is calculated by first
+creating a pearson correlation matrix of the data. Instability may then
+occur for a number of reasons, but one common cause is highly correlated
+features (in the positive and negative direction). \cr
 
-Regularization often takes care of this problem by arbitrarily selecting one of the variables in a highly
-correlated group and removing the rest. We have developed DNEA to be very robust in situations where \strong{\emph{p >> n}}
-by optimizing the model via several regularization steps (\emph{please see} \code{\link{BICtune}} \emph{and}
-\code{\link{stabilitySelection}}) that may handle such problems without intervention, however,
-the user can also pre-emptively collapse highly-correlated features into a single group via \code{\link{aggregateFeatures}}.
+Regularization often takes care of this problem by arbitrarily
+selecting one of the variables in a highly correlated group and removing
+the rest. We have developed DNEA to be very robust in situations where
+\strong{\emph{p >> n}} by optimizing the model via several regularization
+steps (\emph{please see} \code{\link{BICtune}} \emph{and}
+\code{\link{stabilitySelection}}) that may handle such problems without
+intervention, however, the user can also pre-emptively collapse
+highly-correlated features into a single group via
+\code{\link{aggregateFeatures}}.
 }
 
-\subsection{Benefits of Feauture Collapsing}{
+\subsection{Benefits of Feature Aggregation}{
 
-When your dataset contains highly correlated features, we recommend collapsing features into related groups - such as
-highly-correlated features of a given class of molecules (ie. many fatty acids, carnitines, etc.) -
-because the user then has more control over which variables are included in the model. Without collapsing, the model
-regularization may result in one of the features within a class being included and some or all of the remaining features
-being removed. By collapsing first, you retain the signal from all of the features in the collapsed group and also have
-information pertaining to which features are highly correlated and will therefore have similar feature-feature associations.
+When your dataset contains highly correlated features, we recommend
+aggregating features into related groups - such as highly-correlated
+features of a given class of molecules (ie. many fatty acids,
+carnitines, etc.) - because the user then has more control over which
+variables are included in the model. Without collapsing, the model
+regularization may result in one of the features within a class being
+included and some or all of the remaining features being removed. By
+collapsing first, you retain the signal from all of the features in the
+collapsed group and also have information pertaining to which features
+are highly correlated and will therefore have similar
+feature-feature associations.
 }
 }
 \examples{
@@ -60,7 +76,8 @@ information pertaining to which features are highly correlated and will therefor
 data(TEDDY)
 data(T1Dmeta)
 #create group labels
-group_labels <- factor(T1Dmeta$group, levels = c("DM:control", "DM:case"))
+group_labels <- factor(T1Dmeta$group,
+                       levels = c("DM:control", "DM:case"))
 names(group_labels) <- rownames(T1Dmeta)
 
 
@@ -71,7 +88,7 @@ DNEA <- createDNEAobject(expression_data = TEDDY,
 
 }
 \seealso{
-\code{\link{BICtune}}, \code{\link{stabilitySelection}}
+\code{\link{BICtune}},\code{\link{stabilitySelection}}
 }
 \author{
 Christopher Patsalis

@@ -7,7 +7,7 @@
 includeMetadata(object, type = c("sample", "feature"), metadata)
 }
 \arguments{
-\item{object}{A \code{DNEAobj} object}
+\item{object}{A \code{\link{DNEAobj}} object}
 
 \item{type}{sample or feature metadata}
 
@@ -17,9 +17,10 @@ includeMetadata(object, type = c("sample", "feature"), metadata)
 A DNEAobj object with the specified additions
 }
 \description{
-This function will take additional metadata and add it to the specified dataframe in the metadata
-slot. \strong{\emph{NOTE:}} The rownames of the new metadata must match the order of the input sample names or feature names,
-respectively
+This function will take additional metadata and add it to the specified
+dataframe in the metadata slot. \strong{\emph{NOTE:}} The rownames of the
+new metadata must match the order of the input sample names or feature
+names, respectively
 }
 \examples{
 #import example data
@@ -34,7 +35,7 @@ dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
 
 }
 \seealso{
-\code{\link{featureNames}}, \code{\link{sampleNames}},
+\code{\link{featureNames}},\code{\link{sampleNames}},
 }
 \author{
 Christopher Patsalis
