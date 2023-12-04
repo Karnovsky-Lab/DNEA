@@ -1,23 +1,27 @@
-#'
-#'
-#'
 #' consensusClusteringResults
 #'
-#' An s4 class to represent the results from consensus clustering within DNEA
+#' An s4 class to represent the results from consensus
+#' clustering within DNEA
 #'
-#' @slot summary a data frame containing the subnetworks as rows and summary information as columns. The columns include:
-#' number_of_nodes, number_of_edges, number_of_DE_nodes, number_of_DE_edges
-#' @slot subnetwork_membership A data frame with the same number of rows as features in the data, and a column indicating which
-#' subnework a given feature belongs to, if any.
-#' @slot adjacency_graph The resulting adjacency graph from igraph created after consensus clustering
+#' @slot summary a data frame containing the subnetworks as rows and summary
+#' information as columns. The columns include: number_of_nodes,
+#' number_of_edges, number_of_DE_nodes, number_of_DE_edges
+#' @slot subnetwork_membership A data frame with the same number of rows
+#' as features in the data, and a column indicating which subnework a given
+#' feature belongs to, if any.
+#' @slot adjacency_graph The resulting adjacency graph from igraph
+#' created after consensus clustering
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{clusterNet}}
+#' @seealso
+#' \code{\link{clusterNet}}
+#'
 #' @returns A consensusClusteringResults object
 #' @docType class
 #' @import methods
-#' @rdname consensusClusteringResults
+#' @rdname consensusClusteringResults-class
+#' @aliases consensusClusteringResults
 setClass(Class = "consensusClusteringResults",
          slots = c(summary = "data.frame",
                    subnetwork_membership = "data.frame",
@@ -25,19 +29,25 @@ setClass(Class = "consensusClusteringResults",
 
 #' DNEAinputSummary
 #'
-#' An s4 class to represent the results from diagnostic testing on the input data
+#' An s4 class to represent the results from diagnostic testing
+#' on the input data
 #'
-#' @slot num_samples a single-value numeric vector corresponding to the number of samples in the dataset
-#' @slot num_features a single-value numeric vector corresponding to the number of features in the dataset
-#' @slot diagnostic_values a 3x3 data frame with the diagnostic values calculated via \code{\link{createDNEAobject}}
+#' @slot num_samples a single-value numeric vector corresponding to the
+#' number of samples in the dataset
+#' @slot num_features a single-value numeric vector corresponding to the
+#' number of features in the dataset
+#' @slot diagnostic_values a 3x3 data frame with the diagnostic values
+#' calculated via \code{\link{createDNEAobject}}
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}
+#' @seealso
+#' \code{\link{createDNEAobject}}
 #' @returns A DNEAinputSummary object
 #' @docType class
 #' @import methods
-#' @rdname DNEAinputSummary
+#' @rdname DNEAinputSummary-class
+#' @aliases DNEAinputSummary
 setClass(Class = "DNEAinputSummary",
          slots = c(num_samples = "numeric",
                    num_features = "numeric",
@@ -49,50 +59,69 @@ setClass(Class = "DNEAinputSummary",
 #'
 #' @slot project_name A character string name for the experiment
 #'
-#' @slot assays A list of matrices, "expression_data" being non-normalized, non-transformed data and "scaled_expression_data"
-#' being normalized, log-transformed data. The row names and column names between the two must be identical
-#' (can access expression data via \code{\link{expressionData}})
+#' @slot assays A list of matrices, "expression_data" being non-normalized,
+#' non-transformed data and "scaled_expression_data" being normalized,
+#' log-transformed data. The row names and column names between the two must be
+#' identical (can access expression data via \code{\link{expressionData}})
 #'
-#' @slot metadata A list of information about the data, including a data.frame for sample metadata (rownames must match the
-#' sample order of expression data), a data.frame for feature metadata (rownames must match the feature order of expression
-#' data), a two-level factor corresponding to the two groups in the data, and a character vector the same length as the
-#' number of samples corresponding to the group membership for each sample (the user may add additional metadata via
-#' \code{\link{includeMetadata}})
+#' @slot metadata A list of information about the data, including a
+#' data.frame for sample metadata (rownames must match the sample order of
+#' expression data), a data.frame for feature metadata (rownames must match
+#' the feature order of expression data), a two-level factor corresponding to
+#' the two groups in the data, and a character vector the same length as the
+#' number of samples corresponding to the group membership for each sample
+#' (the user may add additional metadata via \code{\link{includeMetadata}})
 #'
-#' @slot dataset_summary A \code{DNEAinputSummary} object (can view data via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
+#' @slot dataset_summary A \code{DNEAinputSummary} object (can view data
+#' via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
 #'
-#' @slot node_list A data.frame containing all of the features in the dataset as rows as well as the differential expression
-#' analysis results (can view the node list via \code{\link{nodeList}})
+#' @slot node_list A data.frame containing all of the features in the
+#' data set as rows as well as the differential expression analysis
+#' results (can view the node list via \code{\link{nodeList}})
 #'
-#' @slot edge_list A data.frame containing the network edges identified via \code{\link{getNetworks}} (can view the edge
-#' list via \code{\link{edgeList}})
+#' @slot edge_list A data.frame containing the network edges identified
+#' via \code{\link{getNetworks}} (can view the edge list via
+#' \code{\link{edgeList}})
 #'
-#' @slot hyperparameter A list of results obtained from \code{\link{BICtune}} containing a numeric vector of the lambda values
-#' tested during optimization, the resulting bayesian-information criterion and likelihood scores for each lambda value, and the
-#' optimized lambda for analysis (optimized lambda can be accessed or changed via \code{\link{optimizedLambda}})
+#' @slot hyperparameter A list of results obtained from
+#' \code{\link{BICtune}} containing a numeric vector of the lambda values
+#' tested during optimization, the resulting bayesian-information
+#' criterion and likelihood scores for each lambda value, and the
+#' optimized lambda for analysis (optimized lambda can be accessed or
+#' changed via \code{\link{optimizedLambda}})
 #'
-#' @slot adjacency_matrix A list of adjacency matrices, one for each experimental condition, jointly estimated  via
-#' \code{\link{getNetworks}} (can be accessed via \code{\link{adjacencyMatrix}})
+#' @slot adjacency_matrix A list of adjacency matrices, one for each
+#' experimental condition, jointly estimated  via
+#' \code{\link{getNetworks}}
 #'
-#' @slot stable_networks A list of the selection results and selection probabilities, one for each experimental condition,
-#' for every possible feature-feature edge (can be accessed via \code{\link{selectionResults}} and
-#' \code{\link{selectionProbabilities}})
+#' @slot stable_networks A list of the selection results and
+#' selection probabilities, one for each experimental condition,
+#' for every possible feature-feature edge
 #'
-#' @slot consensus_clustering A \code{consensusClusteringResults} object containing the results from consensus clustering
-#' via \code{\link{clusterNet}}
+#' @slot consensus_clustering A \code{consensusClusteringResults} object
+#' containing the results from consensus clustering via
+#' \code{\link{clusterNet}}
 #'
-#' @slot netGSA a data.frame containing the results from netgsa analysis via \code{\link{runNetGSA}}.
-#' Each row is a subnetwork tested for enrichment
+#' @slot netGSA a data.frame containing the results from netgsa analysis
+#' via \code{\link{runNetGSA}}. Each row is a sub network tested
+#' for enrichment
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{expressionData}}, \code{\link{includeMetadata}},
-#' \code{\link{nodeList}}, \code{\link{edgeList}}, \code{\link{datasetSummary}}, \code{\link{diagnostics}},
-#' \code{\link{BICtune}}, \code{\link{getNetworks}}, \code{\link{stabilitySelection}}, \code{\link{clusterNet}},
-#' \code{\link{runNetGSA}}, \code{\link{selectionProbabilities}}, \code{\link{selectionResults}}
+#' @seealso
+#' \code{\link{expressionData}},\code{\link{includeMetadata}},
+#' \code{\link{nodeList}},\code{\link{edgeList}},
+#' \code{\link{datasetSummary}},\code{\link{diagnostics}},
+#' \code{\link{BICtune}},\code{\link{getNetworks}},
+#' \code{\link{stabilitySelection}},\code{\link{clusterNet}},
+#' \code{\link{runNetGSA}},\code{\link{selectionProbabilities}},
+#' \code{\link{selectionResults}},\code{\link{createDNEAobject}},
+#'
 #' @returns A DNEAobj object
 #' @import methods
-#' @rdname DNEAobj
+#' @name DNEAobj-class
+#' @rdname DNEAobj-class
+#' @aliases DNEAobj
 setClass(Class = "DNEAobj",
          slots = c(
            project_name = 'character',
@@ -108,22 +137,28 @@ setClass(Class = "DNEAobj",
            netGSA = 'data.frame')
 )
 
-#' collapse_DNEAobj
+#' collapsed_DNEAobj
 #'
-#' An s4 class to represent the DNEA workflow, including collapsing features. This class inherits everything from
-#' \code{\link{DNEAobj-class}}
+#' An s4 class to represent the DNEA workflow, including collapsing
+#' features. This class inherits everything from \code{\link{DNEAobj}}
 #'
-#' @slot original_experiment The DNEAobj object input to \code{\link{aggregateFeatures}}
-#' @slot feature_membership A data.frame containing all of the features from the original input data and their
-#' corresponding group membership in the collapsed data.
+#' @slot original_experiment The DNEAobj object input to
+#' \code{\link{aggregateFeatures}}
+#' @slot feature_membership A data.frame containing all of the features from
+#' the original input data and their corresponding group membership in the
+#' collapsed data.
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{aggregateFeatures}}, \code{\link{createDNEAobject}}
+#' @seealso
+#' \code{\link{aggregateFeatures}},
+#' \code{\link{createDNEAobject}}
+#'
 #' @returns A collapsed_DNEAobj object
 #' @docType class
 #' @import methods
-#' @rdname collapse_DNEAobj
+#' @rdname collapsed_DNEAobj-class
+#' @aliases collapsed_DNEAobj
 setClass(Class = "collapsed_DNEAobj",
          slots = c(original_experiment = "DNEAobj",
                    feature_membership = "data.frame"),
@@ -146,10 +181,12 @@ setValidity("consensusClusteringResults", function(object){
   if(nrow(object@subnetwork_membership) != nrow(object@summary)){
     "there was a problem with consensus cluster results object"
   }
-  if(any(object@subnetwork_membership != 1 & object@subnetwork_membership != 0)){
+  if(any(object@subnetwork_membership != 1 &
+         object@subnetwork_membership != 0)){
     "There was an error in determining metabolic modules"
   }
 })
+
 #' check validity of "DNEAinputSummary"
 #' @docType methods
 #' @import methods
@@ -166,6 +203,7 @@ setValidity("DNEAinputSummary", function(object){
     "There was a problem with diagnostics"
   }
 })
+
 #'Check Validity of "DNEAobj" object
 #' @docType methods
 #' @import methods
@@ -182,24 +220,29 @@ setValidity("DNEAobj", function(object){
     if(!(is.matrix(object@assays[[i]]))){
       "@assays must be an expression matrix"
     }
-    if(length(rownames(object@assays[[i]])) != length(unique(rownames(object@assays[[i]])))){
+    if(length(rownames(object@assays[[i]])) !=
+       length(unique(rownames(object@assays[[i]])))){
       "@assays must be an expression matrix where each row is a unique feature."
     }
     if(!(is.numeric(object@assays[[i]]))){
       "@assays must be a matrix with numeric values."
     }
-    if(all(colnames(object@assays[[i]]) != sampleNames(object))){
+    if(all(colnames(object@assays[[i]]) !=
+           sampleNames(object))){
       "Samples are out of order"
     }
-    if(all(rownames(object@assays[[i]]) != featureNames(object, original = FALSE))){
+    if(all(rownames(object@assays[[i]]) !=
+           featureNames(object, original = FALSE))){
       "Features are out of order"
     }
   }
-  if(all(rownames(expressionData(object, normalized = FALSE)) != rownames(expressionData(object, normalized = TRUE)))){
+  if(all(rownames(expressionData(object, normalized = FALSE)) !=
+         rownames(expressionData(object, normalized = TRUE)))){
     "assay features are not in the same order"
   }
 
-  if(all(colnames(expressionData(object, normalized = FALSE)) != colnames(expressionData(object, normalized = TRUE)))){
+  if(all(colnames(expressionData(object, normalized = FALSE)) !=
+         colnames(expressionData(object, normalized = TRUE)))){
     "assay samples are not in the same order"
   }
 
@@ -210,7 +253,8 @@ setValidity("DNEAobj", function(object){
   if(!(is.character(object@metadata$samples$samples))){
     "@metadata$samples$samples should be of class character"
   }
-  if(all(object@metadata$samples$samples != colnames(expressionData(object, normalized = FALSE)))){
+  if(all(object@metadata$samples$samples !=
+         colnames(expressionData(object, normalized = FALSE)))){
     "sample metadata does not match order of expression data"
   }
   if(!(is.data.frame(object@metadata$features))){
@@ -222,7 +266,8 @@ setValidity("DNEAobj", function(object){
   if(!(is.character(object@metadata$features$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
-  if(all(object@metadata$features$clean_feature_names != rownames(expressionData(object, normalized = FALSE)))){
+  if(all(object@metadata$features$clean_feature_names !=
+         rownames(expressionData(object, normalized = FALSE)))){
     "feature metadata does not match order of expression data"
   }
   if(length(networkGroups(object)) != 2){
@@ -231,17 +276,20 @@ setValidity("DNEAobj", function(object){
   if(!is.factor(networkGroupIDs(object))){
     "sample conditions should be a factor"
   }
-  if(length(networkGroupIDs(object)) != length(sampleNames(object))){
+  if(length(networkGroupIDs(object)) !=
+     length(sampleNames(object))){
     "There should be only one group label for each sample"
   }
 
   #check dataset summary
   if(all(dim(diagnostics(object)) != c(0, 0))){
 
-    if(numSamples(object) != ncol(expressionData(object, normalized = FALSE))){
+    if(numSamples(object) !=
+       ncol(expressionData(object, normalized = FALSE))){
       "There was a problem with the dataset summary"
     }
-    if(numFeatures(object) != nrow(expressionData(object, normalized = FALSE))){
+    if(numFeatures(object) !=
+       nrow(expressionData(object, normalized = FALSE))){
       "There was a problem with the dataset summary"
     }
     validObject(object@dataset_summary)
@@ -250,7 +298,8 @@ setValidity("DNEAobj", function(object){
   #check nodelist
   if(all(dim(nodeList(object)) != c(0, 0))){
 
-    if(!all(nodeList(object)$Features == featureNames(object, original = FALSE))){
+    if(!all(nodeList(object)$Features ==
+            featureNames(object, original = FALSE))){
       "Node list order does not match expression data"
     }
   }
@@ -265,11 +314,13 @@ setValidity("DNEAobj", function(object){
 
   #check hyperparameter slot
   if(!is.null(lambdas2Test(object))){
-    if(length(object@hyperparameter$BIC_scores) != length(object@hyperparameter$tested_lambda_values)){
+    if(length(object@hyperparameter$BIC_scores) !=
+       length(object@hyperparameter$tested_lambda_values)){
       "There was a problem with the tested lambda values"
     }
     Bscores <- unlist(lapply(object@hyperparameter$BIC_scores, function(x) x$BIC))
-    if(optimizedLambda(object) != object@hyperparameter$tested_lambda_values[match(min(Bscores), Bscores)]){
+    if(optimizedLambda(object) !=
+       object@hyperparameter$tested_lambda_values[match(min(Bscores), Bscores)]){
       "There was a problem with the optimized lambda"
     }
   }
@@ -277,13 +328,16 @@ setValidity("DNEAobj", function(object){
   #check adjacency matrices
   if(!is.null(adjacencyMatrix(object, weighted = TRUE))){
 
-    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) != rownames(adjacencyMatrix(object, weighted = FALSE)))){
+    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) !=
+           rownames(adjacencyMatrix(object, weighted = FALSE)))){
       "there was a problem with the adjacency matrices"
     }
-    if(all(colnames(adjacencyMatrix(object, weighted = TRUE)) != colnames(adjacencyMatrix(object, weighted = FALSE)))){
+    if(all(colnames(adjacencyMatrix(object, weighted = TRUE)) !=
+           colnames(adjacencyMatrix(object, weighted = FALSE)))){
       "there was a problem with the adjacency matrices"
     }
-    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) != colnames(expressionData(object, normalized = FALSE)))){
+    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) !=
+           colnames(expressionData(object, normalized = FALSE)))){
       "there was a problem with the adjacency matrices"
     }
   }
@@ -293,10 +347,12 @@ setValidity("DNEAobj", function(object){
 
     for(i in length(selectionProbabilities(object))){
 
-      if(all(dim(selectionProbabilities(object)[[i]]) != c(numFeatures(object), numFeatures(object)))){
+      if(all(dim(selectionProbabilities(object)[[i]]) !=
+             c(numFeatures(object), numFeatures(object)))){
         "There was a problem with the feature order for selection probabilites"
       }
-      if(any(selectionProbabilities(object)[[i]] > 1) & any(selectionProbabilities(object)[[i]] < 0)){
+      if(any(selectionProbabilities(object)[[i]] > 1) &
+         any(selectionProbabilities(object)[[i]] < 0)){
         "There was a problem calculating selectionProbabilites"
       }
     }
@@ -305,15 +361,11 @@ setValidity("DNEAobj", function(object){
   #check consensus_clustering
   if(!is.null(dim(CCsummary(object)))){
 
-    if(sum(CCsummary(object)$number_of_nodes) != nrow(expressionData(object, normalized = FALSE))){
+    if(sum(CCsummary(object)$number_of_nodes) !=
+       nrow(expressionData(object, normalized = FALSE))){
       "There was a problem with consensus clustering"
     }
 
     validObject(object@consensus_clustering)
   }
 })
-
-############################################################################
-
-
-
