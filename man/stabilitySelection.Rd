@@ -2,7 +2,8 @@
 % Please edit documentation in R/primary.R
 \name{stabilitySelection}
 \alias{stabilitySelection}
-\title{Stability selection to calculate selection probabilities for every possible feature-feature interaction within the data}
+\title{Stability selection to calculate selection probabilities for every
+possible feature-feature interaction within the data}
 \usage{
 stabilitySelection(
   object,
@@ -14,15 +15,18 @@ stabilitySelection(
 )
 }
 \arguments{
-\item{object}{A \code{DNEAobj} object}
+\item{object}{A \code{\link{DNEAobj}} object}
 
-\item{subSample}{A boolean that specifies whether the number of samples are unevenly split
-by condition and, therefore, should be adjusted for when randomly sampling.}
+\item{subSample}{A boolean that specifies whether the number of samples
+are unevenly split by condition and, therefore, should be adjusted for
+when randomly sampling.}
 
-\item{nreps}{The total number of replicates to perform in stability selection. The default is 500.}
+\item{nreps}{The total number of replicates to perform in stability
+selection. The default is 500.}
 
-\item{optimal_lambda}{\emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
-necessary if \code{\link{BICtune}} is not performed}
+\item{optimal_lambda}{\emph{OPTIONAL} - The optimal lambda value to be
+used in the model. This parameter is only necessary if
+\code{\link{BICtune}} is not performed}
 
 \item{BPPARAM}{a BiocParallel object}
 
@@ -30,39 +34,59 @@ necessary if \code{\link{BICtune}} is not performed}
 the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
 }
 \value{
-A \code{DNEAobj} object after populating the stable_networks slot of the object. It contains the selection
-results from stability selection as well as the calculated selection probabilities.
+A \code{\link{DNEAobj}} object after populating the stable_networks
+slot of the object. It contains the selection results from stability
+selection as well as the calculated selection probabilities.
 }
 \description{
-This function randomly samples the input data and fits a glasso model with the sampled data for \strong{\emph{nreps}} number of replicates.
-The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated.
-Stability selection is particularly useful for smaller datasets and when a large number of replicates are performed (the default is 500). The
-exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
-found in the \strong{\emph{Details}} section.
+This function randomly samples the input data and fits a glasso model
+with the sampled data for \strong{\emph{nreps}} number of replicates. The
+resulting adjacency matrices are summed together and selection probabilities
+for each feature-feature interaction are calculated. Stability selection is
+particularly useful for smaller datasets and when a large number of
+replicates are performed (the default is 500). The exact method deployed
+varies slightly whether or not additional sub-sampling of the data is
+performed. More information can be found in the
+\strong{\emph{Details}} section.
 }
 \details{
-Stability selection provides an additional approach by which to regularize the network model and create more robust results,
-particularly when \strong{\emph{p >> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
-a glasso model to each subset of sampled data. The unwieghted adjacency matrix from each model is summed together
-(A feature-feature interaction is considered present if the partial correlation value is above 1e-5), and the probability of
-an edge being selected in a random subset of the data is calculated by dividing the number of times an edge was selected in
-the replicates over the total number of replicates. This results in a selection probability for every possible feature-feature interaction
-that is used to modify the regularization parameter via the following equation:
+Stability selection provides an additional approach by which to
+regularize the network model and create more robust results, particularly
+when \strong{\emph{p >> n}}. Stability selection works by randomly
+sampling (without replacement) the input data many times and fitting
+a glasso model to each subset of sampled data. The unwieghted adjacency
+matrix from each model is summed together (A feature-feature interaction
+is considered present if the partial correlation value is above 1e-5),
+and the probability of an edge being selected in a random subset of the
+data is calculated by dividing the number of times an edge was selected in
+the replicates over the total number of replicates. This results in a
+selection probability for every possible feature-feature interaction
+that is used to modify the regularization parameter
+via the following equation:
 \deqn{\rho = \lambda*(1 / (0.0001 + selection.probability))}{ rho = lambda*(1 / (0.0001 + selection.probability))}
 
-However, when the sample groups are very unbalanced, randomly sampling strongly favors the larger group, resulting in
-over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
-sample by sub-sampling the groups individually to even out the numbers. In this method, 90\% of the smaller group is randomly
-sampled without replacement, and an additional 10\% is randomly sampled without replacement from the entire group to preserve the
-variance. The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
+However, when the sample groups are very unbalanced, randomly
+sampling strongly favors the larger group, resulting in over representation
+of the aforementioned group. In order to combat this, setting
+subSample = TRUE modifies the random sample by sub-sampling the groups
+individually to even out the numbers. In this method, 90\% of the smaller
+group is randomly sampled without replacement, and an additional 10\% is
+randomly sampled without replacement from the entire group to preserve the
+variance. The larger group is randomly sampled to have 1.3 times the number
+of samples present in the smaller group. This method ensures that
 each group is equally represented in stability selection.\cr
 
-The principles of stability selection remain similar with both methods, however, there are a few small differences.
-Stability selection \emph{without} additional sub-sampling randomly samples 50\% of each group (without replacement) and fits a
-model for both halves of the sampled data. Since nearly all of the data for the smaller group is used \emph{with} additional sub-sampling, only one
-model is fit per replicate when subSample = TRUE. This means that at the default value of nreps = 500, 1000 randomly sampled
-models are fit in total \emph{without} sub-sampling, but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
-More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
+The principles of stability selection remain similar with both methods,
+however, there are a few small differences. Stability selection
+\emph{without} additional sub-sampling randomly samples 50\% of each group
+(without replacement) and fits a model for both halves of the sampled data.
+Since nearly all of the data for the smaller group is used \emph{with}
+additional sub-sampling, only one model is fit per replicate when
+subSample = TRUE. This means that at the default value of nreps = 500,
+1000 randomly sampled models are fit in total \emph{without} sub-sampling,
+but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
+More details about the stability approach deployed in this function can be
+found in Ma et al. (2019) referenced below.
 }
 \examples{
 #import BiocParallel package
@@ -79,15 +103,25 @@ dnw <- stabilitySelection(object = dnw,
 
 }
 \references{
-Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ,
+Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T,
+Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+Differential network enrichment analysis reveals novel lipid
+pathways in chronic kidney disease. Bioinformatics.
+2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114.
+PMID: 30887029; PMCID: PMC6748777.
+\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 
-Nicolai, M., & Peter, B. (2010). Stability selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 72(4), 417-473. \url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
+Nicolai, M., & Peter, B. (2010). Stability selection.
+Journal of the Royal Statistical Society: Series B
+(Statistical Methodology), 72(4), 417-473.
+\url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
 }
 \seealso{
-\code{\link{createDNEAobject}}, \code{\link{BICtune}},
-\code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
-\code{\link[BiocParallel:SerialParam]{SerialParam}},
-\code{\link[BiocParallel:SnowParam]{SnowParam}}
+\code{\link{selectionProbabilities}},
+\code{\link{selectionResults}},
+\code{\link[BiocParallel:bpparam]{bpparam}},
+\code{\link[BiocParallel:bpoptions]{bpoptions}}
 }
 \author{
 Christopher Patsalis

@@ -1,60 +1,80 @@
+#' @include all-methods.R
+#' @include all-generics.R
 #' @include JSEM-internals.R
 #' @include utilities-exported.R
 #' @include utilities-internals.R
 #' @include clustering-internals.R
-#' @include all-methods.R
-#' @include all-generics.R
 #' @include all-classes.R
 #' @include start-here.R
 NULL
 
-#' Optimize the lambda regularization parameter for the glasso-based network models using Bayesian-information Criterion
+#' Optimize the lambda regularization parameter for the glasso-based
+#' network models using Bayesian-information Criterion
 #'
-#' This function will calculate the Bayesian information criterion (BIC) and likelihood for a range of lambda values
-#' that are automatically generated (\emph{please see \strong{Details} for more info}) or that are user-specified.
-#' The lambda value with the minimum BIC score is the optimal lambda value for the dataset and is stored in the
-#' DNEAobj object for use in stability selection using \code{\link{stabilitySelection}} and network generation using
-#'  \code{\link{getNetworks}}
+#' This function will calculate the Bayesian information criterion (BIC)
+#' and likelihood for a range of lambda values that are automatically
+#' generated (\emph{please see \strong{Details} for more info}) or that are
+#' user-specified. The lambda value with the minimum BIC score is the optimal
+#' lambda value for the dataset and is stored in the DNEAobj object for use in
+#' stability selection using \code{\link{stabilitySelection}} and network
+#' generation using \code{\link{getNetworks}}
 #'
-#' @param object A \code{DNEAobj} object. See \code{\link{createDNEAobject}}
-#' @param lambda_values **OPTIONAL** A list of values to test while optimizing the lambda parameter.
-#'  If not provided, a set of lambda values are chosen based on the theoretical value for the
-#'  asymptotically valid lambda. More information about this can be found in the details section
-#' @param informed TRUE/FALSE whether or not to utilize the asymptotic properties of lambda for large data sets
-#' to tune the parameter. This reduces the necessary number of computations for optimization
-#' @param interval A numeric value indicating the specifity by which to optimize lambda. The default value
-#' is 1e-3, which indicates lambda will be optimized to 3 decimal places. The value should be between 0 and 0.1.
+#' @param object A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}
+#' @param lambda_values **OPTIONAL** A list of values to test while optimizing
+#' the lambda parameter. If not provided, a set of lambda values are chosen
+#' based on the theoretical value for the asymptotically valid lambda. More
+#' information about this can be found in the details section
+#' @param informed TRUE/FALSE whether or not to utilize the asymptotic
+#' properties of lambda for large data sets to tune the parameter. This reduces
+#' the necessary number of computations for optimization
+#' @param interval A numeric value indicating the specifity by which to
+#' optimize lambda. The default value is 1e-3, which indicates lambda will
+#' be optimized to 3 decimal places. The value should be between 0 and 0.1.
 #' @param eps_threshold A significance cut-off for thresholding network edges.
 #'        The default value is 1e-06. This value generally should not change.
-#' @param eta_value default parameter ??. Default is 0.1
+#' @param eta_value A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
 #' @param BPPARAM A \code{\link{BiocParallel}} object
 #' @param BPOPTIONS a list of options for BiocParallel created using
 #' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}},
-#' \code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
-#' \code{\link[BiocParallel:SerialParam]{SerialParam}},
-#' \code{\link[BiocParallel:SnowParam]{SnowParam}}
+#' @seealso
+#' \code{\link{optimizedLambda}},
+#' \code{\link[BiocParallel:bpparam]{bpparam}},
+#' \code{\link[BiocParallel:bpoptions]{bpoptions}}
 #'
-#' @references Guo J, Levina E, Michailidis G, Zhu J. Joint estimation of multiple graphical models.
-#' Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060. Epub 2011 Feb 9. PMID: 23049124;
-#' PMCID: PMC3412604. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
+#' @references Guo J, Levina E, Michailidis G, Zhu J.
+#' Joint estimation of multiple graphical models.
+#' Biometrika. 2011 Mar;98(1):1-15. doi: 10.1093/biomet/asq060.
+#' Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604.
+#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3412604/}
 #'
 #' @details
-#' There are several ways to optimize the lambda parameter for a glasso model - We utilize Bayesian-information criterion (BIC) to optimize the lambda parameter in
-#' DNEA because it is a more balanced method and less computationally expensive. We can reduce the total number of values that
-#' need to be tested in optimization by carefully selecting values around the asymptotically valid lambda for datasets with many samples and many features:
-#'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{lambda = sqrt(ln(num. features) / num. samples)}
-#' For smaller datasets, the asymptotically valid lambda is described by modifying the previous equation to include an unknown constant, c,
-#' that needs to be determined mathematically. Therefore, to optimize lambda we modify the previous equation as follows:
-#' \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
-#' where c takes on 15 evenly spaced values between 0.01 and 0.3. More information regarding the optimization method deployed here can be found
-#' in the Guo et al. (2011) paper referenced below.
+#' There are several ways to optimize the lambda parameter for a
+#' glasso model - We utilize Bayesian-information criterion (BIC) to
+#' optimize the lambda parameter in DNEA because it is a more balanced
+#' method and less computationally expensive. We can reduce the total
+#' number of values that need to be tested in optimization by carefully
+#' selecting values around the asymptotically valid lambda for datasets
+#' with many samples and many features:
+#'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #'
-#' @returns A \code{DNEAobj} object containing the BIC and likelihood scores for every lambda value tested, as well as
-#'         the optimized lambda value
+#' For smaller datasets, the asymptotically valid lambda is described
+#' by modifying the previous equation to include an unknown constant, c,
+#' that needs to be determined mathematically. Therefore, to optimize
+#' lambda we modify the previous equation as follows:
+#' \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
+#'
+#' where c takes on 15 evenly spaced values between 0.01 and 0.3.
+#' More information regarding the optimization method deployed here can
+#' be found in the Guo et al. (2011) paper referenced below.
+#'
+#' @returns A \code{\link{DNEAobj}} object containing the BIC and likelihood
+#' scores for every lambda value tested, as well as the
+#' optimized lambda value
 #'
 #' @examples
 #' #import BiocParallel package
@@ -64,7 +84,9 @@ NULL
 #' data(dnw)
 #'
 #' #optimize lambda parameter
-#' dnw <- BICtune(object = dnw, informed = TRUE, interval = 1e-2)
+#' dnw <- BICtune(object = dnw,
+#'                informed = TRUE,
+#'                interval = 1e-2)
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
@@ -96,14 +118,13 @@ BICtune <- function(object,
   bic2 <- NULL
 
   message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
-          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n",
-          appendLF = TRUE)
+          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n")
 
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
     if(informed){
 
-      message("Estimating optimal c constant range for asymptotic lambda...", appendLF = TRUE)
+      message("Estimating optimal c constant range for asymptotic lambda...")
       bic1 <- estimate_c(FUN = 'CGM_AHP_tune',
                          trainX = trainX,
                          testX = trainX,
@@ -136,10 +157,13 @@ BICtune <- function(object,
 
     message("Provided lambda values will be used for optimization...", appendLF = TRUE)
     lambda_values <- unlist(lambda_values)
-    if(any(lambda_values < 0 | lambda_values > 1)) stop("The lambda parameter should be a value between 0 and 1 only!")
+    if(any(lambda_values < 0 | lambda_values > 1)){
+
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
   }
 
-  message("Fine-tuning Lambda...", appendLF = TRUE)
+  message("Fine-tuning Lambda...")
   bic2 <- tune_lambda(lambda_values = new_lambda_values,
                       FUN = 'CGM_AHP_tune',
                       trainX = trainX,
@@ -160,7 +184,8 @@ BICtune <- function(object,
   optimizedLambda(object) <- bic2[["lastar_guo"]]
   lambdas2Test(object) <- lambda_tested
 
-  message("The optimal Lambda hyper-parameter has been set to: ", bic2[["lastar_guo"]], "!", appendLF = TRUE)
+  message("The optimal Lambda hyper-parameter has been set to: ",
+          bic2[["lastar_guo"]], "!")
 
   #check valid object
   validObject(object)
@@ -168,63 +193,99 @@ BICtune <- function(object,
   return(object)
 }
 
-#' Stability selection to calculate selection probabilities for every possible feature-feature interaction within the data
+#' Stability selection to calculate selection probabilities for every
+#' possible feature-feature interaction within the data
 #'
-#' This function randomly samples the input data and fits a glasso model with the sampled data for \strong{\emph{nreps}} number of replicates.
-#' The resulting adjacency matrices are summed together and selection probabilities for each feature-feature interaction are calculated.
-#' Stability selection is particularly useful for smaller datasets and when a large number of replicates are performed (the default is 500). The
-#' exact method deployed varies slightly whether or not additional sub-sampling of the data is performed. More information can be
-#' found in the \strong{\emph{Details}} section.
+#' This function randomly samples the input data and fits a glasso model
+#' with the sampled data for \strong{\emph{nreps}} number of replicates. The
+#' resulting adjacency matrices are summed together and selection probabilities
+#' for each feature-feature interaction are calculated. Stability selection is
+#' particularly useful for smaller datasets and when a large number of
+#' replicates are performed (the default is 500). The exact method deployed
+#' varies slightly whether or not additional sub-sampling of the data is
+#' performed. More information can be found in the
+#' \strong{\emph{Details}} section.
 #'
-#' @param object A \code{DNEAobj} object
-#' @param subSample A boolean that specifies whether the number of samples are unevenly split
-#'         by condition and, therefore, should be adjusted for when randomly sampling.
-#' @param nreps The total number of replicates to perform in stability selection. The default is 500.
-#' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be used in the model. This parameter is only
-#'        necessary if \code{\link{BICtune}} is not performed
+#' @param object A \code{\link{DNEAobj}} object
+#' @param subSample A boolean that specifies whether the number of samples
+#' are unevenly split by condition and, therefore, should be adjusted for
+#' when randomly sampling.
+#' @param nreps The total number of replicates to perform in stability
+#' selection. The default is 500.
+#' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be
+#' used in the model. This parameter is only necessary if
+#' \code{\link{BICtune}} is not performed
 #' @param BPPARAM a BiocParallel object
 #' @param BPOPTIONS a list of options for BiocParallel created using
 #' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}},
-#' \code{\link[BiocParallel:MulticoreParam]{MulticoreParam}},
-#' \code{\link[BiocParallel:SerialParam]{SerialParam}},
-#' \code{\link[BiocParallel:SnowParam]{SnowParam}}
+#' @seealso
+#' \code{\link{selectionProbabilities}},
+#' \code{\link{selectionResults}},
+#' \code{\link[BiocParallel:bpparam]{bpparam}},
+#' \code{\link[BiocParallel:bpoptions]{bpoptions}}
 #'
 #'
-#' @references Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+#' @references Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ,
+#' Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T,
+#' Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+#' Differential network enrichment analysis reveals novel lipid
+#' pathways in chronic kidney disease. Bioinformatics.
+#' 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114.
+#' PMID: 30887029; PMCID: PMC6748777.
+#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
-#' Nicolai, M., & Peter, B. (2010). Stability selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 72(4), 417-473. \url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
+#' Nicolai, M., & Peter, B. (2010). Stability selection.
+#' Journal of the Royal Statistical Society: Series B
+#' (Statistical Methodology), 72(4), 417-473.
+#' \url{https://stat.ethz.ch/Manuscripts/buhlmann/stability.pdf}
 #'
 #' @details
-#' Stability selection provides an additional approach by which to regularize the network model and create more robust results,
-#' particularly when \strong{\emph{p >> n}}. Stability selection works by randomly sampling (without replacement) the input data many times and fitting
-#' a glasso model to each subset of sampled data. The unwieghted adjacency matrix from each model is summed together
-#' (A feature-feature interaction is considered present if the partial correlation value is above 1e-5), and the probability of
-#' an edge being selected in a random subset of the data is calculated by dividing the number of times an edge was selected in
-#' the replicates over the total number of replicates. This results in a selection probability for every possible feature-feature interaction
-#' that is used to modify the regularization parameter via the following equation:
+#' Stability selection provides an additional approach by which to
+#' regularize the network model and create more robust results, particularly
+#' when \strong{\emph{p >> n}}. Stability selection works by randomly
+#' sampling (without replacement) the input data many times and fitting
+#' a glasso model to each subset of sampled data. The unwieghted adjacency
+#' matrix from each model is summed together (A feature-feature interaction
+#' is considered present if the partial correlation value is above 1e-5),
+#' and the probability of an edge being selected in a random subset of the
+#' data is calculated by dividing the number of times an edge was selected in
+#' the replicates over the total number of replicates. This results in a
+#' selection probability for every possible feature-feature interaction
+#' that is used to modify the regularization parameter
+#' via the following equation:
 #' \deqn{\rho = \lambda*(1 / (0.0001 + selection.probability))}{ rho = lambda*(1 / (0.0001 + selection.probability))}
 #'
-#' However, when the sample groups are very unbalanced, randomly sampling strongly favors the larger group, resulting in
-#' over representation of the aforementioned group. In order to combat this, setting subSample = TRUE modifies the random
-#' sample by sub-sampling the groups individually to even out the numbers. In this method, 90% of the smaller group is randomly
-#' sampled without replacement, and an additional 10% is randomly sampled without replacement from the entire group to preserve the
-#' variance. The larger group is randomly sampled to have 1.3 times the number of samples present in the smaller group. This method ensures that
+#'
+#' However, when the sample groups are very unbalanced, randomly
+#' sampling strongly favors the larger group, resulting in over representation
+#' of the aforementioned group. In order to combat this, setting
+#' subSample = TRUE modifies the random sample by sub-sampling the groups
+#' individually to even out the numbers. In this method, 90% of the smaller
+#' group is randomly sampled without replacement, and an additional 10% is
+#' randomly sampled without replacement from the entire group to preserve the
+#' variance. The larger group is randomly sampled to have 1.3 times the number
+#' of samples present in the smaller group. This method ensures that
 #' each group is equally represented in stability selection.\cr
 #'
-#' The principles of stability selection remain similar with both methods, however, there are a few small differences.
-#' Stability selection \emph{without} additional sub-sampling randomly samples 50% of each group (without replacement) and fits a
-#' model for both halves of the sampled data. Since nearly all of the data for the smaller group is used \emph{with} additional sub-sampling, only one
-#' model is fit per replicate when subSample = TRUE. This means that at the default value of nreps = 500, 1000 randomly sampled
-#' models are fit in total \emph{without} sub-sampling, but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
-#' More details about the stability approach deployed in this function can be found in Ma et al. (2019) referenced below.
+#' The principles of stability selection remain similar with both methods,
+#' however, there are a few small differences. Stability selection
+#' \emph{without} additional sub-sampling randomly samples 50% of each group
+#' (without replacement) and fits a model for both halves of the sampled data.
+#' Since nearly all of the data for the smaller group is used \emph{with}
+#' additional sub-sampling, only one model is fit per replicate when
+#' subSample = TRUE. This means that at the default value of nreps = 500,
+#' 1000 randomly sampled models are fit in total \emph{without} sub-sampling,
+#' but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
+#' More details about the stability approach deployed in this function can be
+#' found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{DNEAobj} object after populating the stable_networks slot of the object. It contains the selection
-#' results from stability selection as well as the calculated selection probabilities.
+#' @returns A \code{\link{DNEAobj}} object after populating the stable_networks
+#' slot of the object. It contains the selection results from stability
+#' selection as well as the calculated selection probabilities.
 #'
 #' @examples
 #' #import BiocParallel package
@@ -250,25 +311,38 @@ stabilitySelection <- function(object,
                                BPOPTIONS = bpoptions()){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(nreps < 1 | !is.numeric(nreps)) stop("nreps specifies the number of stability selection replicates to perform and should be an number greater than zero!")
-  if(!is.logical(subSample)) stop('"subSample" parameter should be TRUE or FALSE!')
+  if(!inherits(object, "DNEAobj")){
 
-  # stabilitySelection requires lambda hyper-parameter. Will use optimal_lambda if
-  # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+    stop('the input object should be of class "DNEAobj"!')
+  }
+  if(nreps < 1 | !is.numeric(nreps)) {
+    stop("nreps must be positive - ",
+    "We recommend setting nreps to 500 at minimum!")
+  }
+  if(!is.logical(subSample)) {
+    stop('"subSample" parameter should be TRUE or FALSE!')
+  }
+
+  # stabilitySelection requires lambda hyper-parameter. Will use
+  # optimal_lambda if supplied, otherwise looks for
+  # @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
   # choosing lambda follows the following algorithm:
-  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-  #    for analysis
-  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']] missing, use optimal lambda
-  #    and set to store as new lambda value
-  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda missing, @hyperparamater[['optimized_lambda']]
-  #    is used for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
+  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided,
+  #    optimal_lambda is used for analysis
+  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']]
+  #    missing, use optimal lambda and set to store as new lambda value
+  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda
+  #    missing, @hyperparamater[['optimized_lambda']] is used for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are
+  #    missing, default to sqrt(log(p)/n) and give warning
   if(!missing(optimal_lambda)){
 
     #check that lambda's are valid
-    if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
+    if(optimal_lambda < 0 | optimal_lambda > 1){
+
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
     if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
@@ -285,8 +359,8 @@ stabilitySelection <- function(object,
     optimized_lambda <- optimizedLambda(object)
   }else{
 
-    # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
-    # in adjDGlasso_minimal
+    # setting optimized_lambda = NULL will default to a lambda of
+    # sqrt(log(# features) / # samples) in adjDGlasso_minimal
     optimized_lambda <- NULL
 
     warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
@@ -312,7 +386,7 @@ stabilitySelection <- function(object,
   ##perform stability selection
   #print message to user
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
-          "stabilitySelection will be performed with ", nreps, " replicates!", appendLF = TRUE)
+          "stabilitySelection will be performed with ", nreps, " replicates!")
 
   if(subSample){
 
@@ -374,31 +448,50 @@ stabilitySelection <- function(object,
 
 #' Construct the GLASSO-based biological Networks
 #'
-#' This function constructs the biological network for each experimental condition using the joint estimation method described
-#' in Ma et al. (2019) (\emph{please see references below}). If \code{\link{BICtune}} and \code{\link{stabilitySelection}}
-#' were already run, the optimized lambda and selection probabilities from each function, respectively, will be used to
-#' add regularization when constructing the networks (please see the \strong{\emph{Details}} section of \code{\link{stabilitySelection}}
-#' for more information). Otherwise, \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+#' This function constructs the biological network for each experimental
+#' condition using the joint estimation method described
+#' in Ma et al. (2019) (\emph{please see references below}). If
+#' \code{\link{BICtune}} and \code{\link{stabilitySelection}} were already run,
+#' the optimized lambda and selection probabilities from each function,
+#' respectively, will be used to add regularization when constructing the
+#' networks (please see the \strong{\emph{Details}} section of
+#' \code{\link{stabilitySelection}} for more information). Otherwise,
+#' \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+#'
 #' will be used as the regularization parameter.
 #'
-#' @param object A \code{DNEAobj} object
-#' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used in analysis. Not necessary if \code{\link{BICtune}}
-#'        or \code{\link{stabilitySelection}} were already performed
-#' @param eps_threshold A numeric value between 0 and 1 by which to threshold the partial correlation values for edge identification.
-#' Edges with an absolute partial correlation value below this threshold will be zero'd out from the adjacency matrix.
+#' @param object A \code{\link{DNEAobj}} object
+#' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used
+#' in analysis. Not necessary if \code{\link{BICtune}} or
+#' \code{\link{stabilitySelection}} were already performed
+#' @param eps_threshold A numeric value between 0 and 1 by which to
+#' threshold the partial correlation values for edge identification.
+#' Edges with an absolute partial correlation value below this threshold
+#' will be zero'd out from the adjacency matrix.
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-#' \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}
+#' @seealso
+#' \code{\link{edgeList}},\code{\link{adjacencyMatrix}}
 #'
 #' @references
-#' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+#' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L,
+#' Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D,
+#' Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+#' Differential network enrichment analysis reveals novel lipid pathways in
+#' chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452.
+#' doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777.
+#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
-#' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C, Michailidis G, Karnovsky A. Application of Differential Network Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites. 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384; PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
+#' Iyer GR, Wigginton J, Duren W, LaBarre JL, Brandenburg M, Burant C,
+#' Michailidis G, Karnovsky A. Application of Differential Network
+#' Enrichment Analysis for Deciphering Metabolic Alterations. Metabolites.
+#' 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384;
+#' PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 #'
-#' @returns A \code{DNEAobj} object after populating the adjaceny_matrix and edge_list slots with the corresponding
-#' adjacency_matrix for each sample condition as well as the network edge list.
+#' @returns A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
+#' and edge_list slots with the corresponding adjacency_matrix for each
+#' sample condition as well as the network edge list.
 #'
 #' @examples
 #' #import completed example data
@@ -432,24 +525,35 @@ getNetworks <- function(object,
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(eps_threshold <=0 | eps_threshold >= 1) stop("The partial correlation threshold should be between 0 and 1 only!")
+  if(!inherits(object, "DNEAobj")){
 
-  # getNetworks() requires lambda hyper-parameter. Will use optimal_lambda if
-  # supplied, otherwise looks for @hyperparameter[["optimized_lambda"]] in DNEAobject
+    stop('the input object should be of class "DNEAobj"!')
+  }
+  if(eps_threshold <=0 | eps_threshold >= 1) {
+
+    stop("The partial correlation threshold should be between 0 and 1 only!")
+  }
+
+  # getNetworks requires lambda hyper-parameter. Will use
+  # optimal_lambda if supplied, otherwise looks for
+  # @hyperparameter[["optimized_lambda"]] in DNEAobject
   #
   # choosing lambda follows the following algorithm:
-  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided, optimal_lambda is used
-  #    for analysis
-  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']] missing, use optimal lambda
-  #    and set to store as new lambda value
-  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda missing, @hyperparamater[['optimized_lambda']]
-  #    is used for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are missing, default to sqrt(log(p)/n) and give warning
+  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided,
+  #    optimal_lambda is used for analysis
+  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']]
+  #    missing, use optimal lambda and set to store as new lambda value
+  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda
+  #    missing, @hyperparamater[['optimized_lambda']] is used for analysis
+  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are
+  #    missing, default to sqrt(log(p)/n) and give warning
   if(!missing(optimal_lambda)){
 
     #check that lambda's are valid
-    if(optimal_lambda < 0 | optimal_lambda > 1) stop("The lambda parameter should be a value between 0 and 1 only!")
+    if(optimal_lambda < 0 | optimal_lambda > 1){
+
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
     if(!is.null(optimizedLambda(object))){
 
       optimized_lambda <- optimal_lambda
@@ -466,8 +570,8 @@ getNetworks <- function(object,
     optimized_lambda <- optimizedLambda(object)
   }else{
 
-    # setting optimized_lambda = NULL will default to a lambda of sqrt(log(# features) / # samples)
-    # in adjDGlasso_minimal
+    # setting optimized_lambda = NULL will default to a lambda of
+    # sqrt(log(# features) / # samples) in adjDGlasso_minimal
     optimized_lambda <- NULL
 
     warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
@@ -511,10 +615,7 @@ getNetworks <- function(object,
   #add names to model weights list
   names(model_weight_values) <- names(selectionProbabilities(object))
 
-  #############################################
-  #**Estimate the partial correlation matrix**#
-  #############################################
-
+  ##estimate the partial correlation matrix for each condition
   for (k in networkGroups(object)){
 
     message("Estimating model for ", k, "...", appendLF = TRUE)
@@ -534,7 +635,8 @@ getNetworks <- function(object,
   ##input weighted_adjacency_matrices into object
   adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
 
-  ##filter the weighted_adjacency_matrices by eps_threshold and create unweighed_adjacency_matrices plus edge list
+  ## filter the weighted_adjacency_matrices by eps_threshold
+  ## and create unweighed_adjacency_matrices plus edge list
   object <- filterNetworks(data = object, pcor = eps_threshold)
 
   #check valid object
@@ -542,29 +644,41 @@ getNetworks <- function(object,
 
   return(object)
 }
-#' Identify metabolic modules within the biological networks using a consensus clustering approach
+
+#' Identify metabolic modules within the biological networks using a
+#' consensus clustering approach
 #'
-#' This function clusters the jointly estimated adjacency matrix constructed using \code{\link{getNetworks}} via
-#' the consensus clustering approach described in Ma et al (\emph{Please see the \strong{\emph{Details}} section for more
-#' information}) to identify metabolic modules, aka subnetworks, present in the larger networks.
-#' Only subnetworks with consensus that meets or exceeds tau are identified as real.
+#' This function clusters the jointly estimated adjacency matrix
+#' constructed using \code{\link{getNetworks}} via the consensus clustering
+#' approach described in Ma et al (\emph{Please see the \strong{\emph{Details}}
+#' section for more information}) to identify metabolic modules, aka
+#' sub networks, present in the larger networks. Only subnetworks with
+#' consensus that meets or exceeds tau are identified as real.
 #'
-#' @param object A \code{DNEAobj} object
-#' @param tau The % agreement threshold among the clustering algorithms for a node to be included in a subnetwork
-#' @param max_iterations The maximum number of replicates of the clustering algorithms to perform before consensus is reached
-#' @param verbose Whether or not a progress bar should be displayed in the console
+#' @param object A \code{\link{DNEAobj}} object
+#' @param tau The % agreement threshold among the clustering algorithms
+#' for a node to be included in a subnetwork
+#' @param max_iterations The maximum number of replicates of the clustering
+#' algorithms to perform before consensus is reached
+#' @param verbose Whether or not a progress bar should be displayed
+#' in the console
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{createDNEAobject}}, \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-#' \code{\link{edgeList}}, \code{\link{adjacencyMatrix}}, \code{\link{getNetworks}}, \code{\link{edgeList}},
-#' \code{\link{filterNetworks}}, \code{\link{plotNetworks}}
+#' @seealso \code{\link{plotNetworks}}
 #'
 #' @references
-#' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L, Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D, Gadegbeku C, Feldman H, Michailidis G, Pennathur S. Differential network enrichment analysis reveals novel lipid pathways in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452. doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
+#' Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ, Natarajan L,
+#' Sharma K, Porter AC, Rahman M, He J, Hamm L, Shafi T, Gipson D,
+#' Gadegbeku C, Feldman H, Michailidis G, Pennathur S.
+#' Differential network enrichment analysis reveals novel lipid pathways
+#' in chronic kidney disease. Bioinformatics. 2019 Sep 15;35(18):3441-3452.
+#' doi: 10.1093/bioinformatics/btz114. PMID: 30887029; PMCID: PMC6748777.
+#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6748777/}
 #'
 #' @details
-#' Seven clustering algorithms from the \code{\link{igraph}} package are utilized in this consensus clustering approach:
+#' Seven clustering algorithms from the \code{\link{igraph}} package
+#' are utilized in this consensus clustering approach:
 #' \enumerate{
 #' \item \code{\link[igraph:cluster_edge_betweenness]{cluster_edge_betweenness}}
 #' \item \code{\link[igraph:cluster_fast_greedy]{cluster_fast_greedy}}
@@ -574,14 +688,18 @@ getNetworks <- function(object,
 #' \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
 #' \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 #'
-#' For each iteration, node membership in each respective cluster is compared across the algorithms, and only the clusters with % agreement
-#' greater than tau are kept. A new adjacency graph is then created and clustering is performed again. This occurs iteratively until consensus
-#' on stable subnetworks or the specified max_iterations is reached \emph{(Please see references for more details)}.
+#' For each iteration, node membership in each respective cluster is
+#' compared across the algorithms, and only the clusters with % agreement
+#' greater than tau are kept. A new adjacency graph is then created and
+#' clustering is performed again. This occurs iteratively until consensus on
+#' stable subnetworks or the specified max_iterations is reached
+#' \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{DNEAobj} object containing sub-network determinations for the nodes within the input network.
-#'        A summary of the consensus clustering results can be viewed using \code{\link{CCsummary}}.
-#'        Sub-network membership for each node can be found in the "membership" column of the node list, which can be
-#'        viewed using \code{\link{nodeList}}.
+#' @returns A \code{\link{DNEAobj}} object containing sub-network determinations for
+#' the nodes within the input network. A summary of the consensus clustering
+#' results can be viewed using \code{\link{CCsummary}}. Sub-network membership
+#' for each node can be found in the "membership" column of the node list,
+#' which can be viewed using \code{\link{nodeList}}.
 #'
 #' @examples
 #' #import completed example data
@@ -601,17 +719,25 @@ clusterNet <- function(object,
                        verbose = TRUE){
 
   #test for proper inputs
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(tau < 0.5 | tau > 1.0) stop("tau corresponds to a percent agreement among the clustering methods. ",
+  if(!inherits(object, "DNEAobj")) {
+
+    stop('the input object should be of class "DNEAobj"!')
+  }
+  if(tau < 0.5 | tau > 1.0) {
+
+    stop("tau corresponds to a percent agreement among the clustering methods. ",
                                  "As such, tau must be greater than 0.5 and less than 1!",
                                  "Clustering results below this threshold are not reliable -",
                                  "Please see user documentation for more information!")
-  if(max_iterations < 1) stop("max_iterations should be a positive integer!")
-  if(!is.logical(verbose)) stop('"verbose" parameter should be TRUE or FALSE!')
+  }
+  if(max_iterations < 1) {
 
-  #####################################
-  #**Join the two condition networks**#
-  #####################################
+    stop("max_iterations should be a positive integer!")
+  }
+  if(!is.logical(verbose)) {
+
+    stop('"verbose" parameter should be TRUE or FALSE!')
+  }
 
   #create list to hold graph from adjacency matrix
   adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted = TRUE)))
@@ -619,7 +745,8 @@ clusterNet <- function(object,
 
   for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
 
-    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]], mode = "undirected", weighted = TRUE)
+    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]],
+                                                   mode = "undirected", weighted = TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -643,10 +770,6 @@ clusterNet <- function(object,
     V(joint_graph)$DE <- rep(NA, numFeatures(object))
   }
 
-  ###########################################################
-  #**ensemble community detection with consusus clustering**#
-  ###########################################################
-
   #run consensus cluster algorithm
   fit <- run_consensus_cluster(joint_graph, tau = tau, max_iterations = max_iterations, verbose = verbose)
   consensus_membership <- fit$final_consensus_cluster
@@ -655,7 +778,7 @@ clusterNet <- function(object,
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
                                dimnames = list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
                                                vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(1))))
-#####
+
   #gather results
   for (j in seq(1, nrow(subnetwork_results))){
 
@@ -678,7 +801,8 @@ clusterNet <- function(object,
   subnetwork_results <- subnetwork_results[rowSums(subnetwork_results) != 0, ]
 
   #update consensus subnetworks
-  consensus_membership <- match(consensus_membership, as.numeric(gsub('subnetwork','',rownames(subnetwork_results))))
+  consensus_membership <- match(consensus_membership,
+                                as.numeric(gsub('subnetwork','',rownames(subnetwork_results))))
   consensus_membership[is.na(consensus_membership)] <- "independent"
 
   #update subnetwork_results rownames
@@ -696,7 +820,9 @@ clusterNet <- function(object,
                                                check.names = FALSE)
   }
 
-  summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results), do.call(rbind, summary_list), check.names = FALSE)
+  summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results),
+                             do.call(rbind, summary_list),
+                             check.names = FALSE)
 
   #add independent features
   summary_stat <- rbind(summary_stat,
@@ -711,7 +837,8 @@ clusterNet <- function(object,
   object@consensus_clustering <- new(Class = "consensusClusteringResults",
                                      summary = summary_stat,
                                      subnetwork_membership = data.frame(subnetwork_results),
-                                     adjacency_graphs = append(adjacency_matrix_graphs, list(joint_graph = joint_graph)))
+                                     adjacency_graphs = append(adjacency_matrix_graphs,
+                                                               list(joint_graph = joint_graph)))
 
   #check valid object
   validObject(object)
@@ -719,25 +846,35 @@ clusterNet <- function(object,
   return(object)
 
 }
+
 #' Identify metabolic modules that are enriched across experimental conditions
 #'
-#' This function performs pathway enrichment analysis on the metabolic modules identified via \code{\link{clusterNet}}
-#' using the \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
+#' This function performs pathway enrichment analysis on the metabolic
+#' modules identified via \code{\link{clusterNet}} using the
+#' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{DNEAobj}
-#' @param min_size The minimum size of metabolic modules for enrichment analysis
+#' @param object A \code{\link{DNEAobj}}
+#' @param min_size The minimum size of metabolic modules for
+#' enrichment analysis
 #'
 #' @author Christopher Patsalis
 #'
-#' @seealso \code{\link{netGSAresults}}, \code{\link{plotNetworks}}, \code{\link{nodeList}}
+#' @seealso
+#' \code{\link{netGSAresults}}
 #'
 #' @references
-#' Hellstern M, Ma J, Yue K, Shojaie A. netgsa: Fast computation and interactive visualization for topology-based pathway enrichment analysis. PLoS Comput Biol. 2021 Jun 11;17(6):e1008979. doi: 10.1371/journal.pcbi.1008979. PMID: 34115744; PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
+#' Hellstern M, Ma J, Yue K, Shojaie A.
+#' netgsa: Fast computation and interactive visualization for
+#' topology-based pathway enrichment analysis.
+#' PLoS Comput Biol. 2021 Jun 11;17(6):e1008979.
+#' doi: 10.1371/journal.pcbi.1008979. PMID: 34115744;
+#' PMCID: PMC8221786. url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 #'
 #'
-#' @returns A \code{DNEAobj} object after populating the @@netGSA slot. Pathway expression differences for
-#'          each node can be found in the node_list. A summary of the NetGSA results can be viewed
-#'          using \code{\link{netGSAresults}}.
+#' @returns A \code{\link{DNEAobj}} object after populating the @@netGSA
+#' slot. Pathway expression differences for each node can be found
+#' in the node_list. A summary of the NetGSA results can be viewed
+#' using \code{\link{netGSAresults}}.
 #'
 #' @examples
 #' #import completed example data
