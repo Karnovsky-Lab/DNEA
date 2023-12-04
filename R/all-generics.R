@@ -1,188 +1,180 @@
-#'
-#'
-#'
-#' @rdname projectName
+#' @include all-classes.R
+NULL
+
+#' @rdname projectName-methods
+#' @aliases projectName
 #' @export
 setGeneric("projectName", function(x) standardGeneric("projectName"))
 
-#'
-#' @include all-classes.R
-#' @rdname expressionData
+#' @rdname expressionData-methods
+#' @aliases expressionData
 #' @export
 setGeneric("expressionData", function(x, normalized) standardGeneric("expressionData"))
 
-#'
-#' @rdname networkGroups
+#' @rdname networkGroups-methods
+#' @aliases networkGroups
 #' @export
 setGeneric("networkGroups", function(x) standardGeneric("networkGroups"))
 
-#'
-#' @rdname networkGroupIDs
+#' @rdname networkGroupIDs-methods
+#' @aliases networkGroupIDs
 #' @export
 setGeneric("networkGroupIDs", function(x) standardGeneric("networkGroupIDs"))
 
-#'
-#' @rdname networkGroupIDs
+#' @rdname networkGroupIDs-methods
+#' @aliases networkGroupIDs
 #' @export
 setGeneric("networkGroupIDs<-", function(x, value) standardGeneric("networkGroupIDs<-"))
-#'
-#' @rdname sampleNames
+
+#' @rdname sampleNames-methods
+#' @aliases sampleNames
 #' @export
 setGeneric("sampleNames", function(x) standardGeneric("sampleNames"))
 
-#'
-#' @rdname featureNames
+#' @rdname featureNames-methods
+#' @aliases featureNames
 #' @export
 setGeneric("featureNames", function(x, original = TRUE) standardGeneric("featureNames"))
 
-#'
-#' @rdname numFeatures
+#' @rdname numFeatures-methods
+#' @aliases numFeatures
 #' @export
 setGeneric("numFeatures", function(x) standardGeneric("numFeatures"))
 
-#'
-#' @rdname numSamples
+#' @rdname numSamples-methods
+#' @aliases numSamples
 #' @export
 setGeneric("numSamples", function(x) standardGeneric("numSamples"))
 
-#'
-#' @rdname optimizedLambda
+#' @rdname optimizedLambda-methods
+#' @aliases optimizedLambda
 #' @export
 setGeneric("optimizedLambda", function(x) standardGeneric("optimizedLambda"))
 
-#'
-#' @rdname optimizedLambda
+#' @rdname optimizedLambda-methods
+#' @aliases optimizedLambda
 #' @export
 setGeneric("optimizedLambda<-", function(x, value) standardGeneric("optimizedLambda<-"))
 
-#'
-#' @rdname lambdas2Test
+#' @rdname lambdas2Test-methods
+#' @aliases lambdas2Test
 #' @export
 setGeneric("lambdas2Test", function(x) standardGeneric("lambdas2Test"))
 
-#'
-#' @rdname lambdas2Test
+#' @rdname lambdas2Test-methods
+#' @aliases lambdas2Test
 #' @export
 setGeneric("lambdas2Test<-", function(x, value) standardGeneric("lambdas2Test<-"))
 
-#'
-#' @rdname BICscores
+#' @rdname BICscores-methods
+#' @aliases BICscores
 #' @export
 setGeneric("BICscores", function(x) standardGeneric("BICscores"))
 
-#'
-#' @rdname BICscores
+#' @rdname BICscores-methods
+#' @aliases BICscores
 #' @export
 setGeneric("BICscores<-", function(x, value) standardGeneric("BICscores<-"))
 
-#'
-#' @rdname selectionResults
-#' @keywords internal
+#' @rdname selectionResults-methods
+#' @aliases selectionResults
 setGeneric("selectionResults", function(x) standardGeneric("selectionResults"))
 
-#'
-#' @rdname selectionResults
 #' @keywords internal
+#' @noRd
 setGeneric("selectionResults<-", function(x, value) standardGeneric("selectionResults<-"))
 
-#'
-#' @rdname selectionProbabilities
-#' @keywords internal
+#' @rdname selectionProbabilities-methods
+#' @aliases selectionProbabilities
 setGeneric("selectionProbabilities", function(x) standardGeneric("selectionProbabilities"))
 
-#'
-#' @rdname selectionProbabilities
 #' @keywords internal
+#' @noRd
 setGeneric("selectionProbabilities<-", function(x, value) standardGeneric("selectionProbabilities<-"))
-#'
-#' @rdname nodeList
+
+#' @rdname nodeList-methods
+#' @aliases nodeList
 #' @export
 setGeneric("nodeList", function(x) standardGeneric("nodeList"))
 
-#'
-#' @rdname nodeList
-#' @keywords internal
+#' @rdname nodeList-methods
+#' @aliases nodeList
 setGeneric("nodeList<-", function(x, value) standardGeneric("nodeList<-"))
 
-#'
-#' @rdname edgeList
+#' @rdname edgeList-methods
+#' @aliases edgeList
 #' @export
 setGeneric("edgeList", function(x) standardGeneric("edgeList"))
 
-#'
-#' @rdname edgeList
-#' @keywords internal
+#' @rdname edgeList-methods
+#' @aliases edgeList
 setGeneric("edgeList<-", function(x, value) standardGeneric("edgeList<-"))
 
-#'
-#' @rdname diagnostics
-#' @keywords internal
+#' @rdname diagnostics-methods
+#' @aliases diagnostics
 setGeneric("diagnostics", function(x) standardGeneric("diagnostics"))
 
-#'
-#' @rdname diagnostics
 #' @keywords internal
+#' @noRd
 setGeneric("diagnostics<-", function(x, value) standardGeneric("diagnostics<-"))
 
-#'
-#' @rdname datasetSummary
-#' @keywords internal
+#' @rdname datasetSummary-methods
+#' @aliases datasetSummary
 setGeneric("datasetSummary", function(x) standardGeneric("datasetSummary"))
 
-#'
-#' @rdname datasetSummary
 #' @keywords internal
+#' @noRd
 setGeneric("datasetSummary<-", function(x, value) standardGeneric("datasetSummary<-"))
 
-#'
-#' @rdname adjacencyMatrix
-#' @keywords internal
+#' @rdname adjacencyMatrix-methods
+#' @aliases adjacencyMatrix
 setGeneric("adjacencyMatrix", function(x, weighted) standardGeneric("adjacencyMatrix"))
 
-#'
-#' @rdname adjacencyMatrix
 #' @keywords internal
+#' @noRd
 setGeneric("adjacencyMatrix<-", function(x, weighted, value) standardGeneric("adjacencyMatrix<-"))
 
 
-#' @rdname subnetworkMembership
+#' @rdname subnetworkMembership-methods
+#' @aliases subnetworkMembership
 #' @export
 setGeneric("subnetworkMembership", function(x) standardGeneric("subnetworkMembership"))
 
-#' @rdname subnetworkMembership
-#' @keywords internal
+#' @rdname subnetworkMembership-methods
+#' @aliases subnetworkMembership
 setGeneric("subnetworkMembership<-", function(x, value) standardGeneric("subnetworkMembership<-"))
 
-#' @rdname adjacencyGraph
+#' @rdname adjacencyGraph-methods
+#' @aliases adjacencyGraph
 #' @export
 setGeneric("adjacencyGraph", function(x, graph) standardGeneric("adjacencyGraph"))
 
-#'
-#' @rdname adjacencyGraph
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("adjacencyGraph<-", function(x, graph, value) standardGeneric("adjacencyGraph<-"))
 
-#'
-#' @rdname CCsummary
+#' @rdname CCsummary-methods
+#' @aliases CCsummary
 #' @export
 setGeneric("CCsummary", function(x) standardGeneric("CCsummary"))
 
-#'
-#' @rdname CCsummary
 #' @keywords internal
+#' @noRd
 setGeneric("CCsummary<-", function(x, value) standardGeneric("CCsummary<-"))
-#'
-#' @rdname netGSAresults
+
+#' @rdname netGSAresults-methods
+#' @aliases netGSAresults
 #' @export
 setGeneric("netGSAresults", function(x) standardGeneric("netGSAresults"))
 
-#'
-#' @rdname netGSAresults
-#' @export
+
+#' @keywords internal
+#' @noRd
 setGeneric("netGSAresults<-", function(x, value) standardGeneric("netGSAresults<-"))
 
-#'
-#' @rdname filterNetworks
+
+#' @rdname filterNetworks-methods
+#' @aliases filterNetworks
 #' @export
 setGeneric("filterNetworks", function(data, pcor, top_percent_edges) standardGeneric("filterNetworks"))
 
