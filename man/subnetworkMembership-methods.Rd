@@ -2,14 +2,11 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{subnetworkMembership}
 \alias{subnetworkMembership}
-\alias{subnetworkMembership<-}
 \alias{subnetworkMembership,DNEAobj-method}
 \alias{subnetworkMembership,consensusClusteringResults-method}
 \title{Retrieve the subnetwork membership for each feature}
 \usage{
 subnetworkMembership(x)
-
-subnetworkMembership(x) <- value
 
 \S4method{subnetworkMembership}{DNEAobj}(x)
 

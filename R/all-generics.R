@@ -140,8 +140,8 @@ setGeneric("adjacencyMatrix<-", function(x, weighted, value) standardGeneric("ad
 #' @export
 setGeneric("subnetworkMembership", function(x) standardGeneric("subnetworkMembership"))
 
-#' @rdname subnetworkMembership-methods
-#' @aliases subnetworkMembership
+#' @keywords internal
+#' @noRd
 setGeneric("subnetworkMembership<-", function(x, value) standardGeneric("subnetworkMembership<-"))
 
 #' @rdname adjacencyGraph-methods
