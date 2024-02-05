@@ -427,14 +427,6 @@ stabilitySelection <- function(object,
             "if the dataset contains ~500 or more samples.")
   }
 
-  #split data by condition
-  data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
-                                                       condition_levels = networkGroups(object),
-                                                       condition_by_sample = networkGroupIDs(object)),
-                                    function(d) t(d))
-  #initialize static variables to pass to workers
-  stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
-
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
           "stabilitySelection will be performed with ", nreps, " replicates!")
 
@@ -444,17 +436,23 @@ stabilitySelection <- function(object,
     message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
 
-    #check that groups are sufficiently uneven if subSample selected
-    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])){
-      stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
-           "Please perform stability selection WITHOUT additional sub-sampling")
-    }
+    #split data by condition
+    data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
+                                                         condition_levels = networkGroups(object),
+                                                         condition_by_sample = networkGroupIDs(object)),
+                                      function(d) t(d))
   }else if(!subSample){
 
     #without additional sub-sampling
     message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
+
+    data_split_by_condition <- lapply(expressionData(object, normalized = TRUE)[-1], function(d) t(d))
   }
+
+
+  #initialize static variables to pass to workers
+  stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
 
   #run SS
   stab_sel <- BiocParallel:: bplapply(X = seq(1, nreps),
