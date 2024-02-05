@@ -249,7 +249,8 @@ restructure_input_data <- function(expression_data,
 #' a GGM model. More information about interpretation can be found in
 #' \strong{\emph{Details}}.
 #'
-#' @param mat A matrix of expression data
+#' @param mat A list of matrices corresponding to the normalized expression
+#' data (one for the whole dataset and one for each condition)
 #' @param condition_values A vector of condition names present
 #' in the dataset
 #' @param conditions A vector of condition labels corresponding to
@@ -303,27 +304,22 @@ restructure_input_data <- function(expression_data,
 dataDiagnostics <- function(mat, condition_values, conditions) {
 
   ##set necessary parameters
-  num_features <- nrow(mat)
-  num_samples <- ncol(mat)
-
-  ##split data by condition
-  separated_conditions_scaled <- split_by_condition(dat = mat,
-                                                    condition_levels = condition_values,
-                                                    condition_by_sample = conditions)
+  num_features <- nrow(mat[["scaled_input_data"]])
+  num_samples <- ncol(mat[["scaled_input_data"]])
 
   ##min eigen value and condition number for each of the datasets
   #control
-  pearson <- cor(t(separated_conditions_scaled[[1]]))
+  pearson <- cor(t(mat[[condition_values[[1]]]]))
   cond_number_1 <- kappa(pearson, exact=TRUE)
   min_eigen_1 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
 
   #case
-  pearson <- cor(t(separated_conditions_scaled[[2]]))
+  pearson <- cor(t(mat[[condition_values[[2]]]]))
   cond_number_2 <- kappa(pearson, exact=TRUE)
   min_eigen_2 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
 
   #whole dataset
-  pearson <- cor(t(cbind(separated_conditions_scaled[[1]], separated_conditions_scaled[[2]])))
+  pearson <- cor(t(mat[["scaled_input_data"]]))
   cond_number_3 <- kappa(pearson, exact=TRUE)
   min_eigen_3 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
 
