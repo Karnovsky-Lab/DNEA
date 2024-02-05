@@ -1,6 +1,18 @@
 #' @include all-classes.R
 NULL
 
+#' @rdname BICtune-methods
+#' @aliases BICtune
+#' @export
+setGeneric("BICtune", function(object,
+                               lambda_values,
+                               interval=1e-3,
+                               informed=TRUE,
+                               eps_threshold=1e-6,
+                               eta_value=0.1,
+                               BPPARAM=bpparam(),
+                               BPOPTIONS=bpoptions()) standardGeneric("BICtune"))
+
 #' @rdname projectName-methods
 #' @aliases projectName
 #' @export
