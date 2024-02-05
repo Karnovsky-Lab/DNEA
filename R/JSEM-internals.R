@@ -764,6 +764,12 @@ CGM_AHP_stabsel_subsample <- function(listX,
   subsampled_listX <- vector("list", init_param[['num_conditions']])
 
   ###subsampling
+  #check that groups are sufficiently uneven if subSample selected
+  if((1.3* init_param[["min_num_samples"]]) > max(init_param[["num_samples"]])){
+    stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
+         "Please perform stability selection WITHOUT additional sub-sampling")
+  }
+
   #randomly sample 1.3x the samples in the smaller group from the larger group
   subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
 
