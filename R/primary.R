@@ -8,6 +8,184 @@
 #' @include start-here.R
 NULL
 
+BICtune.DNEAobj <- function(object,
+                            lambda_values,
+                            interval = 1e-3,
+                            informed = TRUE,
+                            eps_threshold = 1e-06,
+                            eta_value = 0.1,
+                            BPPARAM = bpparam(),
+                            BPOPTIONS = bpoptions()){
+
+
+  ##test for proper input
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
+  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
+
+
+  ##initialize input parameters
+  dat <- split_by_condition(dat = t(scale(log(t(expressionData(object, normalized = FALSE))))),
+                            condition_levels = networkGroups(object),
+                            condition_by_sample = networkGroupIDs(object))
+  # #initialize input parameters
+  # dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
+  #                           condition_levels = networkGroups(object),
+  #                           condition_by_sample = networkGroupIDs(object))
+  n4cov <- max(vapply(dat, ncol, numeric(1)))
+  trainX <- t(do.call(cbind, dat))
+  trainY <- c(rep(1, ncol(dat[[1]])),
+              rep(2, ncol(dat[[2]])))
+  bic1 <- NULL
+  bic2 <- NULL
+
+  message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
+          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n")
+
+  ##Pre-define a range of lambda values to evaluate during optimization if none are provided
+  if(missing(lambda_values)){
+    if(informed){
+
+      message("Estimating optimal c constant range for asymptotic lambda...")
+    }else{
+
+      message("Estimating optimal lambda range...", appendLF = TRUE)
+    }
+  }else{
+    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
+    lambda_values <- unlist(lambda_values)
+    if(any(lambda_values < 0 | lambda_values > 1)){
+
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
+  }
+
+  bic1 <- lambda_tune_dispatch(informed = informed,
+                               FUN = 'CGM_AHP_tune',
+                               trainX = trainX,
+                               testX = trainX,
+                               trainY = trainY,
+                               BIC = TRUE,
+                               eps = eps_threshold,
+                               eta = eta_value,
+                               asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
+                               interval = interval,
+                               BPPARAM = BPPARAM,
+                               BPOPTIONS = BPOPTIONS)
+
+  new_lambda_values <- bic1$new_lambda_values
+  bic1 <- bic1$bic
+
+  message("Fine-tuning Lambda...")
+  bic2 <- tune_lambda(lambda_values = new_lambda_values,
+                      FUN = 'CGM_AHP_tune',
+                      trainX = trainX,
+                      testX = trainX,
+                      trainY = trainY,
+                      BIC = TRUE,
+                      eps = eps_threshold,
+                      eta = eta_value,
+                      BPPARAM = BPPARAM,
+                      BPOPTIONS = BPOPTIONS)
+
+  ##concatenate tuning runs and reorder by lambda value
+  lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
+  BIC_guo <- append(bic1[["BIC_guo"]], bic2[["BIC_guo"]])
+
+  ##update DNEA object
+  BICscores(object) <- BIC_guo
+  optimizedLambda(object) <- bic2[["lastar_guo"]]
+  lambdas2Test(object) <- lambda_tested
+
+  message("The optimal Lambda hyper-parameter has been set to: ",
+          bic2[["lastar_guo"]], "!")
+
+  #check valid object
+  validObject(object)
+
+  return(object)
+}
+
+BICtune.matrix <- function(object,
+                           lambda_values,
+                           interval = 1e-3,
+                           informed = TRUE,
+                           eps_threshold = 1e-06,
+                           eta_value = 0.1,
+                           BPPARAM = bpparam(),
+                           BPOPTIONS = bpoptions()){
+
+
+  ##test for proper input
+  if(!inherits(object, "matrix")) stop('the input object should be of class "DNEAobj"!')
+  if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
+  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
+
+  ##initialize input parameters
+  #object <- t(object)
+  num_features <- ncol(object)
+  n4cov <- nrow(object)
+  trainY <- rep(1, nrow(object))
+  bic1 <- NULL
+  bic2 <- NULL
+
+  ##Pre-define a range of lambda values to evaluate during optimization if none are provided
+  if(missing(lambda_values)){
+    if(informed){
+
+      message("Estimating optimal c constant range for asymptotic lambda...")
+    }else{
+
+      message("Estimating optimal lambda range...",)
+    }
+  }else{
+    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
+    lambda_values <- unlist(lambda_values)
+    if(any(lambda_values < 0 | lambda_values > 1)){
+
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
+  }
+
+  bic1 <- lambda_tune_dispatch(informed = informed,
+                               FUN = 'CGM_AHP_tune',
+                               trainX = object,
+                               testX = object,
+                               trainY = trainY,
+                               BIC = TRUE,
+                               eps = eps_threshold,
+                               eta = eta_value,
+                               asymptotic_lambda = sqrt(log(num_features)/n4cov),
+                               interval = interval,
+                               BPPARAM = BPPARAM,
+                               BPOPTIONS = BPOPTIONS)
+
+  new_lambda_values <- bic1$new_lambda_values
+  bic1 <- bic1$bic
+
+  message("Fine-tuning Lambda...")
+  bic2 <- tune_lambda(lambda_values = new_lambda_values,
+                      FUN = 'CGM_AHP_tune',
+                      trainX = object,
+                      testX = object,
+                      trainY = trainY,
+                      BIC = TRUE,
+                      eps = eps_threshold,
+                      eta = eta_value,
+                      BPPARAM = BPPARAM,
+                      BPOPTIONS = BPOPTIONS)
+
+  ##concatenate tuning runs and reorder by lambda value
+  lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
+  BIC_guo <- append(bic1[["BIC_guo"]], bic2[["BIC_guo"]])
+
+  message("The optimal Lambda hyper-parameter has been set to: ",
+          bic2[["lastar_guo"]], "!")
+
+  return(list(BIC_guo = BIC_guo,
+              optimized_lambda = bic2[["lastar_guo"]],
+              tested_lambda_values = lambda_tested))
+}
 #' Optimize the lambda regularization parameter for the glasso-based
 #' network models using Bayesian-information Criterion
 #'
@@ -90,108 +268,14 @@ NULL
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
+#' @rdname BICtune-methods
+#' @aliases BICtune
 #' @export
-BICtune <- function(object,
-                    lambda_values,
-                    interval = 1e-3,
-                    informed = TRUE,
-                    eps_threshold = 1e-06,
-                    eta_value = 0.1,
-                    BPPARAM = bpparam(),
-                    BPOPTIONS = bpoptions()){
+setMethod("BICtune", signature(object = "DNEAobj"), BICtune.DNEAobj)
 
-
-  ##test for proper input
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
-  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
-
-  ##initialize input parameters
-  dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
-                            condition_levels = networkGroups(object),
-                            condition_by_sample = networkGroupIDs(object))
-  n4cov <- max(vapply(dat, ncol, numeric(1)))
-  trainX <- t(do.call(cbind, dat))
-  trainY <- c(rep(1, ncol(dat[[1]])),
-              rep(2, ncol(dat[[2]])))
-  bic1 <- NULL
-  bic2 <- NULL
-
-  message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
-          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n")
-
-  ##Pre-define a range of lambda values to evaluate during optimization if none are provided
-  if(missing(lambda_values)){
-    if(informed){
-
-      message("Estimating optimal c constant range for asymptotic lambda...")
-      bic1 <- estimate_c(FUN = 'CGM_AHP_tune',
-                         trainX = trainX,
-                         testX = trainX,
-                         trainY = trainY,
-                         BIC = TRUE,
-                         eps = eps_threshold,
-                         eta = eta_value,
-                         asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
-                         interval = interval,
-                         BPPARAM = BPPARAM,
-                         BPOPTIONS = BPOPTIONS)
-    }else{
-
-      message("Estimating optimal lambda range...", appendLF = TRUE)
-      bic1 <- estimate_lambda(FUN = 'CGM_AHP_tune',
-                              trainX = trainX,
-                              testX = trainX,
-                              trainY = trainY,
-                              BIC = TRUE,
-                              eps = eps_threshold,
-                              eta = eta_value,
-                              interval = interval,
-                              BPPARAM = BPPARAM,
-                              BPOPTIONS = BPOPTIONS)
-    }
-
-    new_lambda_values <- bic1$new_lambda_values
-    bic1 <- bic1$bic
-  }else{
-
-    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
-    lambda_values <- unlist(lambda_values)
-    if(any(lambda_values < 0 | lambda_values > 1)){
-
-      stop("The lambda parameter should be a value between 0 and 1 only!")
-    }
-  }
-
-  message("Fine-tuning Lambda...")
-  bic2 <- tune_lambda(lambda_values = new_lambda_values,
-                      FUN = 'CGM_AHP_tune',
-                      trainX = trainX,
-                      testX = trainX,
-                      trainY = trainY,
-                      BIC = TRUE,
-                      eps = eps_threshold,
-                      eta = eta_value,
-                      BPPARAM = BPPARAM,
-                      BPOPTIONS = BPOPTIONS)
-
-  ##concatenate tuning runs and reorder by lambda value
-  lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
-  BIC_guo <- append(bic1[["BIC_guo"]], bic2[["BIC_guo"]])
-
-  ##update DNEA object
-  BICscores(object) <- BIC_guo
-  optimizedLambda(object) <- bic2[["lastar_guo"]]
-  lambdas2Test(object) <- lambda_tested
-
-  message("The optimal Lambda hyper-parameter has been set to: ",
-          bic2[["lastar_guo"]], "!")
-
-  #check valid object
-  validObject(object)
-
-  return(object)
-}
+#' @rdname BICtune-methods
+#' @aliases BICtune
+setMethod("BICtune", signature(object = "matrix"), BICtune.matrix)
 
 #' Stability selection to calculate selection probabilities for every
 #' possible feature-feature interaction within the data
@@ -368,10 +452,17 @@ stabilitySelection <- function(object,
             "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
   }
 
+
+
   #split data by condition
-  data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE),
-                                    condition_levels = networkGroups(object),
-                                    condition_by_sample = networkGroupIDs(object)), function(d) t(d))
+  data_split_by_condition <- lapply(split_by_condition(dat = t(scale(log(t(expressionData(object, normalized = FALSE))))),
+                                                       condition_levels = networkGroups(object),
+                                                       condition_by_sample = networkGroupIDs(object)),
+                                    function(d) t(d))
+  # data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE),
+  #                                                      condition_levels = networkGroups(object),
+  #                                                      condition_by_sample = networkGroupIDs(object)),
+  #                                   function(d) t(d))
 
   #initialize static variables to pass to workers
   stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
@@ -461,9 +552,31 @@ stabilitySelection <- function(object,
 #' will be used as the regularization parameter.
 #'
 #' @param object A \code{\link{DNEAobj}} object
-#' @param optimal_lambda \emph{OPTIONAL} - The lambda value to be used
+#' @param aprox A boolean indicating whether or not \code{\link{BICtune}}
+#' should be used to optimize the lambda value for each condition. If
+#' `aprox==FALSE`, sqrt(log(# features)/#samples) is used to aproximate
+#' lambda
+#' @param optimal_lambdas \emph{OPTIONAL} - The lambda value to be used
 #' in analysis. Not necessary if \code{\link{BICtune}} or
 #' \code{\link{stabilitySelection}} were already performed
+#' @param lambda_values **OPTIONAL** A list of values to test while optimizing
+#' the lambda parameter. If not provided, a set of lambda values are chosen
+#' based on the theoretical value for the asymptotically valid lambda. More
+#' information about this can be found in the details section
+#' @param informed TRUE/FALSE whether or not to utilize the asymptotic
+#' properties of lambda for large data sets to tune the parameter. This reduces
+#' the necessary number of computations for optimization
+#' @param interval A numeric value indicating the specifity by which to
+#' optimize lambda. The default value is 1e-3, which indicates lambda will
+#' be optimized to 3 decimal places. The value should be between 0 and 0.1.
+#' @param eps_threshold A significance cut-off for thresholding network edges.
+#'        The default value is 1e-06. This value generally should not change.
+#' @param eta_value A tuning parameter that that ensures that the empirical
+#' covariance matrix of the data is positive definite so that we can
+#' calculate its inverse. The default value is 0.01.
+#' @param BPPARAM A \code{\link{BiocParallel}} object
+#' @param BPOPTIONS a list of options for BiocParallel created using
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
 #' @param eps_threshold A numeric value between 0 and 1 by which to
 #' threshold the partial correlation values for edge identification.
 #' Edges with an absolute partial correlation value below this threshold
@@ -506,23 +619,17 @@ stabilitySelection <- function(object,
 #' @importFrom gdata lowerTriangle
 #' @importFrom utils combn
 #' @export
+#'
 getNetworks <- function(object,
-                       optimal_lambda,
-                       eps_threshold = 1e-06){
-
-  ##initialize input parameters
-  num_samples <- numSamples(object)
-  num_features <- numFeatures(object)
-  Ip <- diag(rep(1, num_features))
-
-  ##initiate output data structures
-  #weighted adjacency matrices list
-  weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
-  names(weighted_adjacency_matrices) <- networkGroups(object)
-
-  #unweighted adjacency matrices list
-  unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
-  names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+                        lambda_values,
+                        aprox=FALSE,
+                        informed = TRUE,
+                        interval = 1e-3,
+                        eps_threshold = 1e-06,
+                        eta_value = 0.1,
+                        optimal_lambdas,
+                        BPPARAM = bpparam(),
+                        BPOPTIONS = bpoptions()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")){
@@ -531,60 +638,74 @@ getNetworks <- function(object,
   }
   if(eps_threshold <=0 | eps_threshold >= 1) {
 
-    stop("The partial correlation threshold should be between 0 and 1 only!")
+    stop("eps_threshold should be between 0 and 1 only!")
   }
-
-  # getNetworks requires lambda hyper-parameter. Will use
-  # optimal_lambda if supplied, otherwise looks for
-  # @hyperparameter[["optimized_lambda"]] in DNEAobject
-  #
-  # choosing lambda follows the following algorithm:
-  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided,
-  #    optimal_lambda is used for analysis
-  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']]
-  #    missing, use optimal lambda and set to store as new lambda value
-  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda
-  #    missing, @hyperparamater[['optimized_lambda']] is used for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are
-  #    missing, default to sqrt(log(p)/n) and give warning
-  if(!missing(optimal_lambda)){
-
-    #check that lambda's are valid
-    if(optimal_lambda < 0 | optimal_lambda > 1){
-
-      stop("The lambda parameter should be a value between 0 and 1 only!")
-    }
-    if(!is.null(optimizedLambda(object))){
-
-      optimized_lambda <- optimal_lambda
-      warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
-            already exists - optimal_lambda will be used in analysis')
-    }else{
-
-      optimized_lambda <- optimal_lambda
-      optimizedLambda(object) <- optimal_lambda
-      message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
-    }
-  }else if(!is.null(optimizedLambda(object))){
-
-    optimized_lambda <- optimizedLambda(object)
-  }else{
-
-    # setting optimized_lambda = NULL will default to a lambda of
-    # sqrt(log(# features) / # samples) in adjDGlasso_minimal
-    optimized_lambda <- NULL
-
-    warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
-            "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
-            "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
-  }
-  #print lambda used
-  message("Using Lambda hyper-parameter: ", optimized_lambda, "!", appendLF = TRUE)
 
   ##separate the data by condition
   data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
                                                 condition_levels = networkGroups(object),
                                                 condition_by_sample = networkGroupIDs(object))
+
+  ##initialize input parameters
+  num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE = numeric(1))
+  names(num_samples) <- names(data_split_by_condition)
+  num_features <- numFeatures(object)
+  Ip <- diag(rep(1, num_features))
+
+  ##initiate output data structures
+  #weighted adjacency matrices list
+  tuned_lambdas <- vector("list", length(networkGroups(object)))
+  names(tuned_lambdas) <- networkGroups(object)
+  weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
+  names(weighted_adjacency_matrices) <- networkGroups(object)
+
+  #unweighted adjacency matrices list
+  unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
+  names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+
+  if(!missing(optimal_lambdas)){
+
+    optimized_lambdas <- optimal_lambdas[names(data_split_by_condition)]
+    #check that two lambda's are supplied
+    if(length(optimal_lambdas != 3)){
+      stop("Two lambda values should be supplied - one for each condition!")
+    }
+    #check that lambda's are valid
+    if(optimal_lambdas < 0 | optimal_lambdas > 1){
+      stop("The lambda parameter should be a value between 0 and 1 only!")
+    }
+  }else if(missing(optimal_lambdas)){
+    if(aprox){
+
+      message("Lambda will be aproximated by sqrt(log(# features)/# samples)\n",
+              "NOTE: If your dataset contains 500 or more samples per ",
+              "experimental condition, you should set ",
+              ' "aprox=FALSE" and tune lambda for each network!')
+
+      optimized_lambdas <- sqrt(log(num_features) / num_samples)
+
+    }else{
+      message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
+              "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n",
+              "NOTE: if your dataset contains fewer than ~500 samples per experimental condition, consider setting ",
+              ' "aprox=TRUE". This will provide more reliable results')
+
+      optimized_lambdas <- NULL
+      for(x in names(data_split_by_condition)){
+
+        message("\nTUNING LAMBDA FOR ", x,"!:\n",
+                "--------------------------------------------------\n")
+        tuned_lambdas[[x]] <- BICtune(object=t(data_split_by_condition[[x]]),
+                                      informed=informed,
+                                      interval=interval,
+                                      eps_threshold = eps_threshold,
+                                      eta_value = eta_value,
+                                      BPPARAM = BPPARAM,
+                                      BPOPTIONS = BPOPTIONS)
+        optimized_lambdas[[x]] <- tuned_lambdas[[x]][["optimized_lambda"]]
+      }
+    }
+  }
 
   #model will used selection weights based on stability selection if provided
   if (!is.null(selectionProbabilities(object))){
@@ -618,12 +739,13 @@ getNetworks <- function(object,
   ##estimate the partial correlation matrix for each condition
   for (k in networkGroups(object)){
 
-    message("Estimating model for ", k, "...", appendLF = TRUE)
+    message("Estimating model for ", k, "...using ",
+            optimized_lambdas[[k]], " for lambda...")
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                               weights = model_weight_values[[k]],
-                              lambda = optimized_lambda)
+                              lambda = optimized_lambdas[[k]])
 
     #grab the adjacency matrices
     weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
@@ -636,7 +758,7 @@ getNetworks <- function(object,
   adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
 
   ## filter the weighted_adjacency_matrices by eps_threshold
-  ## and create unweighed_adjacency_matrices plus edge list
+  ## and create unweighted_adjacency_matrices plus edge list
   object <- filterNetworks(data = object, pcor = eps_threshold)
 
   #check valid object
@@ -644,6 +766,144 @@ getNetworks <- function(object,
 
   return(object)
 }
+# getNetworks <- function(object,
+#                        optimal_lambda,
+#                        eps_threshold = 1e-06){
+#
+#   ##initialize input parameters
+#   num_samples <- numSamples(object)
+#   num_features <- numFeatures(object)
+#   Ip <- diag(rep(1, num_features))
+#
+#   ##initiate output data structures
+#   #weighted adjacency matrices list
+#   weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
+#   names(weighted_adjacency_matrices) <- networkGroups(object)
+#
+#   #unweighted adjacency matrices list
+#   unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
+#   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
+#
+#   ##test for proper input
+#   if(!inherits(object, "DNEAobj")){
+#
+#     stop('the input object should be of class "DNEAobj"!')
+#   }
+#   if(eps_threshold <=0 | eps_threshold >= 1) {
+#
+#     stop("The partial correlation threshold should be between 0 and 1 only!")
+#   }
+#
+#   # getNetworks requires lambda hyper-parameter. Will use
+#   # optimal_lambda if supplied, otherwise looks for
+#   # @hyperparameter[["optimized_lambda"]] in DNEAobject
+#   #
+#   # choosing lambda follows the following algorithm:
+#   # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided,
+#   #    optimal_lambda is used for analysis
+#   # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']]
+#   #    missing, use optimal lambda and set to store as new lambda value
+#   # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda
+#   #    missing, @hyperparamater[['optimized_lambda']] is used for analysis
+#   # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are
+#   #    missing, default to sqrt(log(p)/n) and give warning
+#   if(!missing(optimal_lambda)){
+#
+#     #check that lambda's are valid
+#     if(optimal_lambda < 0 | optimal_lambda > 1){
+#
+#       stop("The lambda parameter should be a value between 0 and 1 only!")
+#     }
+#     if(!is.null(optimizedLambda(object))){
+#
+#       optimized_lambda <- optimal_lambda
+#       warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]]
+#             already exists - optimal_lambda will be used in analysis')
+#     }else{
+#
+#       optimized_lambda <- optimal_lambda
+#       optimizedLambda(object) <- optimal_lambda
+#       message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
+#     }
+#   }else if(!is.null(optimizedLambda(object))){
+#
+#     optimized_lambda <- optimizedLambda(object)
+#   }else{
+#
+#     # setting optimized_lambda = NULL will default to a lambda of
+#     # sqrt(log(# features) / # samples) in adjDGlasso_minimal
+#     optimized_lambda <- NULL
+#
+#     warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+#             "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
+#             "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
+#   }
+#   #print lambda used
+#   message("Using Lambda hyper-parameter: ", optimized_lambda, "!", appendLF = TRUE)
+#
+#   ##separate the data by condition
+#   data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
+#                                                 condition_levels = networkGroups(object),
+#                                                 condition_by_sample = networkGroupIDs(object))
+#
+#   #model will used selection weights based on stability selection if provided
+#   if (!is.null(selectionProbabilities(object))){
+#
+#     #grab selection probabilities
+#     selection_prob <- selectionProbabilities(object)
+#
+#     #modify to create model weights
+#     model_weight_values <- vector(mode = "list", length = 2)
+#     for(x in seq(1, length(model_weight_values))){
+#
+#       model_weight_values[[x]] <- 1/(1e-04 + as.matrix(selection_prob[[x]]))
+#     }
+#
+#     #name weight values
+#     names(model_weight_values) <- names(selection_prob)
+#     message('selection_probabilites from stability selection will be used in glasso model!\n')
+#   } else{
+#
+#     message("No selection_probabilities were found. We recommend running
+#             stabilitySelection() prior to estimating the glasso model!\n")
+#
+#     model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
+#                                 matrix(rep(1, num_features^2), num_features, num_features))
+#
+#   }
+#
+#   #add names to model weights list
+#   names(model_weight_values) <- names(selectionProbabilities(object))
+#
+#   ##estimate the partial correlation matrix for each condition
+#   for (k in networkGroups(object)){
+#
+#     message("Estimating model for ", k, "...", appendLF = TRUE)
+#
+#     #fit the networks
+#     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
+#                               weights = model_weight_values[[k]],
+#                               lambda = optimized_lambda)
+#
+#     #grab the adjacency matrices
+#     weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
+#                                                nrow = num_features, ncol = num_features,
+#                                                dimnames = list(featureNames(object, original = FALSE),
+#                                                                featureNames(object, original = FALSE)))
+#   }
+#
+#   ##input weighted_adjacency_matrices into object
+#   adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
+#
+#   ## filter the weighted_adjacency_matrices by eps_threshold
+#   ## and create unweighed_adjacency_matrices plus edge list
+#   object <- filterNetworks(data = object, pcor = eps_threshold)
+#
+#   #check valid object
+#   validObject(object)
+#
+#   return(object)
+# }
 
 #' Identify metabolic modules within the biological networks using a
 #' consensus clustering approach
