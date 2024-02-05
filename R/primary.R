@@ -25,13 +25,10 @@ BICtune.DNEAobj <- function(object,
 
 
   ##initialize input parameters
-  dat <- split_by_condition(dat = t(scale(log(t(expressionData(object, normalized = FALSE))))),
+  dat <- split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
                             condition_levels = networkGroups(object),
                             condition_by_sample = networkGroupIDs(object))
-  # #initialize input parameters
-  # dat <- split_by_condition(dat = expressionData(object, normalized = TRUE),
-  #                           condition_levels = networkGroups(object),
-  #                           condition_by_sample = networkGroupIDs(object))
+
   n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
   trainY <- c(rep(1, ncol(dat[[1]])),
@@ -44,14 +41,24 @@ BICtune.DNEAobj <- function(object,
 
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
-    if(informed){
 
-      message("Estimating optimal c constant range for asymptotic lambda...")
-    }else{
+    bic1 <- lambda_tune_dispatch(informed = informed,
+                                 FUN = 'CGM_AHP_tune',
+                                 trainX = trainX,
+                                 testX = trainX,
+                                 trainY = trainY,
+                                 BIC = TRUE,
+                                 eps = eps_threshold,
+                                 eta = eta_value,
+                                 asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
+                                 interval = interval,
+                                 BPPARAM = BPPARAM,
+                                 BPOPTIONS = BPOPTIONS)
 
-      message("Estimating optimal lambda range...", appendLF = TRUE)
-    }
+    lambda_values <- bic1$new_lambda_values
+    bic1 <- bic1$bic
   }else{
+
     message("Provided lambda values will be used for optimization...", appendLF = TRUE)
     lambda_values <- unlist(lambda_values)
     if(any(lambda_values < 0 | lambda_values > 1)){
@@ -60,24 +67,9 @@ BICtune.DNEAobj <- function(object,
     }
   }
 
-  bic1 <- lambda_tune_dispatch(informed = informed,
-                               FUN = 'CGM_AHP_tune',
-                               trainX = trainX,
-                               testX = trainX,
-                               trainY = trainY,
-                               BIC = TRUE,
-                               eps = eps_threshold,
-                               eta = eta_value,
-                               asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
-                               interval = interval,
-                               BPPARAM = BPPARAM,
-                               BPOPTIONS = BPOPTIONS)
-
-  new_lambda_values <- bic1$new_lambda_values
-  bic1 <- bic1$bic
-
+  ##search the estimated area for the optimized lambda
   message("Fine-tuning Lambda...")
-  bic2 <- tune_lambda(lambda_values = new_lambda_values,
+  bic2 <- tune_lambda(lambda_values = lambda_values,
                       FUN = 'CGM_AHP_tune',
                       trainX = trainX,
                       testX = trainX,
@@ -131,14 +123,24 @@ BICtune.matrix <- function(object,
 
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
-    if(informed){
 
-      message("Estimating optimal c constant range for asymptotic lambda...")
-    }else{
+    bic1 <- lambda_tune_dispatch(informed = informed,
+                                 FUN = 'CGM_AHP_tune',
+                                 trainX = object,
+                                 testX = object,
+                                 trainY = trainY,
+                                 BIC = TRUE,
+                                 eps = eps_threshold,
+                                 eta = eta_value,
+                                 asymptotic_lambda = sqrt(log(num_features)/n4cov),
+                                 interval = interval,
+                                 BPPARAM = BPPARAM,
+                                 BPOPTIONS = BPOPTIONS)
 
-      message("Estimating optimal lambda range...",)
-    }
+    lambda_values <- bic1$new_lambda_values
+    bic1 <- bic1$bic
   }else{
+
     message("Provided lambda values will be used for optimization...", appendLF = TRUE)
     lambda_values <- unlist(lambda_values)
     if(any(lambda_values < 0 | lambda_values > 1)){
@@ -147,24 +149,9 @@ BICtune.matrix <- function(object,
     }
   }
 
-  bic1 <- lambda_tune_dispatch(informed = informed,
-                               FUN = 'CGM_AHP_tune',
-                               trainX = object,
-                               testX = object,
-                               trainY = trainY,
-                               BIC = TRUE,
-                               eps = eps_threshold,
-                               eta = eta_value,
-                               asymptotic_lambda = sqrt(log(num_features)/n4cov),
-                               interval = interval,
-                               BPPARAM = BPPARAM,
-                               BPOPTIONS = BPOPTIONS)
-
-  new_lambda_values <- bic1$new_lambda_values
-  bic1 <- bic1$bic
-
+  ##search the estimated area for the optimized lambda
   message("Fine-tuning Lambda...")
-  bic2 <- tune_lambda(lambda_values = new_lambda_values,
+  bic2 <- tune_lambda(lambda_values = lambda_values,
                       FUN = 'CGM_AHP_tune',
                       trainX = object,
                       testX = object,
