@@ -122,7 +122,8 @@ createDNEAobject <- function(project_name,
                 assays =  restructured_data[[1]],
                 metadata = list(samples = restructured_data[[2]]$samples,
                                 features = restructured_data[[2]]$features,
-                                network_group_IDs = restructured_data[[2]]$samples$conditions,
+                                network_group_IDs = structure(restructured_data[[2]]$samples$conditions,
+                                                              names = restructured_data[[2]]$samples$samples),
                                 network_groups = levels(restructured_data[[2]]$samples$conditions)),
                 hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
                 adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
@@ -180,7 +181,7 @@ restructure_input_data <- function(expression_data,
 
   ##initialize output data structures
   #create metadata list and add names
-  meta_key <- c("samples", "features", "network_group_IDs", "network_groups")
+  meta_key <- c("samples", "features")
   metadata <- vector(mode = 'list', length = length(meta_key))
   names(metadata) <- meta_key
 
