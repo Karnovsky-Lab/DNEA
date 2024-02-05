@@ -185,7 +185,7 @@ restructure_input_data <- function(expression_data,
   names(metadata) <- meta_key
 
   #create assays list of expression data
-  assays_key <- c('expression_data','scaled_expression_data')
+  assays_key <- c('input_data','scaled_expression_data')
   assays <- vector(mode = 'list', length = length(assays_key))
   names(assays) <- assays_key
 
@@ -203,7 +203,7 @@ restructure_input_data <- function(expression_data,
   rownames(expression_data) <- clean_feature_names
 
   #add to assays list
-  assays[['expression_data']] <- expression_data
+  assays[['input_data']] <- expression_data
 
   ##scale the expression data for analysis
   #split by group
@@ -213,10 +213,9 @@ restructure_input_data <- function(expression_data,
                                    function(x) t(scale(log(t(x)))))
 
   #combine scaled data into one matrix
-  scaled_expression_data <- cbind(scaled_expression_data[[1]], scaled_expression_data[[2]])
-
-  #order samples to be same as un-scaled
-  scaled_expression_data <- scaled_expression_data[, colnames(expression_data)]
+  scaled_expression_data <- append(scaled_expression_data,
+                                   list(scaled_input_data = t(scale(log(t(expression_data))))),
+                                   after = 0)
 
   #order group_labels to make sure that still matches
   condition_values <- condition_values[colnames(expression_data)]
