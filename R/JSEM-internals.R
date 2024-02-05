@@ -192,11 +192,11 @@ tune_init <- function(
 #' @keywords internal
 #' @noRd
 CGM_AHP_tune <- function(
-    trainX,   # training data
-    testX,    # test data
-    model,    # labels for models.
-    X,   # a vector of supplied lambda
-    BIC=FALSE, # whether to compute the bic.score
+    trainX,
+    testX,
+    model,
+    X,
+    BIC=FALSE,
     eps=1e-06,
     eta=0.01,
     limkappa = 1e+6
@@ -379,7 +379,7 @@ estimate_c <- function(FUN,
                        BPOPTIONS = bpoptions()){
 
   #ballpark the c parameter
-  constant_values <- seq(0, 0.5, 0.02)
+  constant_values <- seq(0, 1 / asymptotic_lambda, 0.02)
   lambda_values <- constant_values * asymptotic_lambda
 
   bic <- tune_lambda(lambda_values = lambda_values,
@@ -482,6 +482,68 @@ estimate_lambda <- function(FUN,
   lambda_values <- lambda_values[lambda_values > 0]
 
   return(list(bic = bic, new_lambda_values = lambda_values))
+}
+#' Wrapper function for tuning the lambda parameter
+#'
+#' Implement the specified method for optimizing the lambda parameter.
+#' Tuning can be focused on lambda, or optimzing the c constant
+#' following the equation:
+#' \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
+#'
+#' @param informed TRUE/FALSE whether or not to utilize the asymptotic
+#' properties of lambda for large data sets to tune the parameter. This reduces
+#' the necessary number of computations for optimization
+#' @inheritParams estimate_c
+#'
+#' @author Christopher Patsalis
+#' @returns A list containing the following items:
+#' \enumerate{
+#' \item \strong{bic}: the output from \code{\link{tune_lambda}}
+#' \item \strong{new_lambda_values}: The new lambda values, defined by
+#' the estimated reference, to test}
+#' @keywords internal
+#' @noRd
+lambda_tune_dispatch <- function(informed,
+                                 FUN,
+                                 trainX,
+                                 testX,
+                                 trainY,
+                                 BIC,
+                                 asymptotic_lambda,
+                                 interval,
+                                 eps,
+                                 eta,
+                                 BPPARAM = bpparam(),
+                                 BPOPTIONS = bpoptions()){
+
+  if(informed){
+
+    bic <- estimate_c(FUN = 'CGM_AHP_tune',
+                      trainX = trainX,
+                      testX = trainX,
+                      trainY = trainY,
+                      BIC = TRUE,
+                      eps = eps,
+                      eta = eta,
+                      asymptotic_lambda = asymptotic_lambda,
+                      interval = interval,
+                      BPPARAM = BPPARAM,
+                      BPOPTIONS = BPOPTIONS)
+  }else{
+
+    bic <- estimate_lambda(FUN = 'CGM_AHP_tune',
+                           trainX = trainX,
+                           testX = trainX,
+                           trainY = trainY,
+                           BIC = TRUE,
+                           eps = eps,
+                           eta = eta,
+                           interval = interval,
+                           BPPARAM = BPPARAM,
+                           BPOPTIONS = BPOPTIONS)
+  }
+
+  return(bic)
 }
 
 #' Initialize static tuning variables
@@ -794,6 +856,7 @@ adjDGlasso_minimal <- function(
   #if no lambda provided default to theoretical asymptotically
   #valid lambda for large p and large n
   if (is.null(lambda)){
+    message("Defaulting lambda to sqrt(log(# features)/# samples!")
     lambda <- sqrt(log(num_features)/num_samples)
   }
 
