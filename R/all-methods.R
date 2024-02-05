@@ -88,7 +88,7 @@ expressionData.DNEAobj <- function(x, normalized = TRUE){
     output <- x@assays$scaled_expression_data
   }else if(!normalized){
 
-    output <- x@assays$expression_data
+    output <- x@assays$input_data
   }
 
   return(output)
