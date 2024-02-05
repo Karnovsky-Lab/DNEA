@@ -518,6 +518,7 @@ lambda_tune_dispatch <- function(informed,
 
   if(informed){
 
+    message("Estimating optimal c constant range for asymptotic lambda...")
     bic <- estimate_c(FUN = 'CGM_AHP_tune',
                       trainX = trainX,
                       testX = trainX,
@@ -531,6 +532,7 @@ lambda_tune_dispatch <- function(informed,
                       BPOPTIONS = BPOPTIONS)
   }else{
 
+    message("Estimating optimal lambda range...")
     bic <- estimate_lambda(FUN = 'CGM_AHP_tune',
                            trainX = trainX,
                            testX = trainX,
