@@ -4,19 +4,57 @@
 \alias{getNetworks}
 \title{Construct the GLASSO-based biological Networks}
 \usage{
-getNetworks(object, optimal_lambda, eps_threshold = 1e-06)
+getNetworks(
+  object,
+  lambda_values,
+  aprox = FALSE,
+  informed = TRUE,
+  interval = 0.001,
+  eps_threshold = 1e-06,
+  eta_value = 0.1,
+  optimal_lambdas,
+  BPPARAM = bpparam(),
+  BPOPTIONS = bpoptions()
+)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}} object}
 
-\item{optimal_lambda}{\emph{OPTIONAL} - The lambda value to be used
-in analysis. Not necessary if \code{\link{BICtune}} or
-\code{\link{stabilitySelection}} were already performed}
+\item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing
+the lambda parameter. If not provided, a set of lambda values are chosen
+based on the theoretical value for the asymptotically valid lambda. More
+information about this can be found in the details section}
+
+\item{aprox}{A boolean indicating whether or not \code{\link{BICtune}}
+should be used to optimize the lambda value for each condition. If
+\code{aprox==FALSE}, sqrt(log(# features)/#samples) is used to aproximate
+lambda}
+
+\item{informed}{TRUE/FALSE whether or not to utilize the asymptotic
+properties of lambda for large data sets to tune the parameter. This reduces
+the necessary number of computations for optimization}
+
+\item{interval}{A numeric value indicating the specifity by which to
+optimize lambda. The default value is 1e-3, which indicates lambda will
+be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to
 threshold the partial correlation values for edge identification.
 Edges with an absolute partial correlation value below this threshold
 will be zero'd out from the adjacency matrix.}
+
+\item{eta_value}{A tuning parameter that that ensures that the empirical
+covariance matrix of the data is positive definite so that we can
+calculate its inverse. The default value is 0.01.}
+
+\item{optimal_lambdas}{\emph{OPTIONAL} - The lambda value to be used
+in analysis. Not necessary if \code{\link{BICtune}} or
+\code{\link{stabilitySelection}} were already performed}
+
+\item{BPPARAM}{A \code{\link{BiocParallel}} object}
+
+\item{BPOPTIONS}{a list of options for BiocParallel created using
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
 }
 \value{
 A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
