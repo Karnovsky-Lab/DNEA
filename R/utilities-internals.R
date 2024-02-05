@@ -16,7 +16,7 @@
 split_by_condition <- function(dat, condition_levels, condition_by_sample){
 
   #check input
-  if(ncol(dat) != length(condition_by_sample)) {
+  if(!all(colnames(dat) == names(condition_by_sample))) {
     stop("The provided conditions do not correspond to the samples in expression matrix!")
   }
 
