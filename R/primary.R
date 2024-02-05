@@ -397,72 +397,44 @@ stabilitySelection <- function(object,
   # stabilitySelection requires lambda hyper-parameter. Will use
   # optimal_lambda if supplied, otherwise looks for
   # @hyperparameter[["optimized_lambda"]] in DNEAobject
-  #
-  # choosing lambda follows the following algorithm:
-  # 1. if @hyperparamater[['optimized_lambda']] and optimal_lambda provided,
-  #    optimal_lambda is used for analysis
-  # 2. if optimal_lambda provided and @hyperparamater[['optimized_lambda']]
-  #    missing, use optimal lambda and set to store as new lambda value
-  # 3. if @hyperparamater[['optimized_lambda']] provided and optimal_lambda
-  #    missing, @hyperparamater[['optimized_lambda']] is used for analysis
-  # 4. if both @hyperparamater[['optimized_lambda']] and optimal_lambda are
-  #    missing, default to sqrt(log(p)/n) and give warning
   if(!missing(optimal_lambda)){
 
-    #check that lambda's are valid
     if(optimal_lambda < 0 | optimal_lambda > 1){
 
       stop("The lambda parameter should be a value between 0 and 1 only!")
     }
-    if(!is.null(optimizedLambda(object))){
+    #set lambda for use downstream
+    optimized_lambda <- optimal_lambda
+    message('IMPORTANT: optimal_lambda argument was provided - The default parameters will ',
+            'be overrided and optimal_lambda will be used in analysis')
 
-      optimized_lambda <- optimal_lambda
-      warning('optimal_lambda argument was provided even though @hyperparameter[["optimized_lambda"]] already exists",
-              " - optimal_lambda will be used in analysis')
-    }else{
-
-      optimized_lambda <- optimal_lambda
+    if(is.null(optimizedLambda(object))){
       optimizedLambda(object) <- optimal_lambda
       message('@hyperparameter[["optimized_lambda"]] was previously empty and now set to optimal_lambda argument')
     }
   }else if(!is.null(optimizedLambda(object))){
-
     optimized_lambda <- optimizedLambda(object)
+    message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
+            'accessed via the optimizedLambda() function')
   }else{
-
     # setting optimized_lambda = NULL will default to a lambda of
     # sqrt(log(# features) / # samples) in adjDGlasso_minimal
     optimized_lambda <- NULL
 
-    warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will beused in the analyis. ",
+    warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be used in the analyis. ",
             "However, We highly recommend optimizing the lambda parameter by running BICtune(), ",
-            "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis.")
+            "or providing a calibrated lambda value using the optimal_lambda parameter prior to analysis ",
+            "if the dataset contains ~500 or more samples.")
   }
 
-
-
   #split data by condition
-  data_split_by_condition <- lapply(split_by_condition(dat = t(scale(log(t(expressionData(object, normalized = FALSE))))),
+  data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
                                                        condition_levels = networkGroups(object),
                                                        condition_by_sample = networkGroupIDs(object)),
                                     function(d) t(d))
-  # data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE),
-  #                                                      condition_levels = networkGroups(object),
-  #                                                      condition_by_sample = networkGroupIDs(object)),
-  #                                   function(d) t(d))
-
   #initialize static variables to pass to workers
   stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
 
-
-  #check that groups are sufficiently uneven if subSample selected
-  if(subSample){
-    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])) stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
-                                                                                                       "Please perform stability selection WITHOUT additional sub-sampling")
-  }
-
-  ##perform stability selection
-  #print message to user
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
           "stabilitySelection will be performed with ", nreps, " replicates!")
 
@@ -471,6 +443,12 @@ stabilitySelection <- function(object,
     #with additional sub-sampling
     message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
+
+    #check that groups are sufficiently uneven if subSample selected
+    if((1.3* stabsel_init_param[["min_num_samples"]]) > max(stabsel_init_param[["num_samples"]])){
+      stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
+           "Please perform stability selection WITHOUT additional sub-sampling")
+    }
   }else if(!subSample){
 
     #without additional sub-sampling
@@ -488,14 +466,11 @@ stabilitySelection <- function(object,
                                       BPOPTIONS = BPOPTIONS)
 
   ##concatenate results for output
-  #initiate list for stability selection raw results
   selection_results <- vector("list", length(networkGroups(object)))
   names(selection_results) <- networkGroups(object)
 
-  #initiate list for stability selection results converted to probabilities
   selection_probabilities <- vector("list", length(networkGroups(object)))
   names(selection_probabilities) <- networkGroups(object)
-
 
   #reduce results to one matrix and calculate selection probabilities
   for (k in seq(1, length(selection_results))){
