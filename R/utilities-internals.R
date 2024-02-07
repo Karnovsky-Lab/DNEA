@@ -16,6 +16,9 @@
 split_by_condition <- function(dat, condition_levels, condition_by_sample){
 
   #check input
+  if(is.null(colnames(dat))) stop("dat must have column names!")
+  if(is.null(rownames(dat))) stop("dat must have row names!")
+  if(is.null(names(condition_by_sample))) stop("each element in condition_by_sample must be named for its corresponding sample!")
   if(!all(colnames(dat) == names(condition_by_sample))) {
     stop("The provided conditions do not correspond to the samples in expression matrix!")
   }
