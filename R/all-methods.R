@@ -97,8 +97,10 @@ expressionData.DNEAobj <- function(x, assay = c("input_data", "log_input_data", 
 #'
 #'
 #' @param x A \code{\link{DNEAobj}} object
-#' @param normalized A boolean indicating whether the normalized or
-#' original input data should be returned
+#' @param assay A character string corresponding to the data to retrieve:
+#' "input_data" retrieves the data as it was input, "log_input_data"
+#' retrieves the input_data after log transforming, and
+#' "scaled_expression_data" retrieves the log-scaled data matrices.
 #'
 #' @author Christopher Patsalis
 #' @seealso
