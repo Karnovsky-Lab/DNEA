@@ -2,9 +2,9 @@ test_that("aggregateFeatures", {
 
   dat <- readRDS(test_path("testdata", "test-TEDDYresults.rds"))
 
-  TEDDY_groups <- data.frame(features = rownames(expressionData(dat, normalized = FALSE)),
-                             groups = rownames(expressionData(dat, normalized = FALSE)),
-                             row.names = rownames(expressionData(dat, normalized = FALSE)))
+  TEDDY_groups <- data.frame(features = rownames(expressionData(x = dat, assay = "input_data")),
+                             groups = rownames(expressionData(x = dat, assay = "input_data")),
+                             row.names = rownames(expressionData(x = dat, assay = "input_data")))
 
   TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine", "leucine", "valine")] <- "BCAAs"
   TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
