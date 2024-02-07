@@ -80,15 +80,18 @@ setMethod("projectName", signature(x= "DNEAobj"), function(x){
   x@project_name
 })
 
-expressionData.DNEAobj <- function(x, normalized = TRUE){
+expressionData.DNEAobj <- function(x, normalized = TRUE, log_transformed = TRUE){
 
   ##pull data to return
   if(normalized){
 
     output <- x@assays$scaled_expression_data
   }else if(!normalized){
-
-    output <- x@assays$input_data
+    if(log_transformed){
+      output <- x@assays$log_input_data
+    }else if(!log_transformed){
+      output <- x@assays$input_data
+    }
   }
 
   return(output)
