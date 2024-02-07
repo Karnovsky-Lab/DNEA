@@ -131,7 +131,7 @@ createDNEAobject <- function(project_name,
   validObject(object)
 
   #perform diagnostic testing on dataset
-  datasetSummary(object) <- dataDiagnostics(mat = expressionData(object, assay = "scaled_expression_data"),
+  datasetSummary(object) <- dataDiagnostics(mat = expressionData(x= object, assay = "scaled_expression_data"),
                                        condition_values = networkGroups(object),
                                        conditions = networkGroupIDs(object))
 
