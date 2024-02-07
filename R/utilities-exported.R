@@ -128,20 +128,21 @@ addExpressionData <- function(object,
                               data){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) {
-    stop('the input object should be of class "DNEAobj"!')
+  sample_names <- sampleNames(object)
+  group1 <- names(networkGroupIDs(object)[networkGroupIDs(object) == networkGroups(object)[1]])
+  group2 <- names(networkGroupIDs(object)[networkGroupIDs(object) == networkGroups(object)[2]])
+  metab_names <- featureNames(object)
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!all(vapply(seq(data), function(x) is.numeric(data[[x]]) & inherits(data[[x]], "matrix"), logical(1)))){
+    stop("The new data should be a list of numeric matrices!")
   }
-  if(!inherits(data, "matrix")) {
-    stop('the input metadata should be of class "matrix"!')
-  }
-  if(!all(rownames(data) == rownames(expressionData(x = object, assay = "input_data")))) {
+  if(!all(vapply(seq(length(data)), function(x) all(rownames(data[[x]]) == metab_names), logical(1)))) {
     stop("The feature order of new data does not match order in DNEAobj!")
   }
-  if(!all(colnames(data) == colnames(expressionData(x = object, assay = "input_data")))) {
+  if(!all(colnames(data[["scaled_expression_data"]]) == sample_names) |
+     !all(colnames(data[[networkGroups(object)[1]]]) == group1) |
+     !all(colnames(data[[networkGroups(object)[2]]]) == group2)) {
     stop("The sample order of new data does not match order in DNEAobj!")
-  }
-  if(!is.numeric(data)) {
-    stop("The new data should be a numeric matrix!")
   }
 
   object@assays[["DNEA_scaled_data"]] <- expressionData(x = object, assay = "scaled_expression_data")
