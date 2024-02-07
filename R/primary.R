@@ -25,7 +25,7 @@ BICtune.DNEAobj <- function(object,
 
 
   ##initialize input parameters
-  dat <- split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
+  dat <- split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]],
                             condition_levels = networkGroups(object),
                             condition_by_sample = networkGroupIDs(object))
 
@@ -437,7 +437,7 @@ stabilitySelection <- function(object,
     ss_function <- "CGM_AHP_stabsel_subsample"
 
     #split data by condition
-    data_split_by_condition <- lapply(split_by_condition(dat = expressionData(object, normalized = TRUE)[["scaled_input_data"]],
+    data_split_by_condition <- lapply(split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]],
                                                          condition_levels = networkGroups(object),
                                                          condition_by_sample = networkGroupIDs(object)),
                                       function(d) t(d))
@@ -447,7 +447,7 @@ stabilitySelection <- function(object,
     message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
 
-    data_split_by_condition <- lapply(expressionData(object, normalized = TRUE)[-1], function(d) t(d))
+    data_split_by_condition <- lapply(expressionData(x = object, assay = "scaled_expression_data")[-1], function(d) t(d))
   }
 
 
@@ -602,9 +602,9 @@ getNetworks <- function(object,
   }
 
   ##separate the data by condition
-  data_split_by_condition <- expressionData(object, normalized = TRUE)
+  data_split_by_condition <- expressionData(x = object, assay = "scaled_expression_data")
   data_split_by_condition <- data_split_by_condition[-match("scaled_input_data", names(data_split_by_condition))]
-  # data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
+  # data_split_by_condition <- split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[match("scaled_input_data", names(data_split_by_condition))],
   #                                               condition_levels = networkGroups(object),
   #                                               condition_by_sample = networkGroupIDs(object))
 
@@ -629,7 +629,7 @@ getNetworks <- function(object,
 
     optimized_lambdas <- optimal_lambdas[names(data_split_by_condition)]
     #check that two lambda's are supplied
-    if(length(optimal_lambdas != 3)){
+    if(length(optimal_lambdas != 2)){
       stop("Two lambda values should be supplied - one for each condition!")
     }
     #check that lambda's are valid
@@ -1124,7 +1124,7 @@ runNetGSA <- function(object,
   adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
                              list(adjacencyMatrix(x = object, weighted = TRUE)[[2]]))
 
-  expression_data <- expressionData(object, normalized = FALSE)
+  expression_data <- expressionData(x = object, assay = "log_input_data")
   data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
   subnetworks <- as.matrix(subnetworkMembership(object))
 
