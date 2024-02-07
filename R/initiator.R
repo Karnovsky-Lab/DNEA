@@ -91,7 +91,6 @@ createDNEAobject <- function(project_name,
 
     #check that order of group_labels matches data
     if(!(all(names(group_labels) == colnames(expression_data)))){
-
       stop("Group labels do not match sample order in expression data!")
     }
 
@@ -111,7 +110,6 @@ createDNEAobject <- function(project_name,
     restructured_data <- restructure_input_data(expression_data = expression_data,
                                                 condition_values = group_labels)
   } else{
-
     #no data was provided - throw error
     stop('Expression data must be provided to create DNEAobject')
   }
@@ -186,7 +184,7 @@ restructure_input_data <- function(expression_data,
   names(metadata) <- meta_key
 
   #create assays list of expression data
-  assays_key <- c('input_data','scaled_expression_data')
+  assays_key <- c('input_data', 'log_input_data', 'scaled_expression_data')
   assays <- vector(mode = 'list', length = length(assays_key))
   names(assays) <- assays_key
 
@@ -205,6 +203,7 @@ restructure_input_data <- function(expression_data,
 
   #add to assays list
   assays[['input_data']] <- expression_data
+  assays[['log_input_data']] <- log(expression_data)
 
   ##scale the expression data for analysis
   #split by group
