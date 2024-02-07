@@ -21,7 +21,7 @@ setGeneric("projectName", function(x) standardGeneric("projectName"))
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
-setGeneric("expressionData", function(x, normalized, log_transformed) standardGeneric("expressionData"))
+setGeneric("expressionData", function(x, assay) standardGeneric("expressionData"))
 
 #' @rdname networkGroups-methods
 #' @aliases networkGroups
