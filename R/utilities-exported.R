@@ -34,18 +34,17 @@ includeMetadata <- function(object,
                             metadata){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) {
-
-    stop('the input object should be of class "DNEAobj"!')
-  }
+  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!any(inherits(metadata, "matrix") | inherits(metadata, "data.frame"))) {
-
     stop('the input metadata should be of class "matrix" or "data.frame"!')
   }
+  if(is.null(colnames(metadata))) stop("dat must have column names!")
+  if(is.null(rownames(metadata))) stop("dat must have row names!")
 
   type <- match.arg(type)
   if(type == 'sample'){
-    if(all(sampleNames(object) == rownames(metadata))){
+    if(tryCatch({all(sampleNames(object) == rownames(metadata))},
+                warning = function(w){FALSE})){
       for(i in seq(1, length(colnames(metadata)))){
 
 
@@ -56,9 +55,9 @@ includeMetadata <- function(object,
       stop('new metadata order does not match sample order')
 
     }
-  } else{
-    if(all(featureNames(object) == rownames(metadata)) |
-       all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))){
+  } else if(type == 'feature'){
+    if(tryCatch({all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))},
+      warning = function(w){FALSE})){
       for(i in seq(1, length(colnames(metadata)))){
 
         new_metadata_colname <- colnames(metadata)[i]
