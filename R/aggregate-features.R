@@ -288,7 +288,7 @@ collapseNodes_cor <- function(dat, correlation_threshold = 0.9) {
 
 
   #create adjacency graph
-  adjacency_graph <- graph.adjacency(group_matrix, mode = "undirected", weighted = TRUE)
+  adjacency_graph <- graph.adjacency(group_matrix, mode = "max", weighted = TRUE)
 
   #edge list from adjacency graph
   edge_list <- cbind.data.frame(get.edgelist(adjacency_graph),
