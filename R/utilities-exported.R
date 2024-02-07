@@ -135,17 +135,17 @@ addExpressionData <- function(object,
   if(!inherits(data, "matrix")) {
     stop('the input metadata should be of class "matrix"!')
   }
-  if(!all(rownames(data) == rownames(expressionData(object, normalized = TRUE)))) {
+  if(!all(rownames(data) == rownames(expressionData(x = object, assay = "input_data")))) {
     stop("The feature order of new data does not match order in DNEAobj!")
   }
-  if(!all(colnames(data) == colnames(expressionData(object, normalized = TRUE)))) {
+  if(!all(colnames(data) == colnames(expressionData(x = object, assay = "input_data")))) {
     stop("The sample order of new data does not match order in DNEAobj!")
   }
   if(!is.numeric(data)) {
     stop("The new data should be a numeric matrix!")
   }
 
-  object@assays[["DNEA_scaled_data"]] <- expressionData(object, normalized = TRUE)
+  object@assays[["DNEA_scaled_data"]] <- expressionData(x = object, assay = "scaled_expression_data")
   object@assays[["scaled_expression_data"]] <- data
 
   validObject(object)
