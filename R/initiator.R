@@ -131,7 +131,7 @@ createDNEAobject <- function(project_name,
   validObject(object)
 
   #perform diagnostic testing on dataset
-  datasetSummary(object) <- dataDiagnostics(mat = expressionData(object, normalized = TRUE),
+  datasetSummary(object) <- dataDiagnostics(mat = expressionData(object, assay = "scaled_expression_data"),
                                        condition_values = networkGroups(object),
                                        conditions = networkGroupIDs(object))
 
@@ -140,7 +140,7 @@ createDNEAobject <- function(project_name,
   show(object@dataset_summary)
 
   ##perform differential expression on the features
-  nodeList(object) <- metabDE(mat = expressionData(x = object, normalized = FALSE),
+  nodeList(object) <- metabDE(mat = expressionData(x = object, assay = "log_input_data"),
                               condition_values = networkGroups(object),
                               conditions = networkGroupIDs(object))
 
@@ -385,7 +385,6 @@ metabDE <- function(mat,
   ##set necessary parameters and output
   num_features <- nrow(mat)
   num_samples <- ncol(mat)
-  mat <- log(mat)
   feature_info <- data.frame(clean_feature_names = rownames(mat))
 
   ##split data by condition
