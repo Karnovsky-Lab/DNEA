@@ -602,9 +602,11 @@ getNetworks <- function(object,
   }
 
   ##separate the data by condition
-  data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
-                                                condition_levels = networkGroups(object),
-                                                condition_by_sample = networkGroupIDs(object))
+  data_split_by_condition <- expressionData(object, normalized = TRUE)
+  data_split_by_condition <- data_split_by_condition[-match("scaled_input_data", names(data_split_by_condition))]
+  # data_split_by_condition <- split_by_condition(dat = expressionData(object, normalized = TRUE),
+  #                                               condition_levels = networkGroups(object),
+  #                                               condition_by_sample = networkGroupIDs(object))
 
   ##initialize input parameters
   num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE = numeric(1))
