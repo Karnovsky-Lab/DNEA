@@ -97,12 +97,12 @@
 #' data(dnw)
 #'
 #' #simulate group labels
-#' TEDDY_groups <- data.frame(features = rownames(expressionData(dnw,
-#'                                                normalized = FALSE)),
-#'                            groups = rownames(expressionData(dnw,
-#'                                              normalized = FALSE)),
-#'                            row.names = rownames(expressionData(dnw,
-#'                                                 normalized = FALSE)))
+#' TEDDY_groups <- data.frame(features = rownames(expressionData(x = dnw,
+#'                                                assay = "input_data")),
+#'                            groups = rownames(expressionData(x = dnw,
+#'                                              assay = "input_data")),
+#'                            row.names = rownames(expressionData(x = dnw,
+#'                                                 assay = "input_data")))
 #'
 #' TEDDY_groups$groups[TEDDY_groups$groups %in% c("isoleucine",
 #'                                                "leucine",
@@ -135,13 +135,13 @@ aggregateFeatures <- function(object,
 
   ##Check to see if there is non-normalized, non-transformed expression data
   ##provided - Feature reduction requires this
-  if(is.null(expressionData(object, normalized = FALSE))){
+  if(is.null(expressionData(x = object, assay = "input_data"))){
     stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!",
          '\nTo proceed, please insert un-scaled expression data into the DNEAobject')
   }
 
   #check that rownames of feature_groups match feature order
-  if(!(all(rownames(expressionData(object, normalized = FALSE)) ==
+  if(!(all(rownames(expressionData(x = object, assay = "input_data")) ==
            rownames(feature_groups)))){
     stop("The feature order of feature_groups does not match the expression data!")
   }
@@ -155,7 +155,7 @@ aggregateFeatures <- function(object,
   ##create dataframe input for node collapsing algorithm
   collapse_dat <- data.frame(samples = sampleNames(object),
                              groups = networkGroupIDs(object),
-                             t(expressionData(object, normalized = FALSE)))
+                             t(expressionData(x = object, assay = "input_data")))
 
   ##collapse features based on specified approach
   if (method == "correlation") {
@@ -186,8 +186,9 @@ aggregateFeatures <- function(object,
 
   collapsed_object <- new("collapsed_DNEAobj",
                           project_name = projectName(reduced_object),
-                          assays =  list(expression_data = expressionData(reduced_object, normalized = FALSE),
-                                         scaled_expression_data = expressionData(reduced_object, normalized = TRUE)),
+                          assays =  list(input_data = expressionData(x = reduced_object, assay = "input_data"),
+                                         log_input_data = expressionData(x = reduced_object, assay = "log_input_data"),
+                                         scaled_expression_data = expressionData(x = reduced_object, assay = "scaled_expression_data")),
                           metadata = list(samples = data.frame(samples = sampleNames(reduced_object),
                                                                conditions = networkGroupIDs(reduced_object),
                                                                row.names = sampleNames(reduced_object)),

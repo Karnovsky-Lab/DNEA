@@ -236,13 +236,13 @@ setValidity("DNEAobj", function(object){
       "Features are out of order"
     }
   }
-  if(all(rownames(expressionData(object, normalized = FALSE)) !=
-         rownames(expressionData(object, normalized = TRUE)))){
+  if(all(rownames(expressionData(x = object, assay = "input_data")) !=
+         rownames(expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]]))){
     "assay features are not in the same order"
   }
 
-  if(all(colnames(expressionData(object, normalized = FALSE)) !=
-         colnames(expressionData(object, normalized = TRUE)))){
+  if(all(colnames(expressionData(x = object, assay = "input_data")) !=
+         colnames(expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]]))){
     "assay samples are not in the same order"
   }
 
@@ -254,7 +254,7 @@ setValidity("DNEAobj", function(object){
     "@metadata$samples$samples should be of class character"
   }
   if(all(object@metadata$samples$samples !=
-         colnames(expressionData(object, normalized = FALSE)))){
+         colnames(expressionData(x = object, assay = "input_data")))){
     "sample metadata does not match order of expression data"
   }
   if(!(is.data.frame(object@metadata$features))){
@@ -267,7 +267,7 @@ setValidity("DNEAobj", function(object){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
   if(all(object@metadata$features$clean_feature_names !=
-         rownames(expressionData(object, normalized = FALSE)))){
+         rownames(expressionData(x = object, assay = "input_data")))){
     "feature metadata does not match order of expression data"
   }
   if(length(networkGroups(object)) != 2){
@@ -285,11 +285,11 @@ setValidity("DNEAobj", function(object){
   if(all(dim(diagnostics(object)) != c(0, 0))){
 
     if(numSamples(object) !=
-       ncol(expressionData(object, normalized = FALSE))){
+       ncol(expressionData(x = object, assay = "input_data"))){
       "There was a problem with the dataset summary"
     }
     if(numFeatures(object) !=
-       nrow(expressionData(object, normalized = FALSE))){
+       nrow(expressionData(x = object, assay = "input_data"))){
       "There was a problem with the dataset summary"
     }
     validObject(object@dataset_summary)
@@ -337,7 +337,7 @@ setValidity("DNEAobj", function(object){
       "there was a problem with the adjacency matrices"
     }
     if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) !=
-           colnames(expressionData(object, normalized = FALSE)))){
+           colnames(expressionData(x = object, assay = "input_data")))){
       "there was a problem with the adjacency matrices"
     }
   }
@@ -362,7 +362,7 @@ setValidity("DNEAobj", function(object){
   if(!is.null(dim(CCsummary(object)))){
 
     if(sum(CCsummary(object)$number_of_nodes) !=
-       nrow(expressionData(object, normalized = FALSE))){
+       nrow(expressionData(x = object, assay = "input_data"))){
       "There was a problem with consensus clustering"
     }
 
