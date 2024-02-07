@@ -109,7 +109,7 @@ expressionData.DNEAobj <- function(x, assay = c("input_data", "log_input_data", 
 #' #import example data
 #' data(dnw)
 #'
-#' expressionData(dnw, normalized = TRUE)
+#' expressionData(x = dnw, assay = "input_data")
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
