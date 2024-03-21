@@ -215,35 +215,41 @@ setValidity("DNEAobj", function(object){
     "@project_name must be a character string"
   }
 
-  #check assays
-  for (i in length(object@assays)){
-    if(!(is.matrix(object@assays[[i]]))){
-      "@assays must be an expression matrix"
-    }
-    if(length(rownames(object@assays[[i]])) !=
-       length(unique(rownames(object@assays[[i]])))){
-      "@assays must be an expression matrix where each row is a unique feature."
-    }
-    if(!(is.numeric(object@assays[[i]]))){
-      "@assays must be a matrix with numeric values."
-    }
-    if(all(colnames(object@assays[[i]]) !=
-           sampleNames(object))){
-      "Samples are out of order"
-    }
-    if(all(rownames(object@assays[[i]]) !=
-           featureNames(object, original = FALSE))){
-      "Features are out of order"
-    }
-  }
-  if(all(rownames(expressionData(x = object, assay = "input_data")) !=
-         rownames(expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]]))){
-    "assay features are not in the same order"
-  }
+  ##check assays
+  for(i in c("input_data", "log_input_data", "scaled_expression_data", "DNEA_scaled_data")){
 
-  if(all(colnames(expressionData(x = object, assay = "input_data")) !=
-         colnames(expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]]))){
-    "assay samples are not in the same order"
+    if(is.matrix(assays(object)[[i]])){
+
+      data2check <- list(assays(object)[[i]])
+    }else if(is.list(assays(object)[[i]])){
+
+      data2check <- assays(object)[[i]]
+    }
+
+    for(y in seq(length(data2check))){
+      if(!(is.matrix(data2check[[y]]))){
+        "@assays must be an expression matrix"
+      }
+      if(length(rownames(data2check[[y]])) !=
+         length(unique(rownames(data2check[[y]])))){
+        "@assays must be an expression matrix where each row is a unique feature."
+      }
+      if(!(is.numeric(data2check[[y]]))){
+        "@assays must be a matrix with numeric values."
+      }
+      if(tryCatch(expr = {all(colnames(data2check[[y]]) !=
+                              sampleNames(object)[networkGroupIDs(object) == names(data2check)[y]])},
+                  warning = function(w){conditionMessage(w)
+                    FALSE},
+                  error = function(e){conditionMessage(e)
+                    FALSE})){
+        "Samples are out of order"
+      }
+      if(all(rownames(data2check[[y]]) !=
+             featureNames(object, original = FALSE))){
+        "Features are out of order"
+      }
+    }
   }
 
   #check metadata
