@@ -117,6 +117,15 @@ expressionData.DNEAobj <- function(x, assay = c("input_data", "log_input_data", 
 #' @export
 setMethod("expressionData",signature(x = "DNEAobj"), expressionData.DNEAobj)
 
+assays.DNEAobj <- function(x){
+  x@assays
+}
+#' @rdname assays-methods
+#' @aliases assays
+#' @keywords internal
+#' @noRd
+setMethod("assays", signature = (x = "DNEAobj"), assays.DNEAobj)
+
 networkGroupIDs.DNEAobj <- function(x){
   x@metadata$network_group_IDs
 }

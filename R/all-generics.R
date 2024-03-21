@@ -23,6 +23,12 @@ setGeneric("projectName", function(x) standardGeneric("projectName"))
 #' @export
 setGeneric("expressionData", function(x, assay) standardGeneric("expressionData"))
 
+#' @rdname assays-methods
+#' @aliases assays
+#' @keywords internal
+#' @noRd
+setGeneric("assays", function(x) standardGeneric("assays"))
+
 #' @rdname networkGroups-methods
 #' @aliases networkGroups
 #' @export
