@@ -104,20 +104,28 @@ includeMetadata <- function(object,
 #'             'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
 #'
 #' #log-transform and median center the expression data without scaling
-#' newdat <- NULL
-#' for(cond in dat){
-#'  for(i in seq(1, ncol(cond))){
-#'   my_median = median(cond[, i], na.rm = TRUE)
-#'   my_range = range(cond[, i], na.rm = TRUE)
-#'   scale_factor = max(abs(my_range-my_median))
-#'   cond[, i] <- (cond[, i] - my_median) / scale_factor
+#' newdat <- list()
+#' for(cond in seq(length(dat))){
+#'
+#'   group_dat <- dat[[cond]]
+#'   for(i in seq(1, ncol(group_dat))){
+#'     metab_median = median(group_dat[, i], na.rm = TRUE)
+#'     metab_range = range(group_dat[, i], na.rm = TRUE)
+#'     scale_factor = max(abs(metab_range - metab_median))
+#'     group_dat[, i] <- (group_dat[, i] - metab_median) / scale_factor
+#'
+#'     rm(metab_median, metab_range, scale_factor)
 #'   }
-#'   newdat <- rbind(newdat, cond)
+#'
+#'   group_dat <- group_dat[rownames(dat[[cond]]),colnames(dat[[cond]])]
+#'   group_dat <- t(group_dat)
+#'   newdat <- append(newdat, list(group_dat))
+#'
+#'   rm(i, group_dat)
 #' }
 #'
-#' #reorder to match dnw
-#' newdat <- newdat[sampleNames(dnw), featureNames(dnw)]
-#' newdat <- t(newdat)
+#' #add names
+#' names(newdat) <- names(dat)
 #'
 #' #add data
 #' dnw <- addExpressionData(object = dnw, data = newdat)
