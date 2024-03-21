@@ -25,9 +25,7 @@ BICtune.DNEAobj <- function(object,
 
 
   ##initialize input parameters
-  dat <- split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]],
-                            condition_levels = networkGroups(object),
-                            condition_by_sample = networkGroupIDs(object))
+  dat <- expressionData(x = object, assay = "scaled_expression_data")
 
   n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
@@ -109,15 +107,15 @@ BICtune.matrix <- function(object,
 
 
   ##test for proper input
-  if(!inherits(object, "matrix")) stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "matrix")) stop('object should be a list of matrices!')
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
   if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
 
   ##initialize input parameters
-  #object <- t(object)
+  n4cov <- ncol(object)
+  trainY <- rep(1, n4cov)
   num_features <- ncol(object)
-  n4cov <- nrow(object)
-  trainY <- rep(1, nrow(object))
+  object <- t(object)
   bic1 <- NULL
   bic2 <- NULL
 
@@ -173,6 +171,7 @@ BICtune.matrix <- function(object,
               optimized_lambda = bic2[["lastar_guo"]],
               tested_lambda_values = lambda_tested))
 }
+
 #' Optimize the lambda regularization parameter for the glasso-based
 #' network models using Bayesian-information Criterion
 #'
@@ -427,6 +426,10 @@ stabilitySelection <- function(object,
             "if the dataset contains ~500 or more samples.")
   }
 
+  #grab scaled expression data
+  data_split_by_condition <- lapply(expressionData(x = object, assay = "scaled_expression_data"),
+                                    function(d) t(d))
+
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
           "stabilitySelection will be performed with ", nreps, " replicates!")
 
@@ -436,18 +439,12 @@ stabilitySelection <- function(object,
     message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
 
-    #split data by condition
-    data_split_by_condition <- lapply(split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[["scaled_input_data"]],
-                                                         condition_levels = networkGroups(object),
-                                                         condition_by_sample = networkGroupIDs(object)),
-                                      function(d) t(d))
   }else if(!subSample){
 
     #without additional sub-sampling
     message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
 
-    data_split_by_condition <- lapply(expressionData(x = object, assay = "scaled_expression_data")[-1], function(d) t(d))
   }
 
 
@@ -603,10 +600,6 @@ getNetworks <- function(object,
 
   ##separate the data by condition
   data_split_by_condition <- expressionData(x = object, assay = "scaled_expression_data")
-  data_split_by_condition <- data_split_by_condition[-match("scaled_input_data", names(data_split_by_condition))]
-  # data_split_by_condition <- split_by_condition(dat = expressionData(x = object, assay = "scaled_expression_data")[match("scaled_input_data", names(data_split_by_condition))],
-  #                                               condition_levels = networkGroups(object),
-  #                                               condition_by_sample = networkGroupIDs(object))
 
   ##initialize input parameters
   num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE = numeric(1))
@@ -627,15 +620,18 @@ getNetworks <- function(object,
 
   if(!missing(optimal_lambdas)){
 
+    if(aprox) warning("Lambda values were provided even though aprox=TRUE. ",
+                      "The provided lambda values will be used in analysis. ",
+                      "To aproximate lambda, remove the supplied values.")
+
     optimized_lambdas <- optimal_lambdas[names(data_split_by_condition)]
-    #check that two lambda's are supplied
     if(length(optimal_lambdas != 2)){
       stop("Two lambda values should be supplied - one for each condition!")
     }
-    #check that lambda's are valid
     if(optimal_lambdas < 0 | optimal_lambdas > 1){
       stop("The lambda parameter should be a value between 0 and 1 only!")
     }
+
   }else if(missing(optimal_lambdas)){
     if(aprox){
 
@@ -657,7 +653,7 @@ getNetworks <- function(object,
 
         message("\nTUNING LAMBDA FOR ", x,"!:\n",
                 "--------------------------------------------------\n")
-        tuned_lambdas[[x]] <- BICtune(object=t(data_split_by_condition[[x]]),
+        tuned_lambdas[[x]] <- BICtune(object=data_split_by_condition[[x]],
                                       informed=informed,
                                       interval=interval,
                                       eps_threshold = eps_threshold,
