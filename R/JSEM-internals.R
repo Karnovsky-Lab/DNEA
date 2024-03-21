@@ -795,7 +795,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
   }
 
   ##train glasso model
-  tmp_model <- try(CGM_AHP_train(trainX=scale(do.call(rbind, subsampled_listX)),
+  tmp_model <- try(CGM_AHP_train(trainX=do.call(rbind, subsampled_listX),
                                  trainY=modelY, lambda_value=lastar,
                                  limkappa = limkappa, eta=eta))
 
