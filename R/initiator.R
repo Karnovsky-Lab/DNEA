@@ -212,11 +212,6 @@ restructure_input_data <- function(expression_data,
                                                       condition_by_sample = condition_values),
                                    function(x) t(scale(log(t(x)))))
 
-  #combine scaled data into one matrix
-  scaled_expression_data <- append(scaled_expression_data,
-                                   list(scaled_input_data = t(scale(log(t(expression_data))))),
-                                   after = 0)
-
   #order group_labels to make sure that still matches
   condition_values <- condition_values[colnames(expression_data)]
 
@@ -303,24 +298,25 @@ restructure_input_data <- function(expression_data,
 dataDiagnostics <- function(mat, condition_values, conditions) {
 
   ##set necessary parameters
-  num_features <- nrow(mat[["scaled_input_data"]])
-  num_samples <- ncol(mat[["scaled_input_data"]])
+  scaled_input_data <- do.call(cbind, mat)
+  num_features <- nrow(scaled_input_data)
+  num_samples <- ncol(scaled_input_data)
 
   ##min eigen value and condition number for each of the datasets
-  #control
-  pearson <- cor(t(mat[[condition_values[[1]]]]))
-  cond_number_1 <- kappa(pearson, exact=TRUE)
-  min_eigen_1 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
+  #group1
+  pearson_1 <- cor(t(mat[[condition_values[[1]]]]))
+  cond_number_1 <- kappa(pearson_1, exact=TRUE)
+  min_eigen_1 <- min(unlist(eigen(pearson_1, symmetric=TRUE, only.values=TRUE)))
 
-  #case
-  pearson <- cor(t(mat[[condition_values[[2]]]]))
-  cond_number_2 <- kappa(pearson, exact=TRUE)
-  min_eigen_2 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
+  #group2
+  pearson_2 <- cor(t(mat[[condition_values[[2]]]]))
+  cond_number_2 <- kappa(pearson_2, exact=TRUE)
+  min_eigen_2 <- min(unlist(eigen(pearson_2, symmetric=TRUE, only.values=TRUE)))
 
   #whole dataset
-  pearson <- cor(t(mat[["scaled_input_data"]]))
-  cond_number_3 <- kappa(pearson, exact=TRUE)
-  min_eigen_3 <- min(unlist(eigen(pearson, symmetric=TRUE, only.values=TRUE)))
+  pearson_3 <- cor(t(scaled_input_data))
+  cond_number_3 <- kappa(pearson_3, exact=TRUE)
+  min_eigen_3 <- min(unlist(eigen(pearson_3, symmetric=TRUE, only.values=TRUE)))
 
   ##create diagnostics table
   diagnostic_values <- data.frame(row.names = c("all_data",
@@ -332,7 +328,7 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
   if(any(diagnostic_values$min_eigen <= 1e-5)){
 
     warning("One or more condition(s) look unstable. ",
-            "We reccomend you aggregate features features before continuing!")
+            "We recommend you aggregate features features before continuing!")
   } else{
 
     warning("Diagnostic tests complete. You can proceed with the analysis!")
@@ -385,7 +381,8 @@ metabDE <- function(mat,
   ##set necessary parameters and output
   num_features <- nrow(mat)
   num_samples <- ncol(mat)
-  feature_info <- data.frame(clean_feature_names = rownames(mat))
+  feature_info <- data.frame(clean_feature_names = rownames(mat),
+                             row.names = rownames(mat))
 
   ##split data by condition
   cond_data <- split_by_condition(dat = mat,
@@ -393,17 +390,16 @@ metabDE <- function(mat,
                                   condition_by_sample = conditions)
 
   ##perform Differential expression
-  # feature_info$comparison <- rep(condition_values[2], '/', condition_values[1], nrow(feature_info))
-  # feature_info$foldchange <- rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]])
-  assign(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
-  feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(get(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]))[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
-  #assign(paste0('feature_info$foldchange-',condition_values[2], '/', condition_values[1]), rowMeans(cond_data[[2]]) - rowMeans(cond_data[[1]]))
-  #feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(feature_info$foldchange[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
-  feature_info$t_statistic <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$statistic, FUN.VALUE = numeric(length(num_features)))
-  feature_info$t_statistic_direction <- vapply(seq(1, num_features), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
-  feature_info$pvalue <- vapply(seq(1, num_features), function(i) t.test(cond_data[[2]][i, ], cond_data[[1]][i, ], var.equal = FALSE)$p.value, FUN.VALUE = numeric(length(num_features)))
+  feature_info$comparison <- rep(paste0(condition_values[2], ' / ', condition_values[1]), nrow(feature_info))
+  feature_info$foldchange <- rowMeans(cond_data[[condition_values[2]]]) - rowMeans(cond_data[[condition_values[1]]])
+  feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(feature_info$foldchange[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
+
+  metab_statistics <- vapply(rownames(feature_info), function(i) unlist(t.test(cond_data[[condition_values[2]]][i, ], cond_data[[condition_values[1]]][i, ], var.equal = FALSE)[c("statistic", "p.value")]), FUN.VALUE = numeric(2))
+  feature_info$t_statistic <- metab_statistics["statistic.t",]
+  feature_info$t_statistic_direction <- vapply(seq(nrow(feature_info)), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE = character(1))
+  feature_info$pvalue <- metab_statistics["p.value",]
   feature_info$qvalue <- p.adjust(feature_info$pvalue, "BH")
-  feature_info$DEstatus <- vapply(seq(1, num_features), function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE), FUN.VALUE = logical(length(num_features)))
+  feature_info$DEstatus <- vapply(seq(nrow(feature_info)), function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE), FUN.VALUE = logical(length(num_features)))
 
   return(feature_info)
 }
