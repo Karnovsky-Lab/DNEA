@@ -95,7 +95,7 @@ includeMetadata <- function(object,
 #' data(T1Dmeta)
 #'
 #' #transpose TEDDY data
-#' TEDDY <- t(TEDDY)
+#' TEDDY <- t(log(TEDDY))
 #'
 #' #make sure metadata and expression data are in same order
 #' T1Dmeta <- T1Dmeta[rownames(TEDDY),]
