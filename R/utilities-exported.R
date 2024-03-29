@@ -220,14 +220,14 @@ getNetworkFiles <- function(object,
 #' @param object A \code{\link{DNEAobj}} object
 #' @param type There are two possible arguments to \strong{type}:
 #' \emph{"group_networks"} specifies the whole network or condition networks.
-#' \emph{"subnetworks"} specifies that one of the sub networks should be plot.
+#' \emph{"sub_networks"} specifies that one of the sub networks should be plot.
 #' Additional input via the \strong{subtype} parameter is required
 #' @param subtype There are several possible arguments to \strong{subtype}.
 #' If \emph{type == "group_networks"}, \strong{subtype} can be \emph{"All"}
 #' to plot the whole network (ie. both conditions in the data returned by
 #' \code{\link{networkGroups}}), or one of the condition network names to
 #' plot the network corresponding to that condition. If
-#' \emph{type == "subnetworks"}, \strong{subtype} should be a single-value
+#' \emph{type == "sub_networks"}, \strong{subtype} should be a single-value
 #' numeric vector corresponding to the sub network to plot.
 #' @param layout_func The layout in which to plot the specified network.
 #' Please see \code{\link[igraph]{plot.igraph}} for more information
@@ -261,12 +261,12 @@ getNetworkFiles <- function(object,
 #'
 #' #plot the networks
 #' plotNetworks(object = dnw, type = "group_networks", subtype = "All")
-#' plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
+#' plotNetworks(object = dnw, type = "sub_networks", subtype = 1)
 #'
 #' @import igraph
 #' @export
 plotNetworks <- function(object,
-                         type = c("group_networks", "subnetworks"),
+                         type = c("group_networks", "sub_networks"),
                          subtype = "All",
                          layout_func,
                          main = "",
@@ -313,7 +313,7 @@ plotNetworks <- function(object,
       subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[match(subgroup_nodes, V(network_graph)$name)])
     }
 
-  }else if(type == "subnetworks"){
+  }else if(type == "sub_networks"){
 
     #check that subnetwork given is relevant
     if(all(is.na(match(subtype, node_list$membership)))) {
