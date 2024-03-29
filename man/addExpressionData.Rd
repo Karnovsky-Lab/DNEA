@@ -32,8 +32,8 @@ TEDDY <- t(log(TEDDY))
 #make sure metadata and expression data are in same order
 T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 
-dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
-            'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
+dat <- list('DM:control'=TEDDY[T1Dmeta$group == "DM:control",],
+            'DM:case'=TEDDY[T1Dmeta$group == "DM:case",])
 
 #log-transform and median center the expression data without scaling
 newdat <- list()
@@ -41,9 +41,9 @@ for(cond in seq(length(dat))){
 
   group_dat <- dat[[cond]]
   for(i in seq(1, ncol(group_dat))){
-    metab_median = median(group_dat[, i], na.rm = TRUE)
-    metab_range = range(group_dat[, i], na.rm = TRUE)
-    scale_factor = max(abs(metab_range - metab_median))
+    metab_median=median(group_dat[, i], na.rm=TRUE)
+    metab_range=range(group_dat[, i], na.rm=TRUE)
+    scale_factor=max(abs(metab_range - metab_median))
     group_dat[, i] <- (group_dat[, i] - metab_median) / scale_factor
 
     rm(metab_median, metab_range, scale_factor)
@@ -60,7 +60,7 @@ for(cond in seq(length(dat))){
 names(newdat) <- names(dat)
 
 #add data
-dnw <- addExpressionData(object = dnw, data = newdat)
+dnw <- addExpressionData(object=dnw, data=newdat)
 
 }
 \seealso{

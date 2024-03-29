@@ -71,14 +71,14 @@ NULL
 #' data(T1Dmeta)
 #' #create group labels
 #' group_labels <- factor(T1Dmeta$group,
-#'                        levels = c("DM:control", "DM:case"))
+#'                        levels=c("DM:control", "DM:case"))
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
 #'
 #' #initiate DNEAobj object
-#' DNEA <- createDNEAobject(expression_data = TEDDY,
-#'                          project_name = "TEDDYmetabolomics",
-#'                          group_labels = group_labels)
+#' DNEA <- createDNEAobject(expression_data=TEDDY,
+#'                          project_name="TEDDYmetabolomics",
+#'                          group_labels=group_labels)
 #'
 #' @export
 createDNEAobject <- function(project_name,
@@ -107,8 +107,8 @@ createDNEAobject <- function(project_name,
     }
 
     #create data structures to initialize DNEAobject with un-scaled data
-    restructured_data <- restructure_input_data(expression_data = expression_data,
-                                                condition_values = group_labels)
+    restructured_data <- restructure_input_data(expression_data=expression_data,
+                                                condition_values=group_labels)
   } else{
     #no data was provided - throw error
     stop('Expression data must be provided to create DNEAobject')
@@ -116,33 +116,33 @@ createDNEAobject <- function(project_name,
 
   ##initiate DNEA object
   object <- new("DNEAobj",
-                project_name = project_name,
-                assays =  restructured_data[[1]],
-                metadata = list(samples = restructured_data[[2]]$samples,
-                                features = restructured_data[[2]]$features,
-                                network_group_IDs = structure(restructured_data[[2]]$samples$conditions,
-                                                              names = restructured_data[[2]]$samples$samples),
-                                network_groups = levels(restructured_data[[2]]$samples$conditions)),
-                hyperparameter = list(BIC_scores = NULL, optimized_lambda = NULL, tested_lambda_values = NULL),
-                adjacency_matrix = list(weighted_adjacency = NULL, unweighted_adjacency = NULL),
-                stable_networks = list(selection_results = NULL, selection_probabilities = NULL))
+                project_name=project_name,
+                assays= restructured_data[[1]],
+                metadata=list(samples=restructured_data[[2]]$samples,
+                                features=restructured_data[[2]]$features,
+                                network_group_IDs=structure(restructured_data[[2]]$samples$conditions,
+                                                            names=restructured_data[[2]]$samples$samples),
+                                network_groups=levels(restructured_data[[2]]$samples$conditions)),
+                hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL, tested_lambda_values=NULL),
+                adjacency_matrix=list(weighted_adjacency=NULL, unweighted_adjacency=NULL),
+                stable_networks=list(selection_results=NULL, selection_probabilities=NULL))
 
   #check object
   validObject(object)
 
   #perform diagnostic testing on dataset
-  datasetSummary(object) <- dataDiagnostics(mat = expressionData(x= object, assay = "scaled_expression_data"),
-                                       condition_values = networkGroups(object),
-                                       conditions = networkGroupIDs(object))
+  datasetSummary(object) <- dataDiagnostics(mat=expressionData(x= object, assay="scaled_expression_data"),
+                                       condition_values=networkGroups(object),
+                                       conditions=networkGroupIDs(object))
 
   #print dataset summary
   message("\nDiagnostic criteria are as follows: ")
   show(object@dataset_summary)
 
   ##perform differential expression on the features
-  nodeList(object) <- metabDE(mat = expressionData(x = object, assay = "log_input_data"),
-                              condition_values = networkGroups(object),
-                              conditions = networkGroupIDs(object))
+  nodeList(object) <- metabDE(mat=expressionData(x=object, assay="log_input_data"),
+                              condition_values=networkGroups(object),
+                              conditions=networkGroupIDs(object))
 
   #check for valid object once more
   validObject(object)
@@ -180,12 +180,12 @@ restructure_input_data <- function(expression_data,
   ##initialize output data structures
   #create metadata list and add names
   meta_key <- c("samples", "features")
-  metadata <- vector(mode = 'list', length = length(meta_key))
+  metadata <- vector(mode='list', length=length(meta_key))
   names(metadata) <- meta_key
 
   #create assays list of expression data
   assays_key <- c('input_data', 'log_input_data', 'scaled_expression_data')
-  assays <- vector(mode = 'list', length = length(assays_key))
+  assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
 
@@ -207,9 +207,9 @@ restructure_input_data <- function(expression_data,
 
   ##scale the expression data for analysis
   #split by group
-  scaled_expression_data <- lapply(split_by_condition(dat = expression_data,
-                                                      condition_levels = levels(condition_values),
-                                                      condition_by_sample = condition_values),
+  scaled_expression_data <- lapply(split_by_condition(dat=expression_data,
+                                                      condition_levels=levels(condition_values),
+                                                      condition_by_sample=condition_values),
                                    function(x) t(scale(log(t(x)))))
 
   #order group_labels to make sure that still matches
@@ -223,13 +223,13 @@ restructure_input_data <- function(expression_data,
   assays[['scaled_expression_data']] <- scaled_expression_data
 
   #Add features, samples, condition to metadata
-  metadata[["samples"]] <- data.frame(samples = sample_names,
-                                      conditions = condition_values,
-                                      row.names = sample_names)
+  metadata[["samples"]] <- data.frame(samples=sample_names,
+                                      conditions=condition_values,
+                                      row.names=sample_names)
 
-  metadata[["features"]] <- data.frame(feature_names = feature_names,
-                                       clean_feature_names = clean_feature_names,
-                                       row.names = feature_names)
+  metadata[["features"]] <- data.frame(feature_names=feature_names,
+                                       clean_feature_names=clean_feature_names,
+                                       row.names=feature_names)
 
   return(list(assays, metadata))
 }
@@ -319,9 +319,9 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
   min_eigen_3 <- min(unlist(eigen(pearson_3, symmetric=TRUE, only.values=TRUE)))
 
   ##create diagnostics table
-  diagnostic_values <- data.frame(row.names = c("all_data",
-                                                condition_values[[1]],
-                                                condition_values[[2]]))
+  diagnostic_values <- data.frame(row.names=c("all_data",
+                                              condition_values[[1]],
+                                              condition_values[[2]]))
   diagnostic_values$min_eigen <- c(min_eigen_3,min_eigen_1, min_eigen_2)
   diagnostic_values$condition_num <- c(cond_number_3, cond_number_1, cond_number_2)
 
@@ -335,8 +335,8 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
   }
 
   return(new("DNEAinputSummary",
-             num_samples = num_samples, num_features = num_features,
-             diagnostic_values = diagnostic_values))
+             num_samples=num_samples, num_features=num_features,
+             diagnostic_values=diagnostic_values))
 
 }
 
@@ -371,7 +371,7 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
 #' \item \strong{qvalue -} The p-value after adjusting for multiple-testing
 #' using Benjamini-Hochberg
 #' \item \strong{DEstatus -} Whether or not the features qvalue is less
-#' than or equal to alpha = 0.05}
+#' than or equal to alpha=0.05}
 #' @keywords internal
 #' @noRd
 metabDE <- function(mat,
@@ -381,25 +381,25 @@ metabDE <- function(mat,
   ##set necessary parameters and output
   num_features <- nrow(mat)
   num_samples <- ncol(mat)
-  feature_info <- data.frame(clean_feature_names = rownames(mat),
-                             row.names = rownames(mat))
+  feature_info <- data.frame(clean_feature_names=rownames(mat),
+                             row.names=rownames(mat))
 
   ##split data by condition
-  cond_data <- split_by_condition(dat = mat,
-                                  condition_levels = condition_values,
-                                  condition_by_sample = conditions)
+  cond_data <- split_by_condition(dat=mat,
+                                  condition_levels=condition_values,
+                                  condition_by_sample=conditions)
 
   ##perform Differential expression
   feature_info$comparison <- rep(paste0(condition_values[2], ' / ', condition_values[1]), nrow(feature_info))
   feature_info$foldchange <- rowMeans(cond_data[[condition_values[2]]]) - rowMeans(cond_data[[condition_values[1]]])
-  feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(feature_info$foldchange[i] > 0, "Up", "Down"), FUN.VALUE = character(length(num_features)))
+  feature_info$fcdirection <- vapply(seq(1, num_features), function(i) ifelse(feature_info$foldchange[i] > 0, "Up", "Down"), FUN.VALUE=character(length(num_features)))
 
-  metab_statistics <- vapply(rownames(feature_info), function(i) unlist(t.test(cond_data[[condition_values[2]]][i, ], cond_data[[condition_values[1]]][i, ], var.equal = FALSE)[c("statistic", "p.value")]), FUN.VALUE = numeric(2))
+  metab_statistics <- vapply(rownames(feature_info), function(i) unlist(t.test(cond_data[[condition_values[2]]][i, ], cond_data[[condition_values[1]]][i, ], var.equal=FALSE)[c("statistic", "p.value")]), FUN.VALUE=numeric(2))
   feature_info$t_statistic <- metab_statistics["statistic.t",]
-  feature_info$t_statistic_direction <- vapply(seq(nrow(feature_info)), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE = character(1))
+  feature_info$t_statistic_direction <- vapply(seq(nrow(feature_info)), function(i) ifelse(feature_info$t_statistic[i] > 0, "Up", "Down"), FUN.VALUE=character(1))
   feature_info$pvalue <- metab_statistics["p.value",]
   feature_info$qvalue <- p.adjust(feature_info$pvalue, "BH")
-  feature_info$DEstatus <- vapply(seq(nrow(feature_info)), function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE), FUN.VALUE = logical(length(num_features)))
+  feature_info$DEstatus <- vapply(seq(nrow(feature_info)), function(i) ifelse(abs(feature_info$qvalue[i]) >= 0.05, FALSE, TRUE), FUN.VALUE=logical(length(num_features)))
 
   return(feature_info)
 }

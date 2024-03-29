@@ -38,7 +38,7 @@ setMethod("show", "DNEAobj", function(object) {
                                      "Enrichment analysis not performed",
                                      paste0(sum(netGSAresults(object)$NetGSA_pFDR <= 0.05),
                                             " enriched modules\n")),
-      sep = ""
+      sep=""
   )
 })
 
@@ -60,7 +60,7 @@ setMethod("show", "DNEAinputSummary", function(object) {
   cat(is(object)[[1]],
              "\n  Number of Samples  -  ", numSamples(object),
              "\n  Number of Features  -  ", numFeatures(object),"\n",
-      sep = "")
+      sep="")
   print(as.matrix(diagnostics(object)))
 })
 
@@ -86,7 +86,7 @@ setMethod("projectName", signature(x= "DNEAobj"), function(x){
   x@project_name
 })
 
-expressionData.DNEAobj <- function(x, assay = c("input_data", "log_input_data", "scaled_expression_data")){
+expressionData.DNEAobj <- function(x, assay=c("input_data", "log_input_data", "scaled_expression_data")){
 
   assay <- match.arg(assay)
   output <- x@assays[[assay]]
@@ -117,11 +117,11 @@ expressionData.DNEAobj <- function(x, assay = c("input_data", "log_input_data", 
 #' #import example data
 #' data(dnw)
 #'
-#' expressionData(x = dnw, assay = "input_data")
+#' expressionData(x=dnw, assay="input_data")
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
-setMethod("expressionData",signature(x = "DNEAobj"), expressionData.DNEAobj)
+setMethod("expressionData",signature(x="DNEAobj"), expressionData.DNEAobj)
 
 assays.DNEAobj <- function(x){
   x@assays
@@ -130,7 +130,7 @@ assays.DNEAobj <- function(x){
 #' @aliases assays
 #' @keywords internal
 #' @noRd
-setMethod("assays", signature = (x = "DNEAobj"), assays.DNEAobj)
+setMethod("assays", signature=(x="DNEAobj"), assays.DNEAobj)
 
 networkGroupIDs.DNEAobj <- function(x){
   x@metadata$network_group_IDs
@@ -156,7 +156,7 @@ networkGroupIDs.DNEAobj <- function(x){
 #' @rdname networkGroupIDs-methods
 #' @aliases networkGroupIDs
 #' @export
-setMethod("networkGroupIDs", signature(x = "DNEAobj"), networkGroupIDs.DNEAobj)
+setMethod("networkGroupIDs", signature(x="DNEAobj"), networkGroupIDs.DNEAobj)
 
 #' Retrieve the unique group values of the experimental condition
 #'
@@ -177,7 +177,7 @@ setMethod("networkGroupIDs", signature(x = "DNEAobj"), networkGroupIDs.DNEAobj)
 #' @rdname networkGroups-methods
 #' @aliases networkGroups
 #' @export
-setMethod("networkGroups", signature(x = "DNEAobj"), function(x){
+setMethod("networkGroups", signature(x="DNEAobj"), function(x){
 
   x@metadata$network_groups
 })
@@ -204,9 +204,9 @@ sampleNames.DNEAobj <- function(x){
 #' @rdname sampleNames-methods
 #' @aliases sampleNames
 #' @export
-setMethod("sampleNames", signature(x = "DNEAobj"), sampleNames.DNEAobj)
+setMethod("sampleNames", signature(x="DNEAobj"), sampleNames.DNEAobj)
 
-featureNames.DNEAobj <- function(x, original = FALSE){
+featureNames.DNEAobj <- function(x, original=FALSE){
 
   if(isTRUE(original)){
     x@metadata[["features"]]$feature_names
@@ -232,11 +232,11 @@ featureNames.DNEAobj <- function(x, original = FALSE){
 #' #import example data
 #' data(dnw)
 #'
-#' featureNames(dnw, original = TRUE)
+#' featureNames(dnw, original=TRUE)
 #' @rdname featureNames-methods
 #' @aliases featureNames
 #' @export
-setMethod("featureNames", signature(x = "DNEAobj"), featureNames.DNEAobj)
+setMethod("featureNames", signature(x="DNEAobj"), featureNames.DNEAobj)
 
 numFeatures.DNEAobj <- function(x){
   x@dataset_summary@num_features
@@ -260,11 +260,11 @@ numFeatures.DNEAobj <- function(x){
 #' @rdname numFeatures-methods
 #' @aliases numFeatures
 #' @export
-setMethod("numFeatures", signature(x = "DNEAobj"), numFeatures.DNEAobj)
+setMethod("numFeatures", signature(x="DNEAobj"), numFeatures.DNEAobj)
 
 #' @rdname numFeatures-methods
 #' @export
-setMethod("numFeatures", signature(x = "DNEAinputSummary"), function(x){
+setMethod("numFeatures", signature(x="DNEAinputSummary"), function(x){
 
   x@num_features
 })
@@ -289,12 +289,12 @@ numSamples.DNEAobj <- function(x){
 #' @rdname numSamples-methods
 #' @aliases numSamples
 #' @export
-setMethod("numSamples", signature(x = "DNEAobj"), numSamples.DNEAobj)
+setMethod("numSamples", signature(x="DNEAobj"), numSamples.DNEAobj)
 
 #' @rdname numSamples-methods
 #' @aliases numSamples
 #' @export
-setMethod("numSamples", signature(x = "DNEAinputSummary"), function(x){
+setMethod("numSamples", signature(x="DNEAinputSummary"), function(x){
 
   x@num_samples
 })
@@ -325,12 +325,12 @@ optimizedLambda.DNEAobj <- function(x){
 #' @rdname optimizedLambda-methods
 #' @aliases optimizedLambda
 #' @export
-setMethod("optimizedLambda", signature(x = "DNEAobj"), optimizedLambda.DNEAobj)
+setMethod("optimizedLambda", signature(x="DNEAobj"), optimizedLambda.DNEAobj)
 
 #' @rdname optimizedLambda-methods
 #' @aliases optimizedLambda
 #' @export
-setReplaceMethod("optimizedLambda", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("optimizedLambda", signature(x="DNEAobj"), function(x, value){
 
   x@hyperparameter$optimized_lambda <- value
   validObject(x)
@@ -363,11 +363,11 @@ lambdas2Test.DNEAobj <- function(x){
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
 #' @export
-setMethod("lambdas2Test", signature(x = "DNEAobj"), lambdas2Test.DNEAobj)
+setMethod("lambdas2Test", signature(x="DNEAobj"), lambdas2Test.DNEAobj)
 
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
-setReplaceMethod("lambdas2Test", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("lambdas2Test", signature(x="DNEAobj"), function(x, value){
 
   x@hyperparameter$tested_lambda_values <- value
   validObject(x)
@@ -401,11 +401,11 @@ BICscores.DNEAobj <- function(x){
 #' @rdname BICscores-methods
 #' @aliases BICscores
 #' @export
-setMethod("BICscores", signature(x = "DNEAobj"), BICscores.DNEAobj)
+setMethod("BICscores", signature(x="DNEAobj"), BICscores.DNEAobj)
 
 #' @rdname BICscores-methods
 #' @aliases BICscores
-setReplaceMethod("BICscores", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("BICscores", signature(x="DNEAobj"), function(x, value){
 
   x@hyperparameter$BIC_scores <- value
   validObject(x)
@@ -436,11 +436,11 @@ selectionResults.DNEAobj <- function(x){
 #' @rdname selectionResults-methods
 #' @aliases selectionResults
 #' @export
-setMethod("selectionResults", signature(x = "DNEAobj"), selectionResults.DNEAobj)
+setMethod("selectionResults", signature(x="DNEAobj"), selectionResults.DNEAobj)
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("selectionResults", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("selectionResults", signature(x="DNEAobj"), function(x, value){
 
   x@stable_networks$selection_results <- value
   validObject(x)
@@ -472,11 +472,11 @@ selectionProbabilities.DNEAobj <- function(x){
 #' @rdname selectionProbabilities-methods
 #' @aliases selectionProbabilities
 #' @export
-setMethod("selectionProbabilities", signature(x = "DNEAobj"), selectionProbabilities.DNEAobj)
+setMethod("selectionProbabilities", signature(x="DNEAobj"), selectionProbabilities.DNEAobj)
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("selectionProbabilities", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("selectionProbabilities", signature(x="DNEAobj"), function(x, value){
 
   x@stable_networks$selection_probabilities <- value
   validObject(x)
@@ -510,11 +510,11 @@ edgeList.DNEAobj <- function(x){
 #' @rdname edgeList-methods
 #' @aliases edgeList
 #' @export
-setMethod("edgeList", signature(x = "DNEAobj"), edgeList.DNEAobj)
+setMethod("edgeList", signature(x="DNEAobj"), edgeList.DNEAobj)
 
 #' @rdname edgeList-methods
 #' @aliases edgeList
-setReplaceMethod("edgeList", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("edgeList", signature(x="DNEAobj"), function(x, value){
   x@edge_list <- value
   validObject(x)
   x
@@ -547,11 +547,11 @@ nodeList.DNEAobj <- function(x){
 #' @rdname nodeList-methods
 #' @aliases nodeList
 #' @export
-setMethod("nodeList", signature(x = "DNEAobj"), nodeList.DNEAobj)
+setMethod("nodeList", signature(x="DNEAobj"), nodeList.DNEAobj)
 
 #' @rdname nodeList-methods
 #' @aliases nodeList
-setReplaceMethod("nodeList", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("nodeList", signature(x="DNEAobj"), function(x, value){
 
   x@node_list <- value
   validObject(x)
@@ -582,11 +582,11 @@ diagnostics.DNEAobj <- function(x){
 #' @rdname diagnostics-methods
 #' @aliases diagnostics
 #' @export
-setMethod("diagnostics", signature(x = "DNEAobj"), diagnostics.DNEAobj)
+setMethod("diagnostics", signature(x="DNEAobj"), diagnostics.DNEAobj)
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("diagnostics", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("diagnostics", signature(x="DNEAobj"), function(x, value){
 
   x@dataset_summary$diagnostic_values <- value
   validObject(x)
@@ -595,14 +595,14 @@ setReplaceMethod("diagnostics", signature(x = "DNEAobj"), function(x, value){
 
 #' @rdname diagnostics-methods
 #' @aliases diagnostics
-setMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x){
+setMethod("diagnostics", signature(x="DNEAinputSummary"), function(x){
 
   x@diagnostic_values
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, value){
+setReplaceMethod("diagnostics", signature(x="DNEAinputSummary"), function(x, value){
 
   x@diagnostic_values <- value
   validObject(x)
@@ -630,21 +630,21 @@ setReplaceMethod("diagnostics", signature(x = "DNEAinputSummary"), function(x, v
 #' @rdname datasetSummary-methods
 #' @aliases datasetSummary
 #' @export
-setMethod("datasetSummary", signature(x = "DNEAobj"), function(x){
+setMethod("datasetSummary", signature(x="DNEAobj"), function(x){
 
   x@dataset_summary
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("datasetSummary", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("datasetSummary", signature(x="DNEAobj"), function(x, value){
 
   x@dataset_summary <- value
   validObject(x)
   x
 })
 
-adjacencyMatrix.DNEAobj <- function(x, weighted = FALSE){
+adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
 
   if(weighted){
 
@@ -675,15 +675,15 @@ adjacencyMatrix.DNEAobj <- function(x, weighted = FALSE){
 #' #import example data
 #' data(dnw)
 #'
-#' adjacencyMatrix(dnw, weighted = TRUE)
+#' adjacencyMatrix(dnw, weighted=TRUE)
 #' @rdname adjacencyMatrix-methods
 #' @aliases adjacencyMatrix
 #' @export
-setMethod("adjacencyMatrix", signature(x = "DNEAobj"), adjacencyMatrix.DNEAobj)
+setMethod("adjacencyMatrix", signature(x="DNEAobj"), adjacencyMatrix.DNEAobj)
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("adjacencyMatrix", signature(x = "DNEAobj"), function(x, weighted = FALSE, value){
+setReplaceMethod("adjacencyMatrix", signature(x="DNEAobj"), function(x, weighted=FALSE, value){
 
   if(weighted){
 
@@ -717,19 +717,19 @@ setReplaceMethod("adjacencyMatrix", signature(x = "DNEAobj"), function(x, weight
 #' #import example data
 #' data(dnw)
 #'
-#' adjacencyGraph(dnw, graph = "DM:case")
+#' adjacencyGraph(dnw, graph="DM:case")
 
 #' @rdname adjacencyGraph-methods
 #' @aliases adjacencyGraph
 #' @export
-setMethod("adjacencyGraph", signature(x = "DNEAobj"), function(x, graph){
+setMethod("adjacencyGraph", signature(x="DNEAobj"), function(x, graph){
 
   x@consensus_clustering@adjacency_graphs[[graph]]
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("adjacencyGraph", signature(x = "DNEAobj"), function(x, graph, value){
+setReplaceMethod("adjacencyGraph", signature(x="DNEAobj"), function(x, graph, value){
 
   x@consensus_clustering@adjacency_graphs$graph <- value
   validObject(x)
@@ -738,14 +738,14 @@ setReplaceMethod("adjacencyGraph", signature(x = "DNEAobj"), function(x, graph, 
 
 #' @rdname adjacencyGraph-methods
 #' @aliases adjacencyGraph
-setMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), function(x, graph){
+setMethod("adjacencyGraph", signature(x="consensusClusteringResults"), function(x, graph){
 
   x@adjacency_graphs$graph
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), function(x, graph, value){
+setReplaceMethod("adjacencyGraph", signature(x="consensusClusteringResults"), function(x, graph, value){
 
   x@adjacency_graphs$graph <- value
   validObject(x)
@@ -767,7 +767,7 @@ setReplaceMethod("adjacencyGraph", signature(x = "consensusClusteringResults"), 
 #' @rdname summary.consensuClusteringResults-methods
 #' @aliases summary.consensusClusteringResults
 #' @export
-setMethod("summary", signature(object = "consensusClusteringResults"), function(object){
+setMethod("summary", signature(object="consensusClusteringResults"), function(object){
 
   object@summary
 })
@@ -792,14 +792,14 @@ setMethod("summary", signature(object = "consensusClusteringResults"), function(
 #' @rdname CCsummary-methods
 #' @aliases CCsummary
 #' @export
-setMethod("CCsummary", signature(x = "DNEAobj"), function(x){
+setMethod("CCsummary", signature(x="DNEAobj"), function(x){
 
   summary(x@consensus_clustering)
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("CCsummary", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("CCsummary", signature(x="DNEAobj"), function(x, value){
 
   x@consensus_clustering@summary <- value
   validObject(x)
@@ -826,21 +826,21 @@ setReplaceMethod("CCsummary", signature(x = "DNEAobj"), function(x, value){
 #' @rdname subnetworkMembership-methods
 #' @aliases subnetworkMembership
 #' @export
-setMethod("subnetworkMembership", signature(x = "DNEAobj"), function(x){
+setMethod("subnetworkMembership", signature(x="DNEAobj"), function(x){
 
   x@consensus_clustering@subnetwork_membership
 })
 
 #' @rdname subnetworkMembership-methods
 #' @aliases subnetworkMembership
-setMethod("subnetworkMembership", signature(x = "consensusClusteringResults"), function(x){
+setMethod("subnetworkMembership", signature(x="consensusClusteringResults"), function(x){
 
   x@subnetwork_membership
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("subnetworkMembership", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("subnetworkMembership", signature(x="DNEAobj"), function(x, value){
 
   x@consensus_clustering@subnetwork_membership <- value
   validObject(x)
@@ -866,14 +866,14 @@ setReplaceMethod("subnetworkMembership", signature(x = "DNEAobj"), function(x, v
 #' @rdname netGSAresults-methods
 #' @aliases netGSAresults
 #' @export
-setMethod("netGSAresults", signature(x = "DNEAobj"), function(x){
+setMethod("netGSAresults", signature(x="DNEAobj"), function(x){
 
   x@netGSA
 })
 
 #' @keywords internal
 #' @noRd
-setReplaceMethod("netGSAresults", signature(x = "DNEAobj"), function(x, value){
+setReplaceMethod("netGSAresults", signature(x="DNEAobj"), function(x, value){
 
   x@netGSA <- value
   validObject(x)

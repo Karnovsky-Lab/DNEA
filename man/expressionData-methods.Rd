@@ -32,7 +32,7 @@ with one row for each sample and one column for each feature in the data.
 #import example data
 data(dnw)
 
-expressionData(x = dnw, assay = "input_data")
+expressionData(x=dnw, assay="input_data")
 }
 \seealso{
 \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}

@@ -27,7 +27,7 @@ slot of the \code{\link{DNEAobj}} object.
 #import example data
 data(dnw)
 
-featureNames(dnw, original = TRUE)
+featureNames(dnw, original=TRUE)
 }
 \seealso{
 \code{\link{createDNEAobject}}

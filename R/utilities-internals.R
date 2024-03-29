@@ -24,7 +24,7 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
   }
 
   #create key for separating the data by key and running diagnostic tests, feature DE calculations
-  separated_conditions_data <- vector(mode = 'list', length = length(condition_levels))
+  separated_conditions_data <- vector(mode='list', length=length(condition_levels))
   names(separated_conditions_data) <- condition_levels
 
   for(cond in condition_levels){

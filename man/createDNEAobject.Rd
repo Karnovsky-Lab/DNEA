@@ -77,14 +77,14 @@ data(TEDDY)
 data(T1Dmeta)
 #create group labels
 group_labels <- factor(T1Dmeta$group,
-                       levels = c("DM:control", "DM:case"))
+                       levels=c("DM:control", "DM:case"))
 names(group_labels) <- rownames(T1Dmeta)
 
 
 #initiate DNEAobj object
-DNEA <- createDNEAobject(expression_data = TEDDY,
-                         project_name = "TEDDYmetabolomics",
-                         group_labels = group_labels)
+DNEA <- createDNEAobject(expression_data=TEDDY,
+                         project_name="TEDDYmetabolomics",
+                         group_labels=group_labels)
 
 }
 \seealso{

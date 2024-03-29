@@ -80,10 +80,10 @@ will be used as the regularization parameter.
 data(dnw)
 
 #construct the networks
-dnw <- getNetworks(object = dnw)
+dnw <- getNetworks(object=dnw)
 
 #now we can plot the group networks
-plotNetworks(object = dnw, type = "group_networks")
+plotNetworks(object=dnw, type="group_networks")
 
 }
 \references{

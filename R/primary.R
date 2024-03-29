@@ -10,12 +10,12 @@ NULL
 
 BICtune.DNEAobj <- function(object,
                             lambda_values,
-                            interval = 1e-3,
-                            informed = TRUE,
-                            eps_threshold = 1e-06,
-                            eta_value = 0.1,
-                            BPPARAM = bpparam(),
-                            BPOPTIONS = bpoptions()){
+                            interval=1e-3,
+                            informed=TRUE,
+                            eps_threshold=1e-06,
+                            eta_value=0.1,
+                            BPPARAM=bpparam(),
+                            BPOPTIONS=bpoptions()){
 
 
   ##test for proper input
@@ -25,7 +25,7 @@ BICtune.DNEAobj <- function(object,
 
 
   ##initialize input parameters
-  dat <- expressionData(x = object, assay = "scaled_expression_data")
+  dat <- expressionData(x=object, assay="scaled_expression_data")
 
   n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
@@ -40,24 +40,24 @@ BICtune.DNEAobj <- function(object,
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
 
-    bic1 <- lambda_tune_dispatch(informed = informed,
-                                 FUN = 'CGM_AHP_tune',
-                                 trainX = trainX,
-                                 testX = trainX,
-                                 trainY = trainY,
-                                 BIC = TRUE,
-                                 eps = eps_threshold,
-                                 eta = eta_value,
-                                 asymptotic_lambda = sqrt(log(numFeatures(object))/n4cov),
-                                 interval = interval,
-                                 BPPARAM = BPPARAM,
-                                 BPOPTIONS = BPOPTIONS)
+    bic1 <- lambda_tune_dispatch(informed=informed,
+                                 FUN='CGM_AHP_tune',
+                                 trainX=trainX,
+                                 testX=trainX,
+                                 trainY=trainY,
+                                 BIC=TRUE,
+                                 eps=eps_threshold,
+                                 eta=eta_value,
+                                 asymptotic_lambda=sqrt(log(numFeatures(object))/n4cov),
+                                 interval=interval,
+                                 BPPARAM=BPPARAM,
+                                 BPOPTIONS=BPOPTIONS)
 
     lambda_values <- bic1$new_lambda_values
     bic1 <- bic1$bic
   }else{
 
-    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
+    message("Provided lambda values will be used for optimization...", appendLF=TRUE)
     lambda_values <- unlist(lambda_values)
     if(any(lambda_values < 0 | lambda_values > 1)){
 
@@ -67,16 +67,16 @@ BICtune.DNEAobj <- function(object,
 
   ##search the estimated area for the optimized lambda
   message("Fine-tuning Lambda...")
-  bic2 <- tune_lambda(lambda_values = lambda_values,
-                      FUN = 'CGM_AHP_tune',
-                      trainX = trainX,
-                      testX = trainX,
-                      trainY = trainY,
-                      BIC = TRUE,
-                      eps = eps_threshold,
-                      eta = eta_value,
-                      BPPARAM = BPPARAM,
-                      BPOPTIONS = BPOPTIONS)
+  bic2 <- tune_lambda(lambda_values=lambda_values,
+                      FUN='CGM_AHP_tune',
+                      trainX=trainX,
+                      testX=trainX,
+                      trainY=trainY,
+                      BIC=TRUE,
+                      eps=eps_threshold,
+                      eta=eta_value,
+                      BPPARAM=BPPARAM,
+                      BPOPTIONS=BPOPTIONS)
 
   ##concatenate tuning runs and reorder by lambda value
   lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
@@ -98,12 +98,12 @@ BICtune.DNEAobj <- function(object,
 
 BICtune.matrix <- function(object,
                            lambda_values,
-                           interval = 1e-3,
-                           informed = TRUE,
-                           eps_threshold = 1e-06,
-                           eta_value = 0.1,
-                           BPPARAM = bpparam(),
-                           BPOPTIONS = bpoptions()){
+                           interval=1e-3,
+                           informed=TRUE,
+                           eps_threshold=1e-06,
+                           eta_value=0.1,
+                           BPPARAM=bpparam(),
+                           BPOPTIONS=bpoptions()){
 
 
   ##test for proper input
@@ -122,24 +122,24 @@ BICtune.matrix <- function(object,
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
 
-    bic1 <- lambda_tune_dispatch(informed = informed,
-                                 FUN = 'CGM_AHP_tune',
-                                 trainX = object,
-                                 testX = object,
-                                 trainY = trainY,
-                                 BIC = TRUE,
-                                 eps = eps_threshold,
-                                 eta = eta_value,
-                                 asymptotic_lambda = sqrt(log(num_features)/n4cov),
-                                 interval = interval,
-                                 BPPARAM = BPPARAM,
-                                 BPOPTIONS = BPOPTIONS)
+    bic1 <- lambda_tune_dispatch(informed=informed,
+                                 FUN='CGM_AHP_tune',
+                                 trainX=object,
+                                 testX=object,
+                                 trainY=trainY,
+                                 BIC=TRUE,
+                                 eps=eps_threshold,
+                                 eta=eta_value,
+                                 asymptotic_lambda=sqrt(log(num_features)/n4cov),
+                                 interval=interval,
+                                 BPPARAM=BPPARAM,
+                                 BPOPTIONS=BPOPTIONS)
 
     lambda_values <- bic1$new_lambda_values
     bic1 <- bic1$bic
   }else{
 
-    message("Provided lambda values will be used for optimization...", appendLF = TRUE)
+    message("Provided lambda values will be used for optimization...", appendLF=TRUE)
     lambda_values <- unlist(lambda_values)
     if(any(lambda_values < 0 | lambda_values > 1)){
 
@@ -149,16 +149,16 @@ BICtune.matrix <- function(object,
 
   ##search the estimated area for the optimized lambda
   message("Fine-tuning Lambda...")
-  bic2 <- tune_lambda(lambda_values = lambda_values,
-                      FUN = 'CGM_AHP_tune',
-                      trainX = object,
-                      testX = object,
-                      trainY = trainY,
-                      BIC = TRUE,
-                      eps = eps_threshold,
-                      eta = eta_value,
-                      BPPARAM = BPPARAM,
-                      BPOPTIONS = BPOPTIONS)
+  bic2 <- tune_lambda(lambda_values=lambda_values,
+                      FUN='CGM_AHP_tune',
+                      trainX=object,
+                      testX=object,
+                      trainY=trainY,
+                      BIC=TRUE,
+                      eps=eps_threshold,
+                      eta=eta_value,
+                      BPPARAM=BPPARAM,
+                      BPOPTIONS=BPOPTIONS)
 
   ##concatenate tuning runs and reorder by lambda value
   lambda_tested <- append(bic1[["lambda_values"]], bic2[["lambda_values"]])
@@ -167,9 +167,9 @@ BICtune.matrix <- function(object,
   message("The optimal Lambda hyper-parameter has been set to: ",
           bic2[["lastar_guo"]], "!")
 
-  return(list(BIC_guo = BIC_guo,
-              optimized_lambda = bic2[["lastar_guo"]],
-              tested_lambda_values = lambda_tested))
+  return(list(BIC_guo=BIC_guo,
+              optimized_lambda=bic2[["lastar_guo"]],
+              tested_lambda_values=lambda_tested))
 }
 
 #' Optimize the lambda regularization parameter for the glasso-based
@@ -248,20 +248,20 @@ BICtune.matrix <- function(object,
 #' data(dnw)
 #'
 #' #optimize lambda parameter
-#' dnw <- BICtune(object = dnw,
-#'                informed = TRUE,
-#'                interval = 1e-2)
+#' dnw <- BICtune(object=dnw,
+#'                informed=TRUE,
+#'                interval=1e-2)
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
 #' @rdname BICtune-methods
 #' @aliases BICtune
 #' @export
-setMethod("BICtune", signature(object = "DNEAobj"), BICtune.DNEAobj)
+setMethod("BICtune", signature(object="DNEAobj"), BICtune.DNEAobj)
 
 #' @rdname BICtune-methods
 #' @aliases BICtune
-setMethod("BICtune", signature(object = "matrix"), BICtune.matrix)
+setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 
 #' Stability selection to calculate selection probabilities for every
 #' possible feature-feature interaction within the data
@@ -332,7 +332,7 @@ setMethod("BICtune", signature(object = "matrix"), BICtune.matrix)
 #' However, when the sample groups are very unbalanced, randomly
 #' sampling strongly favors the larger group, resulting in over representation
 #' of the aforementioned group. In order to combat this, setting
-#' subSample = TRUE modifies the random sample by sub-sampling the groups
+#' subSample=TRUE modifies the random sample by sub-sampling the groups
 #' individually to even out the numbers. In this method, 90% of the smaller
 #' group is randomly sampled without replacement, and an additional 10% is
 #' randomly sampled without replacement from the entire group to preserve the
@@ -346,7 +346,7 @@ setMethod("BICtune", signature(object = "matrix"), BICtune.matrix)
 #' (without replacement) and fits a model for both halves of the sampled data.
 #' Since nearly all of the data for the smaller group is used \emph{with}
 #' additional sub-sampling, only one model is fit per replicate when
-#' subSample = TRUE. This means that at the default value of nreps = 500,
+#' subSample=TRUE. This means that at the default value of nreps=500,
 #' 1000 randomly sampled models are fit in total \emph{without} sub-sampling,
 #' but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
 #' More details about the stability approach deployed in this function can be
@@ -365,20 +365,20 @@ setMethod("BICtune", signature(object = "matrix"), BICtune.matrix)
 #' data(dnw)
 #'
 #' # perform stability selection
-#' dnw <- stabilitySelection(object = dnw,
-#'                                    subSample = FALSE,
-#'                                    nreps = 4,
-#'                                    BPPARAM = bpparam())
+#' dnw <- stabilitySelection(object=dnw,
+#'                           subSample=FALSE,
+#'                           nreps=4,
+#'                           BPPARAM=bpparam())
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
 #' @export
 stabilitySelection <- function(object,
-                               subSample = FALSE,
-                               nreps = 500,
+                               subSample=FALSE,
+                               nreps=500,
                                optimal_lambda,
-                               BPPARAM = bpparam(),
-                               BPOPTIONS = bpoptions()){
+                               BPPARAM=bpparam(),
+                               BPOPTIONS=bpoptions()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")){
@@ -416,7 +416,7 @@ stabilitySelection <- function(object,
     message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
             'accessed via the optimizedLambda() function')
   }else{
-    # setting optimized_lambda = NULL will default to a lambda of
+    # setting optimized_lambda=NULL will default to a lambda of
     # sqrt(log(# features) / # samples) in adjDGlasso_minimal
     optimized_lambda <- NULL
 
@@ -427,7 +427,7 @@ stabilitySelection <- function(object,
   }
 
   #grab scaled expression data
-  data_split_by_condition <- lapply(expressionData(x = object, assay = "scaled_expression_data"),
+  data_split_by_condition <- lapply(expressionData(x=object, assay="scaled_expression_data"),
                                     function(d) t(d))
 
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
@@ -449,16 +449,16 @@ stabilitySelection <- function(object,
 
 
   #initialize static variables to pass to workers
-  stabsel_init_param <- stabsel_init(listX = data_split_by_condition, nreps = nreps)
+  stabsel_init_param <- stabsel_init(listX=data_split_by_condition, nreps=nreps)
 
   #run SS
-  stab_sel <- BiocParallel:: bplapply(X = seq(1, nreps),
-                                      FUN = ss_function,
-                                      init_param = stabsel_init_param,
-                                      listX = data_split_by_condition,
-                                      lastar = optimized_lambda,
-                                      BPPARAM = BPPARAM,
-                                      BPOPTIONS = BPOPTIONS)
+  stab_sel <- BiocParallel:: bplapply(X=seq(1, nreps),
+                                      FUN=ss_function,
+                                      init_param=stabsel_init_param,
+                                      listX=data_split_by_condition,
+                                      lastar=optimized_lambda,
+                                      BPPARAM=BPPARAM,
+                                      BPOPTIONS=BPOPTIONS)
 
   ##concatenate results for output
   selection_results <- vector("list", length(networkGroups(object)))
@@ -475,12 +475,12 @@ stabilitySelection <- function(object,
     if (subSample){
 
       message("Calculating selection probabilities WITH subsampling for...",
-              names(selection_results)[[k]], "...", appendLF = TRUE)
+              names(selection_results)[[k]], "...", appendLF=TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(nreps)
     } else {
 
       message("Calculating selection probabilities WITHOUT subsampling for...",
-              names(selection_results)[[k]], "...", appendLF = TRUE)
+              names(selection_results)[[k]], "...", appendLF=TRUE)
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
@@ -568,10 +568,10 @@ stabilitySelection <- function(object,
 #' data(dnw)
 #'
 #' #construct the networks
-#' dnw <- getNetworks(object = dnw)
+#' dnw <- getNetworks(object=dnw)
 #'
 #' #now we can plot the group networks
-#' plotNetworks(object = dnw, type = "group_networks")
+#' plotNetworks(object=dnw, type="group_networks")
 #'
 #' @importFrom gdata lowerTriangle
 #' @importFrom utils combn
@@ -580,13 +580,13 @@ stabilitySelection <- function(object,
 getNetworks <- function(object,
                         lambda_values,
                         aprox=FALSE,
-                        informed = TRUE,
-                        interval = 1e-3,
-                        eps_threshold = 1e-06,
-                        eta_value = 0.1,
+                        informed=TRUE,
+                        interval=1e-3,
+                        eps_threshold=1e-06,
+                        eta_value=0.1,
                         optimal_lambdas,
-                        BPPARAM = bpparam(),
-                        BPOPTIONS = bpoptions()){
+                        BPPARAM=bpparam(),
+                        BPOPTIONS=bpoptions()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")){
@@ -599,10 +599,10 @@ getNetworks <- function(object,
   }
 
   ##separate the data by condition
-  data_split_by_condition <- expressionData(x = object, assay = "scaled_expression_data")
+  data_split_by_condition <- expressionData(x=object, assay="scaled_expression_data")
 
   ##initialize input parameters
-  num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE = numeric(1))
+  num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE=numeric(1))
   names(num_samples) <- names(data_split_by_condition)
   num_features <- numFeatures(object)
   Ip <- diag(rep(1, num_features))
@@ -656,10 +656,10 @@ getNetworks <- function(object,
         tuned_lambdas[[x]] <- BICtune(object=data_split_by_condition[[x]],
                                       informed=informed,
                                       interval=interval,
-                                      eps_threshold = eps_threshold,
-                                      eta_value = eta_value,
-                                      BPPARAM = BPPARAM,
-                                      BPOPTIONS = BPOPTIONS)
+                                      eps_threshold=eps_threshold,
+                                      eta_value=eta_value,
+                                      BPPARAM=BPPARAM,
+                                      BPOPTIONS=BPOPTIONS)
         optimized_lambdas[[x]] <- tuned_lambdas[[x]][["optimized_lambda"]]
       }
     }
@@ -672,7 +672,7 @@ getNetworks <- function(object,
     selection_prob <- selectionProbabilities(object)
 
     #modify to create model weights
-    model_weight_values <- vector(mode = "list", length = 2)
+    model_weight_values <- vector(mode="list", length=2)
     for(x in seq(1, length(model_weight_values))){
 
       model_weight_values[[x]] <- 1/(1e-04 + as.matrix(selection_prob[[x]]))
@@ -702,22 +702,22 @@ getNetworks <- function(object,
 
     #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
-                              weights = model_weight_values[[k]],
-                              lambda = optimized_lambdas[[k]])
+                              weights=model_weight_values[[k]],
+                              lambda=optimized_lambdas[[k]])
 
     #grab the adjacency matrices
-    weighted_adjacency_matrices[[k]] <- matrix(data = fit$Theta.glasso,
-                                               nrow = num_features, ncol = num_features,
-                                               dimnames = list(featureNames(object, original = FALSE),
-                                                               featureNames(object, original = FALSE)))
+    weighted_adjacency_matrices[[k]] <- matrix(data=fit$Theta.glasso,
+                                               nrow=num_features, ncol=num_features,
+                                               dimnames=list(featureNames(object, original=FALSE),
+                                                             featureNames(object, original=FALSE)))
   }
 
   ##input weighted_adjacency_matrices into object
-  adjacencyMatrix(x = object, weighted = TRUE) <- weighted_adjacency_matrices
+  adjacencyMatrix(x=object, weighted=TRUE) <- weighted_adjacency_matrices
 
   ## filter the weighted_adjacency_matrices by eps_threshold
   ## and create unweighted_adjacency_matrices plus edge list
-  object <- filterNetworks(data = object, pcor = eps_threshold)
+  object <- filterNetworks(data=object, pcor=eps_threshold)
 
   #check valid object
   validObject(object)
@@ -786,17 +786,17 @@ getNetworks <- function(object,
 #' data(dnw)
 #'
 #' #identify metabolic modules via consensus clustering
-#' dnw <- clusterNet(object = dnw, tau = 0.5, max_iterations = 5)
+#' dnw <- clusterNet(object=dnw, tau=0.5, max_iterations=5)
 #'
 #' #we can also plot the subnetworks
-#' plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
+#' plotNetworks(object=dnw, type="subnetworks", subtype=1)
 #'
 #' @import igraph
 #' @export
 clusterNet <- function(object,
-                       tau = 0.5,
-                       max_iterations = 5,
-                       verbose = TRUE){
+                       tau=0.5,
+                       max_iterations=5,
+                       verbose=TRUE){
 
   #test for proper inputs
   if(!inherits(object, "DNEAobj")) {
@@ -820,13 +820,13 @@ clusterNet <- function(object,
   }
 
   #create list to hold graph from adjacency matrix
-  adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted = TRUE)))
-  names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted = TRUE))
+  adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted=TRUE)))
+  names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted=TRUE))
 
-  for (loop_el in names(adjacencyMatrix(object, weighted = TRUE))) {
+  for (loop_el in names(adjacencyMatrix(object, weighted=TRUE))) {
 
-    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted = TRUE)[[loop_el]],
-                                                   mode = "undirected", weighted = TRUE)
+    adjacency_graph <- graph_from_adjacency_matrix(adjacencyMatrix(object, weighted=TRUE)[[loop_el]],
+                                                   mode="undirected", weighted=TRUE)
     V(adjacency_graph)$name <- as.character(featureNames(object))
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
@@ -851,12 +851,12 @@ clusterNet <- function(object,
   }
 
   #run consensus cluster algorithm
-  fit <- run_consensus_cluster(joint_graph, tau = tau, max_iterations = max_iterations, verbose = verbose)
+  fit <- run_consensus_cluster(joint_graph, tau=tau, max_iterations=max_iterations, verbose=verbose)
   consensus_membership <- fit$final_consensus_cluster
 
   #initiate output matrix
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
-                               dimnames = list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
+                               dimnames=list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
                                                vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(1))))
 
   #gather results
@@ -897,12 +897,12 @@ clusterNet <- function(object,
                                                "number_of_edges"=length(E(cluster_c)),
                                                "number_of_DE.nodes"=sum(as.numeric(table(V(cluster_c)$DE)[names(table(V(cluster_c)$DE))==TRUE])),
                                                "number_of_DE.edges"=sum(as.numeric(table(E(cluster_c)$color)[names(table(E(cluster_c)$color)) %in% c("red", "green")])),
-                                               check.names = FALSE)
+                                               check.names=FALSE)
   }
 
   summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results),
                              do.call(rbind, summary_list),
-                             check.names = FALSE)
+                             check.names=FALSE)
 
   #add independent features
   summary_stat <- rbind(summary_stat,
@@ -914,11 +914,11 @@ clusterNet <- function(object,
 
   #add results to DNEAobj object
   nodeList(object)[["membership"]] <- consensus_membership
-  object@consensus_clustering <- new(Class = "consensusClusteringResults",
-                                     summary = summary_stat,
-                                     subnetwork_membership = data.frame(subnetwork_results),
-                                     adjacency_graphs = append(adjacency_matrix_graphs,
-                                                               list(joint_graph = joint_graph)))
+  object@consensus_clustering <- new(Class="consensusClusteringResults",
+                                     summary=summary_stat,
+                                     subnetwork_membership=data.frame(subnetwork_results),
+                                     adjacency_graphs=append(adjacency_matrix_graphs,
+                                                             list(joint_graph=joint_graph)))
 
   #check valid object
   validObject(object)
@@ -961,7 +961,7 @@ clusterNet <- function(object,
 #' data(dnw)
 #'
 #' #perform pathway enrichment analysis using netGSA
-#' dnw <- runNetGSA(object = dnw, min_size = 5)
+#' dnw <- runNetGSA(object=dnw, min_size=5)
 #'
 #' #view the results
 #' netGSAresults(dnw)
@@ -972,17 +972,17 @@ clusterNet <- function(object,
 #' @importFrom netgsa NetGSA
 #' @export
 runNetGSA <- function(object,
-                      min_size = 5){
+                      min_size=5){
 
   #test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
   ##set input variables
-  adjacency_matrices <- list(list(adjacencyMatrix(x = object, weighted = TRUE)[[1]]),
-                             list(adjacencyMatrix(x = object, weighted = TRUE)[[2]]))
+  adjacency_matrices <- list(list(adjacencyMatrix(x=object, weighted=TRUE)[[1]]),
+                             list(adjacencyMatrix(x=object, weighted=TRUE)[[2]]))
 
-  expression_data <- expressionData(x = object, assay = "log_input_data")
+  expression_data <- expressionData(x=object, assay="log_input_data")
   data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
   subnetworks <- as.matrix(subnetworkMembership(object))
 
@@ -991,12 +991,12 @@ runNetGSA <- function(object,
   filtered_subnetworks <- as.matrix(sub_membership[rowSums(sub_membership) >= min_size, ])
 
   ##run netgsa
-  netgsa_results <- NetGSA(A = adjacency_matrices,
-                           x = expression_data,
-                           group = data_groups,
-                           pathways = filtered_subnetworks,
-                           lklMethod = "REML",
-                           minsize = min_size)
+  netgsa_results <- NetGSA(A=adjacency_matrices,
+                           x=expression_data,
+                           group=data_groups,
+                           pathways=filtered_subnetworks,
+                           lklMethod="REML",
+                           minsize=min_size)
 
   #add netGSA results to Node list
   nodeList(object)[["mean1"]] <- as.vector(netgsa_results$beta[[1]])
@@ -1016,7 +1016,7 @@ runNetGSA <- function(object,
 
   #rename subnetworks
   cluster_names <- CCsummary(object)[-match("independent", CCsummary(object)$subnetworks), ]
-  new_cluster_order <- data.frame(subnetworks = c(res$subnetworks, cluster_names$subnetworks[-match(res$subnetworks, cluster_names$subnetworks)]))
+  new_cluster_order <- data.frame(subnetworks=c(res$subnetworks, cluster_names$subnetworks[-match(res$subnetworks, cluster_names$subnetworks)]))
 
   #update consensus subnetworks
   nodeList(object)$membership <- match(nodeList(object)$membership, as.numeric(gsub('subnetwork','',new_cluster_order$subnetworks)))

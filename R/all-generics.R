@@ -52,7 +52,7 @@ setGeneric("sampleNames", function(x) standardGeneric("sampleNames"))
 #' @rdname featureNames-methods
 #' @aliases featureNames
 #' @export
-setGeneric("featureNames", function(x, original = TRUE) standardGeneric("featureNames"))
+setGeneric("featureNames", function(x, original=TRUE) standardGeneric("featureNames"))
 
 #' @rdname numFeatures-methods
 #' @aliases numFeatures

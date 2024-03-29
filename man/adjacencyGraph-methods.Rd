@@ -31,7 +31,7 @@ control, or joint network determined via \code{\link{clusterNet}}.
 #import example data
 data(dnw)
 
-adjacencyGraph(dnw, graph = "DM:case")
+adjacencyGraph(dnw, graph="DM:case")
 }
 \seealso{
 \code{\link{clusterNet}}

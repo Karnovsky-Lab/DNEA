@@ -68,7 +68,7 @@ via the following equation:
 However, when the sample groups are very unbalanced, randomly
 sampling strongly favors the larger group, resulting in over representation
 of the aforementioned group. In order to combat this, setting
-subSample = TRUE modifies the random sample by sub-sampling the groups
+subSample=TRUE modifies the random sample by sub-sampling the groups
 individually to even out the numbers. In this method, 90\% of the smaller
 group is randomly sampled without replacement, and an additional 10\% is
 randomly sampled without replacement from the entire group to preserve the
@@ -82,7 +82,7 @@ however, there are a few small differences. Stability selection
 (without replacement) and fits a model for both halves of the sampled data.
 Since nearly all of the data for the smaller group is used \emph{with}
 additional sub-sampling, only one model is fit per replicate when
-subSample = TRUE. This means that at the default value of nreps = 500,
+subSample=TRUE. This means that at the default value of nreps=500,
 1000 randomly sampled models are fit in total \emph{without} sub-sampling,
 but 500 randomly sampled models are fit in total \emph{with} sub-sampling.
 More details about the stability approach deployed in this function can be
@@ -96,10 +96,10 @@ library(BiocParallel)
 data(dnw)
 
 # perform stability selection
-dnw <- stabilitySelection(object = dnw,
-                                   subSample = FALSE,
-                                   nreps = 4,
-                                   BPPARAM = bpparam())
+dnw <- stabilitySelection(object=dnw,
+                          subSample=FALSE,
+                          nreps=4,
+                          BPPARAM=bpparam())
 
 }
 \references{

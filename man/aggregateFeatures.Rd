@@ -105,12 +105,12 @@ into a single feature.}
 data(dnw)
 
 #simulate group labels
-TEDDY_groups <- data.frame(features = rownames(expressionData(x = dnw,
-                                               assay = "input_data")),
-                           groups = rownames(expressionData(x = dnw,
-                                             assay = "input_data")),
-                           row.names = rownames(expressionData(x = dnw,
-                                                assay = "input_data")))
+TEDDY_groups <- data.frame(features=rownames(expressionData(x=dnw,
+                           assay="input_data")),
+                           groups=rownames(expressionData(x=dnw,
+                                           assay="input_data")),
+                           row.names=rownames(expressionData(x=dnw,
+                                              assay="input_data")))
 
 TEDDY_groups$groups[TEDDY_groups$groups \%in\% c("isoleucine",
                                                "leucine",
@@ -118,10 +118,10 @@ TEDDY_groups$groups[TEDDY_groups$groups \%in\% c("isoleucine",
 TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
 
 
-collapsed_TEDDY <- aggregateFeatures(object = dnw,
-                                  method = "hybrid",
-                                  correlation_threshold = 0.7,
-                                  feature_groups = TEDDY_groups)
+collapsed_TEDDY <- aggregateFeatures(object=dnw,
+                                  method="hybrid",
+                                  correlation_threshold=0.7,
+                                  feature_groups=TEDDY_groups)
 
 }
 \seealso{

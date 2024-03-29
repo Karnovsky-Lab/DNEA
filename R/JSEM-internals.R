@@ -40,9 +40,9 @@ CGM_AHP_train <- function(
   trainX,
   trainY,
   lambda_value,
-  adaptive_weight = array(1, c(length(unique(trainY)), ncol(trainX), ncol(trainX))),
-  eta = 0.01,
-  limkappa = 1e+6
+  adaptive_weight=array(1, c(length(unique(trainY)), ncol(trainX), ncol(trainX))),
+  eta=0.01,
+  limkappa=1e+6
   ){
 
   ## Set the general paramters
@@ -79,7 +79,7 @@ CGM_AHP_train <- function(
 
     for (k in seq(1, K)) {
       penalty_matrix <- lambda_value * adaptive_weight[k, , ] * V
-      obj_glasso <- glasso(S[k, , ], penalty_matrix, maxit = 100)
+      obj_glasso <- glasso(S[k, , ], penalty_matrix, maxit=100)
       OMEGA_new[k, , ] <- (obj_glasso$wi + t(obj_glasso$wi))/2
     }
 
@@ -137,7 +137,7 @@ tune_init <- function(
 ){
 
   ##initiate output list
-  init_param <- vector(mode = 'list', length = 6)
+  init_param <- vector(mode='list', length=6)
   names(init_param) <- c('num_features', 'num_conditions',
                          'len_lambda','num_samples_by_cond',
                          'bic_score', 'likelihood')
@@ -199,7 +199,7 @@ CGM_AHP_tune <- function(
     BIC=FALSE,
     eps=1e-06,
     eta=0.01,
-    limkappa = 1e+6
+    limkappa=1e+6
 ){
 
   num_features <- dim(trainX)[2]
@@ -215,8 +215,8 @@ CGM_AHP_tune <- function(
   likelihood <- 0
 
 
-  Omega.hat <- CGM_AHP_train(trainX = trainX, trainY = model,
-                             lambda_value = X, eta = eta)$OMEGA
+  Omega.hat <- CGM_AHP_train(trainX=trainX, trainY=model,
+                             lambda_value=X, eta=eta)$OMEGA
 
   for (k in seq(1, num_conditions)){
     data <- testX[which(model == k), ]
@@ -236,7 +236,7 @@ CGM_AHP_tune <- function(
   }
 
 
-  out <- list(BIC = bic_score, likelihood = likelihood)
+  out <- list(BIC=bic_score, likelihood=likelihood)
 
   return(out)
 }
@@ -291,20 +291,20 @@ tune_lambda <- function(lambda_values,
                         BIC,
                         eps,
                         eta,
-                        BPPARAM = bpparam(),
-                        BPOPTIONS = bpoptions()){
+                        BPPARAM=bpparam(),
+                        BPOPTIONS=bpoptions()){
 
   #run the tuning algorithm
-  BIC_guo <- BiocParallel::bplapply(X = lambda_values,
-                                    FUN = 'CGM_AHP_tune',
-                                    trainX = trainX,
-                                    testX = testX,
-                                    model = trainY,
-                                    BIC = TRUE,
-                                    eps = eps,
-                                    eta = eta,
-                                    BPPARAM = BPPARAM,
-                                    BPOPTIONS = BPOPTIONS)
+  BIC_guo <- BiocParallel::bplapply(X=lambda_values,
+                                    FUN='CGM_AHP_tune',
+                                    trainX=trainX,
+                                    testX=testX,
+                                    model=trainY,
+                                    BIC=TRUE,
+                                    eps=eps,
+                                    eta=eta,
+                                    BPPARAM=BPPARAM,
+                                    BPOPTIONS=BPOPTIONS)
 
   ##collect BIC scores
   BIC_scores <- unlist(vapply(BIC_guo, function(a) a$BIC, numeric(1)))
@@ -315,11 +315,11 @@ tune_lambda <- function(lambda_values,
   BIC_guo <- BIC_guo[keep]
   lambda_values <- lambda_values[keep]
 
-  output <- list(optimal = match(min(BIC_scores), BIC_scores),
-                 BIC_guo = BIC_guo,
-                 lambda_values = lambda_values,
-                 lastar_guo = lambda_values[match(min(BIC_scores), BIC_scores)],
-                 finite = keep)
+  output <- list(optimal=match(min(BIC_scores), BIC_scores),
+                 BIC_guo=BIC_guo,
+                 lambda_values=lambda_values,
+                 lastar_guo=lambda_values[match(min(BIC_scores), BIC_scores)],
+                 finite=keep)
   return(output)
 }
 
@@ -375,23 +375,23 @@ estimate_c <- function(FUN,
                        interval,
                        eps,
                        eta,
-                       BPPARAM = bpparam(),
-                       BPOPTIONS = bpoptions()){
+                       BPPARAM=bpparam(),
+                       BPOPTIONS=bpoptions()){
 
   #ballpark the c parameter
   constant_values <- seq(0, 1 / asymptotic_lambda, 0.02)
   lambda_values <- constant_values * asymptotic_lambda
 
-  bic <- tune_lambda(lambda_values = lambda_values,
-                     FUN = 'CGM_AHP_tune',
-                     trainX = trainX,
-                     testX = trainX,
-                     trainY = trainY,
-                     BIC = TRUE,
-                     eps = eps,
-                     eta = eta,
-                     BPPARAM = BPPARAM,
-                     BPOPTIONS = BPOPTIONS)
+  bic <- tune_lambda(lambda_values=lambda_values,
+                     FUN='CGM_AHP_tune',
+                     trainX=trainX,
+                     testX=trainX,
+                     trainY=trainY,
+                     BIC=TRUE,
+                     eps=eps,
+                     eta=eta,
+                     BPPARAM=BPPARAM,
+                     BPOPTIONS=BPOPTIONS)
 
   #remove c constants leading to non-finite values and collect ballparked c value
   constant_values <- constant_values[bic$finite]
@@ -405,7 +405,7 @@ estimate_c <- function(FUN,
   #find new lambda values
   lambda_values <- fine_tuned_constants * asymptotic_lambda
 
-  return(list(bic = bic, new_lambda_values = lambda_values))
+  return(list(bic=bic, new_lambda_values=lambda_values))
 }
 
 #' Estimate a range for the optimal lambda value
@@ -455,22 +455,22 @@ estimate_lambda <- function(FUN,
                             eps,
                             eta,
                             interval,
-                            BPPARAM = bpparam(),
-                            BPOPTIONS = bpoptions()){
+                            BPPARAM=bpparam(),
+                            BPOPTIONS=bpoptions()){
 
   #ballpark lambda
   lambda_values <- seq(0.0, 1, 0.05)
 
-  bic <- tune_lambda(lambda_values = lambda_values,
-                     FUN = 'CGM_AHP_tune',
-                     trainX = trainX,
-                     testX = trainX,
-                     trainY = trainY,
-                     BIC = TRUE,
-                     eps = eps,
-                     eta = eta,
-                     BPPARAM = BPPARAM,
-                     BPOPTIONS = BPOPTIONS)
+  bic <- tune_lambda(lambda_values=lambda_values,
+                     FUN='CGM_AHP_tune',
+                     trainX=trainX,
+                     testX=trainX,
+                     trainY=trainY,
+                     BIC=TRUE,
+                     eps=eps,
+                     eta=eta,
+                     BPPARAM=BPPARAM,
+                     BPOPTIONS=BPOPTIONS)
 
 
   #ballpark'd lambda value
@@ -481,7 +481,7 @@ estimate_lambda <- function(FUN,
                      seq(ballpark_lambda + interval, ballpark_lambda + 0.05, interval))
   lambda_values <- lambda_values[lambda_values > 0]
 
-  return(list(bic = bic, new_lambda_values = lambda_values))
+  return(list(bic=bic, new_lambda_values=lambda_values))
 }
 #' Wrapper function for tuning the lambda parameter
 #'
@@ -513,36 +513,36 @@ lambda_tune_dispatch <- function(informed,
                                  interval,
                                  eps,
                                  eta,
-                                 BPPARAM = bpparam(),
-                                 BPOPTIONS = bpoptions()){
+                                 BPPARAM=bpparam(),
+                                 BPOPTIONS=bpoptions()){
 
   if(informed){
 
     message("Estimating optimal c constant range for asymptotic lambda...")
-    bic <- estimate_c(FUN = 'CGM_AHP_tune',
-                      trainX = trainX,
-                      testX = trainX,
-                      trainY = trainY,
-                      BIC = TRUE,
-                      eps = eps,
-                      eta = eta,
-                      asymptotic_lambda = asymptotic_lambda,
-                      interval = interval,
-                      BPPARAM = BPPARAM,
-                      BPOPTIONS = BPOPTIONS)
+    bic <- estimate_c(FUN='CGM_AHP_tune',
+                      trainX=trainX,
+                      testX=trainX,
+                      trainY=trainY,
+                      BIC=TRUE,
+                      eps=eps,
+                      eta=eta,
+                      asymptotic_lambda=asymptotic_lambda,
+                      interval=interval,
+                      BPPARAM=BPPARAM,
+                      BPOPTIONS=BPOPTIONS)
   }else{
 
     message("Estimating optimal lambda range...")
-    bic <- estimate_lambda(FUN = 'CGM_AHP_tune',
-                           trainX = trainX,
-                           testX = trainX,
-                           trainY = trainY,
-                           BIC = TRUE,
-                           eps = eps,
-                           eta = eta,
-                           interval = interval,
-                           BPPARAM = BPPARAM,
-                           BPOPTIONS = BPOPTIONS)
+    bic <- estimate_lambda(FUN='CGM_AHP_tune',
+                           trainX=trainX,
+                           testX=trainX,
+                           trainY=trainY,
+                           BIC=TRUE,
+                           eps=eps,
+                           eta=eta,
+                           interval=interval,
+                           BPPARAM=BPPARAM,
+                           BPOPTIONS=BPOPTIONS)
   }
 
   return(bic)
@@ -577,7 +577,7 @@ stabsel_init <- function(
 ){
 
   ##initialize output list
-  init_param <- vector(mode = 'list', length = 6)
+  init_param <- vector(mode='list', length=6)
   names(init_param) <- c('num_features',
                          'num_conditions',
                          'num_samples',
@@ -603,14 +603,14 @@ stabsel_init <- function(
   edge_matrix <- vector("list", num_conditions)
 
   for (k in seq(1, num_conditions)){
-    selection_matrix[[k]] <- Matrix(data = 0,
-                                    nrow = num_features,
-                                    ncol = num_features,
-                                    sparse = TRUE)
-    edge_matrix[[k]] <- Matrix(data = 0,
-                               nrow = num_features*(num_features-1)/2,
-                               ncol = nreps,
-                               sparse = TRUE)
+    selection_matrix[[k]] <- Matrix(data=0,
+                                    nrow=num_features,
+                                    ncol=num_features,
+                                    sparse=TRUE)
+    edge_matrix[[k]] <- Matrix(data=0,
+                               nrow=num_features*(num_features-1)/2,
+                               ncol=nreps,
+                               sparse=TRUE)
   }
 
   #set output results
@@ -671,12 +671,12 @@ CGM_AHP_stabsel <- function(listX,
   for(k in seq(1, init_param[['num_conditions']])){
 
     #create index to randomly sample half of the available samples
-    ind1 <- sample(x = seq(1, init_param[['num_samples']][[k]]),
-                   size = init_param[['num_samples']][[k]]/2,
-                   replace = FALSE)
+    ind1 <- sample(x=seq(1, init_param[['num_samples']][[k]]),
+                   size=init_param[['num_samples']][[k]]/2,
+                   replace=FALSE)
 
     #collect the other half of samples not in index1
-    ind2 <- seq(1, init_param[['num_samples']][[k]])[is.na(match(seq(1, init_param[['num_samples']][[k]]), ind1, nomatch = NA))]
+    ind2 <- seq(1, init_param[['num_samples']][[k]])[is.na(match(seq(1, init_param[['num_samples']][[k]]), ind1, nomatch=NA))]
 
     #grab the first group of samples indicated by ind.1
     rand_sample1[[k]] <- listX[[k]][ind1, ]
@@ -715,7 +715,7 @@ CGM_AHP_stabsel <- function(listX,
     selection_matrix[[k]] <- selection_matrix[[k]] + adjacency_mat1 + adjacency_mat2
   }
 
-  return(list(mat = selection_matrix, stab_sel_rep = X))
+  return(list(mat=selection_matrix, stab_sel_rep=X))
 }
 
 #' Perform stability selection WITH additional subsampling
@@ -771,14 +771,14 @@ CGM_AHP_stabsel_subsample <- function(listX,
   }
 
   #randomly sample 1.3x the samples in the smaller group from the larger group
-  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace = FALSE)
+  subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace=FALSE)
 
   #subsample the smaller group
   if(max(init_param[['num_samples']]) > (2 * min(init_param[['num_samples']]))){
 
     #subsample 90% of the smaller group and add an additional 10%
-    temp90 <- dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace = FALSE)
-    temp10 <- dplyr::sample_n(temp90, 0.1*init_param[['min_num_samples']], replace = FALSE)
+    temp90 <- dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace=FALSE)
+    temp10 <- dplyr::sample_n(temp90, 0.1*init_param[['min_num_samples']], replace=FALSE)
     subsampled_listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]] <- rbind(temp90, temp10)
   }else{
 
@@ -797,7 +797,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
   ##train glasso model
   tmp_model <- try(CGM_AHP_train(trainX=do.call(rbind, subsampled_listX),
                                  trainY=modelY, lambda_value=lastar,
-                                 limkappa = limkappa, eta=eta))
+                                 limkappa=limkappa, eta=eta))
 
 
   if (inherits(tmp_model, "try-error")){
@@ -815,7 +815,7 @@ CGM_AHP_stabsel_subsample <- function(listX,
     edge_matrix[[k]][,X] <- as(t(tmp_adjacency_mat)[lower.tri(tmp_adjacency_mat,diag=FALSE)], "sparseMatrix")
   }
 
-  return(list(mat = selection_matrix, edge_matrix = edge_matrix, stab_sel_rep = X))
+  return(list(mat=selection_matrix, edge_matrix=edge_matrix, stab_sel_rep=X))
 }
 
 #' Construct the debiased glasso model
@@ -851,9 +851,9 @@ adjDGlasso_minimal <- function(
     data,
     weights=1,
     theta_star=NULL,
-    lambda = NULL,
-    verbose = TRUE,
-    zero.edge = NULL
+    lambda=NULL,
+    verbose=TRUE,
+    zero.edge=NULL
 ){
 
   ##set static parameters
@@ -881,7 +881,7 @@ adjDGlasso_minimal <- function(
   }
   Theta.hat.from.Glasso <- (Theta.hat.from.Glasso + t(Theta.hat.from.Glasso))/2
 
-  if(verbose) message("model estimated!\n", appendLF = TRUE)
+  if(verbose) message("model estimated!\n", appendLF=TRUE)
 
   coeff <- diag(1,num_features) - cov2cor(Theta.hat.from.Glasso)
 

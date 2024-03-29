@@ -28,7 +28,7 @@ modules identified via \code{\link{clusterNet}} using the
 data(dnw)
 
 #perform pathway enrichment analysis using netGSA
-dnw <- runNetGSA(object = dnw, min_size = 5)
+dnw <- runNetGSA(object=dnw, min_size=5)
 
 #view the results
 netGSAresults(dnw)

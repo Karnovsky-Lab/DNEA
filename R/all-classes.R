@@ -22,10 +22,10 @@
 #' @import methods
 #' @rdname consensusClusteringResults-class
 #' @aliases consensusClusteringResults
-setClass(Class = "consensusClusteringResults",
-         slots = c(summary = "data.frame",
-                   subnetwork_membership = "data.frame",
-                   adjacency_graphs = "list"))
+setClass(Class="consensusClusteringResults",
+         slots=c(summary="data.frame",
+                 subnetwork_membership="data.frame",
+                 adjacency_graphs="list"))
 
 #' DNEAinputSummary
 #'
@@ -48,10 +48,10 @@ setClass(Class = "consensusClusteringResults",
 #' @import methods
 #' @rdname DNEAinputSummary-class
 #' @aliases DNEAinputSummary
-setClass(Class = "DNEAinputSummary",
-         slots = c(num_samples = "numeric",
-                   num_features = "numeric",
-                   diagnostic_values = "data.frame"))
+setClass(Class="DNEAinputSummary",
+         slots=c(num_samples="numeric",
+                 num_features="numeric",
+                 diagnostic_values="data.frame"))
 
 #' DNEAobj
 #'
@@ -122,19 +122,19 @@ setClass(Class = "DNEAinputSummary",
 #' @name DNEAobj-class
 #' @rdname DNEAobj-class
 #' @aliases DNEAobj
-setClass(Class = "DNEAobj",
-         slots = c(
-           project_name = 'character',
-           assays = 'list',
-           metadata = 'list',
-           dataset_summary = 'DNEAinputSummary',
-           node_list = 'data.frame',
-           edge_list = 'data.frame',
-           hyperparameter = 'list',
-           adjacency_matrix = 'list',
-           stable_networks = 'list',
-           consensus_clustering = "consensusClusteringResults",
-           netGSA = 'data.frame')
+setClass(Class="DNEAobj",
+         slots=c(
+           project_name='character',
+           assays='list',
+           metadata='list',
+           dataset_summary='DNEAinputSummary',
+           node_list='data.frame',
+           edge_list='data.frame',
+           hyperparameter='list',
+           adjacency_matrix='list',
+           stable_networks='list',
+           consensus_clustering="consensusClusteringResults",
+           netGSA='data.frame')
 )
 
 #' collapsed_DNEAobj
@@ -159,10 +159,10 @@ setClass(Class = "DNEAobj",
 #' @import methods
 #' @rdname collapsed_DNEAobj-class
 #' @aliases collapsed_DNEAobj
-setClass(Class = "collapsed_DNEAobj",
-         slots = c(original_experiment = "DNEAobj",
-                   feature_membership = "data.frame"),
-         contains = "DNEAobj")
+setClass(Class="collapsed_DNEAobj",
+         slots=c(original_experiment="DNEAobj",
+                 feature_membership="data.frame"),
+         contains="DNEAobj")
 
 #' check validity of "consensusClusteringResults"
 #' @docType methods
@@ -174,7 +174,7 @@ setValidity("consensusClusteringResults", function(object){
     "there was a problem with consensus cluster results object"
   }
   for(i in length(object@adjacency_graphs)){
-    if(inherits(object@adjacency_graphs[i], what = "igraph")){
+    if(inherits(object@adjacency_graphs[i], what="igraph")){
       "There was a problem with adjacency graphs in consensus clustering"
     }
   }
@@ -237,16 +237,16 @@ setValidity("DNEAobj", function(object){
       if(!(is.numeric(data2check[[y]]))){
         "@assays must be a matrix with numeric values."
       }
-      if(tryCatch(expr = {all(colnames(data2check[[y]]) !=
-                              sampleNames(object)[networkGroupIDs(object) == names(data2check)[y]])},
-                  warning = function(w){conditionMessage(w)
+      if(tryCatch(expr={all(colnames(data2check[[y]]) !=
+                            sampleNames(object)[networkGroupIDs(object) == names(data2check)[y]])},
+                  warning=function(w){conditionMessage(w)
                     FALSE},
-                  error = function(e){conditionMessage(e)
+                  error=function(e){conditionMessage(e)
                     FALSE})){
         "Samples are out of order"
       }
       if(all(rownames(data2check[[y]]) !=
-             featureNames(object, original = FALSE))){
+             featureNames(object, original=FALSE))){
         "Features are out of order"
       }
     }
@@ -260,7 +260,7 @@ setValidity("DNEAobj", function(object){
     "@metadata$samples$samples should be of class character"
   }
   if(all(object@metadata$samples$samples !=
-         colnames(expressionData(x = object, assay = "input_data")))){
+         colnames(expressionData(x=object, assay="input_data")))){
     "sample metadata does not match order of expression data"
   }
   if(!(is.data.frame(object@metadata$features))){
@@ -273,7 +273,7 @@ setValidity("DNEAobj", function(object){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
   if(all(object@metadata$features$clean_feature_names !=
-         rownames(expressionData(x = object, assay = "input_data")))){
+         rownames(expressionData(x=object, assay="input_data")))){
     "feature metadata does not match order of expression data"
   }
   if(length(networkGroups(object)) != 2){
@@ -291,11 +291,11 @@ setValidity("DNEAobj", function(object){
   if(all(dim(diagnostics(object)) != c(0, 0))){
 
     if(numSamples(object) !=
-       ncol(expressionData(x = object, assay = "input_data"))){
+       ncol(expressionData(x=object, assay="input_data"))){
       "There was a problem with the dataset summary"
     }
     if(numFeatures(object) !=
-       nrow(expressionData(x = object, assay = "input_data"))){
+       nrow(expressionData(x=object, assay="input_data"))){
       "There was a problem with the dataset summary"
     }
     validObject(object@dataset_summary)
@@ -305,7 +305,7 @@ setValidity("DNEAobj", function(object){
   if(all(dim(nodeList(object)) != c(0, 0))){
 
     if(!all(nodeList(object)$Features ==
-            featureNames(object, original = FALSE))){
+            featureNames(object, original=FALSE))){
       "Node list order does not match expression data"
     }
   }
@@ -332,18 +332,18 @@ setValidity("DNEAobj", function(object){
   }
 
   #check adjacency matrices
-  if(!is.null(adjacencyMatrix(object, weighted = TRUE))){
+  if(!is.null(adjacencyMatrix(object, weighted=TRUE))){
 
-    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) !=
-           rownames(adjacencyMatrix(object, weighted = FALSE)))){
+    if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
+           rownames(adjacencyMatrix(object, weighted=FALSE)))){
       "there was a problem with the adjacency matrices"
     }
-    if(all(colnames(adjacencyMatrix(object, weighted = TRUE)) !=
-           colnames(adjacencyMatrix(object, weighted = FALSE)))){
+    if(all(colnames(adjacencyMatrix(object, weighted=TRUE)) !=
+           colnames(adjacencyMatrix(object, weighted=FALSE)))){
       "there was a problem with the adjacency matrices"
     }
-    if(all(rownames(adjacencyMatrix(object, weighted = TRUE)) !=
-           colnames(expressionData(x = object, assay = "input_data")))){
+    if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
+           colnames(expressionData(x=object, assay="input_data")))){
       "there was a problem with the adjacency matrices"
     }
   }
@@ -368,7 +368,7 @@ setValidity("DNEAobj", function(object){
   if(!is.null(dim(CCsummary(object)))){
 
     if(sum(CCsummary(object)$number_of_nodes) !=
-       nrow(expressionData(x = object, assay = "input_data"))){
+       nrow(expressionData(x=object, assay="input_data"))){
       "There was a problem with consensus clustering"
     }
 

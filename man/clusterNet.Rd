@@ -58,10 +58,10 @@ stable subnetworks or the specified max_iterations is reached
 data(dnw)
 
 #identify metabolic modules via consensus clustering
-dnw <- clusterNet(object = dnw, tau = 0.5, max_iterations = 5)
+dnw <- clusterNet(object=dnw, tau=0.5, max_iterations=5)
 
 #we can also plot the subnetworks
-plotNetworks(object = dnw, type = "subnetworks", subtype = 1)
+plotNetworks(object=dnw, type="subnetworks", subtype=1)
 
 }
 \references{

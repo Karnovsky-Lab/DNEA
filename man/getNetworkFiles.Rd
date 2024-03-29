@@ -28,7 +28,7 @@ data(dnw)
 #filepath wherein to save the networks files
 filepath <- tempdir()
 #save node and edge list for input to cytoscape
-getNetworkFiles(dnw, file_path = filepath)
+getNetworkFiles(dnw, file_path=filepath)
 
 }
 \seealso{

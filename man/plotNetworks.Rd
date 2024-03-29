@@ -68,8 +68,8 @@ edges specific to group 2.
 data(dnw)
 
 #plot the networks
-plotNetworks(object = dnw, type = "group_networks", subtype = "All")
-plotNetworks(object = dnw, type = "sub_networks", subtype = 1)
+plotNetworks(object=dnw, type="group_networks", subtype="All")
+plotNetworks(object=dnw, type="sub_networks", subtype=1)
 
 }
 \seealso{

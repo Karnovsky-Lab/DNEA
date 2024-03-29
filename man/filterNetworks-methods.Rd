@@ -48,10 +48,10 @@ separately. \cr
 data(dnw)
 
 #filter the networks by a correlation threshold of 0.166
-dnw <- filterNetworks(dnw, pcor = 0.166)
+dnw <- filterNetworks(dnw, pcor=0.166)
 
 #filter networks for the top 40\% strongest correlations
-dnw <- filterNetworks(dnw, top_percent_edges = 0.4)
+dnw <- filterNetworks(dnw, top_percent_edges=0.4)
 
 }
 \seealso{

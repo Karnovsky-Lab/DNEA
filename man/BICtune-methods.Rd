@@ -110,9 +110,9 @@ library(BiocParallel)
 data(dnw)
 
 #optimize lambda parameter
-dnw <- BICtune(object = dnw,
-               informed = TRUE,
-               interval = 1e-2)
+dnw <- BICtune(object=dnw,
+               informed=TRUE,
+               interval=1e-2)
 
 }
 \references{

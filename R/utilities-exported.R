@@ -26,11 +26,11 @@
 #' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 #'
 #' #add new metadata to DNEAobj object
-#' dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
+#' dnw <- includeMetadata(object=dnw, type="sample", metadata=T1Dmeta)
 #'
 #' @export
 includeMetadata <- function(object,
-                            type = c('sample', 'feature'),
+                            type=c('sample', 'feature'),
                             metadata){
 
   ##test for proper input
@@ -44,7 +44,7 @@ includeMetadata <- function(object,
   type <- match.arg(type)
   if(type == 'sample'){
     if(tryCatch({all(sampleNames(object) == rownames(metadata))},
-                warning = function(w){FALSE})){
+                warning=function(w){FALSE})){
       for(i in seq(1, length(colnames(metadata)))){
 
 
@@ -57,7 +57,7 @@ includeMetadata <- function(object,
     }
   } else if(type == 'feature'){
     if(tryCatch({all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))},
-      warning = function(w){FALSE})){
+      warning=function(w){FALSE})){
       for(i in seq(1, length(colnames(metadata)))){
 
         new_metadata_colname <- colnames(metadata)[i]
@@ -100,8 +100,8 @@ includeMetadata <- function(object,
 #' #make sure metadata and expression data are in same order
 #' T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 #'
-#' dat <- list('DM:control' = TEDDY[T1Dmeta$group == "DM:control",],
-#'             'DM:case' = TEDDY[T1Dmeta$group == "DM:case",])
+#' dat <- list('DM:control'=TEDDY[T1Dmeta$group == "DM:control",],
+#'             'DM:case'=TEDDY[T1Dmeta$group == "DM:case",])
 #'
 #' #log-transform and median center the expression data without scaling
 #' newdat <- list()
@@ -109,9 +109,9 @@ includeMetadata <- function(object,
 #'
 #'   group_dat <- dat[[cond]]
 #'   for(i in seq(1, ncol(group_dat))){
-#'     metab_median = median(group_dat[, i], na.rm = TRUE)
-#'     metab_range = range(group_dat[, i], na.rm = TRUE)
-#'     scale_factor = max(abs(metab_range - metab_median))
+#'     metab_median=median(group_dat[, i], na.rm=TRUE)
+#'     metab_range=range(group_dat[, i], na.rm=TRUE)
+#'     scale_factor=max(abs(metab_range - metab_median))
 #'     group_dat[, i] <- (group_dat[, i] - metab_median) / scale_factor
 #'
 #'     rm(metab_median, metab_range, scale_factor)
@@ -128,7 +128,7 @@ includeMetadata <- function(object,
 #' names(newdat) <- names(dat)
 #'
 #' #add data
-#' dnw <- addExpressionData(object = dnw, data = newdat)
+#' dnw <- addExpressionData(object=dnw, data=newdat)
 #'
 #' @rdname addExpressionData
 #' @export
@@ -153,7 +153,7 @@ addExpressionData <- function(object,
     stop("The sample order of new data does not match order in DNEAobj!")
   }
 
-  object@assays[["DNEA_scaled_data"]] <- expressionData(x = object, assay = "scaled_expression_data")
+  object@assays[["DNEA_scaled_data"]] <- expressionData(x=object, assay="scaled_expression_data")
   object@assays[["scaled_expression_data"]] <- data
 
   validObject(object)
@@ -185,12 +185,12 @@ addExpressionData <- function(object,
 #' #filepath wherein to save the networks files
 #' filepath <- tempdir()
 #' #save node and edge list for input to cytoscape
-#' getNetworkFiles(dnw, file_path = filepath)
+#' getNetworkFiles(dnw, file_path=filepath)
 #'
 #' @importFrom utils write.csv
 #' @export
 getNetworkFiles <- function(object,
-                            file_path = getwd()){
+                            file_path=getwd()){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) {
@@ -201,11 +201,11 @@ getNetworkFiles <- function(object,
   }
   #save node list
   write.csv(nodeList(object), paste0(file_path, "/", object@project_name,'_nodelist_',Sys.Date(),'.csv'),
-            row.names = FALSE)
+            row.names=FALSE)
 
   #save edge list
   write.csv(edgeList(object), paste0(file_path, "/", object@project_name,'_edgelist_',Sys.Date(),'.csv'),
-            row.names = FALSE)
+            row.names=FALSE)
 
   return(object)
 }
@@ -260,20 +260,20 @@ getNetworkFiles <- function(object,
 #' data(dnw)
 #'
 #' #plot the networks
-#' plotNetworks(object = dnw, type = "group_networks", subtype = "All")
-#' plotNetworks(object = dnw, type = "sub_networks", subtype = 1)
+#' plotNetworks(object=dnw, type="group_networks", subtype="All")
+#' plotNetworks(object=dnw, type="sub_networks", subtype=1)
 #'
 #' @import igraph
 #' @export
 plotNetworks <- function(object,
-                         type = c("group_networks", "sub_networks"),
-                         subtype = "All",
+                         type=c("group_networks", "sub_networks"),
+                         subtype="All",
                          layout_func,
-                         main = "",
-                         node_size = 15,
-                         edge_width = 1,
-                         label_size = 1,
-                         label_font = 1){
+                         main="",
+                         node_size=15,
+                         edge_width=1,
+                         label_size=1,
+                         label_font=1){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) {
@@ -328,18 +328,18 @@ plotNetworks <- function(object,
   #set graph layout
   if(missing(layout_func)){
 
-    graph_layout <- layout.fruchterman.reingold(graph = subtype_network)
+    graph_layout <- layout.fruchterman.reingold(graph=subtype_network)
   }else{
 
-    graph_layout <- layout_func(graph = subtype_network)
+    graph_layout <- layout_func(graph=subtype_network)
   }
 
   #plot the specified network
-  plot(subtype_network, main = main, layout = graph_layout,
-       vertex.size = node_size, width = edge_width,
-       vertex.label = V(subtype_network)$name,
-       vertex.label.cex = label_size,
-       vertex.label.font = label_font)
+  plot(subtype_network, main=main, layout=graph_layout,
+       vertex.size=node_size, width=edge_width,
+       vertex.label=V(subtype_network)$name,
+       vertex.label.cex=label_size,
+       vertex.label.font=label_font)
 
 }
 
@@ -355,10 +355,10 @@ filterNetworks.DNEAobj <- function(data,
   }
 
   ##grab adjacency matrices
-  weighted_adjacency_matrices <- adjacencyMatrix(data, weighted = TRUE)
+  weighted_adjacency_matrices <- adjacencyMatrix(data, weighted=TRUE)
 
   ##start new unweighted adjacency list
-  unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
+  unweighted_adjacency_matrices <- vector("list", length=length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##filter networks
@@ -390,7 +390,7 @@ filterNetworks.DNEAobj <- function(data,
 
       #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
-                                 probs = (1 - top_percent_edges))
+                                 probs=(1 - top_percent_edges))
 
       #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
@@ -403,15 +403,15 @@ filterNetworks.DNEAobj <- function(data,
   }
 
   #store the adjacency matrices in DNEAobj object
-  adjacencyMatrix(x = data, weighted = TRUE) <- weighted_adjacency_matrices
-  adjacencyMatrix(x = data, weighted = FALSE) <- unweighted_adjacency_matrices
+  adjacencyMatrix(x=data, weighted=TRUE) <- weighted_adjacency_matrices
+  adjacencyMatrix(x=data, weighted=FALSE) <- unweighted_adjacency_matrices
 
   ##update edge list
   #initiate output dataframe
   pairs <- combn(as.character(featureNames(data)), 2, simplify=FALSE)
   edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                           pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
-                          check.names = FALSE)
+                          check.names=FALSE)
 
   #concatenate results into dataframe
   edge_list[,c(1,2)] <- do.call(rbind, pairs)
@@ -483,16 +483,16 @@ filterNetworks.DNEAobj <- function(data,
 #' data(dnw)
 #'
 #' #filter the networks by a correlation threshold of 0.166
-#' dnw <- filterNetworks(dnw, pcor = 0.166)
+#' dnw <- filterNetworks(dnw, pcor=0.166)
 #'
 #' #filter networks for the top 40% strongest correlations
-#' dnw <- filterNetworks(dnw, top_percent_edges = 0.4)
+#' dnw <- filterNetworks(dnw, top_percent_edges=0.4)
 #'
 #' @importFrom stats quantile
 #' @rdname filterNetworks-methods
 #' @aliases filterNetworks
 #' @export
-setMethod("filterNetworks", signature(data = "DNEAobj"), filterNetworks.DNEAobj)
+setMethod("filterNetworks", signature(data="DNEAobj"), filterNetworks.DNEAobj)
 
 filterNetworks.list <- function(data,
                                 pcor,
@@ -502,7 +502,7 @@ filterNetworks.list <- function(data,
   weighted_adjacency_matrices <- data
 
   ##start new unweighted adjacency list
-  unweighted_adjacency_matrices <- vector("list", length = length(weighted_adjacency_matrices))
+  unweighted_adjacency_matrices <- vector("list", length=length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##filter networks
@@ -524,7 +524,7 @@ filterNetworks.list <- function(data,
 
       #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
-                                 probs = (1 - top_percent_edges))
+                                 probs=(1 - top_percent_edges))
 
       #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
@@ -541,7 +541,7 @@ filterNetworks.list <- function(data,
   pairs <- combn(as.character(colnames(weighted_adjacency_matrices[[1]])), 2, simplify=FALSE)
   edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                           pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
-                          check.names = FALSE)
+                          check.names=FALSE)
 
   #concatenate results into dataframe
   edge_list[,c(1,2)] <- do.call(rbind, pairs)
@@ -571,11 +571,11 @@ filterNetworks.list <- function(data,
   message("Total number of edges in dataset: ",
           nrow(edge_list))
 
-  return(list(weighted = weighted_adjacency_matrices,
-              unweighted = unweighted_adjacency_matrices,
-              edge_list = edge_list))
+  return(list(weighted=weighted_adjacency_matrices,
+              unweighted=unweighted_adjacency_matrices,
+              edge_list=edge_list))
 }
 #'
 #' @rdname filterNetworks-methods
 #' @aliases filterNetworks
-setMethod("filterNetworks", signature(data = "list"), filterNetworks.list)
+setMethod("filterNetworks", signature(data="list"), filterNetworks.list)

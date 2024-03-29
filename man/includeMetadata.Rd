@@ -31,7 +31,7 @@ data(T1Dmeta)
 T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 
 #add new metadata to DNEAobj object
-dnw <- includeMetadata(object = dnw, type = "sample", metadata = T1Dmeta)
+dnw <- includeMetadata(object=dnw, type="sample", metadata=T1Dmeta)
 
 }
 \seealso{

@@ -28,7 +28,7 @@ weighted or unweighted adjacency matrix determined via
 #import example data
 data(dnw)
 
-adjacencyMatrix(dnw, weighted = TRUE)
+adjacencyMatrix(dnw, weighted=TRUE)
 }
 \seealso{
 \code{\link{getNetworks}}
