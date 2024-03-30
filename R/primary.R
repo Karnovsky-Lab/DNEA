@@ -247,7 +247,7 @@ BICtune.matrix <- function(object,
 #' #optimize lambda parameter
 #' dnw <- BICtune(object=dnw,
 #'                informed=TRUE,
-#'                interval=1e-2)
+#'                interval=0.1)
 #'
 #' @import glasso
 #' @importFrom BiocParallel bplapply bpparam bpoptions bptasks
