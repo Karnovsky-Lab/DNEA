@@ -177,8 +177,8 @@ setValidity("consensusClusteringResults", function(object){
   if(ncol(summary(object) != 5)){
     "there was a problem with consensus cluster results object"
   }
-  for(i in length(object@adjacency_graphs)){
-    if(inherits(object@adjacency_graphs[i], what="igraph")){
+  for(i in length(adjacencyGraph(object))){
+    if(inherits(adjacencyGraph(object)[i], what="igraph")){
       "There was a problem with adjacency graphs in consensus clustering"
     }
   }
@@ -201,10 +201,10 @@ setValidity("consensusClusteringResults", function(object){
 #' @noRd
 setValidity("DNEAinputSummary", function(object){
 
-  if(!is.numeric(object@num_samples) | length(object@num_samples) != 1){
+  if(!is.numeric(numSamples(object)) | length(numSamples(object)) != 1){
     "there was a problem with dataset summary"
   }
-  if(!is.numeric(object@num_features) | length(object@num_features) != 1){
+  if(!is.numeric(numFeatures(object)) | length(numFeatures(object)) != 1){
     "there was a problem with dataset summary"
   }
   if(all(dim(diagnostics(object)) != c(3, 2))){
