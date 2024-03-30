@@ -25,8 +25,8 @@ BIC score for tested lambda values}
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns the
-BIC values for each lambda tested during hyperparameter optimization
+The function takes as input a \code{\link{DNEAobj}} object and returns
+the BIC values for each lambda tested during hyperparameter optimization
 performed via BICtune().
 }
 \examples{

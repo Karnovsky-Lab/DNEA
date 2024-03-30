@@ -17,9 +17,9 @@ A \code{\link{DNEAobj}} object after filling the
 selection_results section of the stable_networks slot.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns an m x m
-matrix of selection results for every possible network edge calculated
-via \code{\link{stabilitySelection}}.
+The function takes as input a \code{\link{DNEAobj}} object and returns
+an m x m matrix of selection results for every possible network edge
+calculated via \code{\link{stabilitySelection}}.
 }
 \examples{
 #import example data

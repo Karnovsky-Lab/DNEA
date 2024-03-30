@@ -13,7 +13,8 @@ adjacencyGraph(x, graph)
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} or \code{consensusClusteringResults} object}
+\item{x}{A \code{\link{DNEAobj}} or \code{consensusClusteringResults}
+object}
 
 \item{graph}{A character string indicating which of the adjacency
 graphs to return. Values can be "joint_graph" for the whole graph object,

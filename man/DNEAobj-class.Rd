@@ -15,7 +15,8 @@
 \value{
 A DNEAobj object
 
-A summary of the information stored in a \code{\link{DNEAobj}} object.
+A summary of the information stored in a
+\code{\link{DNEAobj}} object.
 }
 \description{
 An s4 class to represent the DNEA workflow

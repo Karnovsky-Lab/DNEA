@@ -25,8 +25,9 @@ The expression matrix specified by the user.
 }
 \description{
 This function accesses the expression data stored in the @assays
-slot of the \code{\link{DNEAobj}} object. The output is an \emph{n x m} matrix
-with one row for each sample and one column for each feature in the data.
+slot of the \code{\link{DNEAobj}} object. The output is an \emph{n x m}
+matrix with one row for each sample and one column for each feature
+in the data.
 }
 \examples{
 #import example data

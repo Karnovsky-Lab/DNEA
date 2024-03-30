@@ -24,7 +24,8 @@ on the input data
 \section{Functions}{
 \itemize{
 \item \code{show(DNEAinputSummary)}: This function will display the number of samples, number of features,
-and diagnostics values of the input dataset to a \code{\link{DNEAobj}} object.
+and diagnostics values of the input dataset to a
+\code{\link{DNEAobj}} object.
 
 }}
 \section{Slots}{
