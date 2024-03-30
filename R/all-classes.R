@@ -204,13 +204,13 @@ setValidity("DNEAinputSummary", function(object){
   }
 })
 
-#'Check Validity of "DNEAobj" object
+#' Check Validity of "DNEAobj" object
 #' @docType methods
 #' @import methods
 #' @noRd
 setValidity("DNEAobj", function(object){
 
-  #check project name
+  ##check project name
   if(!(is.character(projectName(object)))){
     "@project_name must be a character string"
   }
@@ -252,7 +252,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check metadata
+  ##check metadata
   if(!(is.data.frame(object@metadata$samples))){
     "@metadata$samples should be of class data.frame"
   }
@@ -287,7 +287,7 @@ setValidity("DNEAobj", function(object){
     "There should be only one group label for each sample"
   }
 
-  #check dataset summary
+  ##check dataset summary
   if(all(dim(diagnostics(object)) != c(0, 0))){
 
     if(numSamples(object) !=
@@ -301,7 +301,7 @@ setValidity("DNEAobj", function(object){
     validObject(object@dataset_summary)
   }
 
-  #check nodelist
+  ##check nodelist
   if(all(dim(nodeList(object)) != c(0, 0))){
 
     if(!all(nodeList(object)$Features ==
@@ -310,7 +310,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check edgeList
+  ##check edgeList
   if(all(dim(edgeList(object)) != c(0, 0))){
 
     if(ncol(edgeList(object) != 5)){
@@ -318,7 +318,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check hyperparameter slot
+  ##check hyperparameter slot
   if(!is.null(lambdas2Test(object))){
     if(length(object@hyperparameter$BIC_scores) !=
        length(object@hyperparameter$tested_lambda_values)){
@@ -331,7 +331,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check adjacency matrices
+  ##check adjacency matrices
   if(!is.null(adjacencyMatrix(object, weighted=TRUE))){
 
     if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
@@ -348,7 +348,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check stable networks
+  ##check stable networks
   if(!is.null(selectionProbabilities(object))){
 
     for(i in length(selectionProbabilities(object))){
@@ -364,7 +364,7 @@ setValidity("DNEAobj", function(object){
     }
   }
 
-  #check consensus_clustering
+  ##check consensus_clustering
   if(!is.null(dim(CCsummary(object)))){
 
     if(sum(CCsummary(object)$number_of_nodes) !=

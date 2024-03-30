@@ -89,16 +89,13 @@ createDNEAobject <- function(project_name,
   ##restructure data to initiate object
   if(!missing(expression_data) & !missing(group_labels)){
 
-    #check that order of group_labels matches data
     if(!(all(names(group_labels) == colnames(expression_data)))){
       stop("Group labels do not match sample order in expression data!")
     }
 
-    ##turn condition into factor
     if(!is.factor(group_labels)){
 
       group_labels <- factor(group_labels)
-
       message("Condition for expression_data should be of class factor. ",
               "Converting now.\n",
               "Condition is now a factor with levels:\n1. ",
@@ -106,7 +103,7 @@ createDNEAobject <- function(project_name,
               levels(group_labels)[2])
     }
 
-    #create data structures to initialize DNEAobject with un-scaled data
+    ##create data structures to initialize DNEAobject with un-scaled data
     restructured_data <- restructure_input_data(expression_data=expression_data,
                                                 condition_values=group_labels)
   } else{
@@ -127,15 +124,12 @@ createDNEAobject <- function(project_name,
                 adjacency_matrix=list(weighted_adjacency=NULL, unweighted_adjacency=NULL),
                 stable_networks=list(selection_results=NULL, selection_probabilities=NULL))
 
-  #check object
-  validObject(object)
-
-  #perform diagnostic testing on dataset
+  ##perform diagnostic testing on dataset
   datasetSummary(object) <- dataDiagnostics(mat=expressionData(x= object, assay="scaled_expression_data"),
                                        condition_values=networkGroups(object),
                                        conditions=networkGroupIDs(object))
 
-  #print dataset summary
+  ##print dataset summary
   message("\nDiagnostic criteria are as follows: ")
   show(object@dataset_summary)
 
@@ -144,7 +138,7 @@ createDNEAobject <- function(project_name,
                               condition_values=networkGroups(object),
                               conditions=networkGroupIDs(object))
 
-  #check for valid object once more
+  ##check for valid object once more
   validObject(object)
 
   return(object)
@@ -178,19 +172,14 @@ restructure_input_data <- function(expression_data,
                                    condition_values){
 
   ##initialize output data structures
-  #create metadata list and add names
   meta_key <- c("samples", "features")
   metadata <- vector(mode='list', length=length(meta_key))
   names(metadata) <- meta_key
 
-  #create assays list of expression data
   assays_key <- c('input_data', 'log_input_data', 'scaled_expression_data')
   assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
-
-
-  ##grab relevant metadata
   feature_names <- rownames(expression_data)
   clean_feature_names <- make_clean_names(feature_names)
   sample_names <- colnames(expression_data)
@@ -206,27 +195,22 @@ restructure_input_data <- function(expression_data,
   assays[['log_input_data']] <- log(expression_data)
 
   ##scale the expression data for analysis
-  #split by group
   scaled_expression_data <- lapply(split_by_condition(dat=expression_data,
                                                       condition_levels=levels(condition_values),
                                                       condition_by_sample=condition_values),
                                    function(x) t(scale(log(t(x)))))
 
-  #order group_labels to make sure that still matches
+  ##order group_labels to make sure that still matches
   condition_values <- condition_values[colnames(expression_data)]
 
   message("Data has been normalized for further analysis.",
   " New data can be found in the scaled_expression_data assay!\n")
 
   ##concatenate output
-  #add scaled data to assays list
   assays[['scaled_expression_data']] <- scaled_expression_data
-
-  #Add features, samples, condition to metadata
   metadata[["samples"]] <- data.frame(samples=sample_names,
                                       conditions=condition_values,
                                       row.names=sample_names)
-
   metadata[["features"]] <- data.frame(feature_names=feature_names,
                                        clean_feature_names=clean_feature_names,
                                        row.names=feature_names)
@@ -303,17 +287,17 @@ dataDiagnostics <- function(mat, condition_values, conditions) {
   num_samples <- ncol(scaled_input_data)
 
   ##min eigen value and condition number for each of the datasets
-  #group1
+  ##group1
   pearson_1 <- cor(t(mat[[condition_values[[1]]]]))
   cond_number_1 <- kappa(pearson_1, exact=TRUE)
   min_eigen_1 <- min(unlist(eigen(pearson_1, symmetric=TRUE, only.values=TRUE)))
 
-  #group2
+  ##group2
   pearson_2 <- cor(t(mat[[condition_values[[2]]]]))
   cond_number_2 <- kappa(pearson_2, exact=TRUE)
   min_eigen_2 <- min(unlist(eigen(pearson_2, symmetric=TRUE, only.values=TRUE)))
 
-  #whole dataset
+  ##whole dataset
   pearson_3 <- cor(t(scaled_input_data))
   cond_number_3 <- kappa(pearson_3, exact=TRUE)
   min_eigen_3 <- min(unlist(eigen(pearson_3, symmetric=TRUE, only.values=TRUE)))
@@ -383,8 +367,6 @@ metabDE <- function(mat,
   num_samples <- ncol(mat)
   feature_info <- data.frame(clean_feature_names=rownames(mat),
                              row.names=rownames(mat))
-
-  ##split data by condition
   cond_data <- split_by_condition(dat=mat,
                                   condition_levels=condition_values,
                                   condition_by_sample=conditions)

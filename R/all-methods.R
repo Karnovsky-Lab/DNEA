@@ -90,8 +90,6 @@ expressionData.DNEAobj <- function(x, assay=c("input_data", "log_input_data", "s
 
   assay <- match.arg(assay)
   output <- x@assays[[assay]]
-
-
   return(output)
 }
 
@@ -124,6 +122,7 @@ expressionData.DNEAobj <- function(x, assay=c("input_data", "log_input_data", "s
 setMethod("expressionData",signature(x="DNEAobj"), expressionData.DNEAobj)
 
 assays.DNEAobj <- function(x){
+
   x@assays
 }
 #' @rdname assays-methods
@@ -133,6 +132,7 @@ assays.DNEAobj <- function(x){
 setMethod("assays", signature=(x="DNEAobj"), assays.DNEAobj)
 
 networkGroupIDs.DNEAobj <- function(x){
+
   x@metadata$network_group_IDs
 }
 
@@ -183,6 +183,7 @@ setMethod("networkGroups", signature(x="DNEAobj"), function(x){
 })
 
 sampleNames.DNEAobj <- function(x){
+
   x@metadata[["samples"]]$samples
 }
 
@@ -269,6 +270,7 @@ setMethod("numFeatures", signature(x="DNEAinputSummary"), function(x){
   x@num_features
 })
 numSamples.DNEAobj <- function(x){
+
   x@dataset_summary@num_samples
 }
 
@@ -412,6 +414,7 @@ setReplaceMethod("BICscores", signature(x="DNEAobj"), function(x, value){
   x
 })
 selectionResults.DNEAobj <- function(x){
+
   x@stable_networks$selection_results
 }
 
@@ -448,6 +451,7 @@ setReplaceMethod("selectionResults", signature(x="DNEAobj"), function(x, value){
 })
 
 selectionProbabilities.DNEAobj <- function(x){
+
   x@stable_networks$selection_probabilities
 }
 
@@ -515,6 +519,7 @@ setMethod("edgeList", signature(x="DNEAobj"), edgeList.DNEAobj)
 #' @rdname edgeList-methods
 #' @aliases edgeList
 setReplaceMethod("edgeList", signature(x="DNEAobj"), function(x, value){
+
   x@edge_list <- value
   validObject(x)
   x
@@ -647,11 +652,8 @@ setReplaceMethod("datasetSummary", signature(x="DNEAobj"), function(x, value){
 adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
 
   if(weighted){
-
     x@adjacency_matrix$weighted_adjacency
-
   } else if(!weighted){
-
     x@adjacency_matrix$unweighted_adjacency
   }
 }
@@ -686,14 +688,10 @@ setMethod("adjacencyMatrix", signature(x="DNEAobj"), adjacencyMatrix.DNEAobj)
 setReplaceMethod("adjacencyMatrix", signature(x="DNEAobj"), function(x, weighted=FALSE, value){
 
   if(weighted){
-
     x@adjacency_matrix$weighted_adjacency <- value
-
   } else if(!weighted){
-
     x@adjacency_matrix$unweighted_adjacency <- value
   }
-
   validObject(x)
   x
 })

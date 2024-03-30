@@ -23,10 +23,8 @@ BICtune.DNEAobj <- function(object,
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
   if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
 
-
   ##initialize input parameters
   dat <- expressionData(x=object, assay="scaled_expression_data")
-
   n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
   trainY <- c(rep(1, ncol(dat[[1]])),
@@ -92,7 +90,6 @@ BICtune.DNEAobj <- function(object,
 
   #check valid object
   validObject(object)
-
   return(object)
 }
 
@@ -382,7 +379,6 @@ stabilitySelection <- function(object,
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")){
-
     stop('the input object should be of class "DNEAobj"!')
   }
   if(nreps < 1 | !is.numeric(nreps)) {
@@ -393,16 +389,16 @@ stabilitySelection <- function(object,
     stop('"subSample" parameter should be TRUE or FALSE!')
   }
 
-  # stabilitySelection requires lambda hyper-parameter. Will use
-  # optimal_lambda if supplied, otherwise looks for
-  # @hyperparameter[["optimized_lambda"]] in DNEAobject
+  ## stabilitySelection requires lambda hyper-parameter. Will use
+  ## optimal_lambda if supplied, otherwise looks for
+  ## @hyperparameter[["optimized_lambda"]] in DNEAobject
   if(!missing(optimal_lambda)){
 
     if(optimal_lambda < 0 | optimal_lambda > 1){
 
       stop("The lambda parameter should be a value between 0 and 1 only!")
     }
-    #set lambda for use downstream
+    ##set lambda for use downstream
     optimized_lambda <- optimal_lambda
     message('IMPORTANT: optimal_lambda argument was provided - The default parameters will ',
             'be overrided and optimal_lambda will be used in analysis')
@@ -416,8 +412,8 @@ stabilitySelection <- function(object,
     message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
             'accessed via the optimizedLambda() function')
   }else{
-    # setting optimized_lambda=NULL will default to a lambda of
-    # sqrt(log(# features) / # samples) in adjDGlasso_minimal
+    ##setting optimized_lambda=NULL will default to a lambda of
+    ##sqrt(log(# features) / # samples) in adjDGlasso_minimal
     optimized_lambda <- NULL
 
     warning("No lambda value was supplied for the model - sqrt(log(# features) / # samples) will be used in the analyis. ",
@@ -426,32 +422,25 @@ stabilitySelection <- function(object,
             "if the dataset contains ~500 or more samples.")
   }
 
-  #grab scaled expression data
   data_split_by_condition <- lapply(expressionData(x=object, assay="scaled_expression_data"),
                                     function(d) t(d))
 
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
           "stabilitySelection will be performed with ", nreps, " replicates!")
 
+  ##set internal function to use
   if(subSample){
 
-    #with additional sub-sampling
     message("Additional sub-sampling will be performed on uneven groups")
     ss_function <- "CGM_AHP_stabsel_subsample"
-
   }else if(!subSample){
 
-    #without additional sub-sampling
     message("No additional sub-sampling will be performed. Sample groups will both be randomly sampled 50%")
     ss_function <- "CGM_AHP_stabsel"
-
   }
 
-
-  #initialize static variables to pass to workers
+  ##initialize parameters and run stability selection
   stabsel_init_param <- stabsel_init(listX=data_split_by_condition, nreps=nreps)
-
-  #run SS
   stab_sel <- BiocParallel:: bplapply(X=seq(1, nreps),
                                       FUN=ss_function,
                                       init_param=stabsel_init_param,
@@ -467,7 +456,6 @@ stabilitySelection <- function(object,
   selection_probabilities <- vector("list", length(networkGroups(object)))
   names(selection_probabilities) <- networkGroups(object)
 
-  #reduce results to one matrix and calculate selection probabilities
   for (k in seq(1, length(selection_results))){
     selection_results[[k]] <- lapply(stab_sel, function(r) r$mat[[k]])
     selection_results[[k]] <- Reduce("+", selection_results[[k]])
@@ -484,13 +472,11 @@ stabilitySelection <- function(object,
       selection_probabilities[[k]] <- selection_results[[k]]/(2 * nreps)
     }
   }
-
   selectionResults(object) <- selection_results
   selectionProbabilities(object) <- selection_probabilities
 
-  #check valid object
+  ##check valid object
   validObject(object)
-
   return(object)
 }
 
@@ -590,31 +576,26 @@ getNetworks <- function(object,
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")){
-
     stop('the input object should be of class "DNEAobj"!')
   }
   if(eps_threshold <=0 | eps_threshold >= 1) {
-
     stop("eps_threshold should be between 0 and 1 only!")
   }
 
-  ##separate the data by condition
-  data_split_by_condition <- expressionData(x=object, assay="scaled_expression_data")
-
   ##initialize input parameters
+  data_split_by_condition <- expressionData(x=object, assay="scaled_expression_data")
   num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE=numeric(1))
   names(num_samples) <- names(data_split_by_condition)
   num_features <- numFeatures(object)
   Ip <- diag(rep(1, num_features))
 
   ##initiate output data structures
-  #weighted adjacency matrices list
   tuned_lambdas <- vector("list", length(networkGroups(object)))
   names(tuned_lambdas) <- networkGroups(object)
+
   weighted_adjacency_matrices <- vector("list", length(networkGroups(object)))
   names(weighted_adjacency_matrices) <- networkGroups(object)
 
-  #unweighted adjacency matrices list
   unweighted_adjacency_matrices <- vector("list", length(weighted_adjacency_matrices))
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
@@ -665,33 +646,26 @@ getNetworks <- function(object,
     }
   }
 
-  #model will used selection weights based on stability selection if provided
+  ##model will use selection weights if provided
   if (!is.null(selectionProbabilities(object))){
 
-    #grab selection probabilities
+    ##grab selection probabilities and calculate rho
     selection_prob <- selectionProbabilities(object)
-
-    #modify to create model weights
     model_weight_values <- vector(mode="list", length=2)
     for(x in seq(1, length(model_weight_values))){
 
       model_weight_values[[x]] <- 1/(1e-04 + as.matrix(selection_prob[[x]]))
     }
-
-    #name weight values
     names(model_weight_values) <- names(selection_prob)
     message('selection_probabilites from stability selection will be used in glasso model!\n')
   } else{
 
     message("No selection_probabilities were found. We recommend running
             stabilitySelection() prior to estimating the glasso model!\n")
-
     model_weight_values <- list(matrix(rep(1, num_features^2), num_features, num_features),
                                 matrix(rep(1, num_features^2), num_features, num_features))
-
   }
 
-  #add names to model weights list
   names(model_weight_values) <- names(selectionProbabilities(object))
 
   ##estimate the partial correlation matrix for each condition
@@ -700,12 +674,10 @@ getNetworks <- function(object,
     message("Estimating model for ", k, "...using ",
             optimized_lambdas[[k]], " for lambda...")
 
-    #fit the networks
     fit <- adjDGlasso_minimal(t(data_split_by_condition[[k]]),
                               weights=model_weight_values[[k]],
                               lambda=optimized_lambdas[[k]])
 
-    #grab the adjacency matrices
     weighted_adjacency_matrices[[k]] <- matrix(data=fit$Theta.glasso,
                                                nrow=num_features, ncol=num_features,
                                                dimnames=list(featureNames(object, original=FALSE),
@@ -721,7 +693,6 @@ getNetworks <- function(object,
 
   #check valid object
   validObject(object)
-
   return(object)
 }
 
@@ -798,28 +769,24 @@ clusterNet <- function(object,
                        max_iterations=5,
                        verbose=TRUE){
 
-  #test for proper inputs
+  ##test for proper inputs
   if(!inherits(object, "DNEAobj")) {
-
     stop('the input object should be of class "DNEAobj"!')
   }
   if(tau < 0.5 | tau > 1.0) {
-
     stop("tau corresponds to a percent agreement among the clustering methods. ",
                                  "As such, tau must be greater than 0.5 and less than 1!",
                                  "Clustering results below this threshold are not reliable -",
                                  "Please see user documentation for more information!")
   }
   if(max_iterations < 1) {
-
     stop("max_iterations should be a positive integer!")
   }
   if(!is.logical(verbose)) {
-
     stop('"verbose" parameter should be TRUE or FALSE!')
   }
 
-  #create list to hold graph from adjacency matrix
+  ##create list to hold graph from adjacency matrix
   adjacency_matrix_graphs <- vector("list", length(adjacencyMatrix(object, weighted=TRUE)))
   names(adjacency_matrix_graphs) <- names(adjacencyMatrix(object, weighted=TRUE))
 
@@ -831,10 +798,8 @@ clusterNet <- function(object,
     adjacency_matrix_graphs[[loop_el]] <- adjacency_graph
   }
 
-  #join adjacency matrix graphs
+  ##join adjacency matrix graphs and modify
   joint_graph <- igraph::union(adjacency_matrix_graphs[[1]], adjacency_matrix_graphs[[2]])
-
-  #modify the joint_graph
   jointLayout <- layout_nicely(joint_graph)
   E(joint_graph)$lty <- 1
   E(joint_graph)$color <- "black"
@@ -850,37 +815,32 @@ clusterNet <- function(object,
     V(joint_graph)$DE <- rep(NA, numFeatures(object))
   }
 
-  #run consensus cluster algorithm
+  ##run consensus cluster
   fit <- run_consensus_cluster(joint_graph, tau=tau, max_iterations=max_iterations, verbose=verbose)
   consensus_membership <- fit$final_consensus_cluster
 
-  #initiate output matrix
+  ##create output
   subnetwork_results <- matrix(0, nrow=length(unique(consensus_membership)), numFeatures(object),
                                dimnames=list(paste0("subnetwork", seq(1, length(unique(consensus_membership)))),
-                                               vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(1))))
-
-  #gather results
+                                             vapply(seq(1, length(joint_graph)), function(x) names(joint_graph[[x]]), character(1))))
   for (j in seq(1, nrow(subnetwork_results))){
 
-    #grab features in this subnetwork
     subnetwork_nodes <- consensus_membership == j
-
-
     if(sum(subnetwork_nodes) == 1){
 
-      #if subnetwork is only one feature, relabel to "independent"
+      ##if subnetwork is only one feature, relabel to "independent"
       consensus_membership[consensus_membership == j] <- "independent"
     }else{
 
-      #concatenate the results
+      ##concatenate the results
       subnetwork_results[j, consensus_membership == j] <- 1
     }
   }
 
-  #remove empty rows
+  ##remove empty rows
   subnetwork_results <- subnetwork_results[rowSums(subnetwork_results) != 0, ]
 
-  #update consensus subnetworks
+  ##update consensus subnetworks
   consensus_membership <- match(consensus_membership,
                                 as.numeric(gsub('subnetwork','',rownames(subnetwork_results))))
   consensus_membership[is.na(consensus_membership)] <- "independent"
@@ -888,7 +848,7 @@ clusterNet <- function(object,
   #update subnetwork_results rownames
   rownames(subnetwork_results) <- paste0("subnetwork", seq(1, nrow(subnetwork_results)))
 
-  #concatenate the netGSA results table
+  #create output table
   summary_list <- list()
   for (loop_cluster in seq(1, nrow(subnetwork_results))){
 
@@ -899,12 +859,9 @@ clusterNet <- function(object,
                                                "number_of_DE.edges"=sum(as.numeric(table(E(cluster_c)$color)[names(table(E(cluster_c)$color)) %in% c("red", "green")])),
                                                check.names=FALSE)
   }
-
   summary_stat <- data.frame("subnetworks"= rownames(subnetwork_results),
                              do.call(rbind, summary_list),
                              check.names=FALSE)
-
-  #add independent features
   summary_stat <- rbind(summary_stat,
                         list("independent",
                              sum(consensus_membership == "independent"),
@@ -912,19 +869,16 @@ clusterNet <- function(object,
                              sum(nodeList(object)$DEstatus[consensus_membership == "independent"]),
                              0))
 
-  #add results to DNEAobj object
+  ##add results to DNEAobj object
   nodeList(object)[["membership"]] <- consensus_membership
   object@consensus_clustering <- new(Class="consensusClusteringResults",
                                      summary=summary_stat,
                                      subnetwork_membership=data.frame(subnetwork_results),
                                      adjacency_graphs=append(adjacency_matrix_graphs,
                                                              list(joint_graph=joint_graph)))
-
-  #check valid object
+  ##check valid object
   validObject(object)
-
   return(object)
-
 }
 
 #' Identify metabolic modules that are enriched across experimental conditions
@@ -974,7 +928,7 @@ clusterNet <- function(object,
 runNetGSA <- function(object,
                       min_size=5){
 
-  #test for proper input
+  ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
 
@@ -998,34 +952,31 @@ runNetGSA <- function(object,
                            lklMethod="REML",
                            minsize=min_size)
 
-  #add netGSA results to Node list
+  ##add netGSA results to Node list
   nodeList(object)[["mean1"]] <- as.vector(netgsa_results$beta[[1]])
   nodeList(object)[["mean2"]] <- as.vector(netgsa_results$beta[[2]])
   nodeList(object)[["meanchange"]] <- netgsa_results$beta[[2]] - netgsa_results$beta[[1]]
   nodeList(object)[["mc.notes"]] <- paste(networkGroups(object)[[2]], 'over', networkGroups(object)[[1]])
 
-  #concatenate netGSA summary output
+  ##concatenate netGSA summary output
   res <- data.frame(CCsummary(object)[CCsummary(object)$number_of_nodes >= min_size, ])
   res <- res[!grepl("independent", res$subnetworks),]
   res[["NetGSA_pval"]] <- netgsa_results$results$pval
   res[["NetGSA_pFDR"]] <- netgsa_results$results$pFdr
-
-  #order netGSA results by FDR
   res <- res[order(res$NetGSA_pFDR),]
 
-
-  #rename subnetworks
+  ##rename subnetworks
   cluster_names <- CCsummary(object)[-match("independent", CCsummary(object)$subnetworks), ]
   new_cluster_order <- data.frame(subnetworks=c(res$subnetworks, cluster_names$subnetworks[-match(res$subnetworks, cluster_names$subnetworks)]))
 
-  #update consensus subnetworks
+  ##update consensus subnetworks
   nodeList(object)$membership <- match(nodeList(object)$membership, as.numeric(gsub('subnetwork','',new_cluster_order$subnetworks)))
   nodeList(object)$membership[is.na(nodeList(object)$membership)] <- "independent"
 
-  #update res subnetwork names
+  ##update res subnetwork names
   res$subnetworks <- paste0("subnetwork", seq(1, nrow(res)))
 
-  #update cluster summary subnetwork names
+  ##update cluster summary subnetwork names
   cluster_names <- CCsummary(object)
   rownames(cluster_names) <- cluster_names$subnetworks
   cluster_names <- cluster_names[new_cluster_order$subnetworks, ]
@@ -1033,17 +984,16 @@ runNetGSA <- function(object,
   cluster_names$subnetworks <- paste0("subnetwork", seq(1, nrow(cluster_names)))
   cluster_names <- rbind(cluster_names, CCsummary(object)[match("independent", CCsummary(object)$subnetworks), ])
 
-  #update subnetwork_membership matrix
+  ##update subnetwork_membership matrix
   sub_membership <- sub_membership[new_cluster_order$subnetworks, ]
   rownames(sub_membership) <- paste0("subnetwork", seq(1, nrow(sub_membership)))
 
-  #update DNEAobject
+  ##update DNEAobject
   netGSAresults(object) <- res
   CCsummary(object) <- cluster_names
   subnetworkMembership(object) <- sub_membership
 
-  #check valid object
+  ##check valid object
   validObject(object)
-
   return(object)
 }

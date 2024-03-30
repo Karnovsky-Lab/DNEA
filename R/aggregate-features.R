@@ -127,37 +127,30 @@ aggregateFeatures <- function(object,
                               correlation_threshold=NULL,
                               feature_groups=NULL){
 
-  ##set method
+  ##input checks
   method <- match.arg(method)
-
-  ##bind local variables to function
   feature_membership <- NULL
-
-  ##Check to see if there is non-normalized, non-transformed expression data
-  ##provided - Feature reduction requires this
   if(is.null(expressionData(x=object, assay="input_data"))){
     stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!",
          '\nTo proceed, please insert un-scaled expression data into the DNEAobject')
   }
 
-  #check that rownames of feature_groups match feature order
   if(!(all(rownames(expressionData(x=object, assay="input_data")) ==
            rownames(feature_groups)))){
     stop("The feature order of feature_groups does not match the expression data!")
   }
 
-  #warning if correlation_threshold was provided for knowledge-based collapsing
+  ##warning if correlation_threshold was provided for knowledge-based collapsing
   if(method == "knowledge" & !is.null(correlation_threshold)){
     warning("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
             "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups.\n")
   }
 
-  ##create dataframe input for node collapsing algorithm
+
+  ##perform feature aggregation
   collapse_dat <- data.frame(samples=sampleNames(object),
                              groups=networkGroupIDs(object),
                              t(expressionData(x=object, assay="input_data")))
-
-  ##collapse features based on specified approach
   if (method == "correlation") {
     res <- collapseNodes_cor(dat=collapse_dat,
                              correlation_threshold=correlation_threshold)
@@ -174,12 +167,11 @@ aggregateFeatures <- function(object,
           "The aggregated log-scaled data is in the @assay slot\n",
           "(The orginal DNEAobj can be found in the @original_experiment slot)")
 
-  #new input
   new_dat <- t(res[["collapsed_data"]][,-c(1,2)])
   new_group_labels <- res[["collapsed_data"]][["groups"]]
   names(new_group_labels) <- res[["collapsed_data"]][["samples"]]
 
-  #initialize new collapsed_DNEAobj object
+  ##initialize new collapsed_DNEAobj object
   reduced_object <- createDNEAobject(project_name=projectName(object),
                                      expression_data=new_dat,
                                      group_labels=new_group_labels)
@@ -203,13 +195,11 @@ aggregateFeatures <- function(object,
                           original_experiment=reduced_object,
                           feature_membership=res[["feature_membership"]])
 
-  #add diagnostics
   datasetSummary(collapsed_object) <- new("DNEAinputSummary",
                                           num_samples=numSamples(reduced_object),
                                           num_features=numFeatures(reduced_object),
                                           diagnostic_values=diagnostics(reduced_object))
 
-  ##add node list
   nodeList(collapsed_object) <- nodeList(reduced_object)
   return(collapsed_object)
 
@@ -250,10 +240,8 @@ aggregateFeatures <- function(object,
 #' @noRd
 collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
 
-  ##bind local variables to function
+  ##set up parameters
   feature_membership <- NULL
-
-  ##set-up parameters and split data
   num_features <- ncol(dat)-2
   sample_groups <- unique(dat[,2])
   metabs <- colnames(dat)[-c(1,2)]
@@ -262,11 +250,11 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
   input_dat[[1]] <- dat[dat[,2] == sample_groups[1],]
   input_dat[[2]] <- dat[dat[,2] == sample_groups[2],]
 
-  #calculate pearson correlations and cluster
+  ##calculate pearson correlations and cluster
   cor_mat <- list()
   clust <- list()
   clust_groups <- list()
-  for (a in seq(1, length(input_dat))) {
+  for(a in seq(1, length(input_dat))){
     cor_mat[[a]] <- cor(as.matrix(input_dat[[a]][,-c(1, 2)]),
                         use="pairwise.complete.obs",
                         method="pearson")
@@ -274,7 +262,7 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
     clust_groups[[a]] <- cutree(clust[[a]], h=1-correlation_threshold)
   }
 
-  #create adjacency matrix
+  ##create adjacency matrix
   group_matrix <- matrix(0, num_features, num_features)
   colnames(group_matrix) <- rownames(group_matrix) <- metabs
   for(i in seq(1, (num_features-1))){
@@ -285,71 +273,60 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
       }
     }
   }
-
-
-  #create adjacency graph
   adjacency_graph <- graph.adjacency(group_matrix, mode="max", weighted=TRUE)
 
-  #edge list from adjacency graph
+  ##edge list from adjacency graph
   edge_list <- cbind.data.frame(get.edgelist(adjacency_graph),
                                 data.frame(weights=E(adjacency_graph)$weight))
 
 
-  #if no correlation in either condition send error
+  ##if no correlation in either condition send error
   if(dim(edge_list)[1] == 0){
-
     stop("Features in teh data are not sufficientl correlated for aggregating...",
          "\nTry using a lower correlation to aggregate features")
   }
 
-  #filter to features clustering in both sample conditions only
+  ##filter to features clustering in both sample conditions only
   filtered_edge_list <- edge_list[edge_list[, 3] == 2,c(1, 2)]
 
-  #if no correlation in shared by both conditions send error
+  ##if no correlation in shared by both conditions send error
   if(dim(filtered_edge_list)[1] == 0){
-
     stop("Features in teh data are not sufficientl correlated for aggregating...",
          "\nTry using a lower correlation to aggregate features")
   } else {
-
-    #new graph from filtered edge list
+    ##new graph from filtered edge list
     filtered_adjacency_graph <- graph_from_edgelist(as.matrix(filtered_edge_list[,c(1, 2)]))
     graph_components <- components(filtered_adjacency_graph)$membership
 
-    #combine new groups with independet features
+    ##combine new groups with independent features
     final_membership <- data.frame(feature=names(graph_components),
                                    feature_membership=graph_components)
     final_membership$feature_membership <- paste0("group",final_membership$feature_membership)
     independent_features <- data.frame(feature=metabs[!(metabs %in% names(graph_components))],
-                                    feature_membership=metabs[!(metabs %in% names(graph_components))])
+                                       feature_membership=metabs[!(metabs %in% names(graph_components))])
     rownames(independent_features) <- independent_features$feature_membership
     final_membership <- rbind.data.frame(final_membership, independent_features)
 
     newdat <- NULL
-    for (a in seq(1, length(input_dat))) {
+    for(a in seq(1, length(input_dat))){
 
-      #reformat input data by condition
+      ##reformat input data by condition
       dat_by_cond <- cbind.data.frame(data.frame(feature=colnames(input_dat[[a]])[-c(1,2)]),
                                       data.frame(t(input_dat[[a]][,-c(1,2)])))
-
-      #merge with group membership info
       dat_by_cond <- merge(final_membership, dat_by_cond, by="feature", all.y=TRUE)
 
-      #collapse expression data within groups to singular value per condition
+      ##collapse expression data within groups to singular value per condition
       dat_by_cond <- as.data.frame(dat_by_cond[,-1] %>% group_by(feature_membership) %>%
                                      summarise(across(everything(), mean)))
 
-      #reformat result
+      ##reformat result
       rownames(dat_by_cond) <- dat_by_cond$feature_membership
       dat_by_cond <- t(dat_by_cond[,-1])
       dat_by_cond <- dat_by_cond[unlist(input_dat[[a]][1]), ]
       dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1, 2)], dat_by_cond)
 
-      #bind with data output
       newdat <- rbind(newdat, dat_by_cond)
     }
-
-
     return(list(feature_membership=final_membership,
                 collapsed_data=newdat))
   }
@@ -395,23 +372,22 @@ collapseNodes_knowledge <- function (dat,
   newdat <- NULL
   for (a in seq(1, length(input_dat))) {
 
-    #merge expression data with user-specified groups
+    ##merge expression data with user-specified groups
     dat_by_cond <- cbind.data.frame(data.frame(metabolite=colnames(input_dat[[a]])[-c(1,2)]),
                                     as.data.frame(t(input_dat[[a]][,-c(1,2)])))
     dat_by_cond <- merge(feature_groups, dat_by_cond,
                          by="metabolite")
 
-    #collapse groups by mean
+    ##collapse groups by mean
     dat_by_cond <- as.data.frame(dat_by_cond[,-1] %>% group_by(metab_group) %>%
                                    summarise(across(everything(), mean)))
 
-    #reformat and merge with sample/sample condition info
+    ##reformat and merge with sample/sample condition info
     rownames(dat_by_cond) <- dat_by_cond$metab_group
     dat_by_cond <- t(dat_by_cond[,-1])
     dat_by_cond <- dat_by_cond[unlist(input_dat[[a]][1]), ]
     dat_by_cond <- cbind.data.frame(input_dat[[a]][,c(1, 2)], dat_by_cond)
 
-    #bind to output
     newdat <- rbind(newdat, dat_by_cond)
   }
 
@@ -455,45 +431,42 @@ collapseNodes_hybrid <- function (dat,
                                   feature_groups,
                                   correlation_threshold=0.9) {
 
-  ##bind local variables to function
+  ##set up parameters
   feature_membership <- NULL
-
-  ##set parameters
   colnames(feature_groups) <- c("metabolite", "metab_group")
   final_membership <- list()
   newdat <- list()
 
-  for (feature_group in unique(feature_groups$metab_group)) {
+  for(feature_group in unique(feature_groups$metab_group)){
 
-    #filter data to knowledge-based group
+    ##filter data to knowledge-based group
     feature_group_membership <- feature_groups[feature_groups$metab_group == feature_group,]
     feature_group_data <- select(dat, c(1, 2, match(feature_group_membership$metabolite, names(dat))))
-    if(dim(feature_group_membership)[1] == 1) {
+    if(dim(feature_group_membership)[1] == 1){
 
-      #features that are independent stay the same
+      ##features that are independent stay the same
       final_membership[[feature_group]] <- data.frame(feature=feature_group_membership$metab_group,
                                                       feature_membership=feature_group_membership$metab_group,
                                                       row.names=feature_group_membership$metabolite)
       newdat[[feature_group]] <- feature_group_data
     } else {
 
-      #correlation-based collapsed within knowledge-based groups
+      ##correlation-based collapsed within knowledge-based groups
       correlation_based_collapse <- tryCatch(expr={
         collapseNodes_cor(feature_group_data,
                           correlation_threshold=correlation_threshold)
       }, error=function(e){
-
         stop("Features in ", feature_group, " are not sufficiently correlated...",
              "\nTry using a lower coefficient to aggregate features")
       })
 
-      #add new data to final_membership and rename groups
+      ##add new data to final_membership and rename groups
       final_membership[[feature_group]] <- data.frame(correlation_based_collapse$feature_membership)
       new_membership_groups <- str_detect(final_membership[[feature_group]]$feature_membership, "group")
       final_membership[[feature_group]]$feature_membership[new_membership_groups] <- paste0("knowledge: ", feature_group, "-correlation: ",
                                                                                             final_membership[[feature_group]]$feature_membership[new_membership_groups])
 
-      #add new data to output expression data and rename groups
+      ##add new data to output expression data and rename groups
       newdat[[feature_group]] <- correlation_based_collapse$collapsed_data
       new_dat_groups <- str_detect(colnames(newdat[[feature_group]]), "group[[:digit:]]")
       colnames(newdat[[feature_group]])[new_dat_groups] <- paste0("knowledge: ", feature_group, "-correlation: ",
@@ -502,11 +475,10 @@ collapseNodes_hybrid <- function (dat,
     }
   }
 
-  #format final_membership for output
+  ##format output
   names(final_membership) <- NULL
   final_membership <- do.call("rbind", final_membership)
 
-  #format newdat for output
   names(newdat) <- NULL
   newdat <- do.call("cbind", lapply(newdat, function(x) x[-c(1,2)]))
   newdat <- cbind.data.frame(dat[,c(1, 2)], newdat)

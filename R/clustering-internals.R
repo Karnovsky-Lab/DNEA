@@ -15,7 +15,7 @@ getConsensusMatrix <- function(cluster_results){
   num_features <- length(cluster_results[[1]]$membership)
   consensus_matrix <- matrix(0, num_features, num_features)
 
-  #check consensus
+  ##check consensus
   for (feat1 in seq(1, (num_features-1))){
     for (feat2 in seq((feat1 + 1), num_features)){
       for (algo_iter in seq(1, num_iters)){
@@ -25,7 +25,7 @@ getConsensusMatrix <- function(cluster_results){
     }
   }
 
-  #return conensus matrix
+  ##return conensus matrix
   consensus_matrix <- consensus_matrix + t(consensus_matrix)
   consensus_matrix <- consensus_matrix/num_iters
   diag(consensus_matrix) <- rep(1, num_features)
@@ -69,7 +69,7 @@ ensembl_cluster <- function(adjacency_graph,
   ##initiate list
   clustering_results <- vector("list", length=7)
 
-  #set progress bar
+  ##set progress bar
   if(verbose){prog_bar <- txtProgressBar(min=0, max=7, style=3, width=50, char="=")}
 
   ##perform clustering
@@ -172,14 +172,14 @@ run_consensus_cluster <- function(adjacency_graph,
                                                verbose=verbose)
 
 
-    #get new consensus matrix
+    ##get new consensus matrix
     consensus_matrix <- getConsensusMatrix(final_consensus_cluster[!(is.na(final_consensus_cluster))])
 
-    #add to iter
+    ##add to iter
     iter <- iter + 1
   }
 
-  #new order
+  ##new order
   new.order <- order(final_consensus_cluster[[1]]$membership)
 
   return(list(final_consensus_cluster=final_consensus_cluster[[1]]$membership,

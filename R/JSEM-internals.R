@@ -378,7 +378,7 @@ estimate_c <- function(FUN,
                        BPPARAM=bpparam(),
                        BPOPTIONS=bpoptions()){
 
-  #ballpark the c parameter
+  ##ballpark the c parameter
   constant_values <- seq(0, 1 / asymptotic_lambda, 0.02)
   lambda_values <- constant_values * asymptotic_lambda
 
@@ -393,16 +393,14 @@ estimate_c <- function(FUN,
                      BPPARAM=BPPARAM,
                      BPOPTIONS=BPOPTIONS)
 
-  #remove c constants leading to non-finite values and collect ballparked c value
+  ##remove c constants leading to non-finite values and collect ballparked c value
   constant_values <- constant_values[bic$finite]
   ballpark_c <- constant_values[bic$optimal]
 
-  #create new interval
+  ##create new interval and calculate new lambda values
   fine_tuned_constants <- c(seq(ballpark_c - 0.02, ballpark_c, interval),
                             seq(ballpark_c + interval, ballpark_c + 0.02, interval))
   fine_tuned_constants <- fine_tuned_constants[fine_tuned_constants > 0]
-
-  #find new lambda values
   lambda_values <- fine_tuned_constants * asymptotic_lambda
 
   return(list(bic=bic, new_lambda_values=lambda_values))
@@ -458,7 +456,7 @@ estimate_lambda <- function(FUN,
                             BPPARAM=bpparam(),
                             BPOPTIONS=bpoptions()){
 
-  #ballpark lambda
+  ##ballpark lambda
   lambda_values <- seq(0.0, 1, 0.05)
 
   bic <- tune_lambda(lambda_values=lambda_values,
@@ -473,16 +471,15 @@ estimate_lambda <- function(FUN,
                      BPOPTIONS=BPOPTIONS)
 
 
-  #ballpark'd lambda value
+  ##create new test list
   ballpark_lambda <- bic$lastar_guo
-
-  #find new lambda values
   lambda_values <- c(seq(ballpark_lambda - 0.05, ballpark_lambda, interval),
                      seq(ballpark_lambda + interval, ballpark_lambda + 0.05, interval))
   lambda_values <- lambda_values[lambda_values > 0]
 
   return(list(bic=bic, new_lambda_values=lambda_values))
 }
+
 #' Wrapper function for tuning the lambda parameter
 #'
 #' Implement the specified method for optimizing the lambda parameter.
@@ -576,7 +573,7 @@ stabsel_init <- function(
     nreps #number of reps performed for stability selection
 ){
 
-  ##initialize output list
+  ##set static variables for analysis
   init_param <- vector(mode='list', length=6)
   names(init_param) <- c('num_features',
                          'num_conditions',
@@ -584,8 +581,6 @@ stabsel_init <- function(
                          'min_num_samples',
                          'selection_matrix',
                          'edge_matrix')
-
-  ##set static variables for analysis
   if (is.list(listX)) {
     num_conditions <- length(listX)
     num_features <- ncol(listX[[1]])
@@ -597,11 +592,9 @@ stabsel_init <- function(
     num_samples <- nrow(listX)
     min_num_samples <- num_samples
   }
-
   selection_matrix <- vector("list", num_conditions)
   names(selection_matrix) <- c('control','case')
   edge_matrix <- vector("list", num_conditions)
-
   for (k in seq(1, num_conditions)){
     selection_matrix[[k]] <- Matrix(data=0,
                                     nrow=num_features,
@@ -613,7 +606,7 @@ stabsel_init <- function(
                                sparse=TRUE)
   }
 
-  #set output results
+  ##set output results
   init_param[['num_features']] <- num_features
   init_param[['num_conditions']] <- num_conditions
   init_param[['num_samples']] <- num_samples
@@ -658,16 +651,14 @@ CGM_AHP_stabsel <- function(listX,
                             eta=0.01,
                             limkappa=1e+6) {
 
-  #initialize parameters
+  ##initialize parameters
   rand_sample1 <- vector("list", init_param[['num_conditions']])
   rand_sample2 <- vector("list", init_param[['num_conditions']])
-
   model1 <- NULL
   model2 <- NULL
-
   selection_matrix <- init_param[['selection_matrix']]
 
-  #randomly sample 50% of data
+  ##randomly sample 50% of data
   for(k in seq(1, init_param[['num_conditions']])){
 
     #create index to randomly sample half of the available samples
@@ -688,7 +679,7 @@ CGM_AHP_stabsel <- function(listX,
     model2 <- c(model2, rep(k, length(ind2)))
   }
 
-  #fit two glasso models
+  ##fit two glasso models
   group1_model <- try(CGM_AHP_train(trainX=do.call(rbind, rand_sample1),
                                     trainY=model1, lambda_value=lastar,
                                     limkappa=limkappa, eta=eta))
@@ -696,19 +687,19 @@ CGM_AHP_stabsel <- function(listX,
                                     trainY=model2, lambda_value=lastar,
                                     limkappa=limkappa, eta=eta))
 
-  if (inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
+  if(inherits(group1_model, "try-error") || inherits(group2_model, "try-error")){
     warning("glasso model for replicate: ", X, " failed!")
   }
 
-  #zero out unstable edges and combine model results
+  ##zero out unstable edges and combine model results
   for (k in seq(1, init_param[['num_conditions']])){
 
-    #adjacency matrix from rand_sample1 model
+    ##adjacency matrix from rand_sample1 model
     adjacency_mat1 <- as(group1_model$OMEGA[[k]], "sparseMatrix")
     adjacency_mat1[abs(adjacency_mat1) > 1e-5] <- 1
     diag(adjacency_mat1) <- 0
 
-    #adjacency matrix from rand_sample2 model
+    ##adjacency matrix from rand_sample2 model
     adjacency_mat2 <- as(group2_model$OMEGA[[k]], "sparseMatrix")
     adjacency_mat2[abs(adjacency_mat2) > 1e-5] <- 1
     diag(adjacency_mat2) <- 0
@@ -757,39 +748,38 @@ CGM_AHP_stabsel_subsample <- function(listX,
                                       limkappa=1e+6) {
 
 
-  #initialize necessary parameters
+  ##initialize necessary parameters
   selection_matrix <- init_param[["selection_matrix"]]
   edge_matrix <- init_param[["edge_matrix"]]
   modelY <- NULL
   subsampled_listX <- vector("list", init_param[['num_conditions']])
 
-  ###subsampling
-  #check that groups are sufficiently uneven if subSample selected
+  ##check that groups are sufficiently uneven if subSample selected
   if((1.3* init_param[["min_num_samples"]]) > max(init_param[["num_samples"]])){
     stop("The condition groups are not sufficiently uneven to randomly sample apropriately.\n",
          "Please perform stability selection WITHOUT additional sub-sampling")
   }
 
-  #randomly sample 1.3x the samples in the smaller group from the larger group
+  ##randomly sample 1.3x the samples in the smaller group from the larger group
   subsampled_listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]] <- dplyr::sample_n(as.data.frame(listX[[match(max(init_param[['num_samples']]), init_param[['num_samples']])]]), 1.3*init_param[['min_num_samples']], replace=FALSE)
 
-  #subsample the smaller group
+  ##subsample the smaller group
   if(max(init_param[['num_samples']]) > (2 * min(init_param[['num_samples']]))){
 
-    #subsample 90% of the smaller group and add an additional 10%
+    ##subsample 90% of the smaller group and add an additional 10%
     temp90 <- dplyr::sample_n(as.data.frame(listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]), 0.9*init_param[['min_num_samples']], replace=FALSE)
     temp10 <- dplyr::sample_n(temp90, 0.1*init_param[['min_num_samples']], replace=FALSE)
     subsampled_listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]] <- rbind(temp90, temp10)
   }else{
 
-    #if the larger group is more than twice the size of the smaller group, we leave the smaller group alone
+    ##if the larger group is more than twice the size of the smaller group, we leave the smaller group alone
     subsampled_listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]] <- listX[[match(min(init_param[['num_samples']]), init_param[['num_samples']])]]
   }
 
   ##get new sample numbers
   subsampled_num_samples <- lapply(subsampled_listX, nrow)
 
-  #set up group vector
+  ##set up group vector
   for (k in seq(1, init_param[['num_conditions']])){
     modelY <- c(modelY, rep(k, subsampled_num_samples[[k]]))
   }
@@ -799,12 +789,11 @@ CGM_AHP_stabsel_subsample <- function(listX,
                                  trainY=modelY, lambda_value=lastar,
                                  limkappa=limkappa, eta=eta))
 
-
-  if (inherits(tmp_model, "try-error")){
+  if(inherits(tmp_model, "try-error")){
     warning("glasso model for replicate: ", X, " failed!")
   }
 
-  #zero out unstable edges and prepare output matrices
+  ##zero out unstable edges and prepare output matrices
   for(k in seq(1, init_param[['num_conditions']])){
 
     tmp_adjacency_mat <- tmp_model$OMEGA[[k]]
@@ -861,8 +850,8 @@ adjDGlasso_minimal <- function(
   num_features <- ncol(data)
   empcov <- (1/num_samples) * (t(data) %*% data) #empirical cov
 
-  #if no lambda provided default to theoretical asymptotically
-  #valid lambda for large p and large n
+  ##if no lambda provided default to theoretical asymptotically
+  ##valid lambda for large p and large n
   if (is.null(lambda)){
     message("Defaulting lambda to sqrt(log(# features)/# samples!")
     lambda <- sqrt(log(num_features)/num_samples)

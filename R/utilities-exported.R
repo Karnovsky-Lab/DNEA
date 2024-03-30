@@ -280,52 +280,41 @@ plotNetworks <- function(object,
     stop('the input object should be of class "DNEAobj"!')
   }
 
-  #get type argument
+  #set up parameters
   type <- match.arg(type)
-
-  #grab network graph
   network_graph <- adjacencyGraph(object, "joint_graph")
-
-  #grab node list
   node_list <- nodeList(object)
 
   if(type == "group_networks"){
 
-    #grab edge list
     edge_list <- edgeList(object)
-
     if(subtype == "All"){
 
-      #graph for total network
       subtype_network <- induced.subgraph(network_graph, V(network_graph)$name)
     }else{
 
-      #check the subtype exists
+      ##check the subtype exists
       if(!(subtype %in% c(networkGroups(object), "Both"))) {
         stop("The subtype provided does not match a network within the data!")
       }
-
-      #grab metabolite names present in specified subtype
+      ##grab metabolite names present in specified subtype
       subgroup_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == subtype | edge_list$edge == "Both"],
                                  edge_list$Metabolite.B[edge_list$edge == subtype | edge_list$edge == "Both"]))
-
-      #threshold network_graph network
+      ##threshold network_graph network
       subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[match(subgroup_nodes, V(network_graph)$name)])
     }
 
   }else if(type == "sub_networks"){
 
-    #check that subnetwork given is relevant
+    ##check that subnetwork given is relevant
     if(all(is.na(match(subtype, node_list$membership)))) {
       stop("The subnetwork specified does not exist!",
       "\nPlease specify a value contained in the membership column of the node list")
     }
-
-    #threshold network_graph network
+    ##threshold network_graph network
     subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subtype])
   }
-
-  #set graph layout
+  ##set graph layout
   if(missing(layout_func)){
 
     graph_layout <- layout.fruchterman.reingold(graph=subtype_network)
@@ -334,7 +323,7 @@ plotNetworks <- function(object,
     graph_layout <- layout_func(graph=subtype_network)
   }
 
-  #plot the specified network
+  ##plot the specified network
   plot(subtype_network, main=main, layout=graph_layout,
        vertex.size=node_size, width=edge_width,
        vertex.label=V(subtype_network)$name,
@@ -343,8 +332,6 @@ plotNetworks <- function(object,
 
 }
 
-#'
-#'
 filterNetworks.DNEAobj <- function(data,
                                    pcor,
                                    top_percent_edges){
@@ -362,58 +349,52 @@ filterNetworks.DNEAobj <- function(data,
   names(unweighted_adjacency_matrices) <- names(weighted_adjacency_matrices)
 
   ##filter networks
-  #can't provide both filters
+  ##can't provide both filters
   if(!missing(pcor) & !missing(top_percent_edges)){
 
     stop("Only pcor or top_percent_edges should be specified, not both!")
   }else if(!missing(pcor)){
-
-    #check for valid input
     if(pcor <=0 | pcor >= 1) {
       stop("the specified partial correlation threshold should be between 0 and 1!")
     }
 
-    #filter by pcor
+    ##filter by pcor
     for(k in names(weighted_adjacency_matrices)){
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < pcor] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else if(!missing(top_percent_edges)){
 
-    #check for valid input
+    ##check for valid input
     if(top_percent_edges <=0 | top_percent_edges >= 1) {
       stop("the specified % threshold should be between 0 and 1!")
     }
 
-    #filter networks to top x% strongest edges
+    ##filter networks to top x% strongest edges
     for(k in names(weighted_adjacency_matrices)){
 
-      #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
                                  probs=(1 - top_percent_edges))
-
-      #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else{
 
-    #must provide one filter
+    ##must provide one filter
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  #store the adjacency matrices in DNEAobj object
+  ##store the adjacency matrices in DNEAobj object
   adjacencyMatrix(x=data, weighted=TRUE) <- weighted_adjacency_matrices
   adjacencyMatrix(x=data, weighted=FALSE) <- unweighted_adjacency_matrices
 
-  ##update edge list
-  #initiate output dataframe
+  ##update edge list and create output
   pairs <- combn(as.character(featureNames(data)), 2, simplify=FALSE)
   edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                           pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
                           check.names=FALSE)
 
-  #concatenate results into dataframe
+  ##concatenate results into dataframe
   edge_list[,c(1,2)] <- do.call(rbind, pairs)
   edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
   edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
@@ -424,21 +405,20 @@ filterNetworks.DNEAobj <- function(data,
   edge_list <- edge_list[!is.na(edge_list$edge),]
   rownames(edge_list) <- NULL
 
-  #replace edgelist
+  ##replace edgelist
   edgeList(data) <- edge_list
 
 
-  ##return to console messages for total edges
-  #control network
+  ##inform user of remaining edges
+  ##control network
   message(names(unweighted_adjacency_matrices)[[1]], " network specific edges: ",
           (sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"))
 
-  #case network
+  ##case network
   message(names(unweighted_adjacency_matrices)[[2]],
           " network specific edges: ",
           (sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"))
-
-  #shared edges
+  ##shared edges
   message(rep("-", 35))
   message("Number of edges shared by both networks: ",
           sum(edge_list$edge == "Both"))
@@ -512,7 +492,6 @@ filterNetworks.list <- function(data,
     stop("Only pcor or top_percent_edges should be specified, not both!")
   }else if(!missing(pcor)){
 
-    #filter by pcor
     for(k in names(weighted_adjacency_matrices)){
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < pcor] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
@@ -522,28 +501,24 @@ filterNetworks.list <- function(data,
     #filter networks to top x% strongest edges
     for(k in names(weighted_adjacency_matrices)){
 
-      #grab quantile value
       percent_cutoff <- quantile(abs(weighted_adjacency_matrices[[k]][weighted_adjacency_matrices[[k]] != 0]),
                                  probs=(1 - top_percent_edges))
-
-      #filter
       weighted_adjacency_matrices[[k]][abs(weighted_adjacency_matrices[[k]]) < percent_cutoff] <- 0
       unweighted_adjacency_matrices[[k]] <- weighted_adjacency_matrices[[k]] != 0
     }
   }else{
 
-    #must provide one filter
+    ##must provide one filter
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  ##create edge list
-  #initiate output dataframe
+  ##create edge list and output
   pairs <- combn(as.character(colnames(weighted_adjacency_matrices[[1]])), 2, simplify=FALSE)
   edge_list <- data.frame(Metabolite.A=rep(0,length(pairs)), Metabolite.B=rep(0,length(pairs)),
                           pcor.0=rep(0,length(pairs)), pcor.1=rep(0,length(pairs)),
                           check.names=FALSE)
 
-  #concatenate results into dataframe
+  ##concatenate results into dataframe
   edge_list[,c(1,2)] <- do.call(rbind, pairs)
   edge_list[,3] <- lowerTriangle(weighted_adjacency_matrices[[1]])
   edge_list[,4] <- lowerTriangle(weighted_adjacency_matrices[[2]])
@@ -554,17 +529,17 @@ filterNetworks.list <- function(data,
   edge_list <- edge_list[!is.na(edge_list$edge),] #remove non-edges
   rownames(edge_list) <- NULL
 
-  ##return to console messages for total edges
-  #control network
+  ##inform user of remaining edges
+  ##control network
   message(names(unweighted_adjacency_matrices)[[1]], " network specific edges: ",
           (sum(unweighted_adjacency_matrices[[1]])/2) - sum(edge_list$edge == "Both"))
 
-  #case network
+  ##case network
   message(names(unweighted_adjacency_matrices)[[2]],
           " network specific edges: ",
           (sum(unweighted_adjacency_matrices[[2]])/2) - sum(edge_list$edge == "Both"))
 
-  #shared edges
+  ##shared edges
   message(rep("-", 35))
   message("Number of edges shared by both networks: ",
           sum(edge_list$edge == "Both"))
