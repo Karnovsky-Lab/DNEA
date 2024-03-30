@@ -181,9 +181,12 @@ setValidity("consensusClusteringResults", function(object){
   if(nrow(object@subnetwork_membership) != nrow(object@summary)){
     "there was a problem with consensus cluster results object"
   }
-  if(any(object@subnetwork_membership != 1 &
-         object@subnetwork_membership != 0)){
-    "There was an error in determining metabolic modules"
+  if(!all(unique(unlist(object@subnetwork_membership)) %in% c(0, 1))){
+    "There was an error in determining sub networks"
+  }
+
+  if(object@summary$number_of_nodes != ncol(object@subnetworkMembership)){
+    "Not all features accounted for in sub networks"
   }
 })
 
@@ -204,27 +207,22 @@ setValidity("DNEAinputSummary", function(object){
   }
 })
 
-#' Check Validity of "DNEAobj" object
-#' @docType methods
-#' @import methods
+#' Check assays slot
+#' @aliases DNEA-validator
+#' @keywords internal
 #' @noRd
-setValidity("DNEAobj", function(object){
-
-  ##check project name
-  if(!(is.character(projectName(object)))){
-    "@project_name must be a character string"
-  }
-
-  ##check assays
-  for(i in c("input_data", "log_input_data",
-             "scaled_expression_data", "DNEA_scaled_data")){
-
+assaysCheck <- function(object){
+  assays2check <- c("input_data", "log_input_data",
+                    "scaled_expression_data", "DNEA_scaled_data")
+  for(i in assays2check){
     if(is.matrix(assays(object)[[i]])){
 
       data2check <- list(assays(object)[[i]])
     }else if(is.list(assays(object)[[i]])){
 
       data2check <- assays(object)[[i]]
+    }else{
+      "Each element in @assays should be a matrix or list of matrices"
     }
 
     for(y in seq(length(data2check))){
@@ -239,13 +237,22 @@ setValidity("DNEAobj", function(object){
       if(!(is.numeric(data2check[[y]]))){
         "@assays must be a matrix with numeric values."
       }
-      if(tryCatch(expr={all(colnames(data2check[[y]]) !=
-                            sampleNames(object)[networkGroupIDs(object) == names(data2check)[y]])},
-                  warning=function(w){conditionMessage(w)
-                    FALSE},
-                  error=function(e){conditionMessage(e)
-                    FALSE})){
-        "Samples are out of order"
+      if(is.null(names(data2check)[y])){
+        if(!all(colnames(data2check[[y]]) == sampleNames(object))){
+          paste0("The ", i, " matrix should contain the same samples ",
+                 "and in the same order as the input data")
+        }
+      }else if(names(data2check)[y] %in% networkGroups(object)){
+        group_samples <- metaData(object, type = "samples")
+        samps <- group_samples$conditions == names(data2check)[y]
+        group_samples <- rownames(group_samples)[samps]
+        if(!all(colnames(data2check[[y]]) == group_samples)){
+          paste0("The ", i,": ",  names(data2check)[y],
+                 " does not contain the correct group samples")
+        }
+      }else{
+        paste0("The ", i,": ",  names(data2check)[y],
+               "does not match a specified experimental group")
       }
       if(all(rownames(data2check[[y]]) !=
              featureNames(object, original=FALSE))){
@@ -253,104 +260,117 @@ setValidity("DNEAobj", function(object){
       }
     }
   }
+}
+#' Check metadata slot
+#' @aliases DNEA-validator
+#' @keywords internal
+#' @noRd
+metadataCheck <- function(object){
 
-  ##check metadata
-  if(!(is.data.frame(object@metadata$samples))){
+  samps <- metaData(object, type="samples")
+  metabs <- metaData(object, type = "features")
+
+  ##check samples metadata
+  if(!(is.data.frame(samps))){
     "@metadata$samples should be of class data.frame"
   }
-  if(!(is.character(object@metadata$samples$samples))){
+  if(!(is.character(samps$samples))){
     "@metadata$samples$samples should be of class character"
   }
-  if(all(object@metadata$samples$samples !=
+  if(!all(samps$samples ==
          colnames(expressionData(x=object, assay="input_data")))){
     "sample metadata does not match order of expression data"
   }
-  if(!(is.data.frame(object@metadata$features))){
+
+  ##check features metadata
+  if(!(is.data.frame(metabs))){
     " @metadata$features should be of class data.frame"
   }
-  if(!(is.character(object@metadata$features$feature_names))){
+  if(!(is.character(metabs$feature_names))){
     "@metadata$features$feature_names should be of class character"
   }
-  if(!(is.character(object@metadata$features$clean_feature_names))){
+  if(!(is.character(metabs$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
-  if(all(object@metadata$features$clean_feature_names !=
+  if(!all(metabs$clean_feature_names ==
          rownames(expressionData(x=object, assay="input_data")))){
     "feature metadata does not match order of expression data"
   }
+
+  ##check experimental groups data
   if(length(networkGroups(object)) != 2){
     "sample conditions should be a two-level factor"
   }
   if(!is.factor(networkGroupIDs(object))){
     "sample conditions should be a factor"
   }
-  if(length(networkGroupIDs(object)) !=
+  if(length(networkGroupIDs(object)) ==
      length(sampleNames(object))){
+    if(!all(names(networkGroupIDs(object)) ==
+            sampleNames(object))){
+      "Group ID's are not aligned with their respective samples"
+    }
+  }else{
     "There should be only one group label for each sample"
+  }
+}
+#' Check Validity of "DNEAobj" object
+#' @aliases DNEA-validator
+#' @docType methods
+#' @import methods
+#' @noRd
+setValidity("DNEAobj", function(object){
+
+  ##check slots
+  assaysCheck(object)
+  metadataCheck(object)
+  validObject(object@consensus_clustering)
+
+  ##check project name
+  if(!(is.character(projectName(object)))){
+    "@project_name must be a character string"
   }
 
   ##check dataset summary
-  if(all(dim(diagnostics(object)) != c(0, 0))){
-
-    if(numSamples(object) !=
-       ncol(expressionData(x=object, assay="input_data"))){
-      "There was a problem with the dataset summary"
-    }
-    if(numFeatures(object) !=
-       nrow(expressionData(x=object, assay="input_data"))){
-      "There was a problem with the dataset summary"
-    }
-    validObject(object@dataset_summary)
+  ds <- datasetSummary(object)
+  validObject(ds)
+  if(numSamples(object) !=
+     ncol(expressionData(x=object, assay="input_data"))){
+    "There was a problem with the dataset summary"
+  }
+  if(numFeatures(object) !=
+     nrow(expressionData(x=object, assay="input_data"))){
+    "There was a problem with the dataset summary"
   }
 
   ##check nodelist
-  if(all(dim(nodeList(object)) != c(0, 0))){
-
-    if(!all(nodeList(object)$Features ==
-            featureNames(object, original=FALSE))){
-      "Node list order does not match expression data"
-    }
-  }
-
-  ##check edgeList
-  if(all(dim(edgeList(object)) != c(0, 0))){
-
-    if(ncol(edgeList(object) != 5)){
-      "There was a problem with the edge list"
-    }
+  metabs <- nodeList(object)$clean_feature_name
+  feats <- featureNames(object, original=FALSE)
+  if(!all(metabs[order(metabs)] ==
+          feats[order(feats)])){
+    "Node list features do not match expression data"
   }
 
   ##check hyperparameter slot
   if(!is.null(lambdas2Test(object))){
-    if(length(object@hyperparameter$BIC_scores) !=
-       length(object@hyperparameter$tested_lambda_values)){
+    if(length(BICscores(object)) != length(lambdas2Test(object))){
       "There was a problem with the tested lambda values"
     }
     Bscores <- unlist(lapply(object@hyperparameter$BIC_scores,
                              function(x) x$BIC))
     if(optimizedLambda(object) !=
-       object@hyperparameter$tested_lambda_values[match(min(Bscores), Bscores)]){
+       lambdas2Test(object)[match(min(Bscores), Bscores)]){
       "There was a problem with the optimized lambda"
     }
   }
 
   ##check adjacency matrices
   if(!is.null(adjacencyMatrix(object, weighted=TRUE))){
-
-    if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
-           rownames(adjacencyMatrix(object, weighted=FALSE)))){
-      "there was a problem with the adjacency matrices"
-    }
-    if(all(colnames(adjacencyMatrix(object, weighted=TRUE)) !=
-           colnames(adjacencyMatrix(object, weighted=FALSE)))){
-      "there was a problem with the adjacency matrices"
-    }
     if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
            colnames(expressionData(x=object, assay="input_data")))){
       "there was a problem with the adjacency matrices"
     }
   }
-
   ##check stable networks
   if(!is.null(selectionProbabilities(object))){
 
@@ -365,16 +385,5 @@ setValidity("DNEAobj", function(object){
         "There was a problem calculating selection probabilites"
       }
     }
-  }
-
-  ##check consensus_clustering
-  if(!is.null(dim(CCsummary(object)))){
-
-    if(sum(CCsummary(object)$number_of_nodes) !=
-       nrow(expressionData(x=object, assay="input_data"))){
-      "There was a problem with consensus clustering"
-    }
-
-    validObject(object@consensus_clustering)
   }
 })
