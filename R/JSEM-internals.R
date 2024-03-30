@@ -581,12 +581,12 @@ stabsel_init <- function(
                          'min_num_samples',
                          'selection_matrix',
                          'edge_matrix')
-  if (is.list(listX)) {
+  if(is.list(listX)) {
     num_conditions <- length(listX)
     num_features <- ncol(listX[[1]])
     num_samples <- unlist(lapply(listX, nrow))
     min_num_samples <- min(num_samples)
-  } else{
+  }else{
     num_features <- ncol(listX)
     num_conditions <- 1
     num_samples <- nrow(listX)
@@ -852,7 +852,7 @@ adjDGlasso_minimal <- function(
 
   ##if no lambda provided default to theoretical asymptotically
   ##valid lambda for large p and large n
-  if (is.null(lambda)){
+  if(is.null(lambda)){
     message("Defaulting lambda to sqrt(log(# features)/# samples!")
     lambda <- sqrt(log(num_features)/num_samples)
   }

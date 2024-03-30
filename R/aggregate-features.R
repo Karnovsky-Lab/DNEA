@@ -131,19 +131,19 @@ aggregateFeatures <- function(object,
   method <- match.arg(method)
   feature_membership <- NULL
   if(is.null(expressionData(x=object, assay="input_data"))){
-    stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!",
-         '\nTo proceed, please insert un-scaled expression data into the DNEAobject')
+    stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!")
   }
 
   if(!(all(rownames(expressionData(x=object, assay="input_data")) ==
            rownames(feature_groups)))){
-    stop("The feature order of feature_groups does not match the expression data!")
+    stop("feature_groups order does not match expression data order!")
   }
 
-  ##warning if correlation_threshold was provided for knowledge-based collapsing
   if(method == "knowledge" & !is.null(correlation_threshold)){
-    warning("correlation_threshold is only used in the correlation-based and hybrid node collapsing methods...\n",
-            "...The threshold will be ignored and nodes will be collapsed based on the provided feature_groups.\n")
+    warning("correlation_threshold is only used in the correlation-based and ",
+            "hybrid node collapsing methods...\n",
+            "...The threshold will be ignored and nodes will be collapsed ",
+            "based on the provided feature_groups.\n")
   }
 
 
@@ -282,8 +282,8 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
 
   ##if no correlation in either condition send error
   if(dim(edge_list)[1] == 0){
-    stop("Features in teh data are not sufficientl correlated for aggregating...",
-         "\nTry using a lower correlation to aggregate features")
+    stop("Features in teh data are not sufficientl correlated for aggregating",
+         "...\nTry using a lower correlation to aggregate features")
   }
 
   ##filter to features clustering in both sample conditions only
@@ -291,8 +291,8 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
 
   ##if no correlation in shared by both conditions send error
   if(dim(filtered_edge_list)[1] == 0){
-    stop("Features in teh data are not sufficientl correlated for aggregating...",
-         "\nTry using a lower correlation to aggregate features")
+    stop("Features in teh data are not sufficientl correlated for aggregating",
+         "...\nTry using a lower correlation to aggregate features")
   } else {
     ##new graph from filtered edge list
     filtered_adjacency_graph <- graph_from_edgelist(as.matrix(filtered_edge_list[,c(1, 2)]))
