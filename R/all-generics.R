@@ -51,14 +51,13 @@ setGeneric("networkGroupIDs<-", function(x, value)
   standardGeneric("networkGroupIDs<-"))
 
 #' @rdname metaData-methods
-#' @aliases metaData includeMetadata
+#' @aliases metaData
 #' @export
 setGeneric("metaData", function(x, type)
   standardGeneric("metaData"))
 
-#' @rdname metaData-methods
-#' @aliases metaData includeMetadata
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("metaData<-", function(x, type, value)
   standardGeneric("metaData<-"))
 

@@ -2,14 +2,10 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{metaData}
 \alias{metaData}
-\alias{includeMetadata}
-\alias{metaData<-}
 \alias{metaData,DNEAobj-method}
 \title{Retrieve metadata stored in DNEAobj}
 \usage{
 metaData(x, type)
-
-metaData(x, type) <- value
 
 \S4method{metaData}{DNEAobj}(x, type = c("samples", "features"))
 }

@@ -4,14 +4,16 @@
 \alias{includeMetadata}
 \title{Add additional metadata to the DNEAobj object}
 \usage{
-includeMetadata(object, type = c("sample", "feature"), metadata)
+includeMetadata(object, type = c("samples", "features"), metadata)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}} object}
 
-\item{type}{sample or feature metadata}
+\item{type}{A character string corresponding to the type of metadata
+being included. Can be either "samples" or "features"}
 
-\item{metadata}{a data.frame containing metadata to add}
+\item{metadata}{a data.frame containing metadata to add. The row
+names should be either the sample names or feature names, respectively}
 }
 \value{
 A DNEAobj object with the specified additions

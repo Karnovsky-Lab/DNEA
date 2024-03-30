@@ -223,7 +223,7 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
 #'
 #' metaData(dnw, type = "sample")
 #' @rdname metaData-methods
-#' @aliases metaData includeMetadata
+#' @aliases metaData
 #' @export
 setMethod("metaData", signature(x="DNEAobj"),
           metaData.DNEAobj)
