@@ -2,7 +2,6 @@
 
 export("BICscores<-")
 export("lambdas2Test<-")
-export("metaData<-")
 export("networkGroupIDs<-")
 export("optimizedLambda<-")
 export(BICscores)
