@@ -38,6 +38,7 @@ dnw <- includeMetadata(object=dnw, type="sample", metadata=T1Dmeta)
 }
 \seealso{
 \code{\link{featureNames}},\code{\link{sampleNames}},
+\code{\link{metaData}}
 }
 \author{
 Christopher Patsalis

@@ -52,6 +52,7 @@ setGeneric("networkGroupIDs<-", function(x, value)
 
 #' @rdname metaData-methods
 #' @aliases metaData
+#' @seealso \code{\link{includeMetadata}}
 #' @export
 setGeneric("metaData", function(x, type)
   standardGeneric("metaData"))

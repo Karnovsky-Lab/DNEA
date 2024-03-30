@@ -215,13 +215,14 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
 #'
 #' @author Christopher Patsalis
 #' @seealso
-#' \code{\link{createDNEAobject}}
+#' \code{\link{createDNEAobject}}, \code{\link{includeMetadata}}
 #' @returns A data frame of the indicated metadata
 #' @examples
 #' #import example data
 #' data(dnw)
 #'
 #' metaData(dnw, type = "sample")
+#' @seealso \code{\link{includeMetadata}}
 #' @rdname metaData-methods
 #' @aliases metaData
 #' @export

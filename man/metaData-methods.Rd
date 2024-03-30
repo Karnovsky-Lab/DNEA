@@ -29,7 +29,11 @@ data(dnw)
 metaData(dnw, type = "sample")
 }
 \seealso{
-\code{\link{createDNEAobject}}
+\code{\link{includeMetadata}}
+
+\code{\link{createDNEAobject}}, \code{\link{includeMetadata}}
+
+\code{\link{includeMetadata}}
 }
 \author{
 Christopher Patsalis
