@@ -129,7 +129,6 @@ createDNEAobject <- function(project_name,
 
   message("\nDiagnostic criteria are as follows: ")
   show(ds_test)
-  validObject(object)
   return(object)
 }
 ################################################################################
