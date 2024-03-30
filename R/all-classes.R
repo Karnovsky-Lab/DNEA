@@ -216,7 +216,8 @@ setValidity("DNEAobj", function(object){
   }
 
   ##check assays
-  for(i in c("input_data", "log_input_data", "scaled_expression_data", "DNEA_scaled_data")){
+  for(i in c("input_data", "log_input_data",
+             "scaled_expression_data", "DNEA_scaled_data")){
 
     if(is.matrix(assays(object)[[i]])){
 
@@ -232,7 +233,8 @@ setValidity("DNEAobj", function(object){
       }
       if(length(rownames(data2check[[y]])) !=
          length(unique(rownames(data2check[[y]])))){
-        "@assays must be an expression matrix where each row is a unique feature."
+        "@assays must be an expression matrix where
+        each row is a unique feature."
       }
       if(!(is.numeric(data2check[[y]]))){
         "@assays must be a matrix with numeric values."
@@ -324,7 +326,8 @@ setValidity("DNEAobj", function(object){
        length(object@hyperparameter$tested_lambda_values)){
       "There was a problem with the tested lambda values"
     }
-    Bscores <- unlist(lapply(object@hyperparameter$BIC_scores, function(x) x$BIC))
+    Bscores <- unlist(lapply(object@hyperparameter$BIC_scores,
+                             function(x) x$BIC))
     if(optimizedLambda(object) !=
        object@hyperparameter$tested_lambda_values[match(min(Bscores), Bscores)]){
       "There was a problem with the optimized lambda"
@@ -359,7 +362,7 @@ setValidity("DNEAobj", function(object){
       }
       if(any(selectionProbabilities(object)[[i]] > 1) &
          any(selectionProbabilities(object)[[i]] < 0)){
-        "There was a problem calculating selectionProbabilites"
+        "There was a problem calculating selection probabilites"
       }
     }
   }
