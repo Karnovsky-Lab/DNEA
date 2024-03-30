@@ -50,6 +50,18 @@ setGeneric("networkGroupIDs", function(x)
 setGeneric("networkGroupIDs<-", function(x, value)
   standardGeneric("networkGroupIDs<-"))
 
+#' @rdname metaData-methods
+#' @aliases metaData includeMetadata
+#' @export
+setGeneric("metaData", function(x, type)
+  standardGeneric("metaData"))
+
+#' @rdname metaData-methods
+#' @aliases metaData includeMetadata
+#' @export
+setGeneric("metaData<-", function(x, type, value)
+  standardGeneric("metaData<-"))
+
 #' @rdname sampleNames-methods
 #' @aliases sampleNames
 #' @export

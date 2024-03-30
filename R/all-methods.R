@@ -195,6 +195,53 @@ networkGroups.DNEAobj <- function(x){
 setMethod("networkGroups", signature(x="DNEAobj"),
           networkGroups.DNEAobj)
 
+metaData.DNEAobj <- function(x, type=c("samples", "features")){
+
+  type <- match.arg(type)
+  if(type == "samples"){
+    x@metadata[["samples"]]
+  }else if(type == "features"){
+    x@metadata[["features"]]
+  }
+}
+#' Retrieve metadata stored in DNEAobj
+#'
+#' This function retrieves the specified metadata data frame stored
+#' in the @@metadata slot of the \code{\link{DNEAobj}} object.
+#'
+#' @param x A \code{\link{DNEAobj}} object.
+#' @param type A character string indicating the type of metadata
+#' to access. Can be "sample" or "feature".
+#'
+#' @author Christopher Patsalis
+#' @seealso
+#' \code{\link{createDNEAobject}}
+#' @returns A data frame of the indicated metadata
+#' @examples
+#' #import example data
+#' data(dnw)
+#'
+#' metaData(dnw, type = "sample")
+#' @rdname metaData-methods
+#' @aliases metaData includeMetadata
+#' @export
+setMethod("metaData", signature(x="DNEAobj"),
+          metaData.DNEAobj)
+
+metaDataReplace.DNEAobj <- function(x, type, value){
+
+  type <- match.arg(type)
+  if(type == "samples"){
+    x@metadata[["samples"]] <- value
+  }else if(type == "features"){
+    x@metadata[["features"]] <- value
+  }
+}
+#' @keywords internal
+#' @export
+setReplaceMethod("metaData", signature(x="DNEAobj"),
+                 metaDataReplace.DNEAobj)
+
 sampleNames.DNEAobj <- function(x){
 
   x@metadata[["samples"]]$samples
