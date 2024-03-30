@@ -324,7 +324,7 @@ setValidity("DNEAobj", function(object){
   ##check slots
   assaysCheck(object)
   metadataCheck(object)
-  validObject(object@consensus_clustering)
+  validObject(consensus_clustering(object))
 
   ##check project name
   if(!(is.character(projectName(object)))){
