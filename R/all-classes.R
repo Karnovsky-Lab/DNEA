@@ -1,3 +1,7 @@
+#' @include all-methods.R
+#' @include all-generics.R
+NULL
+
 #' consensusClusteringResults
 #'
 #' An s4 class to represent the results from consensus
@@ -170,7 +174,7 @@ setClass(Class="collapsed_DNEAobj",
 #' @noRd
 setValidity("consensusClusteringResults", function(object){
 
-  if(ncol(object@summary != 5)){
+  if(ncol(summary(object) != 5)){
     "there was a problem with consensus cluster results object"
   }
   for(i in length(object@adjacency_graphs)){
@@ -178,14 +182,15 @@ setValidity("consensusClusteringResults", function(object){
       "There was a problem with adjacency graphs in consensus clustering"
     }
   }
-  if(nrow(object@subnetwork_membership) != nrow(object@summary)){
+  if(nrow(subnetworkMembership(object)) != nrow(summary(object))){
     "there was a problem with consensus cluster results object"
   }
-  if(!all(unique(unlist(object@subnetwork_membership)) %in% c(0, 1))){
+  if(!all(unique(unlist(subnetworkMembership(object))) %in% c(0, 1))){
     "There was an error in determining sub networks"
   }
 
-  if(object@summary$number_of_nodes != ncol(object@subnetworkMembership)){
+  if(sum(CCsummary(object)$number_of_nodes) !=
+     ncol(subnetworkMembership(object))){
     "Not all features accounted for in sub networks"
   }
 })
@@ -215,7 +220,9 @@ assaysCheck <- function(object){
   assays2check <- c("input_data", "log_input_data",
                     "scaled_expression_data", "DNEA_scaled_data")
   for(i in assays2check){
-    if(is.list(assays(object)[[i]])){
+    if(is.null(assays(object)[[i]])){
+      break
+    }else if(is.list(assays(object)[[i]])){
       data2check <- assays(object)[[i]]
     }else{data2check <- list(assays(object)[[i]])}
     for(y in seq(length(data2check))){
@@ -257,9 +264,7 @@ assaysCheck <- function(object){
       if(all(rownames(data2check[[y]]) !=
              featureNames(object, original=FALSE))){
         "Features are out of order"
-      }
-    }
-  }
+      }}}
 }
 #' Check metadata slot
 #' @aliases DNEA-validator
@@ -303,7 +308,12 @@ metadataCheck <- function(object){
   }
 }
 
-DNEAobjCheck <- function(object){
+#' Check Validity of "DNEAobj" object
+#' @aliases DNEA-validator
+#' @docType methods
+#' @import methods
+#' @noRd
+setValidity("DNEAobj", function(object){
 
   ds <- datasetSummary(object)
   validObject(ds)
@@ -349,10 +359,4 @@ DNEAobjCheck <- function(object){
          any(selectionProbabilities(object)[[i]] < 0)){
         "There was a problem calculating selection probabilites"
       }}}
-}
-#' Check Validity of "DNEAobj" object
-#' @aliases DNEA-validator
-#' @docType methods
-#' @import methods
-#' @noRd
-setValidity("DNEAobj", DNEAobjCheck(object))
+})
