@@ -16,6 +16,7 @@
 #'
 #' @seealso
 #' \code{\link{featureNames}},\code{\link{sampleNames}},
+#' \code{\link{metaData}}
 #'
 #' @returns A DNEAobj object with the specified additions
 #'
