@@ -84,17 +84,12 @@ NULL
 createDNEAobject <- function(project_name,
                              expression_data,
                              group_labels){
-
-
-  ##restructure data to initiate object
+  ##checks
   if(!missing(expression_data) & !missing(group_labels)){
-
     if(!(all(names(group_labels) == colnames(expression_data)))){
       stop("Group labels do not match sample order in expression data!")
     }
-
     if(!is.factor(group_labels)){
-
       group_labels <- factor(group_labels)
       message("Condition for expression_data should be of class factor. ",
               "Converting now.\n",
@@ -102,14 +97,21 @@ createDNEAobject <- function(project_name,
               levels(group_labels)[1],"\n2. ",
               levels(group_labels)[2])
     }
-
-    ##create data structures to initialize DNEAobject with un-scaled data
+    ##restructure data
     restructured_data <- restructure_input_data(expression_data=expression_data,
                                                 condition_values=group_labels)
   } else{
-    #no data was provided - throw error
     stop('Expression data must be provided to create DNEAobject')
   }
+  ##perform diagnostic testing on dataset
+  ds_test <- dataDiagnostics(mat=expressionData(x= object, assay="scaled_expression_data"),
+                             condition_values=networkGroups(object),
+                             conditions=networkGroupIDs(object))
+
+  ##perform differential expression on the features
+  DE_test <- metabDE(mat=expressionData(x=object, assay="log_input_data"),
+                     condition_values=networkGroups(object),
+                     conditions=networkGroupIDs(object))
 
   ##initiate DNEA object
   object <- new("DNEAobj",
@@ -120,27 +122,14 @@ createDNEAobject <- function(project_name,
                                 network_group_IDs=structure(restructured_data[[2]]$samples$conditions,
                                                             names=restructured_data[[2]]$samples$samples),
                                 network_groups=levels(restructured_data[[2]]$samples$conditions)),
+                dataset_summary=ds_test, node_list=DE_test,
                 hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL, tested_lambda_values=NULL),
                 adjacency_matrix=list(weighted_adjacency=NULL, unweighted_adjacency=NULL),
                 stable_networks=list(selection_results=NULL, selection_probabilities=NULL))
 
-  ##perform diagnostic testing on dataset
-  datasetSummary(object) <- dataDiagnostics(mat=expressionData(x= object, assay="scaled_expression_data"),
-                                       condition_values=networkGroups(object),
-                                       conditions=networkGroupIDs(object))
-
-  ##print dataset summary
   message("\nDiagnostic criteria are as follows: ")
-  show(object@dataset_summary)
-
-  ##perform differential expression on the features
-  nodeList(object) <- metabDE(mat=expressionData(x=object, assay="log_input_data"),
-                              condition_values=networkGroups(object),
-                              conditions=networkGroupIDs(object))
-
-  ##check for valid object once more
+  show(ds_test)
   validObject(object)
-
   return(object)
 }
 ################################################################################
