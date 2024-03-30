@@ -215,16 +215,9 @@ assaysCheck <- function(object){
   assays2check <- c("input_data", "log_input_data",
                     "scaled_expression_data", "DNEA_scaled_data")
   for(i in assays2check){
-    if(is.matrix(assays(object)[[i]])){
-
-      data2check <- list(assays(object)[[i]])
-    }else if(is.list(assays(object)[[i]])){
-
+    if(is.list(assays(object)[[i]])){
       data2check <- assays(object)[[i]]
-    }else{
-      "Each element in @assays should be a matrix or list of matrices"
-    }
-
+    }else{data2check <- list(assays(object)[[i]])}
     for(y in seq(length(data2check))){
       if(!(is.matrix(data2check[[y]]))){
         "@assays must be an expression matrix"
@@ -237,7 +230,14 @@ assaysCheck <- function(object){
       if(!(is.numeric(data2check[[y]]))){
         "@assays must be a matrix with numeric values."
       }
+      if(numFeatures(object) != nrow(data2check[[y]])){
+        "There was a problem with the feature number"
+      }
       if(is.null(names(data2check)[y])){
+        if(numSamples(object) !=
+           ncol(expressionData(x=object, assay="input_data"))){
+          "There was a problem with the sample number"
+        }
         if(!all(colnames(data2check[[y]]) == sampleNames(object))){
           paste0("The ", i, " matrix should contain the same samples ",
                  "and in the same order as the input data")
@@ -268,27 +268,16 @@ assaysCheck <- function(object){
 metadataCheck <- function(object){
 
   samps <- metaData(object, type="samples")
-  metabs <- metaData(object, type = "features")
-
-  ##check samples metadata
-  if(!(is.data.frame(samps))){
-    "@metadata$samples should be of class data.frame"
-  }
-  if(!(is.character(samps$samples))){
-    "@metadata$samples$samples should be of class character"
-  }
+  if(!(is.data.frame(samps)))"sample metadata should be a data.frame"
+  if(!(is.character(samps$samples)))"sample labels should be character strings"
   if(!all(samps$samples ==
          colnames(expressionData(x=object, assay="input_data")))){
     "sample metadata does not match order of expression data"
   }
 
-  ##check features metadata
-  if(!(is.data.frame(metabs))){
-    " @metadata$features should be of class data.frame"
-  }
-  if(!(is.character(metabs$feature_names))){
-    "@metadata$features$feature_names should be of class character"
-  }
+  metabs <- metaData(object, type = "features")
+  if(!(is.data.frame(metabs)))"feature metadata should be a data.frame"
+  if(!(is.character(metabs$feature_names)))"feature names should be characters"
   if(!(is.character(metabs$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
@@ -298,12 +287,11 @@ metadataCheck <- function(object){
   }
 
   ##check experimental groups data
-  if(length(networkGroups(object)) != 2){
+  if(length(networkGroups(object)) != 2 |
+     !is.factor(networkGroupIDs(object))){
     "sample conditions should be a two-level factor"
   }
-  if(!is.factor(networkGroupIDs(object))){
-    "sample conditions should be a factor"
-  }
+
   if(length(networkGroupIDs(object)) ==
      length(sampleNames(object))){
     if(!all(names(networkGroupIDs(object)) ==
@@ -314,35 +302,18 @@ metadataCheck <- function(object){
     "There should be only one group label for each sample"
   }
 }
-#' Check Validity of "DNEAobj" object
-#' @aliases DNEA-validator
-#' @docType methods
-#' @import methods
-#' @noRd
-setValidity("DNEAobj", function(object){
 
-  ##check slots
+DNEAobjCheck <- function(object){
+
+  ds <- datasetSummary(object)
+  validObject(ds)
   assaysCheck(object)
   metadataCheck(object)
   validObject(consensus_clustering(object))
-
   ##check project name
   if(!(is.character(projectName(object)))){
     "@project_name must be a character string"
   }
-
-  ##check dataset summary
-  ds <- datasetSummary(object)
-  validObject(ds)
-  if(numSamples(object) !=
-     ncol(expressionData(x=object, assay="input_data"))){
-    "There was a problem with the dataset summary"
-  }
-  if(numFeatures(object) !=
-     nrow(expressionData(x=object, assay="input_data"))){
-    "There was a problem with the dataset summary"
-  }
-
   ##check nodelist
   metabs <- nodeList(object)$clean_feature_name
   feats <- featureNames(object, original=FALSE)
@@ -350,32 +321,26 @@ setValidity("DNEAobj", function(object){
           feats[order(feats)])){
     "Node list features do not match expression data"
   }
-
   ##check hyperparameter slot
   if(!is.null(lambdas2Test(object))){
     if(length(BICscores(object)) != length(lambdas2Test(object))){
       "There was a problem with the tested lambda values"
     }
-    Bscores <- unlist(lapply(object@hyperparameter$BIC_scores,
+    Bscores <- unlist(lapply(BICscore(object),
                              function(x) x$BIC))
     if(optimizedLambda(object) !=
        lambdas2Test(object)[match(min(Bscores), Bscores)]){
       "There was a problem with the optimized lambda"
-    }
-  }
-
+    }}
   ##check adjacency matrices
   if(!is.null(adjacencyMatrix(object, weighted=TRUE))){
     if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
            colnames(expressionData(x=object, assay="input_data")))){
       "there was a problem with the adjacency matrices"
-    }
-  }
+    }}
   ##check stable networks
   if(!is.null(selectionProbabilities(object))){
-
     for(i in length(selectionProbabilities(object))){
-
       if(all(dim(selectionProbabilities(object)[[i]]) !=
              c(numFeatures(object), numFeatures(object)))){
         "There was a problem with the feature order for selection probabilites"
@@ -383,7 +348,11 @@ setValidity("DNEAobj", function(object){
       if(any(selectionProbabilities(object)[[i]] > 1) &
          any(selectionProbabilities(object)[[i]] < 0)){
         "There was a problem calculating selection probabilites"
-      }
-    }
-  }
-})
+      }}}
+}
+#' Check Validity of "DNEAobj" object
+#' @aliases DNEA-validator
+#' @docType methods
+#' @import methods
+#' @noRd
+setValidity("DNEAobj", DNEAobjCheck(object))
