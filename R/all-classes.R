@@ -189,7 +189,7 @@ setValidity("consensusClusteringResults", function(object){
     "There was an error in determining sub networks"
   }
 
-  if(sum(CCsummary(object)$number_of_nodes) !=
+  if(sum(summary(object)$number_of_nodes) !=
      ncol(subnetworkMembership(object))){
     "Not all features accounted for in sub networks"
   }
