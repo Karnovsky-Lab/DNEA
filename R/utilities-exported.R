@@ -7,8 +7,10 @@
 #' names, respectively
 #'
 #' @param object A \code{\link{DNEAobj}} object
-#' @param type sample or feature metadata
-#' @param metadata a data.frame containing metadata to add
+#' @param type A character string corresponding to the type of metadata
+#' being included. Can be either "samples" or "features"
+#' @param metadata a data.frame containing metadata to add. The row
+#' names should be either the sample names or feature names, respectively
 #'
 #' @author Christopher Patsalis
 #'
@@ -30,7 +32,7 @@
 #'
 #' @export
 includeMetadata <- function(object,
-                            type=c('sample', 'feature'),
+                            type=c('samples', 'features'),
                             metadata){
 
   ##test for proper input
@@ -42,32 +44,27 @@ includeMetadata <- function(object,
   if(is.null(rownames(metadata))) stop("dat must have row names!")
 
   type <- match.arg(type)
-  if(type == 'sample'){
-    if(tryCatch({all(sampleNames(object) == rownames(metadata))},
-                warning=function(w){FALSE})){
-      for(i in seq(1, length(colnames(metadata)))){
+  if(type == 'samples'){
+    if(all(rownames(metaData(object, type="samples")) == rownames(metadata))){
 
-
-        object@metadata[["samples"]][[colnames(metadata)[i]]] <- metadata[, i]
-      }
-    } else{
+      new_metadata <- cbind(metaData(object, type = "samples"),
+                            metadata)
+      metaData(object, type = "samples") <- new_metadata
+    }else{
 
       stop('new metadata order does not match sample order')
-
     }
-  } else if(type == 'feature'){
-    if(tryCatch({all(object@metadata[["features"]]$clean_feature_names == rownames(metadata))},
-      warning=function(w){FALSE})){
-      for(i in seq(1, length(colnames(metadata)))){
+  } else if(type == 'features'){
+    if(all(rownames(metaData(object, type="features")) == rownames(metadata))){
 
-        new_metadata_colname <- colnames(metadata)[i]
-        object@metadata[["features"]][[metadata[, i]]] <- metadata[, i]
-      }
-    } else{
+      new_metadata <- cbind(metaData(object, type = "features"),
+                            metadata)
+      metaData(object, type = "features") <- new_metadata
+    }else{
+
       stop('new metadata order does not match feature order')
     }
   }
-
   return(object)
 }
 
