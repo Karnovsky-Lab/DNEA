@@ -875,6 +875,15 @@ summary.consensusClusteringResults <- function(object){
 setMethod("summary", signature(object="consensusClusteringResults"),
           summary.consensusClusteringResults)
 
+consensus_clustering.DNEAobj <- function(x){
+
+  x@consensus_clustering
+}
+#' @keywords internal
+#' @noRd
+setMethod("consensus_clustering", signature(x="DNEAobj"),
+          consensus_clustering.DNEAobj)
+
 CCsummary.DNEAobj <- function(x){
 
   summary(x@consensus_clustering)

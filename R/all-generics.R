@@ -217,6 +217,11 @@ setGeneric("adjacencyGraph", function(x, graph)
 setGeneric("adjacencyGraph<-", function(x, graph, value)
   standardGeneric("adjacencyGraph<-"))
 
+#' @keywords internal
+#' @noRd
+setGeneric("consensus_clustering", function(x)
+  standardGeneric("consensus_clustering"))
+
 #' @rdname CCsummary-methods
 #' @aliases CCsummary
 #' @export
