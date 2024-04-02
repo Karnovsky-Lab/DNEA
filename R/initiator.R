@@ -103,31 +103,39 @@ createDNEAobject <- function(project_name,
   } else{
     stop('Expression data must be provided to create DNEAobject')
   }
+
+  ##gather network information for use later
+  network_group_IDs <- structure(restructured_data[["metadata"]]$samples$conditions,
+                                 names=restructured_data[["metadata"]]$samples$samples)
+  network_groups <- levels(restructured_data[["metadata"]]$samples$conditions)
+
   ##perform diagnostic testing on dataset
-  ds_test <- dataDiagnostics(mat=expressionData(x= object, assay="scaled_expression_data"),
-                             condition_values=networkGroups(object),
-                             conditions=networkGroupIDs(object))
+  ds_test <- dataDiagnostics(mat=restructured_data[["assays"]][["scaled_expression_data"]],
+                             condition_values=network_groups,
+                             conditions=network_group_IDs)
 
   ##perform differential expression on the features
-  DE_test <- metabDE(mat=expressionData(x=object, assay="log_input_data"),
-                     condition_values=networkGroups(object),
-                     conditions=networkGroupIDs(object))
+  de_test <- metabDE(mat=restructured_data[["assays"]][["log_input_data"]],
+                     condition_values=network_groups,
+                     conditions=network_group_IDs)
 
   ##initiate DNEA object
   object <- new("DNEAobj",
                 project_name=project_name,
-                assays= restructured_data[[1]],
-                metadata=list(samples=restructured_data[[2]]$samples,
-                                features=restructured_data[[2]]$features,
-                                network_group_IDs=structure(restructured_data[[2]]$samples$conditions,
-                                                            names=restructured_data[[2]]$samples$samples),
-                                network_groups=levels(restructured_data[[2]]$samples$conditions)),
-                dataset_summary=ds_test, node_list=DE_test,
-                hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL, tested_lambda_values=NULL),
-                adjacency_matrix=list(weighted_adjacency=NULL, unweighted_adjacency=NULL),
-                stable_networks=list(selection_results=NULL, selection_probabilities=NULL))
+                assays= restructured_data[["assays"]],
+                metadata=list(samples=restructured_data[["metadata"]]$samples,
+                                features=restructured_data[["metadata"]]$features,
+                                network_group_IDs=network_group_IDs,
+                                network_groups=network_groups),
+                dataset_summary=ds_test, node_list=de_test,
+                hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL,
+                                    tested_lambda_values=NULL),
+                adjacency_matrix=list(weighted_adjacency=NULL,
+                                      unweighted_adjacency=NULL),
+                stable_networks=list(selection_results=NULL,
+                                     selection_probabilities=NULL))
 
-  message("\nDiagnostic criteria are as follows: ")
+  message("Diagnostic criteria are as follows: ")
   show(ds_test)
   return(object)
 }
@@ -192,7 +200,7 @@ restructure_input_data <- function(expression_data,
   condition_values <- condition_values[colnames(expression_data)]
 
   message("Data has been normalized for further analysis.",
-  " New data can be found in the scaled_expression_data assay!\n")
+  " New data can be found in the scaled_expression_data assay!")
 
   ##concatenate output
   assays[['scaled_expression_data']] <- scaled_expression_data
@@ -203,7 +211,7 @@ restructure_input_data <- function(expression_data,
                                        clean_feature_names=clean_feature_names,
                                        row.names=feature_names)
 
-  return(list(assays, metadata))
+  return(list(assays=assays, metadata=metadata))
 }
 
 #' Calculate diagnostic criteria to determine stability of dataset
