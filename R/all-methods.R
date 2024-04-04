@@ -1,3 +1,7 @@
+#' @include all-classes.R
+#' @include all-generics.R
+NULL
+
 #' Retrieve information about a DNEAobj object
 #'
 #' @describeIn DNEAobj-class
