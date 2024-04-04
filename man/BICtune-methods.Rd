@@ -112,7 +112,7 @@ data(dnw)
 #optimize lambda parameter
 dnw <- BICtune(object=dnw,
                informed=TRUE,
-               interval=1e-2)
+               interval=0.1)
 
 }
 \references{
