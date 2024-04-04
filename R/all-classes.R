@@ -1,7 +1,3 @@
-#' @include all-methods.R
-#' @include all-generics.R
-NULL
-
 #' consensusClusteringResults
 #'
 #' An s4 class to represent the results from consensus
@@ -315,10 +311,9 @@ metadataCheck <- function(object){
 #' @noRd
 setValidity("DNEAobj", function(object){
 
-  ds <- datasetSummary(object)
-  validObject(ds)
   assaysCheck(object)
   metadataCheck(object)
+  validObject(datasetSummary(object))
   validObject(consensus_clustering(object))
   ##check project name
   if(!(is.character(projectName(object)))){
@@ -336,7 +331,7 @@ setValidity("DNEAobj", function(object){
     if(length(BICscores(object)) != length(lambdas2Test(object))){
       "There was a problem with the tested lambda values"
     }
-    Bscores <- unlist(lapply(BICscore(object),
+    Bscores <- unlist(lapply(BICscores(object),
                              function(x) x$BIC))
     if(optimizedLambda(object) !=
        lambdas2Test(object)[match(min(Bscores), Bscores)]){
