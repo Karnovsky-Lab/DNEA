@@ -550,12 +550,12 @@ par(mfrow = c(1,2))
 
 #plot subnetworks
 plotNetworks(TEDDYdat, 
-             type = "subnetworks", 
+             type = "sub_networks", 
              subtype = 1, 
              layout_func = layout_in_circle,
              main = "Sub Network 1")
 plotNetworks(TEDDYdat, 
-             type = "subnetworks", 
+             type = "sub_networks", 
              subtype = 2, 
              layout_func = layout_in_circle,
              main = "Sub Network 2")
