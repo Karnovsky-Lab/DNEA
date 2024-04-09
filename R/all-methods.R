@@ -233,14 +233,14 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
 setMethod("metaData", signature(x="DNEAobj"),
           metaData.DNEAobj)
 
-metaDataReplace.DNEAobj <- function(x, type, value){
+metaDataReplace.DNEAobj <- function(x,
+                                    type=c("samples", "features"),
+                                    value){
 
   type <- match.arg(type)
-  if(type == "samples"){
-    x@metadata[["samples"]] <- value
-  }else if(type == "features"){
-    x@metadata[["features"]] <- value
-  }
+  x@metadata[[type]] <- value
+  validObject(x)
+  x
 }
 #' @keywords internal
 #' @export
