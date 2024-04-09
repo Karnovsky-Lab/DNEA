@@ -243,7 +243,7 @@ metaDataReplace.DNEAobj <- function(x,
   x
 }
 #' @keywords internal
-#' @export
+#' @noRd
 setReplaceMethod("metaData", signature(x="DNEAobj"),
                  metaDataReplace.DNEAobj)
 
