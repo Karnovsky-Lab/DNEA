@@ -189,16 +189,13 @@ aggregateFeatures <- function(object,
                                                               row.names=featureNames(reduced_object, original=TRUE)),
                                           network_group_IDs=networkGroupIDs(reduced_object),
                                           network_groups=networkGroups(reduced_object)),
+                          dataset_summary=datasetSummary(reduced_object),
+                          node_list=nodeList(reduced_object),
                           hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL, tested_lambda_values=NULL),
                           adjacency_matrix=list(weighted_adjacency=NULL, unweighted_adjacency=NULL),
                           stable_networks=list(selection_results=NULL, selection_probabilities=NULL),
                           original_experiment=reduced_object,
                           feature_membership=res[["feature_membership"]])
-
-  datasetSummary(collapsed_object) <- new("DNEAinputSummary",
-                                          num_samples=numSamples(reduced_object),
-                                          num_features=numFeatures(reduced_object),
-                                          diagnostic_values=diagnostics(reduced_object))
 
   nodeList(collapsed_object) <- nodeList(reduced_object)
   return(collapsed_object)
