@@ -26,10 +26,10 @@ test_that("plotNetworks", {
 
   expect_error(plotNetworks(dat, type = "test"))
   expect_error(plotNetworks(dat, type = "group_networks", subtype = 1))
-  expect_error(plotNetworks(dat, type = "subnetworks", subtype = "All"))
+  expect_error(plotNetworks(dat, type = "sub_networks", subtype = "All"))
 
   expect_no_condition(withr::with_tempdir(plotNetworks(dat, type = "group_networks", subtype = "All"), clean = TRUE))
-  expect_no_condition(withr::with_tempdir(plotNetworks(dat, type = "subnetworks", subtype = 1), clean = TRUE))
+  expect_no_condition(withr::with_tempdir(plotNetworks(dat, type = "sub_networks", subtype = 1), clean = TRUE))
 })
 
 test_that("filterNetworks", {
