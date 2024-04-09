@@ -5,10 +5,10 @@ test_that("includeMetadata", {
 
   metadat2 <- matrix(data = 1, nrow = 5, ncol = 10, dimnames = list(paste0("row", seq(1,5)), paste0("col", seq(1,10))))
 
-  expect_error(includeMetadata(dat, type = "feature", metadata = metadat))
-  expect_error(includeMetadata(dat, type = "sample", metadata = metadat2))
+  expect_error(includeMetadata(dat, type = "features", metadata = metadat))
+  expect_error(includeMetadata(dat, type = "samples", metadata = metadat2))
 
-  expect_s4_class(includeMetadata(dat, type = "sample", metadata = metadat), "DNEAobj")
+  expect_s4_class(includeMetadata(dat, type = "samples", metadata = metadat), "DNEAobj")
 })
 
 test_that("getNetworkFiles", {
