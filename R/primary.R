@@ -21,7 +21,7 @@ BICtune.DNEAobj <- function(object,
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
-  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
+  if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
 
   ##initialize input parameters
   dat <- expressionData(x=object, assay="scaled_expression_data")
@@ -106,7 +106,7 @@ BICtune.matrix <- function(object,
   ##test for proper input
   if(!inherits(object, "matrix")) stop('object should be a list of matrices!')
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
-  if(interval < 0 | interval > 0.1) stop('"interval" should be between 0 and 0.1!')
+  if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
 
   ##initialize input parameters
   n4cov <- ncol(object)
