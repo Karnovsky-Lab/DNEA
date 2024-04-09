@@ -45,26 +45,12 @@ includeMetadata <- function(object,
   if(is.null(rownames(metadata))) stop("dat must have row names!")
 
   type <- match.arg(type)
-  if(type == 'samples'){
-    if(all(rownames(metaData(object, type="samples")) == rownames(metadata))){
-
-      new_metadata <- cbind(metaData(object, type = "samples"),
-                            metadata)
-      metaData(object, type = "samples") <- new_metadata
-    }else{
-
-      stop('new metadata order does not match sample order')
-    }
-  } else if(type == 'features'){
-    if(all(rownames(metaData(object, type="features")) == rownames(metadata))){
-
-      new_metadata <- cbind(metaData(object, type = "features"),
-                            metadata)
-      metaData(object, type = "features") <- new_metadata
-    }else{
-
-      stop('new metadata order does not match feature order')
-    }
+  if(all(rownames(metaData(x=object, type=type)) == rownames(metadata))){
+    new_metadata <- cbind(metaData(object, type=type),
+                          metadata)
+    metaData(object, type=type) <- new_metadata
+  }else{
+    stop('new metadata order does not match', type, 'order')
   }
   return(object)
 }
