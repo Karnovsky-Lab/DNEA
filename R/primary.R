@@ -554,7 +554,7 @@ stabilitySelection <- function(object,
 #' data(dnw)
 #'
 #' #construct the networks
-#' dnw <- getNetworks(object=dnw)
+#' dnw <- getNetworks(object=dnw, aprox = TRUE)
 #'
 #' #now we can plot the group networks
 #' plotNetworks(object=dnw, type="group_networks")
