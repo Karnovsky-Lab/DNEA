@@ -61,7 +61,7 @@ data(dnw)
 dnw <- clusterNet(object=dnw, tau=0.5, max_iterations=5)
 
 #we can also plot the subnetworks
-plotNetworks(object=dnw, type="subnetworks", subtype=1)
+plotNetworks(object=dnw, type="sub_networks", subtype=1)
 
 }
 \references{
