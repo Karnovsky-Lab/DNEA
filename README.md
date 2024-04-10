@@ -43,5 +43,5 @@ devtools::install_github("Karnovsky-Lab/DNEA")
 
 ## Notes
 
-- More information about the previous implementation of DNEA, Filigree, can be found [here](https://metscape.med.umich.edu/filigree.html). 
-- Information about an associated tool we developed for the construction of a data-driven network for a single group, CorrelationCalculator, can be found [here](https://metscape.med.umich.edu/calculator.html).
+- More information about the previous implementation of DNEA, ***Filigree***, can be found [here](https://metscape.med.umich.edu/filigree.html). 
+- Information about an associated tool we developed for the construction of a data-driven network for a single group, ***CorrelationCalculator***, can be found [here](https://metscape.med.umich.edu/calculator.html).
