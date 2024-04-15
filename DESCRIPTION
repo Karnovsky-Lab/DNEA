@@ -9,7 +9,7 @@ Authors@R: c(
              email = "griyer@umich.edu", role = c("aut")))
 Description: The DNEA R package is the latest implementation of the 
              Differential Network Enrichment Analysis algorithm and 
-             is the predecessor to the Filigree Java-application 
+             is the successor to the Filigree Java-application 
              described in Iyer et al. (2020). The package is designed 
              to take as input an m x n expression matrix for some -omics 
              modality (ie. metabolomics, lipidomics, proteomics, etc.) 
