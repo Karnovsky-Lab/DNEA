@@ -2,19 +2,13 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{lambdas2Test}
 \alias{lambdas2Test}
-\alias{lambdas2Test<-}
 \alias{lambdas2Test,DNEAobj-method}
-\alias{lambdas2Test<-,DNEAobj-method}
 \title{Access the lambda values tested during
 hyper parameter optimization}
 \usage{
 lambdas2Test(x)
 
-lambdas2Test(x) <- value
-
 \S4method{lambdas2Test}{DNEAobj}(x)
-
-\S4method{lambdas2Test}{DNEAobj}(x) <- value
 }
 \arguments{
 \item{x}{A \code{\link{DNEAobj}} or
@@ -47,7 +41,6 @@ names(group_labels) <- rownames(T1Dmeta)
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 
-lambdas2Test(dnw) <- seq(0.01, 1, 0.02)
 lambdas2Test(dnw)
 }
 \seealso{
