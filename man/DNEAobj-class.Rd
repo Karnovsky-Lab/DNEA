@@ -10,7 +10,7 @@
 \S4method{show}{DNEAobj}(object)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 }
 \value{
 A DNEAobj object
@@ -23,66 +23,83 @@ An s4 class to represent the DNEA workflow
 }
 \section{Functions}{
 \itemize{
-\item \code{show(DNEAobj)}: This function will display a summary of the information stored within
-a \code{\link{DNEAobj}} object
+\item \code{show(DNEAobj)}: This function will display a summary of the information
+stored within a \code{\link{DNEAobj}} object.
 
 }}
 \section{Slots}{
 
 \describe{
-\item{\code{project_name}}{A character string name for the experiment}
+\item{\code{project_name}}{A character string name for the experiment.}
 
-\item{\code{assays}}{A list of matrices, "expression_data" being non-normalized,
-non-transformed data and "scaled_expression_data" being normalized,
-log-transformed data. The row names and column names between the two must be
-identical (can access expression data via \code{\link{expressionData}})}
+\item{\code{assays}}{A list of matrices, "expression_data" being
+non-normalized, non-transformed data and "scaled_expression_data"
+being log-transformed, scaled data. The row names and column names
+between the two must be identical (the expression data can be
+accessed via the \code{\link{expressionData}} function).}
 
 \item{\code{metadata}}{A list of information about the data, including a
-data.frame for sample metadata (rownames must match the sample order of
-expression data), a data.frame for feature metadata (rownames must match
-the feature order of expression data), a two-level factor corresponding to
+data frame for sample metadata (the row names must match the
+sample order of the stored expression data), a data frame for
+feature metadata  (the row names must match the feature order of
+the stored expression data), a two-level factor corresponding to
 the two groups in the data, and a character vector the same length as the
 number of samples corresponding to the group membership for each sample
-(the user may add additional metadata via \code{\link{includeMetadata}})}
+(the user may add additional metadata via the
+\code{\link{includeMetadata}} function).}
 
 \item{\code{dataset_summary}}{A \code{DNEAinputSummary} object (can view data
 via \code{\link{datasetSummary}} and \code{\link{diagnostics}})}
 
-\item{\code{node_list}}{A data.frame containing all of the features in the
+\item{\code{node_list}}{A data frame containing all of the features in the
 data set as rows as well as the differential expression analysis
-results (can view the node list via \code{\link{nodeList}})}
+results (can view the node list via \code{\link{nodeList}}).}
 
-\item{\code{edge_list}}{A data.frame containing the network edges identified
+\item{\code{edge_list}}{A data frame containing the network edges identified
 via \code{\link{getNetworks}} (can view the edge list via
-\code{\link{edgeList}})}
+\code{\link{edgeList}}).}
 
 \item{\code{hyperparameter}}{A list of results obtained from
-\code{\link{BICtune}} containing a numeric vector of the lambda values
-tested during optimization, the resulting bayesian-information
-criterion and likelihood scores for each lambda value, and the
-optimized lambda for analysis (optimized lambda can be accessed or
-changed via \code{\link{optimizedLambda}})}
+\code{\link{BICtune}} containing a numeric vector of the
+lambda values tested during optimization, the resulting
+Bayesian-information criterion and likelihood scores for each
+lambda value, and the optimized lambda for analysis (the optimized
+lambda can be accessed or changed via the
+\code{\link{optimizedLambda}} function).}
 
 \item{\code{adjacency_matrix}}{A list of adjacency matrices, one for each
-experimental condition, jointly estimated  via
-\code{\link{getNetworks}}}
+experimental condition, jointly estimated via
+\code{\link{getNetworks}}.}
 
 \item{\code{stable_networks}}{A list of the selection results and
 selection probabilities, one for each experimental condition,
-for every possible feature-feature edge}
+for every possible feature-feature edge.}
 
-\item{\code{consensus_clustering}}{A \code{consensusClusteringResults} object
-containing the results from consensus clustering via
-\code{\link{clusterNet}}}
+\item{\code{consensus_clustering}}{A \code{consensusClusteringResults}
+object containing the results from consensus clustering
+obtained via the \code{\link{clusterNet}} function.}
 
-\item{\code{netGSA}}{a data.frame containing the results from netgsa analysis
-via \code{\link{runNetGSA}}. Each row is a sub network tested
-for enrichment}
+\item{\code{netGSA}}{a data frame containing the results from
+enrichment analysis performed via \code{\link{runNetGSA}} and
+the \code{\link[netgsa:NetGSA]{NetGSA}} algorithm. Each row is the
+results for a given sub network tested for enrichment.}
 }}
 
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 dnw
 }

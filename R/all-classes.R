@@ -3,14 +3,19 @@
 #' An s4 class to represent the results from consensus
 #' clustering within DNEA
 #'
-#' @slot summary a data frame containing the subnetworks as rows and summary
-#' information as columns. The columns include: number_of_nodes,
-#' number_of_edges, number_of_DE_nodes, number_of_DE_edges
-#' @slot subnetwork_membership A data frame with the same number of rows
-#' as features in the data, and a column indicating which subnework a given
-#' feature belongs to, if any.
-#' @slot adjacency_graph The resulting adjacency graph from igraph
-#' created after consensus clustering
+#' @slot summary a data frame containing the sub networks
+#' as rows and summary information as columns. The columns
+#' include: number_of_nodes, number_of_edges,
+#' number_of_DE_nodes, and number_of_DE_edges.
+#'
+#' @slot subnetwork_membership A data frame with the same
+#' number of rows as features in the data, and a column
+#' indicating which sub network a given feature belongs
+#' to, if any.
+#'
+#' @slot adjacency_graph The resulting adjacency graph
+#' from \code{\link{igraph}} created after
+#' consensus clustering.
 #'
 #' @author Christopher Patsalis
 #'
@@ -30,14 +35,15 @@ setClass(Class="consensusClusteringResults",
 #' DNEAinputSummary
 #'
 #' An s4 class to represent the results from diagnostic testing
-#' on the input data
+#' on the input data to a \code{\link{DNEAobj}}.
 #'
-#' @slot num_samples a single-value numeric vector corresponding to the
-#' number of samples in the dataset
-#' @slot num_features a single-value numeric vector corresponding to the
-#' number of features in the dataset
-#' @slot diagnostic_values a 3x3 data frame with the diagnostic values
-#' calculated via \code{\link{createDNEAobject}}
+#' @slot num_samples a single-value numeric vector corresponding
+#' to the number of samples in the data set.
+#'
+#' @slot num_features a single-value numeric vector corresponding
+#' to the number of features in the data set
+#' @slot diagnostic_values a 3x3 data frame with the diagnostic
+#' values calculated via \code{\link{createDNEAobject}}.
 #'
 #' @author Christopher Patsalis
 #'
@@ -57,54 +63,59 @@ setClass(Class="DNEAinputSummary",
 #'
 #' An s4 class to represent the DNEA workflow
 #'
-#' @slot project_name A character string name for the experiment
+#' @slot project_name A character string name for the experiment.
 #'
-#' @slot assays A list of matrices, "expression_data" being non-normalized,
-#' non-transformed data and "scaled_expression_data" being normalized,
-#' log-transformed data. The row names and column names between the two must be
-#' identical (can access expression data via \code{\link{expressionData}})
+#' @slot assays A list of matrices, "expression_data" being
+#' non-normalized, non-transformed data and "scaled_expression_data"
+#' being log-transformed, scaled data. The row names and column names
+#' between the two must be identical (the expression data can be
+#' accessed via the \code{\link{expressionData}} function).
 #'
 #' @slot metadata A list of information about the data, including a
-#' data.frame for sample metadata (rownames must match the sample order of
-#' expression data), a data.frame for feature metadata (rownames must match
-#' the feature order of expression data), a two-level factor corresponding to
+#' data frame for sample metadata (the row names must match the
+#' sample order of the stored expression data), a data frame for
+#' feature metadata  (the row names must match the feature order of
+#' the stored expression data), a two-level factor corresponding to
 #' the two groups in the data, and a character vector the same length as the
 #' number of samples corresponding to the group membership for each sample
-#' (the user may add additional metadata via \code{\link{includeMetadata}})
+#' (the user may add additional metadata via the
+#' \code{\link{includeMetadata}} function).
 #'
 #' @slot dataset_summary A \code{DNEAinputSummary} object (can view data
 #' via \code{\link{datasetSummary}} and \code{\link{diagnostics}})
 #'
-#' @slot node_list A data.frame containing all of the features in the
+#' @slot node_list A data frame containing all of the features in the
 #' data set as rows as well as the differential expression analysis
-#' results (can view the node list via \code{\link{nodeList}})
+#' results (can view the node list via \code{\link{nodeList}}).
 #'
-#' @slot edge_list A data.frame containing the network edges identified
+#' @slot edge_list A data frame containing the network edges identified
 #' via \code{\link{getNetworks}} (can view the edge list via
-#' \code{\link{edgeList}})
+#' \code{\link{edgeList}}).
 #'
 #' @slot hyperparameter A list of results obtained from
-#' \code{\link{BICtune}} containing a numeric vector of the lambda values
-#' tested during optimization, the resulting bayesian-information
-#' criterion and likelihood scores for each lambda value, and the
-#' optimized lambda for analysis (optimized lambda can be accessed or
-#' changed via \code{\link{optimizedLambda}})
+#' \code{\link{BICtune}} containing a numeric vector of the
+#' lambda values tested during optimization, the resulting
+#' Bayesian-information criterion and likelihood scores for each
+#' lambda value, and the optimized lambda for analysis (the optimized
+#' lambda can be accessed or changed via the
+#' \code{\link{optimizedLambda}} function).
 #'
 #' @slot adjacency_matrix A list of adjacency matrices, one for each
-#' experimental condition, jointly estimated  via
-#' \code{\link{getNetworks}}
+#' experimental condition, jointly estimated via
+#' \code{\link{getNetworks}}.
 #'
 #' @slot stable_networks A list of the selection results and
 #' selection probabilities, one for each experimental condition,
-#' for every possible feature-feature edge
+#' for every possible feature-feature edge.
 #'
-#' @slot consensus_clustering A \code{consensusClusteringResults} object
-#' containing the results from consensus clustering via
-#' \code{\link{clusterNet}}
+#' @slot consensus_clustering A \code{consensusClusteringResults}
+#' object containing the results from consensus clustering
+#' obtained via the \code{\link{clusterNet}} function.
 #'
-#' @slot netGSA a data.frame containing the results from netgsa analysis
-#' via \code{\link{runNetGSA}}. Each row is a sub network tested
-#' for enrichment
+#' @slot netGSA a data frame containing the results from
+#' enrichment analysis performed via \code{\link{runNetGSA}} and
+#' the \code{\link[netgsa:NetGSA]{NetGSA}} algorithm. Each row is the
+#' results for a given sub network tested for enrichment.
 #'
 #' @author Christopher Patsalis
 #'
@@ -140,13 +151,15 @@ setClass(Class="DNEAobj",
 #' collapsed_DNEAobj
 #'
 #' An s4 class to represent the DNEA workflow, including collapsing
-#' features. This class inherits everything from \code{\link{DNEAobj}}
+#' features. This class inherits from the
+#' \code{\link{DNEAobj}} class.
 #'
-#' @slot original_experiment The DNEAobj object input to
-#' \code{\link{aggregateFeatures}}
-#' @slot feature_membership A data.frame containing all of the features from
-#' the original input data and their corresponding group membership in the
-#' collapsed data.
+#' @slot original_experiment The \code{\link{DNEAobj}} object input
+#' to \code{\link{aggregateFeatures}}.
+#'
+#' @slot feature_membership A data frame containing all of the
+#' features from the original input data and their corresponding
+#' group membership in the new aggregated data.
 #'
 #' @author Christopher Patsalis
 #'

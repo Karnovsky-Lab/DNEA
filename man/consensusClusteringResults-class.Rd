@@ -15,16 +15,19 @@ clustering within DNEA
 \section{Slots}{
 
 \describe{
-\item{\code{summary}}{a data frame containing the subnetworks as rows and summary
-information as columns. The columns include: number_of_nodes,
-number_of_edges, number_of_DE_nodes, number_of_DE_edges}
+\item{\code{summary}}{a data frame containing the sub networks
+as rows and summary information as columns. The columns
+include: number_of_nodes, number_of_edges,
+number_of_DE_nodes, and number_of_DE_edges.}
 
-\item{\code{subnetwork_membership}}{A data frame with the same number of rows
-as features in the data, and a column indicating which subnework a given
-feature belongs to, if any.}
+\item{\code{subnetwork_membership}}{A data frame with the same
+number of rows as features in the data, and a column
+indicating which sub network a given feature belongs
+to, if any.}
 
-\item{\code{adjacency_graph}}{The resulting adjacency graph from igraph
-created after consensus clustering}
+\item{\code{adjacency_graph}}{The resulting adjacency graph
+from \code{\link{igraph}} created after
+consensus clustering.}
 }}
 
 \seealso{
