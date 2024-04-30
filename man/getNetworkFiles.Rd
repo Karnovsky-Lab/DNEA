@@ -2,27 +2,30 @@
 % Please edit documentation in R/utilities-exported.R
 \name{getNetworkFiles}
 \alias{getNetworkFiles}
-\title{Save network information for input to Cytoscape}
+\title{Save network information to .csv files}
 \usage{
 getNetworkFiles(object, file_path = getwd())
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
-\item{file_path}{The filepath to save the node and edge lists to.
-If \strong{NULL}, the files will be saved to the working directory.}
+\item{file_path}{The file path to save the node and edge lists
+to. If \strong{NULL}, the files will be saved to the working directory.}
 }
 \value{
-Two .csv files, one for the node list and one for the edge
-list, saved to the specified file path
+Two .csv files, one for the node list and one for
+the edge list, saved to the specified file path
 }
 \description{
 This function will save the node and edge information as .csv files
-in the working directory. The files are already formatted for input
-into Cytoscape.
+to the specified directory. The files are already formatted for
+input into Cytoscape.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 #filepath wherein to save the networks files

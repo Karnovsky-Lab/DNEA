@@ -2,14 +2,16 @@
 #' Add additional metadata to the DNEAobj object
 #'
 #' This function will take additional metadata and add it to the specified
-#' dataframe in the metadata slot. \strong{\emph{NOTE:}} The rownames of the
-#' new metadata must match the order of the input sample names or feature
-#' names, respectively
+#' data frame in the metadata slot. \strong{\emph{NOTE:}} The row names
+#' of the new metadata must match the order of the input sample names
+#' or feature names, respectively.
 #'
-#' @param object A \code{\link{DNEAobj}} object
+#' @param object A \code{\link{DNEAobj}} object.
+#'
 #' @param type A character string corresponding to the type of metadata
 #' being included. Can be either "samples" or "features"
-#' @param metadata a data.frame containing metadata to add. The row
+#'
+#' @param metadata a data frame containing metadata to add. The row
 #' names should be either the sample names or feature names, respectively
 #'
 #' @author Christopher Patsalis
@@ -18,12 +20,23 @@
 #' \code{\link{featureNames}},\code{\link{sampleNames}},
 #' \code{\link{metaData}}
 #'
-#' @returns A DNEAobj object with the specified additions
+#' @returns A \code{\link{DNEAobj}} object with the specified additions.
 #'
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
 #' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' #make sure metadata has same sample order as DNEAobj object
 #' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
@@ -58,25 +71,38 @@ includeMetadata <- function(object,
 #' Include custom normalized data in the DNEAobj object
 #'
 #' This function allows the user to input custom-normalized data into the
-#' DNEAobj object for use in DNEA analysis.
+#' \code{\link{DNEAobj}} object for use in DNEA analysis.
 #'
-#' @param object A \code{\link{DNEAobj}} object
-#' @param data An \emph{m x n} numeric matrix of custom-normalized
-#' expression expression data
+#' @param object A \code{\link{DNEAobj}} object.
+#' @param data A list of \emph{m x n} numeric matrices of
+#' custom-normalized expression data, one matrix for each
+#' experimental condition. The list elements should be
+#' labeled for their respective. These should match the
+#' labels returned by \code{\link{networkGroups}}.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso
 #' \code{\link{createDNEAobject}},\code{\link{DNEAobj}},
 #'
-#' @returns A \code{\link{DNEAobj}} object with the added expression data in
-#' the @@assays slot
+#' @returns A \code{\link{DNEAobj}} object with the added
+#' expression data in the @@assays slot
 #'
 #' @examples
-#' #import example data
+#' #load example data
 #' data(TEDDY)
-#' data(dnw)
 #' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' #transpose TEDDY data
 #' TEDDY <- t(log(TEDDY))
@@ -145,25 +171,28 @@ addExpressionData <- function(object,
 }
 
 
-#' Save network information for input to Cytoscape
+#' Save network information to .csv files
 #'
 #' This function will save the node and edge information as .csv files
-#' in the working directory. The files are already formatted for input
-#' into Cytoscape.
+#' to the specified directory. The files are already formatted for
+#' input into Cytoscape.
 #'
-#' @param object A \code{\link{DNEAobj}} object
-#' @param file_path The filepath to save the node and edge lists to.
-#' If **NULL**, the files will be saved to the working directory.
+#' @param object A \code{\link{DNEAobj}} object.
+#' @param file_path The file path to save the node and edge lists
+#' to. If **NULL**, the files will be saved to the working directory.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso
 #' \code{\link{edgeList}},\code{\link{nodeList}}
 #'
-#' @returns Two .csv files, one for the node list and one for the edge
-#' list, saved to the specified file path
+#' @returns Two .csv files, one for the node list and one for
+#' the edge list, saved to the specified file path
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #filepath wherein to save the networks files
@@ -194,18 +223,21 @@ getNetworkFiles <- function(object,
   return(object)
 }
 ################################################################################
-#' Visualize the biological networks identified via DNEA
+#' Visualize the biological networks
 #'
 #' This function plots the total network, condition networks, or
 #' sub networks as specified by the user. Purple nodes are differential
 #' features, green indicates edges specific to group 1, and red indicates
 #' edges specific to group 2.
 #'
-#' @param object A \code{\link{DNEAobj}} object
+#' @param object A \code{\link{DNEAobj}} object.
+#'
 #' @param type There are two possible arguments to \strong{type}:
 #' \emph{"group_networks"} specifies the whole network or condition networks.
-#' \emph{"sub_networks"} specifies that one of the sub networks should be plot.
-#' Additional input via the \strong{subtype} parameter is required
+#' \emph{"sub_networks"} specifies that one of the sub networks should
+#' be plotted.
+#' *Additional input via the \strong{subtype} parameter is required.*
+#'
 #' @param subtype There are several possible arguments to \strong{subtype}.
 #' If \emph{type == "group_networks"}, \strong{subtype} can be \emph{"All"}
 #' to plot the whole network (ie. both conditions in the data returned by
@@ -213,22 +245,28 @@ getNetworkFiles <- function(object,
 #' plot the network corresponding to that condition. If
 #' \emph{type == "sub_networks"}, \strong{subtype} should be a single-value
 #' numeric vector corresponding to the sub network to plot.
+#'
 #' @param layout_func The layout in which to plot the specified network.
-#' Please see \code{\link[igraph]{plot.igraph}} for more information
-#' @param main A character string to use as the plot title
+#' Please see \code{\link[igraph]{plot.igraph}} for more information.
+#'
+#' @param main A character string to use as the plot title.
+#'
 #' @param node_size The size of the nodes in the plot. The default is 15.
 #' Please see \emph{vertex.size} parameter in
-#' \code{\link[igraph]{tkplot}} for more details
+#' \code{\link[igraph]{tkplot}} for more details.
+#'
 #' @param edge_width The width of the edges in the plot. The default is 1.
 #' Please see \emph{width} parameter in
-#' \code{\link[igraph]{tkplot}} for more details
+#' \code{\link[igraph]{tkplot}} for more details.
+#'
 #' @param label_size The size of the node labels in the plot.
 #' The default is 1. Please see \emph{label.size} in
 #' \code{\link[igraph]{tkplot}} for more details.
+#'
 #' @param label_font Specifies the font type to use in the plot.
 #' 1 is normal font, 2 is bold-type, 3 is italic-type, 4 is bold- and
 #' italic-type. Please see the \emph{label.font} parameter in
-#' \code{\link[igraph]{plot.igraph}} for more details
+#' \code{\link[igraph]{plot.igraph}} for more details.
 #'
 #' @author Christopher Patsalis
 #'
@@ -240,7 +278,10 @@ getNetworkFiles <- function(object,
 #' @returns A plot of the specified network
 #'
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #plot the networks
@@ -416,34 +457,42 @@ filterNetworks.DNEAobj <- function(data,
 #' filter conditions
 #'
 #' @description
-#'     This function takes as input a \code{\link{DNEAobj}} object and allows the
-#' user to filter the network edges by one of two methods:
+#' This function takes as input a \code{\link{DNEAobj}} object and
+#' allows the user to filter the network edges by one of two methods:
 #'
 #' \enumerate{
 #' \item \strong{Partial Correlation} - The networks can be filtered to
 #' only include edges greater than or equal to a specified partial
 #' correlation (pcor) value.
 #' \item \strong{Top \emph{X%} of edges} - The networks can be filtered
-#' to only include the strongest \emph{X%} of edges by pcor value.}
+#' to only include the strongest \emph{X%} of edges determined
+#' by their partial correlation values.}
 #'
 #' Filtering is performed on the case and control adjacency matrices
 #' separately. \cr
 #'
-#' @param data A \code{\link{DNEAobj}} object or list of adjacency matrices
-#' @param pcor A pcor value of which to threshold the adjacency
-#' matrices. Edges with pcor values <= to this value will be removed.
+#' @param data A \code{\link{DNEAobj}} object.
+#'
+#' @param pcor A partial correlation value of which to threshold
+#' the adjacency matrices. Edges with pcor values <= to this
+#' value will be removed.
 #' @param top_percent_edges A value between 0-1 that corresponds to
-#' the top x% edges to keep in the networks ie. top_percent_edges =
-#' 0.1 will keep only the top 10% strongest edges in the networks.
+#' the top x% edges to keep in each network, respectively
+#' (i.e. top_percent_edges = 0.1 will keep only the top 10%
+#' strongest edges in the networks).
 #'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{getNetworks}},\code{\link{adjacencyMatrix}}
+#'
 #' @returns The input object after filtering the egdes in the
-#' network according to the specified parameters
+#' network according to the specified parameters.
 #'
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #filter the networks by a correlation threshold of 0.166

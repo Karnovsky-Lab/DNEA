@@ -7,27 +7,38 @@
 includeMetadata(object, type = c("samples", "features"), metadata)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
 \item{type}{A character string corresponding to the type of metadata
 being included. Can be either "samples" or "features"}
 
-\item{metadata}{a data.frame containing metadata to add. The row
+\item{metadata}{a data frame containing metadata to add. The row
 names should be either the sample names or feature names, respectively}
 }
 \value{
-A DNEAobj object with the specified additions
+A \code{\link{DNEAobj}} object with the specified additions.
 }
 \description{
 This function will take additional metadata and add it to the specified
-dataframe in the metadata slot. \strong{\emph{NOTE:}} The rownames of the
-new metadata must match the order of the input sample names or feature
-names, respectively
+data frame in the metadata slot. \strong{\emph{NOTE:}} The row names
+of the new metadata must match the order of the input sample names
+or feature names, respectively.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
 data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 #make sure metadata has same sample order as DNEAobj object
 T1Dmeta <- T1Dmeta[sampleNames(dnw), ]

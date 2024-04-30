@@ -14,37 +14,41 @@ filterNetworks(data, pcor, top_percent_edges)
 \S4method{filterNetworks}{list}(data, pcor, top_percent_edges)
 }
 \arguments{
-\item{data}{A \code{\link{DNEAobj}} object or list of adjacency matrices}
+\item{data}{A \code{\link{DNEAobj}} object.}
 
-\item{pcor}{A pcor value of which to threshold the adjacency
-matrices. Edges with pcor values <= to this value will be removed.}
+\item{pcor}{A partial correlation value of which to threshold
+the adjacency matrices. Edges with pcor values <= to this
+value will be removed.}
 
 \item{top_percent_edges}{A value between 0-1 that corresponds to
-the top x\% edges to keep in the networks ie. top_percent_edges =
-0.1 will keep only the top 10\% strongest edges in the networks.}
+the top x\% edges to keep in each network, respectively
+(i.e. top_percent_edges = 0.1 will keep only the top 10\%
+strongest edges in the networks).}
 }
 \value{
 The input object after filtering the egdes in the
-network according to the specified parameters
+network according to the specified parameters.
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{This function takes as input a \code{\link{DNEAobj}} object and allows the
-}\if{html}{\out{</div>}}
-
-user to filter the network edges by one of two methods:
+This function takes as input a \code{\link{DNEAobj}} object and
+allows the user to filter the network edges by one of two methods:
 
 \enumerate{
 \item \strong{Partial Correlation} - The networks can be filtered to
 only include edges greater than or equal to a specified partial
 correlation (pcor) value.
 \item \strong{Top \emph{X\%} of edges} - The networks can be filtered
-to only include the strongest \emph{X\%} of edges by pcor value.}
+to only include the strongest \emph{X\%} of edges determined
+by their partial correlation values.}
 
 Filtering is performed on the case and control adjacency matrices
 separately. \cr
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 #filter the networks by a correlation threshold of 0.166

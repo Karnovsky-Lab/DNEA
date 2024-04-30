@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities-exported.R
 \name{plotNetworks}
 \alias{plotNetworks}
-\title{Visualize the biological networks identified via DNEA}
+\title{Visualize the biological networks}
 \usage{
 plotNetworks(
   object,
@@ -17,12 +17,13 @@ plotNetworks(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
 \item{type}{There are two possible arguments to \strong{type}:
 \emph{"group_networks"} specifies the whole network or condition networks.
-\emph{"sub_networks"} specifies that one of the sub networks should be plot.
-Additional input via the \strong{subtype} parameter is required}
+\emph{"sub_networks"} specifies that one of the sub networks should
+be plotted.
+\emph{Additional input via the \strong{subtype} parameter is required.}}
 
 \item{subtype}{There are several possible arguments to \strong{subtype}.
 If \emph{type == "group_networks"}, \strong{subtype} can be \emph{"All"}
@@ -33,17 +34,17 @@ plot the network corresponding to that condition. If
 numeric vector corresponding to the sub network to plot.}
 
 \item{layout_func}{The layout in which to plot the specified network.
-Please see \code{\link[igraph]{plot.igraph}} for more information}
+Please see \code{\link[igraph]{plot.igraph}} for more information.}
 
-\item{main}{A character string to use as the plot title}
+\item{main}{A character string to use as the plot title.}
 
 \item{node_size}{The size of the nodes in the plot. The default is 15.
 Please see \emph{vertex.size} parameter in
-\code{\link[igraph]{tkplot}} for more details}
+\code{\link[igraph]{tkplot}} for more details.}
 
 \item{edge_width}{The width of the edges in the plot. The default is 1.
 Please see \emph{width} parameter in
-\code{\link[igraph]{tkplot}} for more details}
+\code{\link[igraph]{tkplot}} for more details.}
 
 \item{label_size}{The size of the node labels in the plot.
 The default is 1. Please see \emph{label.size} in
@@ -52,7 +53,7 @@ The default is 1. Please see \emph{label.size} in
 \item{label_font}{Specifies the font type to use in the plot.
 1 is normal font, 2 is bold-type, 3 is italic-type, 4 is bold- and
 italic-type. Please see the \emph{label.font} parameter in
-\code{\link[igraph]{plot.igraph}} for more details}
+\code{\link[igraph]{plot.igraph}} for more details.}
 }
 \value{
 A plot of the specified network
@@ -64,7 +65,10 @@ features, green indicates edges specific to group 1, and red indicates
 edges specific to group 2.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 #plot the networks

@@ -7,24 +7,37 @@
 addExpressionData(object, data)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
-\item{data}{An \emph{m x n} numeric matrix of custom-normalized
-expression expression data}
+\item{data}{A list of \emph{m x n} numeric matrices of
+custom-normalized expression data, one matrix for each
+experimental condition. The list elements should be
+labeled for their respective. These should match the
+labels returned by \code{\link{networkGroups}}.}
 }
 \value{
-A \code{\link{DNEAobj}} object with the added expression data in
-the @assays slot
+A \code{\link{DNEAobj}} object with the added
+expression data in the @assays slot
 }
 \description{
 This function allows the user to input custom-normalized data into the
-DNEAobj object for use in DNEA analysis.
+\code{\link{DNEAobj}} object for use in DNEA analysis.
 }
 \examples{
-#import example data
+#load example data
 data(TEDDY)
-data(dnw)
 data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 #transpose TEDDY data
 TEDDY <- t(log(TEDDY))
