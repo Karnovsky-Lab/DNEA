@@ -1,9 +1,9 @@
-#' Collapse correlated features into a single group
+#' Aggregate correlated features into a single feature class
 #'
 #' @description
-#' This function takes as input a DNEAobj object and collapses highly
-#' correlated features within the non-normalized, non-transformed data
-#' using one of three methods:
+#' This function takes as input a \code{\link{DNEAobj}} object
+#' and aggregates highly correlated features within the
+#' non-normalized, non-transformed data using one of three methods:
 #'
 #'   \enumerate{
 #'   \item \strong{correlation-based}
@@ -11,23 +11,29 @@
 #'   \item \strong{hybrid}}
 #'
 #' More info about the different approaches can be found in the
-#' \strong{\emph{Details}} section. Highly correlated groups of features
-#' are collapsed by taking the mean expression of all features.
+#' \strong{\emph{Details}} section below. Highly correlated groups
+#' of features are aggregated by taking the mean expression of
+#' all features in the group, respectively.
 #'
 #' \strong{\emph{NOTE:}} This method was developed using non-normalized,
-#' non-transformed data and this fact is critical for feature collapsing
-#' since the mean expression value is used for each group. Normalized data
-#' may alter the results of collapsing.
+#' non-transformed data. Since the mean expression value is used for
+#' each group, normalized data may alter erroneously alter the
+#' aggregated expression values
 #'
-#' @param object A \code{\link{DNEAobj}} object
+#' @param object A \code{\link{DNEAobj}} object.
+#'
 #' @param method A character string that dictates the collapsing method
-#' to use. The available methods are: "correlation", "knowledge", or "hybrid"
+#' to use. The available methods are:
+#' "correlation", "knowledge", or "hybrid".
+#'
 #' @param correlation_threshold A threshold wherein features correlated
-#' above correlation_threshold will be collapsed into one. This parameter
-#' is only necessary for the correlation and hybrid methods
-#' @param feature_groups A data.frame containing group information for
-#' the collapsing algorithm indicated by the "knowledge" and
-#' "hybrid" methods
+#' above the supplied value are aggregated into one feature class.
+#' This parameter is only necessary for the correlation and hybrid
+#' methods.
+#'
+#' @param feature_groups A data frame containing group information
+#' for the algorithm indicated by the "knowledge" and "hybrid"
+#' methods.
 #'
 #' @author Christopher Patsalis
 #'
@@ -36,65 +42,81 @@
 #' \code{\link{stabilitySelection}}
 #'
 #' @details
-#' Due to the computational complexity of the DNEAdev algorithm,
-#' the processing time for a given dataset increases dramatically as the
-#' number of features increases. The ability to process each replicate
-#' performed in  \code{\link{stabilitySelection}} in parallel helps
-#' circumvent this issue, however, a user may still be constrained by
-#' the resources available to them (ie. a limited number of cpu cores
-#' or memory). Collapsing related features into groups is another
-#' method by which the user can reduce the complexity of the
-#' analysis, and as a result decrease the necessary resources.  \cr
+#' Due to the computational complexity of the DNEA algorithm,
+#' the processing time for a given data set increases dramatically
+#' as the number of features increases. The ability to process
+#' each replicate performed in \code{\link{stabilitySelection}}
+#' in parallel helps circumvent this issue, however, an analysis
+#' may still be constrained by the resources available
+#' (i.e. a limited number of cpu cores or memory). Aggregating
+#' related features into a single feature class is another method
+#' by which the user can reduce the complexity of the analysis,
+#' and as a result decrease the necessary resources.  \cr
 #'
 #' In a related scenario, you may also have many
-#' highly-correlated features of the same class of compounds (ie.
-#' fatty acids, carnitines, etc.), and network analysis at the
-#' resolution of these individual features is not important.
-#' Collapsing features would decrease the computing time without
+#' highly-correlated features of the same class of compounds
+#' (i.e. fatty acids, carnitines, etc.), and network analysis
+#' at the resolution of these individual features is not important.
+#' Aggregating features would decrease the computing time without
 #' losing critical information to the analysis (Please see the
 #' \strong{\emph{Details}} section of
 #' \code{\link{createDNEAobject}} for more information about
-#' the motivation behind collapsing highly correlated features). \cr
+#' the motivation behind aggregating highly correlated features). \cr
 #'
 #' Ultimately, this function allows the user to reduce the complexity
-#' of the dataset and reduce the computational power necessary for the
-#' analysis and/or improve the quality of the results. The most appropriate
-#' method to use when collapsing data is dependent on the dataset and
-#' prior information known about the features. The following text
-#' explains more about each method and the best use cases:
+#' of the data set and reduce the computational power necessary for the
+#' analysis and/or improve the quality of the results. The most
+#' appropriate method to use when aggregating data is dependent on
+#' the data set and prior information known about the features.
+#' The following text explains more about each method and the
+#' best use cases:
 #'
 #'   \enumerate{
-#'   \item \strong{correlation-based - } The user specifies a correlation
-#'   threshold wherein features with a higher pearson correlation value
-#'   than the threshold are collapsed into one group. This approach is
-#'   best when no prior information about the features are known.
+#'   \item \strong{correlation-based - } The user specifies a
+#'   correlation threshold wherein features with a higher pearson
+#'   correlation value than the threshold are aggregated into one
+#'   group. This approach is useful when the user does not have
+#'   any particular class definitions for the features.
 #'
 #'
-#'   \item \strong{knowledge-based - } The user specifies feature groups
-#'   based on a priori information (ie. all of the carnitines in a dataset
-#'   are specified as a single group) and the features within each group
-#'   are collapsed into one feature. This approach is best in
-#'   experiments where the dataset contains many highly similar compounds,
-#'   like fatty acids, carnitines, ceramides, etc.
+#'   \item \strong{knowledge-based - } The user specifies feature
+#'   classes based on \emph{a priori} information (i.e. all of the
+#'   carnitine's in a data set are specified as one class)
+#'   and the features within a class are aggregated into one
+#'   feature. This approach is best in experiments where the
+#'   data set contains many highly similar compounds, like
+#'   fatty acids, carnitines, ceramides, etc.
 #'
 #'
 #'   \item \strong{hybrid - } The user specifies both a correlation
-#'   threshold, like in the correlation-based approach, and feature
-#'   groups based on \emph{a priori} information similar to the
+#'   threshold like in the correlation-based approach and feature
+#'   classes based on \emph{a priori} information similar to the
 #'   knowledge-based approach. The features within each user-specified
-#'   group that have a higher pearson correlation than the provided
-#'   threshold are collapsed into one group. This approach is best
-#'   in experiments where the dataset contains many compounds of a
+#'   class that have a higher pearson correlation than the provided
+#'   threshold are aggregated into one class This approach is best
+#'   in experiments where the data set contains many compounds of a
 #'   similar class, but the user is unsure how correlated the
 #'   features of said class will be. This method prevents poorly
-#'   correlated or uncorrelated features from being collapsed
+#'   correlated or uncorrelated features from being aggregated
 #'   into a single feature.}
 #'
 #' @returns A \code{collapsed_DNEAobj} object.
 #'
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' #simulate group labels
 #' TEDDY_groups <- data.frame(features=rownames(expressionData(x=dnw,
