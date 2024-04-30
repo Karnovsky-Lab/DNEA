@@ -2,19 +2,19 @@
 % Please edit documentation in R/initiator.R
 \name{createDNEAobject}
 \alias{createDNEAobject}
-\title{Initialize DNEAobj object}
+\title{Initialize a DNEAobj object}
 \usage{
 createDNEAobject(project_name, expression_data, group_labels)
 }
 \arguments{
-\item{project_name}{A character string name for the experiment}
+\item{project_name}{A character string name for the experiment.}
 
-\item{expression_data}{A numeric matrix or data frame of un-transformed,
-un-scaled expression data. The sample names should be row names and the
-feature names should be column names}
+\item{expression_data}{A numeric \emph{m x n} matrix or data frame
+of un-transformed, un-scaled expression data. The sample names
+should be column names and the feature names should be row names.}
 
 \item{group_labels}{A factor vector of experimental group labels
-named with the corresponding sample name}
+named with the corresponding sample name.}
 }
 \value{
 A \code{\link{DNEAobj}} object.
@@ -22,25 +22,28 @@ A \code{\link{DNEAobj}} object.
 \description{
 This function takes as input a matrix of non-normalized, non-transformed
 expression data and the case/control group labels in order to initiate a
-DNEAobj object. Differential expression analysis using student's T-test and
-Benjamini-Hochberg for multiple-testing corrections as well as diagnostic
-testing are also performed on the data.
-\subsection{IMPORTANT}{
+DNEAobj object. Differential expression analysis is performed using a
+student's T-test and Benjamini-Hochberg for multiple-testing corrections.
+Diagnostic testing is done on the input data by checking the minimum
+eigen value and condition number of the expression data for each
+experimental condition.
+\subsection{IMPORTANT:}{
 
 Special attention should be given to the diagnostic criteria that is
 output. The minimum eigen value and condition number are calculated for
-the whole dataset as well as for each condition to determine mathematic
-stability of the dataset and subsequent results from a GGM model. More
-information about interpretation can be found in \strong{\emph{Details}}.
+the whole data set as well as for each condition to determine mathematic
+stability of the data set and subsequent results from a GGM model. More
+information about interpretation can be found in the
+\strong{\emph{Details}} section below.
 }
 }
 \details{
 \subsection{Diagnostics Motivation}{
 
-Negative or zero eigenvalues in a dataset can represent
+Negative or zero eigenvalues in a data set can represent
 instability in that portion of the matrix, thereby invalidating
 parametric statistical methods and creating unreliable results. In this
-function, the minimum eigenvalue of the dataset is calculated by first
+function, the minimum eigenvalue of the data set is calculated by first
 creating a pearson correlation matrix of the data. Instability may then
 occur for a number of reasons, but one common cause is highly correlated
 features (in the positive and negative direction). \cr
@@ -75,6 +78,7 @@ feature-feature associations.
 #import example data
 data(TEDDY)
 data(T1Dmeta)
+
 #create group labels
 group_labels <- factor(T1Dmeta$group,
                        levels=c("DM:control", "DM:case"))
@@ -88,7 +92,7 @@ DNEA <- createDNEAobject(expression_data=TEDDY,
 
 }
 \seealso{
-\code{\link{BICtune}},\code{\link{stabilitySelection}}
+\code{\link{BICtune}}, \code{\link{stabilitySelection}}
 }
 \author{
 Christopher Patsalis
