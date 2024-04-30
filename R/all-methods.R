@@ -622,7 +622,6 @@ lambdas2Test.DNEAobj <- function(x){
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
-#' lambdas2Test(dnw) <- seq(0.01, 1, 0.02)
 #' lambdas2Test(dnw)
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
@@ -636,9 +635,8 @@ lambdas2TestReplace.DNEAobj <- function(x, value){
   validObject(x)
   x
 }
-#' @rdname lambdas2Test-methods
-#' @aliases lambdas2Test
-#' @export
+#' @keywords internal
+#' @noRd
 setReplaceMethod("lambdas2Test", signature(x="DNEAobj"),
                  lambdas2TestReplace.DNEAobj)
 

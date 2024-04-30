@@ -104,9 +104,8 @@ setGeneric("optimizedLambda<-", function(x, value)
 setGeneric("lambdas2Test", function(x)
   standardGeneric("lambdas2Test"))
 
-#' @rdname lambdas2Test-methods
-#' @aliases lambdas2Test
-#' @export
+#' @keywords internal
+#' @noRd
 setGeneric("lambdas2Test<-", function(x, value)
   standardGeneric("lambdas2Test<-"))
 
