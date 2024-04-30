@@ -8,31 +8,33 @@ consensus clustering approach}
 clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
-\item{tau}{The \% agreement threshold among the clustering algorithms
-for a node to be included in a subnetwork}
+\item{tau}{The \% agreement among the clustering algorithms
+for a node to be included in a sub network.}
 
-\item{max_iterations}{The maximum number of replicates of the clustering
-algorithms to perform before consensus is reached}
+\item{max_iterations}{The maximum number of replicates of
+consensus clustering to be performed if consensus is not
+reached.}
 
-\item{verbose}{Whether or not a progress bar should be displayed
-in the console}
+\item{verbose}{TRUE/FALSE whether a progress bar should be
+displayed in the console.}
 }
 \value{
-A \code{\link{DNEAobj}} object containing sub-network determinations for
-the nodes within the input network. A summary of the consensus clustering
-results can be viewed using \code{\link{CCsummary}}. Sub-network membership
-for each node can be found in the "membership" column of the node list,
-which can be viewed using \code{\link{nodeList}}.
+A \code{\link{DNEAobj}} object containing sub network
+determinations for the nodes within the input network. A summary of the
+consensus clustering results can be viewed using \code{\link{CCsummary}}.
+Sub network membership for each node can be found in the "membership"
+column of the node list, which can be accessed using \code{\link{nodeList}}.
 }
 \description{
-This function clusters the jointly estimated adjacency matrix
+This function clusters the jointly estimated adjacency matrices
 constructed using \code{\link{getNetworks}} via the consensus clustering
-approach described in Ma et al (\emph{Please see the \strong{\emph{Details}}
-section for more information}) to identify metabolic modules, aka
-sub networks, present in the larger networks. Only subnetworks with
-consensus that meets or exceeds tau are identified as real.
+approach described in Ma et al. (\emph{Please see the
+\strong{\emph{Details}} section for more information}) to identify
+metabolic modules, aka sub networks, present in the larger networks.
+Only sub networks with consensus that meets or exceeds tau are
+identified as real.
 }
 \details{
 Seven clustering algorithms from the \code{\link{igraph}} package
@@ -46,15 +48,19 @@ are utilized in this consensus clustering approach:
 \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
 \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 
-For each iteration, node membership in each respective cluster is
-compared across the algorithms, and only the clusters with \% agreement
-greater than tau are kept. A new adjacency graph is then created and
-clustering is performed again. This occurs iteratively until consensus on
-stable subnetworks or the specified max_iterations is reached
+For each iteration, node membership in a respective cluster is
+compared across the algorithms, and only the nodes with tau \%
+agreement for a given cluster are kept. A new adjacency graph is
+then created and clustering is performed again. This occurs iteratively
+until consensus on is reached stable sub networks or the specified
+"max_iterations" is reached
 \emph{(Please see references for more details)}.
 }
 \examples{
-#import completed example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 #identify metabolic modules via consensus clustering

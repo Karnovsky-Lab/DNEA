@@ -176,29 +176,35 @@ BICtune.matrix <- function(object,
 #' and likelihood for a range of lambda values that are automatically
 #' generated (\emph{please see \strong{Details} for more info}) or that are
 #' user-specified. The lambda value with the minimum BIC score is the optimal
-#' lambda value for the dataset and is stored in the DNEAobj object for use in
-#' stability selection using \code{\link{stabilitySelection}} and network
-#' generation using \code{\link{getNetworks}}
+#' lambda value for the data set and is stored in the DNEAobj object for use in
+#' stability selection using \code{\link{stabilitySelection}}.
 #'
 #' @param object A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}
-#' @param lambda_values **OPTIONAL** A list of values to test while optimizing
+#' @param lambda_values \emph{\strong{[OPTIONAL]}} A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
 #' based on the theoretical value for the asymptotically valid lambda. More
-#' information about this can be found in the details section
-#' @param informed TRUE/FALSE whether or not to utilize the asymptotic
-#' properties of lambda for large data sets to tune the parameter. This reduces
-#' the necessary number of computations for optimization
-#' @param interval A numeric value indicating the specifity by which to
+#' information about this can be found in the details section.
+#'
+#' @param interval A numeric value indicating the specificity by which to
 #' optimize lambda. The default value is 1e-3, which indicates lambda will
 #' be optimized to 3 decimal places. The value should be between 0 and 0.1.
-#' @param eps_threshold A significance cut-off for thresholding network edges.
-#'        The default value is 1e-06. This value generally should not change.
+#'
+#' @param informed TRUE/FALSE indicating whether the asymptotic properties
+#' of lambda for large data sets should be utilized to tune the parameter.
+#' This reduces the necessary number of computations for optimization.
+
+#' @param eps_threshold A significance cut-off for thresholding network
+#' edges. The default value is 1e-06.
+#' This value generally should not change.
+#'
 #' @param eta_value A tuning parameter that that ensures that the empirical
 #' covariance matrix of the data is positive definite so that we can
 #' calculate its inverse. The default value is 0.01.
-#' @param BPPARAM A \code{\link{BiocParallel}} object
+#'
+#' @param BPPARAM A \code{\link{BiocParallel}} object.
+#'
 #' @param BPOPTIONS a list of options for BiocParallel created using
-#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.
 #'
 #' @author Christopher Patsalis
 #'
@@ -206,6 +212,7 @@ BICtune.matrix <- function(object,
 #' \code{\link{optimizedLambda}},
 #' \code{\link[BiocParallel:bpparam]{bpparam}},
 #' \code{\link[BiocParallel:bpoptions]{bpoptions}}
+#' \code{\link[glasso:glasso]{glasso}}
 #'
 #' @references Guo J, Levina E, Michailidis G, Zhu J.
 #' Joint estimation of multiple graphical models.
@@ -219,19 +226,22 @@ BICtune.matrix <- function(object,
 #' optimize the lambda parameter in DNEA because it is a more balanced
 #' method and less computationally expensive. We can reduce the total
 #' number of values that need to be tested in optimization by carefully
-#' selecting values around the asymptotically valid lambda for datasets
-#' with many samples and many features:
+#' selecting values around the asymptotically valid lambda for data
+#' sets with many samples and many features following the equation:
 #'  \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #'
-#' For smaller datasets, the asymptotically valid lambda is described
+#' For smaller data sets, the asymptotically valid lambda is described
 #' by modifying the previous equation to include an unknown constant, c,
 #' that needs to be determined mathematically. Therefore, to optimize
 #' lambda we modify the previous equation as follows:
 #' \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
 #'
-#' where c takes on 15 evenly spaced values between 0.01 and 0.3.
-#' More information regarding the optimization method deployed here can
-#' be found in the Guo et al. (2011) paper referenced below.
+#' where c takes on values between 0 and the
+#' theoretical maximum of C in intervals of 0.02. C is then estimated
+#' and a new range is tested to the specificity of the "interval"
+#' input. More information regarding the optimization method
+#' deployed here can be found in the Guo et al. (2011)
+#' paper referenced below.
 #'
 #' @returns A \code{\link{DNEAobj}} object containing the BIC and likelihood
 #' scores for every lambda value tested, as well as the
@@ -241,8 +251,20 @@ BICtune.matrix <- function(object,
 #' #import BiocParallel package
 #' library(BiocParallel)
 #'
-#' #import completed example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' #optimize lambda parameter
 #' dnw <- BICtune(object=dnw,
@@ -256,35 +278,41 @@ BICtune.matrix <- function(object,
 #' @export
 setMethod("BICtune", signature(object="DNEAobj"), BICtune.DNEAobj)
 
-#' @rdname BICtune-methods
-#' @aliases BICtune
+#' @rdname BICtune.matrix-methods
+#' @keywords internal
+#' @noRd
 setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 
-#' Stability selection to calculate selection probabilities for every
-#' possible feature-feature interaction within the data
+#' Stability selection calculates selection probabilities for every
+#' possible feature-feature interaction within the input data
 #'
 #' This function randomly samples the input data and fits a glasso model
 #' with the sampled data for \strong{\emph{nreps}} number of replicates. The
 #' resulting adjacency matrices are summed together and selection probabilities
 #' for each feature-feature interaction are calculated. Stability selection is
-#' particularly useful for smaller datasets and when a large number of
-#' replicates are performed (the default is 500). The exact method deployed
+#' particularly useful for smaller data sets. A large number of replicates
+#' should be performed (the default is 1000). The exact method deployed
 #' varies slightly whether or not additional sub-sampling of the data is
 #' performed. More information can be found in the
 #' \strong{\emph{Details}} section.
 #'
-#' @param object A \code{\link{DNEAobj}} object
-#' @param subSample A boolean that specifies whether the number of samples
-#' are unevenly split by condition and, therefore, should be adjusted for
-#' when randomly sampling.
+#' @param object A \code{\link{DNEAobj}} object.
+#'
+#' @param subSample TRUE/FALSE indicating whether the number of samples
+#' are unevenly split by condition and subsampling should be performed
+#' when randomly sampling to even out the groups.
+#'
 #' @param nreps The total number of replicates to perform in stability
-#' selection. The default is 500.
-#' @param optimal_lambda \emph{OPTIONAL} - The optimal lambda value to be
+#' selection. The default is 1000.
+#'
+#' @param optimal_lambda \emph{\strong{[OPTIONAL]}} The optimal lambda value to be
 #' used in the model. This parameter is only necessary if
-#' \code{\link{BICtune}} is not performed
-#' @param BPPARAM a BiocParallel object
+#' \code{\link{BICtune}} is not performed prior.
+#'
+#' @param BPPARAM a BiocParallel object.
+#'
 #' @param BPOPTIONS a list of options for BiocParallel created using
-#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.
 #'
 #' @author Christopher Patsalis
 #'
@@ -293,6 +321,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' \code{\link{selectionResults}},
 #' \code{\link[BiocParallel:bpparam]{bpparam}},
 #' \code{\link[BiocParallel:bpoptions]{bpoptions}}
+#' \code{\link[glasso:glasso]{glasso}}
 #'
 #'
 #' @references Ma J, Karnovsky A, Afshinnia F, Wigginton J, Rader DJ,
@@ -327,15 +356,16 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #'
 #'
 #' However, when the sample groups are very unbalanced, randomly
-#' sampling strongly favors the larger group, resulting in over representation
-#' of the aforementioned group. In order to combat this, setting
-#' subSample=TRUE modifies the random sample by sub-sampling the groups
-#' individually to even out the numbers. In this method, 90% of the smaller
-#' group is randomly sampled without replacement, and an additional 10% is
-#' randomly sampled without replacement from the entire group to preserve the
-#' variance. The larger group is randomly sampled to have 1.3 times the number
-#' of samples present in the smaller group. This method ensures that
-#' each group is equally represented in stability selection.\cr
+#' sampling strongly favors the larger group, resulting in over
+#' representation. In order to combat this, setting subSample=TRUE
+#' modifies the random sample by sub-sampling the experimental groups
+#' to even out the sample numbers. In this method, 90% of the smaller
+#' group is randomly sampled without replacement, and an
+#' additional 10% is randomly sampled without replacement from
+#' the entire group to preserve the variance. The larger group
+#' is randomly sampled to have 1.3 times the number of samples
+#' present in the smaller group. This method ensures that each
+#' group is equally represented in stability selection. \cr
 #'
 #' The principles of stability selection remain similar with both methods,
 #' however, there are a few small differences. Stability selection
@@ -350,15 +380,19 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{\link{DNEAobj}} object after populating the stable_networks
-#' slot of the object. It contains the selection results from stability
-#' selection as well as the calculated selection probabilities.
+#' @returns A \code{\link{DNEAobj}} object after populating the
+#' stable_networks slot of the object. It contains the selection
+#' results from stability selection as well as the calculated
+#' selection probabilities.
 #'
 #' @examples
 #' #import BiocParallel package
 #' library(BiocParallel)
 #'
-#' #import completed example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' # perform stability selection
@@ -482,48 +516,56 @@ stabilitySelection <- function(object,
 
 #' Construct the GLASSO-based biological Networks
 #'
-#' This function constructs the biological network for each experimental
+#' This function constructs a biological network for each experimental
 #' condition using the joint estimation method described
 #' in Ma et al. (2019) (\emph{please see references below}). If
-#' \code{\link{BICtune}} and \code{\link{stabilitySelection}} were already run,
-#' the optimized lambda and selection probabilities from each function,
-#' respectively, will be used to add regularization when constructing the
-#' networks (please see the \strong{\emph{Details}} section of
-#' \code{\link{stabilitySelection}} for more information). Otherwise,
-#' \deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+#' \code{\link{stabilitySelection}} was performed previously,
+#' the selection probabilities will be used to for model optimization
+#' when constructing the networks (please see the \strong{\emph{Details}}
+#' section of \code{\link{stabilitySelection}} for more information).
 #'
-#' will be used as the regularization parameter.
 #'
-#' @param object A \code{\link{DNEAobj}} object
-#' @param aprox A boolean indicating whether or not \code{\link{BICtune}}
-#' should be used to optimize the lambda value for each condition. If
-#' `aprox==FALSE`, sqrt(log(# features)/#samples) is used to aproximate
-#' lambda
-#' @param optimal_lambdas \emph{OPTIONAL} - The lambda value to be used
-#' in analysis. Not necessary if \code{\link{BICtune}} or
-#' \code{\link{stabilitySelection}} were already performed
+#' @param object A \code{\link{DNEAobj}} object.
+#'
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
 #' based on the theoretical value for the asymptotically valid lambda. More
-#' information about this can be found in the details section
-#' @param informed TRUE/FALSE whether or not to utilize the asymptotic
-#' properties of lambda for large data sets to tune the parameter. This reduces
-#' the necessary number of computations for optimization
+#' information about this can be found in the details section of
+#' \code{\link{BICtune}}.
+#'
+#' @param aprox TRUE/FALSE indicating whether \code{\link{BICtune}}
+#' should be used to optimize the lambda value for each condition. If
+#' `aprox==FALSE`, sqrt(log(# features)/#samples) is used to approximate
+#' lambda.
+#'
+#' @param optimal_lambdas \emph{\strong{[OPTIONAL]}} The lambda value
+#' to be used in analysis. If not provided, the lambda value is
+#' determined based on the input of the "aprox" parameter.
+
+#' @param informed TRUE/FALSE indicating whether the asymptotic properties
+#' of lambda for large data sets should be utilized to tune the parameter.
+#' This reduces the necessary number of computations for optimization.
+#'
 #' @param interval A numeric value indicating the specifity by which to
 #' optimize lambda. The default value is 1e-3, which indicates lambda will
 #' be optimized to 3 decimal places. The value should be between 0 and 0.1.
+#'
 #' @param eps_threshold A significance cut-off for thresholding network edges.
 #'        The default value is 1e-06. This value generally should not change.
+#'
 #' @param eta_value A tuning parameter that that ensures that the empirical
 #' covariance matrix of the data is positive definite so that we can
 #' calculate its inverse. The default value is 0.01.
-#' @param BPPARAM A \code{\link{BiocParallel}} object
+#'
+#' @param BPPARAM A \code{\link{BiocParallel}} object.
+#'
 #' @param BPOPTIONS a list of options for BiocParallel created using
-#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function
+#' the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.
+#'
 #' @param eps_threshold A numeric value between 0 and 1 by which to
 #' threshold the partial correlation values for edge identification.
-#' Edges with an absolute partial correlation value below this threshold
-#' will be zero'd out from the adjacency matrix.
+#' Edges with an absolute partial correlation value below this
+#' threshold will be zero'd out from the adjacency matrix.
 #'
 #' @author Christopher Patsalis
 #'
@@ -550,7 +592,10 @@ stabilitySelection <- function(object,
 #' sample condition as well as the network edge list.
 #'
 #' @examples
-#' #import completed example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #construct the networks
@@ -699,20 +744,25 @@ getNetworks <- function(object,
 #' Identify metabolic modules within the biological networks using a
 #' consensus clustering approach
 #'
-#' This function clusters the jointly estimated adjacency matrix
+#' This function clusters the jointly estimated adjacency matrices
 #' constructed using \code{\link{getNetworks}} via the consensus clustering
-#' approach described in Ma et al (\emph{Please see the \strong{\emph{Details}}
-#' section for more information}) to identify metabolic modules, aka
-#' sub networks, present in the larger networks. Only subnetworks with
-#' consensus that meets or exceeds tau are identified as real.
+#' approach described in Ma et al. (\emph{Please see the
+#' \strong{\emph{Details}} section for more information}) to identify
+#' metabolic modules, aka sub networks, present in the larger networks.
+#' Only sub networks with consensus that meets or exceeds tau are
+#' identified as real.
 #'
-#' @param object A \code{\link{DNEAobj}} object
-#' @param tau The % agreement threshold among the clustering algorithms
-#' for a node to be included in a subnetwork
-#' @param max_iterations The maximum number of replicates of the clustering
-#' algorithms to perform before consensus is reached
-#' @param verbose Whether or not a progress bar should be displayed
-#' in the console
+#' @param object A \code{\link{DNEAobj}} object.
+#'
+#' @param tau The % agreement among the clustering algorithms
+#' for a node to be included in a sub network.
+#'
+#' @param max_iterations The maximum number of replicates of
+#' consensus clustering to be performed if consensus is not
+#' reached.
+#'
+#' @param verbose TRUE/FALSE whether a progress bar should be
+#' displayed in the console.
 #'
 #' @author Christopher Patsalis
 #'
@@ -739,21 +789,25 @@ getNetworks <- function(object,
 #' \item \code{\link[igraph:cluster_walktrap]{cluster_walktrap}}
 #' \item \code{\link[igraph:cluster_leading_eigen]{cluster_leading_eigen}}}
 #'
-#' For each iteration, node membership in each respective cluster is
-#' compared across the algorithms, and only the clusters with % agreement
-#' greater than tau are kept. A new adjacency graph is then created and
-#' clustering is performed again. This occurs iteratively until consensus on
-#' stable subnetworks or the specified max_iterations is reached
+#' For each iteration, node membership in a respective cluster is
+#' compared across the algorithms, and only the nodes with tau %
+#' agreement for a given cluster are kept. A new adjacency graph is
+#' then created and clustering is performed again. This occurs iteratively
+#' until consensus on is reached stable sub networks or the specified
+#' "max_iterations" is reached
 #' \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{\link{DNEAobj}} object containing sub-network determinations for
-#' the nodes within the input network. A summary of the consensus clustering
-#' results can be viewed using \code{\link{CCsummary}}. Sub-network membership
-#' for each node can be found in the "membership" column of the node list,
-#' which can be viewed using \code{\link{nodeList}}.
+#' @returns A \code{\link{DNEAobj}} object containing sub network
+#' determinations for the nodes within the input network. A summary of the
+#' consensus clustering results can be viewed using \code{\link{CCsummary}}.
+#' Sub network membership for each node can be found in the "membership"
+#' column of the node list, which can be accessed using \code{\link{nodeList}}.
 #'
 #' @examples
-#' #import completed example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #identify metabolic modules via consensus clustering
@@ -881,20 +935,25 @@ clusterNet <- function(object,
   return(object)
 }
 
-#' Identify metabolic modules that are enriched across experimental conditions
+#' Identify metabolic modules that are enriched across
+#' experimental conditions using NetGSA
 #'
 #' This function performs pathway enrichment analysis on the metabolic
 #' modules identified via \code{\link{clusterNet}} using the
 #' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{\link{DNEAobj}}
-#' @param min_size The minimum size of metabolic modules for
-#' enrichment analysis
+#' @param object A \code{\link{DNEAobj}}.
+#'
+#' @param min_size The minimum size of a given metabolic
+#' module for to be tested for enrichment across the
+#' experimental condition.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso
 #' \code{\link{netGSAresults}}
+#' \code{\link{clusterNet}}
+#' \code{\link[netgsa:NetGSA]{NetGSA}}
 #'
 #' @references
 #' Hellstern M, Ma J, Yue K, Shojaie A.
@@ -906,12 +965,14 @@ clusterNet <- function(object,
 #'
 #'
 #' @returns A \code{\link{DNEAobj}} object after populating the @@netGSA
-#' slot. Pathway expression differences for each node can be found
-#' in the node_list. A summary of the NetGSA results can be viewed
+#' slot. A summary of the NetGSA results can be viewed
 #' using \code{\link{netGSAresults}}.
 #'
 #' @examples
-#' #import completed example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #perform pathway enrichment analysis using netGSA

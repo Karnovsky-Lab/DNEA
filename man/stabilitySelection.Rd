@@ -2,8 +2,8 @@
 % Please edit documentation in R/primary.R
 \name{stabilitySelection}
 \alias{stabilitySelection}
-\title{Stability selection to calculate selection probabilities for every
-possible feature-feature interaction within the data}
+\title{Stability selection calculates selection probabilities for every
+possible feature-feature interaction within the input data}
 \usage{
 stabilitySelection(
   object,
@@ -15,36 +15,37 @@ stabilitySelection(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
-\item{subSample}{A boolean that specifies whether the number of samples
-are unevenly split by condition and, therefore, should be adjusted for
-when randomly sampling.}
+\item{subSample}{TRUE/FALSE indicating whether the number of samples
+are unevenly split by condition and subsampling should be performed
+when randomly sampling to even out the groups.}
 
 \item{nreps}{The total number of replicates to perform in stability
-selection. The default is 500.}
+selection. The default is 1000.}
 
-\item{optimal_lambda}{\emph{OPTIONAL} - The optimal lambda value to be
+\item{optimal_lambda}{\emph{\strong{\link{OPTIONAL}}} The optimal lambda value to be
 used in the model. This parameter is only necessary if
-\code{\link{BICtune}} is not performed}
+\code{\link{BICtune}} is not performed prior.}
 
-\item{BPPARAM}{a BiocParallel object}
+\item{BPPARAM}{a BiocParallel object.}
 
 \item{BPOPTIONS}{a list of options for BiocParallel created using
-the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
-A \code{\link{DNEAobj}} object after populating the stable_networks
-slot of the object. It contains the selection results from stability
-selection as well as the calculated selection probabilities.
+A \code{\link{DNEAobj}} object after populating the
+stable_networks slot of the object. It contains the selection
+results from stability selection as well as the calculated
+selection probabilities.
 }
 \description{
 This function randomly samples the input data and fits a glasso model
 with the sampled data for \strong{\emph{nreps}} number of replicates. The
 resulting adjacency matrices are summed together and selection probabilities
 for each feature-feature interaction are calculated. Stability selection is
-particularly useful for smaller datasets and when a large number of
-replicates are performed (the default is 500). The exact method deployed
+particularly useful for smaller data sets. A large number of replicates
+should be performed (the default is 1000). The exact method deployed
 varies slightly whether or not additional sub-sampling of the data is
 performed. More information can be found in the
 \strong{\emph{Details}} section.
@@ -66,15 +67,16 @@ via the following equation:
 \deqn{\rho = \lambda*(1 / (0.0001 + selection.probability))}{ rho = lambda*(1 / (0.0001 + selection.probability))}
 
 However, when the sample groups are very unbalanced, randomly
-sampling strongly favors the larger group, resulting in over representation
-of the aforementioned group. In order to combat this, setting
-subSample=TRUE modifies the random sample by sub-sampling the groups
-individually to even out the numbers. In this method, 90\% of the smaller
-group is randomly sampled without replacement, and an additional 10\% is
-randomly sampled without replacement from the entire group to preserve the
-variance. The larger group is randomly sampled to have 1.3 times the number
-of samples present in the smaller group. This method ensures that
-each group is equally represented in stability selection.\cr
+sampling strongly favors the larger group, resulting in over
+representation. In order to combat this, setting subSample=TRUE
+modifies the random sample by sub-sampling the experimental groups
+to even out the sample numbers. In this method, 90\% of the smaller
+group is randomly sampled without replacement, and an
+additional 10\% is randomly sampled without replacement from
+the entire group to preserve the variance. The larger group
+is randomly sampled to have 1.3 times the number of samples
+present in the smaller group. This method ensures that each
+group is equally represented in stability selection. \cr
 
 The principles of stability selection remain similar with both methods,
 however, there are a few small differences. Stability selection
@@ -92,7 +94,10 @@ found in Ma et al. (2019) referenced below.
 #import BiocParallel package
 library(BiocParallel)
 
-#import completed example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 # perform stability selection
@@ -122,6 +127,7 @@ Journal of the Royal Statistical Society: Series B
 \code{\link{selectionResults}},
 \code{\link[BiocParallel:bpparam]{bpparam}},
 \code{\link[BiocParallel:bpoptions]{bpoptions}}
+\code{\link[glasso:glasso]{glasso}}
 }
 \author{
 Christopher Patsalis

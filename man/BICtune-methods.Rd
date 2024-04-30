@@ -3,7 +3,6 @@
 \name{BICtune}
 \alias{BICtune}
 \alias{BICtune,DNEAobj-method}
-\alias{BICtune,matrix-method}
 \title{Optimize the lambda regularization parameter for the glasso-based
 network models using Bayesian-information Criterion}
 \usage{
@@ -28,45 +27,35 @@ BICtune(
   BPPARAM = bpparam(),
   BPOPTIONS = bpoptions()
 )
-
-\S4method{BICtune}{matrix}(
-  object,
-  lambda_values,
-  interval = 0.001,
-  informed = TRUE,
-  eps_threshold = 1e-06,
-  eta_value = 0.1,
-  BPPARAM = bpparam(),
-  BPOPTIONS = bpoptions()
-)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}}
 
-\item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing
+\item{lambda_values}{\emph{\strong{\link{OPTIONAL}}} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
 based on the theoretical value for the asymptotically valid lambda. More
-information about this can be found in the details section}
+information about this can be found in the details section.}
 
-\item{interval}{A numeric value indicating the specifity by which to
+\item{interval}{A numeric value indicating the specificity by which to
 optimize lambda. The default value is 1e-3, which indicates lambda will
 be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 
-\item{informed}{TRUE/FALSE whether or not to utilize the asymptotic
-properties of lambda for large data sets to tune the parameter. This reduces
-the necessary number of computations for optimization}
+\item{informed}{TRUE/FALSE indicating whether the asymptotic properties
+of lambda for large data sets should be utilized to tune the parameter.
+This reduces the necessary number of computations for optimization.}
 
-\item{eps_threshold}{A significance cut-off for thresholding network edges.
-The default value is 1e-06. This value generally should not change.}
+\item{eps_threshold}{A significance cut-off for thresholding network
+edges. The default value is 1e-06.
+This value generally should not change.}
 
 \item{eta_value}{A tuning parameter that that ensures that the empirical
 covariance matrix of the data is positive definite so that we can
 calculate its inverse. The default value is 0.01.}
 
-\item{BPPARAM}{A \code{\link{BiocParallel}} object}
+\item{BPPARAM}{A \code{\link{BiocParallel}} object.}
 
 \item{BPOPTIONS}{a list of options for BiocParallel created using
-the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
 A \code{\link{DNEAobj}} object containing the BIC and likelihood
@@ -78,9 +67,8 @@ This function will calculate the Bayesian information criterion (BIC)
 and likelihood for a range of lambda values that are automatically
 generated (\emph{please see \strong{Details} for more info}) or that are
 user-specified. The lambda value with the minimum BIC score is the optimal
-lambda value for the dataset and is stored in the DNEAobj object for use in
-stability selection using \code{\link{stabilitySelection}} and network
-generation using \code{\link{getNetworks}}
+lambda value for the data set and is stored in the DNEAobj object for use in
+stability selection using \code{\link{stabilitySelection}}.
 }
 \details{
 There are several ways to optimize the lambda parameter for a
@@ -88,26 +76,41 @@ glasso model - We utilize Bayesian-information criterion (BIC) to
 optimize the lambda parameter in DNEA because it is a more balanced
 method and less computationally expensive. We can reduce the total
 number of values that need to be tested in optimization by carefully
-selecting values around the asymptotically valid lambda for datasets
-with many samples and many features:
+selecting values around the asymptotically valid lambda for data
+sets with many samples and many features following the equation:
 \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 
-For smaller datasets, the asymptotically valid lambda is described
+For smaller data sets, the asymptotically valid lambda is described
 by modifying the previous equation to include an unknown constant, c,
 that needs to be determined mathematically. Therefore, to optimize
 lambda we modify the previous equation as follows:
 \deqn{\lambda = c \sqrt{ \ln (num. features) / num. samples}}{lambda = c*sqrt(ln(num. features) / num. samples)}
 
-where c takes on 15 evenly spaced values between 0.01 and 0.3.
-More information regarding the optimization method deployed here can
-be found in the Guo et al. (2011) paper referenced below.
+where c takes on values between 0 and the
+theoretical maximum of C in intervals of 0.02. C is then estimated
+and a new range is tested to the specificity of the "interval"
+input. More information regarding the optimization method
+deployed here can be found in the Guo et al. (2011)
+paper referenced below.
 }
 \examples{
 #import BiocParallel package
 library(BiocParallel)
 
-#import completed example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 #optimize lambda parameter
 dnw <- BICtune(object=dnw,
@@ -126,6 +129,7 @@ Epub 2011 Feb 9. PMID: 23049124; PMCID: PMC3412604.
 \code{\link{optimizedLambda}},
 \code{\link[BiocParallel:bpparam]{bpparam}},
 \code{\link[BiocParallel:bpoptions]{bpoptions}}
+\code{\link[glasso:glasso]{glasso}}
 }
 \author{
 Christopher Patsalis

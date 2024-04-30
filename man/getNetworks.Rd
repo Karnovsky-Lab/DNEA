@@ -18,21 +18,22 @@ getNetworks(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object}
+\item{object}{A \code{\link{DNEAobj}} object.}
 
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
 based on the theoretical value for the asymptotically valid lambda. More
-information about this can be found in the details section}
+information about this can be found in the details section of
+\code{\link{BICtune}}.}
 
-\item{aprox}{A boolean indicating whether or not \code{\link{BICtune}}
+\item{aprox}{TRUE/FALSE indicating whether \code{\link{BICtune}}
 should be used to optimize the lambda value for each condition. If
-\code{aprox==FALSE}, sqrt(log(# features)/#samples) is used to aproximate
-lambda}
+\code{aprox==FALSE}, sqrt(log(# features)/#samples) is used to approximate
+lambda.}
 
-\item{informed}{TRUE/FALSE whether or not to utilize the asymptotic
-properties of lambda for large data sets to tune the parameter. This reduces
-the necessary number of computations for optimization}
+\item{informed}{TRUE/FALSE indicating whether the asymptotic properties
+of lambda for large data sets should be utilized to tune the parameter.
+This reduces the necessary number of computations for optimization.}
 
 \item{interval}{A numeric value indicating the specifity by which to
 optimize lambda. The default value is 1e-3, which indicates lambda will
@@ -40,21 +41,21 @@ be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to
 threshold the partial correlation values for edge identification.
-Edges with an absolute partial correlation value below this threshold
-will be zero'd out from the adjacency matrix.}
+Edges with an absolute partial correlation value below this
+threshold will be zero'd out from the adjacency matrix.}
 
 \item{eta_value}{A tuning parameter that that ensures that the empirical
 covariance matrix of the data is positive definite so that we can
 calculate its inverse. The default value is 0.01.}
 
-\item{optimal_lambdas}{\emph{OPTIONAL} - The lambda value to be used
-in analysis. Not necessary if \code{\link{BICtune}} or
-\code{\link{stabilitySelection}} were already performed}
+\item{optimal_lambdas}{\emph{\strong{\link{OPTIONAL}}} The lambda value
+to be used in analysis. If not provided, the lambda value is
+determined based on the input of the "aprox" parameter.}
 
-\item{BPPARAM}{A \code{\link{BiocParallel}} object}
+\item{BPPARAM}{A \code{\link{BiocParallel}} object.}
 
 \item{BPOPTIONS}{a list of options for BiocParallel created using
-the \code{\link[BiocParallel:bpoptions]{bpoptions}} function}
+the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
 A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
@@ -62,21 +63,19 @@ and edge_list slots with the corresponding adjacency_matrix for each
 sample condition as well as the network edge list.
 }
 \description{
-This function constructs the biological network for each experimental
+This function constructs a biological network for each experimental
 condition using the joint estimation method described
 in Ma et al. (2019) (\emph{please see references below}). If
-\code{\link{BICtune}} and \code{\link{stabilitySelection}} were already run,
-the optimized lambda and selection probabilities from each function,
-respectively, will be used to add regularization when constructing the
-networks (please see the \strong{\emph{Details}} section of
-\code{\link{stabilitySelection}} for more information). Otherwise,
-\deqn{\lambda = \sqrt{\ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
-}
-\details{
-will be used as the regularization parameter.
+\code{\link{stabilitySelection}} was performed previously,
+the selection probabilities will be used to for model optimization
+when constructing the networks (please see the \strong{\emph{Details}}
+section of \code{\link{stabilitySelection}} for more information).
 }
 \examples{
-#import completed example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 #construct the networks
