@@ -18,10 +18,7 @@ source(paste0(filepath, '/LMadjust.R'))
 IAmeta <- readRDS(paste0(filepath, "/IAmeta.rds"))
 
 #read in expression data
-plasma_expression_dat<-read.table('ST001386_AN002314_Results_and_metabolite_metadata.txt', fill = TRUE, sep = '\t')
-plasma_expression_dat<-as.data.frame(t(plasma_expression_dat[2:147,]))
-colnames(plasma_expression_dat) <- plasma_expression_dat[1,]
-plasma_expression_dat <- plasma_expression_dat[-1,]
+plasma_expression_dat <- readRDS(paste0(filepath, "/ST001386_AN002314_Results_and_metabolite_metadata.rds"))
 
 #clean metabolite names and save in variable
 TEDDY_metabnames_original <- colnames(plasma_expression_dat)[-c(1,2)]
