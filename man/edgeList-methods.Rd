@@ -16,20 +16,24 @@ edgeList(x) <- value
 \S4method{edgeList}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{a \code{\link{DNEAobj}} object}
+\item{x}{a \code{\link{DNEAobj}} object.}
 
-\item{value}{a data frame of edges in the network}
+\item{value}{a data frame of edges in the network.}
 }
 \value{
 A data frame corresponding to the edge list
-determined by DNEA
+determined by DNEA.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns the
-edge list created from \code{\link{getNetworks}}.
+The function takes as input a \code{\link{DNEAobj}} object and
+returns the edge list created by the \code{\link{getNetworks}}
+function.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 edgeList(dnw)
