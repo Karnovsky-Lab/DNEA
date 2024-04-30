@@ -1,8 +1,7 @@
 #
 #
 #path to save data
-filepath <- "[FILEPATH TO SAVE /DNEA/data/scripts/]"
-filepath <- "~/Documents/Karnovsky_lab/DNEAproject/DNEAdata/"
+filepath <- "[FILEPATH TO SAVE /DNEA/inst/extdata/]"
 output_filepath <- "[FILEPATH TO OUTPUT FOLDER"
 setwd(filepath)
 
