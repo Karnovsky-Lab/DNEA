@@ -638,6 +638,7 @@ lambdas2TestReplace.DNEAobj <- function(x, value){
 }
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
+#' @export
 setReplaceMethod("lambdas2Test", signature(x="DNEAobj"),
                  lambdas2TestReplace.DNEAobj)
 
