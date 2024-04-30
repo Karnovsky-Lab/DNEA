@@ -10,17 +10,21 @@ netGSAresults(x)
 \S4method{netGSAresults}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 }
 \value{
-A data frame of the results from netGSA.
+A data frame of the results from \code{\link{runNetGSA}}.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns
-the netGSA results in the netGSA slot.
+The function takes as input a \code{\link{DNEAobj}}
+object and returns a summary of the enrichment
+analysis results stored in the netGSA slot.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 netGSAresults(dnw)

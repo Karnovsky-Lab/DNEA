@@ -16,21 +16,34 @@ nodeList(x) <- value
 \S4method{nodeList}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{a \code{\link{DNEAobj}} object}
+\item{x}{a \code{\link{DNEAobj}} object.}
 
-\item{value}{a data frame of nodes in the network}
+\item{value}{a data frame of nodes in the network.}
 }
 \value{
 A data frame corresponding to the node
 list determined by DNEA.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns
-the node list created from \code{\link{createDNEAobject}}.
+The function takes as input a \code{\link{DNEAobj}} object
+and returns the node list created from the
+\code{\link{createDNEAobject}} function.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 nodeList(dnw)
 }

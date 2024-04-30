@@ -5,11 +5,11 @@ NULL
 #' Retrieve information about a DNEAobj object
 #'
 #' @describeIn DNEAobj-class
-#' This function will display a summary of the information stored within
-#' a \code{\link{DNEAobj}} object
+#' This function will display a summary of the information
+#' stored within a \code{\link{DNEAobj}} object.
 #'
 #'
-#' @param object A \code{\link{DNEAobj}} object
+#' @param object A \code{\link{DNEAobj}} object.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}},
@@ -17,9 +17,22 @@ NULL
 #'
 #' @returns A summary of the information stored in a
 #' \code{\link{DNEAobj}} object.
+#'
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' dnw
 #' @export
@@ -54,7 +67,7 @@ setMethod("show", "DNEAobj", function(object) {
 #'
 #' @describeIn DNEAinputSummary-class
 #' This function will display the number of samples, number of features,
-#' and diagnostics values of the input dataset to a
+#' and diagnostics values of the input data set to a
 #' \code{\link{DNEAobj}} object.
 #'
 #' @param object A DNEAinputSummary object
@@ -64,6 +77,24 @@ setMethod("show", "DNEAobj", function(object) {
 #' \code{\link{aggregateFeatures}}
 #'
 #' @returns A summary of the input data to \code{\link{createDNEAobject}}.
+#'
+#' @examples
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
+#'
+#' datasetSummary(dnw)
 #' @export
 setMethod("show", "DNEAinputSummary", function(object){
   cat(is(object)[[1]],
@@ -79,13 +110,26 @@ projectName.DNEAobj <- function(x){
 }
 #' Return the name of the current experiment
 #'
-#' This function returns the name of the DNEA experiment
+#' This function returns the name of the DNEA experiment.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @returns The name of the DNEA experiment.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' projectName(dnw)
 #' @author Christopher Patsalis
@@ -107,17 +151,21 @@ expressionData.DNEAobj <- function(x, assay=c("input_data",
 }
 #' Access expression data within a DNEAobj object,
 #'
-#' This function accesses the expression data stored in the @@assays
-#' slot of the \code{\link{DNEAobj}} object. The output is an \emph{n x m}
-#' matrix with one row for each sample and one column for each feature
-#' in the data.
+#' This function accesses the expression data stored in the
+#' assays slot of the \code{\link{DNEAobj}} object. The
+#' output is an \emph{n x m} matrix with one row for each
+#' sample and one column for each feature in the data.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
-#' @param assay A character string corresponding to the data to retrieve:
-#' "input_data" retrieves the data as it was input, "log_input_data"
-#' retrieves the input_data after log transforming, and
-#' "scaled_expression_data" retrieves the log-scaled data matrices.
+#' @param x A \code{\link{DNEAobj}} object.
+#'
+#' @param assay A character string corresponding to the
+#' data to retrieve: "input_data" retrieves the data as
+#' it was input, "log_input_data" retrieves the input data
+#' after log transforming, and "scaled_expression_data"
+#' retrieves a list of matrices corresponding to the
+#' log-scaled data for each experimental condition,
+#' respectively.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -125,10 +173,24 @@ expressionData.DNEAobj <- function(x, assay=c("input_data",
 
 #' @returns The expression matrix specified by the user.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' expressionData(x=dnw, assay="input_data")
+#' expressionData(x=dnw, assay="log_input_data")
+#' expressionData(x=dnw, assay="scaled_expression_data")
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
@@ -152,19 +214,33 @@ networkGroupIDs.DNEAobj <- function(x){
 }
 #' Access and set the experimental group labels
 #'
-#' This function accesses the experimental group labels for each sample
-#' stored in the @@metadata slot of a \code{\link{DNEAobj}} object.
+#' This function accesses the experimental group labels for
+#' each sample stored in the metadata slot of a
+#' \code{\link{DNEAobj}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @param value a character string name corresponding to a column
-#' name of the sample metadata data frame
+#' name of the sample metadata data frame.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{includeMetadata}}
 #' @returns A vector of the unique condition labels.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' networkGroupIDs(dnw)
 #' @rdname networkGroupIDs-methods
@@ -179,18 +255,32 @@ networkGroups.DNEAobj <- function(x){
 }
 #' Retrieve the unique group values of the experimental condition
 #'
-#' This function takes in a \code{\link{DNEAobj}} object and returns the
-#' unique group values of the experimental condition in the dataset
+#' This function takes in a \code{\link{DNEAobj}} object and
+#' returns the unique group labels of the experimental
+#' condition in the data set.
 #'
-#' @param x A DNEAobject, or DNEAobject_collapsed object
+#' @param x A \code{\link{DNEAobj}} or
+#' \code{\link{collapsed_DNEAobj}}
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{networkGroupIDs}},
 #' \code{\link{createDNEAobject}}
 #' @returns A vector of the condition values.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' networkGroups(dnw)
 #' @rdname networkGroups-methods
@@ -208,22 +298,35 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
     x@metadata[["features"]]
   }
 }
-#' Retrieve metadata stored in DNEAobj
+#' Retrieve metadata stored in a DNEAobj
 #'
-#' This function retrieves the specified metadata data frame stored
-#' in the @@metadata slot of the \code{\link{DNEAobj}} object.
+#' This function retrieves the specified metadata stored
+#' in the metadata slot of the
+#' \code{\link{DNEAobj}} object.
 #'
 #' @param x A \code{\link{DNEAobj}} object.
-#' @param type A character string indicating the type of metadata
-#' to access. Can be "sample" or "feature".
+#' @param type A character string indicating the type
+#' of metadata to access. Can be "sample" or "feature".
 #'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}, \code{\link{includeMetadata}}
 #' @returns A data frame of the indicated metadata
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' metaData(dnw, type = "sample")
 #' @seealso \code{\link{includeMetadata}}
@@ -253,17 +356,30 @@ sampleNames.DNEAobj <- function(x){
 }
 #' Retrieve the sample names from the metadata slot.
 #'
-#' This function accesses the sample names stored in the @@metadata
-#' slot of the \code{\link{DNEAobj}} object.
+#' This function accesses the sample names stored in the
+#' metadata slot of the \code{\link{DNEAobj}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}
 #' @returns A character vector of sample names.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' sampleNames(dnw)
 #' @rdname sampleNames-methods
@@ -282,20 +398,34 @@ featureNames.DNEAobj <- function(x, original=FALSE){
 }
 #' Retrieve the feature names from the metadata slot.
 #'
-#' This function accesses the feature names stored in the @@metadata
-#' slot of the \code{\link{DNEAobj}} object.
+#' This function accesses the feature names stored in the
+#' metadata slot of the \code{\link{DNEAobj}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object
-#' @param original "TRUE" returns the original feature names and "FALSE"
-#' returns the feature names that have been modified to avoid errors as
-#' a result of special characters.
+#' @param x A \code{\link{DNEAobj}} object.
+#' @param original "TRUE" returns the original feature names
+#' and "FALSE" returns the feature names that have been
+#' modified to avoid errors as a result of special characters
+#' using \code{\link[janitor:make_clean_names]{make_clean_names}}.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}
 #' @returns A character vector of feature names.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' featureNames(dnw, original=TRUE)
 #' @rdname featureNames-methods
@@ -309,17 +439,30 @@ numFeatures.DNEAobj <- function(x){
 }
 #' Retrieve the total number of features in the dataset
 #'
-#' This function prints to console the total number of features
-#' in the dataset
+#' This function prints to console the total number of
+#' features in the data set
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}
-#' @returns The number of features in the dataset.
+#' @returns The number of features in the data set.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' numFeatures(dnw)
 #' @rdname numFeatures-methods
@@ -344,15 +487,29 @@ numSamples.DNEAobj <- function(x){
 #' Retrieves the total number of samples in the dataset
 #'
 #' This function prints to console the total number of
-#' samples in the dataset
-#' @param x A \code{\link{DNEAobj}} object
+#' samples in the data set.
+#'
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}
-#' @returns The number of samples in the dataset.
+#' @returns The number of samples in the data set.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' numSamples(dnw)
 #' @rdname numSamples-methods
@@ -378,21 +535,36 @@ optimizedLambda.DNEAobj <- function(x){
 #' Access the lambda value used in analysis
 #'
 #' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' the hyperparameter (lambda) that is currently being used for the analysis.
+#' the hyper parameter (lambda) that is currently being used for the analysis.
 #' The user may also provide a single-value numeric vector to change the
-#' lambda value for analysis
+#' lambda value for analysis.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @param value a single-value numeric vector corresponding to the lambda
-#' value to use in analysis
+#' value to use in analysis.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{BICtune}}
 #' @returns The optimized lambda hyperparameter.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
 #'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
+#'
+#' optimizedLambda(dnw) <- 0.15
 #' optimizedLambda(dnw)
 #' @rdname optimizedLambda-methods
 #' @aliases optimizedLambda
@@ -416,23 +588,41 @@ lambdas2Test.DNEAobj <- function(x){
 
   x@hyperparameter$tested_lambda_values
 }
-#' Access the lambda values tested during hyperparameter optimization
+#' Access the lambda values tested during
+#' hyper parameter optimization
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' the lambda values that were testing during hyperparameter optimization
-#' performed via \code{\link{BICtune}}.
+#' The function takes as input a \code{\link{DNEAobj}}
+#' object and returns the lambda values that were testing
+#' during hyper parameter optimization performed via
+#' \code{\link{BICtune}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} or \code{\link{collapsed_DNEAobj}} object
-#' @param value A list or numeric vector
+#' @param x A \code{\link{DNEAobj}} or
+#' \code{\link{collapsed_DNEAobj}} object.
+#'
+#' @param value A list or numeric vector.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{BICtune}}
 #' @returns The lambda values to evaluate in optimization.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
 #'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
+#'
+#' lambdas2Test(dnw) <- seq(0.01, 1, 0.02)
 #' lambdas2Test(dnw)
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
@@ -457,20 +647,25 @@ BICscores.DNEAobj <- function(x){
 }
 #' Access the BIC scores for each lambda value evaluated
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' the BIC values for each lambda tested during hyperparameter optimization
-#' performed via BICtune().
+#' The function takes as input a \code{\link{DNEAobj}}
+#' object and returns the BIC values for each lambda tested
+#' during hyper parameter optimization performed via
+#' \code{\link{BICtune}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
-#' @param value a list containing lists that consist of the liklihood and
-#' BIC score for tested lambda values
+#' @param x A \code{\link{DNEAobj}} object.
+#' @param value a list of two lists that consist of the
+#' likelihood and BIC scores for each tested lambda value.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{BICtune}}
 #' @returns The optimized lambda hyperparameter.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' BICscores(dnw)
@@ -495,21 +690,28 @@ selectionResults.DNEAobj <- function(x){
 
   x@stable_networks$selection_results
 }
+
 #' Access and set the edge selection results from stabilitySelection()
 #'
 #' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' an m x m matrix of selection results for every possible network edge
-#' calculated via \code{\link{stabilitySelection}}.
+#' an \emph{m x n} matrix of selection results for every possible network
+#' edge calculated during \code{\link{stabilitySelection}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{stabilitySelection}},\code{\link{selectionProbabilities}}
+#'
 #' @returns A \code{\link{DNEAobj}} object after filling the
-#'         selection_results section of the stable_networks slot.
+#' selection_results section of the stable_networks slot.
+#'
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' selectionResults(dnw)
@@ -534,21 +736,27 @@ selectionProbabilities.DNEAobj <- function(x){
 
   x@stable_networks$selection_probabilities
 }
+
 #' Access and set the edge selection probabilities from stabilitySelection()
 #'
 #' The function takes as input a \code{\link{DNEAobj}} object and returns an
-#' m x m matrix of selection probabilities for every possible network
-#' edge calculated via \code{\link{stabilitySelection}}.
+#' \emph{m x n} matrix of selection probabilities for every possible network
+#' edge calculated during \code{\link{stabilitySelection}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{stabilitySelection}},\code{\link{selectionResults}}
+#'
 #' @returns A \code{\link{DNEAobj}} object after filling the
 #' selection_probabilities section of the stable_networks slot.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' selectionProbabilities(dnw)
@@ -575,20 +783,26 @@ edgeList.DNEAobj <- function(x){
 }
 #' Access the edge list
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns the
-#' edge list created from \code{\link{getNetworks}}.
+#' The function takes as input a \code{\link{DNEAobj}} object and
+#' returns the edge list created by the \code{\link{getNetworks}}
+#' function.
 #'
+#' @param x a \code{\link{DNEAobj}} object.
 #'
-#' @param x a \code{\link{DNEAobj}} object
-#' @param value a data frame of edges in the network
+#' @param value a data frame of edges in the network.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{getNetworks}},\code{\link{filterNetworks}},
 #' \code{\link{getNetworkFiles}}
+#'
 #' @returns A data frame corresponding to the edge list
-#' determined by DNEA
+#' determined by DNEA.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' edgeList(dnw)
@@ -615,21 +829,36 @@ nodeList.DNEAobj <- function(x){
 }
 #' Access the node list
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' the node list created from \code{\link{createDNEAobject}}.
+#' The function takes as input a \code{\link{DNEAobj}} object
+#' and returns the node list created from the
+#' \code{\link{createDNEAobject}} function.
 #'
+#' @param x a \code{\link{DNEAobj}} object.
 #'
-#' @param x a \code{\link{DNEAobj}} object
-#' @param value a data frame of nodes in the network
+#' @param value a data frame of nodes in the network.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}},\code{\link{clusterNet}},
 #' \code{\link{getNetworkFiles}}
+#'
 #' @returns A data frame corresponding to the node
 #' list determined by DNEA.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' nodeList(dnw)
 #' @rdname nodeList-methods
@@ -655,18 +884,34 @@ diagnostics.DNEAobj <- function(x){
 }
 #' Retrieve the diagnostic values for the input expression data
 #'
-#' This function retrieves teh diagnostic values calculated for
-#' the input expression data to \code{\link{createDNEAobject}}
+#' This function retrieves the diagnostic values calculated
+#' for the input expression data by the
+#' \code{\link{createDNEAobject}} function.
 #'
+#' @param x \code{\link{DNEAobj}} or
+#' \code{DNEAinputSummary} object.
 #'
-#' @param x \code{\link{DNEAobj}} object or \code{DNEAinputSummary} object
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}, \code{\link{aggregateFeatures}}
-#' @returns Returns the diagnostic values for the input expression data.
+#'
+#' @returns Returns the diagnostic values for
+#' the input expression data.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' diagnostics(dnw)
 #' @rdname diagnostics-methods
@@ -713,19 +958,34 @@ datasetSummary.DNEAobj <- function(x){
 #' Access the dataset_summary slot of a DNEAobj object
 #'
 #' This function prints to console the number of samples, number of
-#' features, and diagnostic values of the input data to
-#' \code{\link{createDNEAobject}} at initiation of the DNEA workflow.
+#' features, and diagnostic values of the input data stored in the
+#' dataset_summary slot of the \code{\link{DNEAobj}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}
-#' @returns The numbers of samples/features and diagnostic values of the
-#' input data calculated by \code{\link{createDNEAobject}}.
+#'
+#' @returns The numbers of samples/features and diagnostic values
+#' of the input data stored in the dataset_summary slot of the
+#' \code{\link{DNEAobj}}.
 #' @examples
-#' #import example data
-#' data(dnw)
+#' #load example data
+#' data(TEDDY)
+#' data(T1Dmeta)
+#'
+#' #make sure metadata and expression data are in same order
+#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+#'
+#' #create group labels
+#' group_labels <- T1Dmeta$group
+#' names(group_labels) <- rownames(T1Dmeta)
+#'
+#' #initiate DNEAobj
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#'                             group_labels = group_labels)
 #'
 #' datasetSummary(dnw)
 #' @rdname datasetSummary-methods
@@ -755,21 +1015,27 @@ adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
 }
 #' Retrieve the weighted or unweighted adjacency matrix
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns the
-#' weighted or unweighted adjacency matrix determined via
-#' \code{\link{getNetworks}}.
+#' The function takes as input a \code{\link{DNEAobj}} object
+#' and returns the weighted or un-weighted adjacency matrix for
+#' each group network constructed via the
+#' \code{\link{getNetworks}} function.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object
-#' @param weighted A boolean indicating whether or not
-#' to select the weighted or thresholded (unweighted)
-#' adjacency matrix
+#' @param x A \code{\link{DNEAobj}} object.
+#' @param weighted TRUE/FALSE indicating whether the
+#' weighted unweighted adjacency matrix should be
+#' returned.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{getNetworks}}
-#' @returns A matrix corresponding to the adjacency matrix specified.
+#' @returns A matrix corresponding to the adjacency
+#' matrix specified.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' adjacencyMatrix(dnw, weighted=TRUE)
@@ -798,24 +1064,31 @@ adjacencyGraph.DNEAobj <- function(x, graph){
 
   x@consensus_clustering@adjacency_graphs[[graph]]
 }
-#' Retrieve the adjacency graph for the case, control, or joint network
+#' Retrieve the adjacency graph for the case, control,
+#' or joint network
 #'
-#' The function  returns the adjacency graph made for the case,
-#' control, or joint network determined via \code{\link{clusterNet}}.
+#' The function  returns the adjacency graph made for
+#' the case, control, or joint network constructed via
+#' consensus clustering using \code{\link{clusterNet}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} or \code{consensusClusteringResults}
-#' object
-#' @param graph A character string indicating which of the adjacency
-#' graphs to return. Values can be "joint_graph" for the whole graph object,
-#' or one of the group values returned by \code{\link{networkGroups}}
+#' @param x A \code{\link{DNEAobj}}
+#'
+#' @param graph A character string indicating which of
+#' the adjacency graphs to return. Values can be "joint_graph"
+#' for the whole graph object, or one of the group values
+#' returned by \code{\link{networkGroups}}.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{clusterNet}}
-#' @returns An \code{\link{igraph}} graph object corresponding to
-#' the specified adjacency graph.
+#' @returns An \code{\link{igraph}} graph object corresponding
+#' to the specified adjacency graph.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' adjacencyGraph(dnw, graph="DM:case")
@@ -863,11 +1136,13 @@ summary.consensusClusteringResults <- function(object){
 }
 #' Retrieve a summary of a consensusClusteringResults object
 #'
-#' The function takes as input a consensusClusteringResults object and
-#' returns a summary of the results of consensus clustering determined
+#' The function takes as input a
+#' \code{\link{consensusClusteringResults}} object and returns
+#' a summary of the results of consensus clustering determined
 #' via \code{\link{clusterNet}}.
 #'
-#' @param object A consensusClusteringResults
+#' @param object A \code{\link{consensusClusteringResults}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{clusterNet}}
@@ -875,7 +1150,8 @@ summary.consensusClusteringResults <- function(object){
 #' of consensus clustering.
 #' @rdname summary.consensuClusteringResults-methods
 #' @aliases summary.consensusClusteringResults
-#' @export
+#' @keywords internal
+#' @noRd
 setMethod("summary", signature(object="consensusClusteringResults"),
           summary.consensusClusteringResults)
 
@@ -895,17 +1171,22 @@ CCsummary.DNEAobj <- function(x){
 #' Retrieves the summary results of consensus clustering
 #'
 #' The function takes as input a \code{\link{DNEAobj}} object and
-#' returns a summary  of the results of consensus clustering determined
-#' via \code{\link{clusterNet}}.
+#' returns a summary  of the results of consensus clustering
+#' stored in the consensus_clustering slot as a
+#' \code{\link{consensusClusteringResults}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{clusterNet}}
 #' @returns A data frame summary of the consensus clustering
 #' results from DNEA.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' CCsummary(dnw)
@@ -932,18 +1213,21 @@ subnetworkMembership.DNEAobj <- function(x){
 }
 #' Retrieve the subnetwork membership for each feature
 #'
-#' The function takes as input a \code{\link{DNEAobj}} or
-#' \code{consensusClusteringResults} object and returns the results of
-#' consensus clustering determined via \code{\link{clusterNet}}.
+#' The function takes as input a \code{\link{DNEAobj}}
+#' object and returns the results of consensus clustering
+#' determined via \code{\link{clusterNet}}.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{clusterNet}}
 #' @returns A data frame that corresponds to the results of
 #' consensus clustering.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' subnetworkMembership(dnw)
@@ -979,17 +1263,22 @@ netGSAresults.DNEAobj <- function(x){
 }
 #' Access the netGSA slot of a DNEAobj object
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
-#' the netGSA results in the netGSA slot.
+#' The function takes as input a \code{\link{DNEAobj}}
+#' object and returns a summary of the enrichment
+#' analysis results stored in the netGSA slot.
 #'
-#' @param x A \code{\link{DNEAobj}} object
+#' @param x A \code{\link{DNEAobj}} object.
+#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{runNetGSA}},
 #' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
-#' @returns A data frame of the results from netGSA.
+#' @returns A data frame of the results from \code{\link{runNetGSA}}.
 #' @examples
-#' #import example data
+#' #dnw is a DNEAobj with the results generated for the example data
+#' #accessed by running data(TEDDY) in the console. The workflow
+#' #for this data can be found in the vignette accessed by
+#' #running browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' netGSAresults(dnw)

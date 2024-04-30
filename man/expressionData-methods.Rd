@@ -13,27 +13,44 @@ expressionData(x, assay)
 )
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
-\item{assay}{A character string corresponding to the data to retrieve:
-"input_data" retrieves the data as it was input, "log_input_data"
-retrieves the input_data after log transforming, and
-"scaled_expression_data" retrieves the log-scaled data matrices.}
+\item{assay}{A character string corresponding to the
+data to retrieve: "input_data" retrieves the data as
+it was input, "log_input_data" retrieves the input data
+after log transforming, and "scaled_expression_data"
+retrieves a list of matrices corresponding to the
+log-scaled data for each experimental condition,
+respectively.}
 }
 \value{
 The expression matrix specified by the user.
 }
 \description{
-This function accesses the expression data stored in the @assays
-slot of the \code{\link{DNEAobj}} object. The output is an \emph{n x m}
-matrix with one row for each sample and one column for each feature
-in the data.
+This function accesses the expression data stored in the
+assays slot of the \code{\link{DNEAobj}} object. The
+output is an \emph{n x m} matrix with one row for each
+sample and one column for each feature in the data.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 expressionData(x=dnw, assay="input_data")
+expressionData(x=dnw, assay="log_input_data")
+expressionData(x=dnw, assay="scaled_expression_data")
 }
 \seealso{
 \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}

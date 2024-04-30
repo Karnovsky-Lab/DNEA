@@ -13,21 +13,34 @@ networkGroupIDs(x) <- value
 \S4method{networkGroupIDs}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
 \item{value}{a character string name corresponding to a column
-name of the sample metadata data frame}
+name of the sample metadata data frame.}
 }
 \value{
 A vector of the unique condition labels.
 }
 \description{
-This function accesses the experimental group labels for each sample
-stored in the @metadata slot of a \code{\link{DNEAobj}} object.
+This function accesses the experimental group labels for
+each sample stored in the metadata slot of a
+\code{\link{DNEAobj}} object.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 networkGroupIDs(dnw)
 }

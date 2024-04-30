@@ -16,24 +16,37 @@ optimizedLambda(x) <- value
 \S4method{optimizedLambda}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
 \item{value}{a single-value numeric vector corresponding to the lambda
-value to use in analysis}
+value to use in analysis.}
 }
 \value{
 The optimized lambda hyperparameter.
 }
 \description{
 The function takes as input a \code{\link{DNEAobj}} object and returns
-the hyperparameter (lambda) that is currently being used for the analysis.
+the hyper parameter (lambda) that is currently being used for the analysis.
 The user may also provide a single-value numeric vector to change the
-lambda value for analysis
+lambda value for analysis.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
 
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
+
+optimizedLambda(dnw) <- 0.15
 optimizedLambda(dnw)
 }
 \seealso{

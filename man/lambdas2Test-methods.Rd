@@ -5,7 +5,8 @@
 \alias{lambdas2Test<-}
 \alias{lambdas2Test,DNEAobj-method}
 \alias{lambdas2Test<-,DNEAobj-method}
-\title{Access the lambda values tested during hyperparameter optimization}
+\title{Access the lambda values tested during
+hyper parameter optimization}
 \usage{
 lambdas2Test(x)
 
@@ -16,22 +17,37 @@ lambdas2Test(x) <- value
 \S4method{lambdas2Test}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} or \code{\link{collapsed_DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} or
+\code{\link{collapsed_DNEAobj}} object.}
 
-\item{value}{A list or numeric vector}
+\item{value}{A list or numeric vector.}
 }
 \value{
 The lambda values to evaluate in optimization.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns
-the lambda values that were testing during hyperparameter optimization
-performed via \code{\link{BICtune}}.
+The function takes as input a \code{\link{DNEAobj}}
+object and returns the lambda values that were testing
+during hyper parameter optimization performed via
+\code{\link{BICtune}}.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
 
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
+
+lambdas2Test(dnw) <- seq(0.01, 1, 0.02)
 lambdas2Test(dnw)
 }
 \seealso{

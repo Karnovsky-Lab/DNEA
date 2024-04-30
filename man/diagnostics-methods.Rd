@@ -13,18 +13,33 @@ diagnostics(x)
 \S4method{diagnostics}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{\code{\link{DNEAobj}} object or \code{DNEAinputSummary} object}
+\item{x}{\code{\link{DNEAobj}} or
+\code{DNEAinputSummary} object.}
 }
 \value{
-Returns the diagnostic values for the input expression data.
+Returns the diagnostic values for
+the input expression data.
 }
 \description{
-This function retrieves teh diagnostic values calculated for
-the input expression data to \code{\link{createDNEAobject}}
+This function retrieves the diagnostic values calculated
+for the input expression data by the
+\code{\link{createDNEAobject}} function.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 diagnostics(dnw)
 }

@@ -10,20 +10,33 @@ datasetSummary(x)
 \S4method{datasetSummary}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 }
 \value{
-The numbers of samples/features and diagnostic values of the
-input data calculated by \code{\link{createDNEAobject}}.
+The numbers of samples/features and diagnostic values
+of the input data stored in the dataset_summary slot of the
+\code{\link{DNEAobj}}.
 }
 \description{
 This function prints to console the number of samples, number of
-features, and diagnostic values of the input data to
-\code{\link{createDNEAobject}} at initiation of the DNEA workflow.
+features, and diagnostic values of the input data stored in the
+dataset_summary slot of the \code{\link{DNEAobj}}.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 datasetSummary(dnw)
 }

@@ -4,7 +4,8 @@
 \alias{adjacencyGraph}
 \alias{adjacencyGraph,DNEAobj-method}
 \alias{adjacencyGraph,consensusClusteringResults-method}
-\title{Retrieve the adjacency graph for the case, control, or joint network}
+\title{Retrieve the adjacency graph for the case, control,
+or joint network}
 \usage{
 adjacencyGraph(x, graph)
 
@@ -13,23 +14,27 @@ adjacencyGraph(x, graph)
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} or \code{consensusClusteringResults}
-object}
+\item{x}{A \code{\link{DNEAobj}}}
 
-\item{graph}{A character string indicating which of the adjacency
-graphs to return. Values can be "joint_graph" for the whole graph object,
-or one of the group values returned by \code{\link{networkGroups}}}
+\item{graph}{A character string indicating which of
+the adjacency graphs to return. Values can be "joint_graph"
+for the whole graph object, or one of the group values
+returned by \code{\link{networkGroups}}.}
 }
 \value{
-An \code{\link{igraph}} graph object corresponding to
-the specified adjacency graph.
+An \code{\link{igraph}} graph object corresponding
+to the specified adjacency graph.
 }
 \description{
-The function  returns the adjacency graph made for the case,
-control, or joint network determined via \code{\link{clusterNet}}.
+The function  returns the adjacency graph made for
+the case, control, or joint network constructed via
+consensus clustering using \code{\link{clusterNet}}.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 adjacencyGraph(dnw, graph="DM:case")

@@ -13,18 +13,30 @@ numSamples(x)
 \S4method{numSamples}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 }
 \value{
-The number of samples in the dataset.
+The number of samples in the data set.
 }
 \description{
 This function prints to console the total number of
-samples in the dataset
+samples in the data set.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 numSamples(dnw)
 }

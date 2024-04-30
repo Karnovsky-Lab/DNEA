@@ -16,21 +16,25 @@ BICscores(x) <- value
 \S4method{BICscores}{DNEAobj}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
-\item{value}{a list containing lists that consist of the liklihood and
-BIC score for tested lambda values}
+\item{value}{a list of two lists that consist of the
+likelihood and BIC scores for each tested lambda value.}
 }
 \value{
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns
-the BIC values for each lambda tested during hyperparameter optimization
-performed via BICtune().
+The function takes as input a \code{\link{DNEAobj}}
+object and returns the BIC values for each lambda tested
+during hyper parameter optimization performed via
+\code{\link{BICtune}}.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 BICscores(dnw)

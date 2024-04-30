@@ -10,7 +10,7 @@ CCsummary(x)
 \S4method{CCsummary}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 }
 \value{
 A data frame summary of the consensus clustering
@@ -18,11 +18,15 @@ results from DNEA.
 }
 \description{
 The function takes as input a \code{\link{DNEAobj}} object and
-returns a summary  of the results of consensus clustering determined
-via \code{\link{clusterNet}}.
+returns a summary  of the results of consensus clustering
+stored in the consensus_clustering slot as a
+\code{\link{consensusClusteringResults}} object.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 CCsummary(dnw)

@@ -10,7 +10,7 @@ selectionResults(x)
 \S4method{selectionResults}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 }
 \value{
 A \code{\link{DNEAobj}} object after filling the
@@ -18,11 +18,14 @@ selection_results section of the stable_networks slot.
 }
 \description{
 The function takes as input a \code{\link{DNEAobj}} object and returns
-an m x m matrix of selection results for every possible network edge
-calculated via \code{\link{stabilitySelection}}.
+an \emph{m x n} matrix of selection results for every possible network
+edge calculated during \code{\link{stabilitySelection}}.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 selectionResults(dnw)

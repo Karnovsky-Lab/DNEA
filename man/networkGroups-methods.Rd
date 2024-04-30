@@ -10,18 +10,32 @@ networkGroups(x)
 \S4method{networkGroups}{DNEAobj}(x)
 }
 \arguments{
-\item{x}{A DNEAobject, or DNEAobject_collapsed object}
+\item{x}{A \code{\link{DNEAobj}} or
+\code{\link{collapsed_DNEAobj}}}
 }
 \value{
 A vector of the condition values.
 }
 \description{
-This function takes in a \code{\link{DNEAobj}} object and returns the
-unique group values of the experimental condition in the dataset
+This function takes in a \code{\link{DNEAobj}} object and
+returns the unique group labels of the experimental
+condition in the data set.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 networkGroups(dnw)
 }

@@ -3,7 +3,7 @@
 \name{metaData}
 \alias{metaData}
 \alias{metaData,DNEAobj-method}
-\title{Retrieve metadata stored in DNEAobj}
+\title{Retrieve metadata stored in a DNEAobj}
 \usage{
 metaData(x, type)
 
@@ -12,19 +12,32 @@ metaData(x, type)
 \arguments{
 \item{x}{A \code{\link{DNEAobj}} object.}
 
-\item{type}{A character string indicating the type of metadata
-to access. Can be "sample" or "feature".}
+\item{type}{A character string indicating the type
+of metadata to access. Can be "sample" or "feature".}
 }
 \value{
 A data frame of the indicated metadata
 }
 \description{
-This function retrieves the specified metadata data frame stored
-in the @metadata slot of the \code{\link{DNEAobj}} object.
+This function retrieves the specified metadata stored
+in the metadata slot of the
+\code{\link{DNEAobj}} object.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 metaData(dnw, type = "sample")
 }

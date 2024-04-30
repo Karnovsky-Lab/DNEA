@@ -10,22 +10,35 @@ featureNames(x, original = TRUE)
 \S4method{featureNames}{DNEAobj}(x, original = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
-\item{original}{"TRUE" returns the original feature names and "FALSE"
-returns the feature names that have been modified to avoid errors as
-a result of special characters.}
+\item{original}{"TRUE" returns the original feature names
+and "FALSE" returns the feature names that have been
+modified to avoid errors as a result of special characters
+using \code{\link[janitor:make_clean_names]{make_clean_names}}.}
 }
 \value{
 A character vector of feature names.
 }
 \description{
-This function accesses the feature names stored in the @metadata
-slot of the \code{\link{DNEAobj}} object.
+This function accesses the feature names stored in the
+metadata slot of the \code{\link{DNEAobj}} object.
 }
 \examples{
-#import example data
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
 
 featureNames(dnw, original=TRUE)
 }

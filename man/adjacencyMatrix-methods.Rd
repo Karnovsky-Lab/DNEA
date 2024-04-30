@@ -10,22 +10,27 @@ adjacencyMatrix(x, weighted)
 \S4method{adjacencyMatrix}{DNEAobj}(x, weighted = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object}
+\item{x}{A \code{\link{DNEAobj}} object.}
 
-\item{weighted}{A boolean indicating whether or not
-to select the weighted or thresholded (unweighted)
-adjacency matrix}
+\item{weighted}{TRUE/FALSE indicating whether the
+weighted unweighted adjacency matrix should be
+returned.}
 }
 \value{
-A matrix corresponding to the adjacency matrix specified.
+A matrix corresponding to the adjacency
+matrix specified.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns the
-weighted or unweighted adjacency matrix determined via
-\code{\link{getNetworks}}.
+The function takes as input a \code{\link{DNEAobj}} object
+and returns the weighted or un-weighted adjacency matrix for
+each group network constructed via the
+\code{\link{getNetworks}} function.
 }
 \examples{
-#import example data
+#dnw is a DNEAobj with the results generated for the example data
+#accessed by running data(TEDDY) in the console. The workflow
+#for this data can be found in the vignette accessed by
+#running browseVignettes("DNEA") in the console.
 data(dnw)
 
 adjacencyMatrix(dnw, weighted=TRUE)
