@@ -115,7 +115,7 @@
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
 #' #initiate DNEAobj
-#' dnw <- <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+#' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
 #' #simulate group labels
