@@ -58,11 +58,13 @@
 NULL
 
 
-#' The example data from xxx
+#' Example expresion data set from The Environmental Determinants
+#' of Diabetes in the Young (TEDDY) clinical trial
 #'
 #' This data is an \emph{m x n} expression matrix corresponding to a
 #' curated list of metabolites from "The Environmental Determinants of
-#' Diabetes in the Young" clinical trial.
+#' Diabetes in the Young" clinical trial. The data was downloaded from
+#'
 #'
 #' @returns An \emph{m x n} expression matrix of metabolomics data from the
 #' TEDDY dataset
@@ -77,19 +79,25 @@ NULL
 #' Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study
 #' design for type 1 diabetes in The Environmental Determinants of Diabetes
 #' in the Young (TEDDY) study. Diabetes Metab Res Rev. 2014 Jul;30(5):424-34.
-#' doi: 10.1002/dmrr.2510. PMID: 24339168; PMCID: PMC4058423.
-#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
+#' doi: 10.1002/dmrr.2510. PMID: 24339168;
+#' PMCID:
+#' \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}{PMC4058423}
+#'
 #' @source This data is available at the NIH Common Fund's National
-#' Metabolomics Data Repository (NMDR) website, the Metabolomics Workbench,
-#' \url{https://www.metabolomicsworkbench.org}, where it has been assigned
-#' Project ID PR000950 and Study ID ST001386. The data can be accessed
+#' Metabolomics Data Repository (NMDR) website,
+#' \href{https://www.metabolomicsworkbench.org}{the Metabolomics Workbench},
+#'  where it has been assigned
+#' Project ID
+#' \href{https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950}{PR000950}
+#'  and Study ID ST001386. The data can be accessed
 #' directly via it's Project DOI: \url{10.21228/M8WM4P}. This work is
 #' supported by NIH grant, U2C- DK119886.
 "TEDDY"
 
-#' The meta data file for the TEDDY metabolomics data
+#' Meta data for the The Environmental Determinants
+#' of Diabetes in the Young (TEDDY) clinical trial
 #'
-#' This data is a data frame containing metadata for the samples
+#' This is a data frame containing metadata for the samples
 #' in the corresponding \code{\link{TEDDY}} example data from
 #' "The Environmental Determinants of Diabetes in the Young" clinical trial.
 #'
@@ -130,20 +138,26 @@ NULL
 
 #' Example results for DNEA
 #'
-#' This data is an example DNEAobj object after performing DNEA. The
-#' experiment was performed using the \code{\link{TEDDY}} data with
-#' 4 reps of stability selection, no subsampling, and default parameters
-#' everywhere else. The seed was set to 417.
+#' "dnw" is a DNEAobj object containing the results for the full
+#' DNEA workflow on the \code{\link{TEDDY}} example data. The
+#' exact workflow to produce these results can be replicated by
+#' following the package vignette accessed by entering
+#' browseVignettes("DNEA") in the console. 1000 replicates were
+#' performed during stability selection \emph{with} the
+#' subsampling protocol. The lambda value used during joint
+#' estimation was aproximated as
+#' \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
+#'
 #'
 #' @returns A \code{\link{DNEAobj}} object containing the results of a
-#' DNEA experiment
+#' DNEA experiment.
 #' @docType data
 #' @keywords datasets
 #' @name dnw
 #' @usage data("dnw")
 #' @format A DNEA results object after completing a DNEA experiment.
-#' @source The data is stored in the \code{\link{DNEA}} package and
-#' can be accessed by running data(dnw) in the console.
+#' @source The data the results of the full DNEA workflow performed using
+#' the \code{\link{TEDDY}} example data, as described above.
 "dnw"
 
 

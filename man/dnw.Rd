@@ -8,20 +8,25 @@
 A DNEA results object after completing a DNEA experiment.
 }
 \source{
-The data is stored in the \code{\link{DNEA}} package and
-can be accessed by running data(dnw) in the console.
+The data the results of the full DNEA workflow performed using
+the \code{\link{TEDDY}} example data, as described above.
 }
 \usage{
 data("dnw")
 }
 \value{
 A \code{\link{DNEAobj}} object containing the results of a
-DNEA experiment
+DNEA experiment.
 }
 \description{
-This data is an example DNEAobj object after performing DNEA. The
-experiment was performed using the \code{\link{TEDDY}} data with
-4 reps of stability selection, no subsampling, and default parameters
-everywhere else. The seed was set to 417.
+"dnw" is a DNEAobj object containing the results for the full
+DNEA workflow on the \code{\link{TEDDY}} example data. The
+exact workflow to produce these results can be replicated by
+following the package vignette accessed by entering
+browseVignettes("DNEA") in the console. 1000 replicates were
+performed during stability selection \emph{with} the
+subsampling protocol. The lambda value used during joint
+estimation was aproximated as
+\deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 }
 \keyword{datasets}

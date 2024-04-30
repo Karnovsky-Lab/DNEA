@@ -3,16 +3,20 @@
 \docType{data}
 \name{TEDDY}
 \alias{TEDDY}
-\title{The example data from xxx}
+\title{Example expresion data set from The Environmental Determinants
+of Diabetes in the Young (TEDDY) clinical trial}
 \format{
 A data frame with 100 rows and 144 columns. Each row corresponds
 to a sample, and each column corresponds to a metabolite.
 }
 \source{
 This data is available at the NIH Common Fund's National
-Metabolomics Data Repository (NMDR) website, the Metabolomics Workbench,
-\url{https://www.metabolomicsworkbench.org}, where it has been assigned
-Project ID PR000950 and Study ID ST001386. The data can be accessed
+Metabolomics Data Repository (NMDR) website,
+\href{https://www.metabolomicsworkbench.org}{the Metabolomics Workbench},
+where it has been assigned
+Project ID
+\href{https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950}{PR000950}
+and Study ID ST001386. The data can be accessed
 directly via it's Project DOI: \url{10.21228/M8WM4P}. This work is
 supported by NIH grant, U2C- DK119886.
 }
@@ -26,7 +30,7 @@ TEDDY dataset
 \description{
 This data is an \emph{m x n} expression matrix corresponding to a
 curated list of metabolites from "The Environmental Determinants of
-Diabetes in the Young" clinical trial.
+Diabetes in the Young" clinical trial. The data was downloaded from
 }
 \references{
 Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K,
@@ -34,7 +38,8 @@ Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B,
 Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study
 design for type 1 diabetes in The Environmental Determinants of Diabetes
 in the Young (TEDDY) study. Diabetes Metab Res Rev. 2014 Jul;30(5):424-34.
-doi: 10.1002/dmrr.2510. PMID: 24339168; PMCID: PMC4058423.
-\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
+doi: 10.1002/dmrr.2510. PMID: 24339168;
+PMCID:
+\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}{PMC4058423}
 }
 \keyword{datasets}
