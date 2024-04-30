@@ -24,7 +24,7 @@ when randomly sampling to even out the groups.}
 \item{nreps}{The total number of replicates to perform in stability
 selection. The default is 1000.}
 
-\item{optimal_lambda}{\emph{\strong{\link{OPTIONAL}}} The optimal lambda value to be
+\item{optimal_lambda}{\emph{\strong{OPTIONAL -}} The optimal lambda value to be
 used in the model. This parameter is only necessary if
 \code{\link{BICtune}} is not performed prior.}
 

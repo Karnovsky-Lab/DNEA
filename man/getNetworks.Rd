@@ -48,7 +48,7 @@ threshold will be zero'd out from the adjacency matrix.}
 covariance matrix of the data is positive definite so that we can
 calculate its inverse. The default value is 0.01.}
 
-\item{optimal_lambdas}{\emph{\strong{\link{OPTIONAL}}} The lambda value
+\item{optimal_lambdas}{\emph{\strong{OPTIONAL -}} The lambda value
 to be used in analysis. If not provided, the lambda value is
 determined based on the input of the "aprox" parameter.}
 

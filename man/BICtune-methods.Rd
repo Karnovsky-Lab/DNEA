@@ -3,6 +3,7 @@
 \name{BICtune}
 \alias{BICtune}
 \alias{BICtune,DNEAobj-method}
+\alias{BICtune,matrix-method}
 \title{Optimize the lambda regularization parameter for the glasso-based
 network models using Bayesian-information Criterion}
 \usage{
@@ -27,11 +28,22 @@ BICtune(
   BPPARAM = bpparam(),
   BPOPTIONS = bpoptions()
 )
+
+\S4method{BICtune}{matrix}(
+  object,
+  lambda_values,
+  interval = 0.001,
+  informed = TRUE,
+  eps_threshold = 1e-06,
+  eta_value = 0.1,
+  BPPARAM = bpparam(),
+  BPOPTIONS = bpoptions()
+)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}}
 
-\item{lambda_values}{\emph{\strong{\link{OPTIONAL}}} A list of values to test while optimizing
+\item{lambda_values}{\emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
 based on the theoretical value for the asymptotically valid lambda. More
 information about this can be found in the details section.}

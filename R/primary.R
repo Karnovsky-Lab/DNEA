@@ -180,7 +180,7 @@ BICtune.matrix <- function(object,
 #' stability selection using \code{\link{stabilitySelection}}.
 #'
 #' @param object A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}
-#' @param lambda_values \emph{\strong{[OPTIONAL]}} A list of values to test while optimizing
+#' @param lambda_values \emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
 #' based on the theoretical value for the asymptotically valid lambda. More
 #' information about this can be found in the details section.
@@ -278,9 +278,9 @@ BICtune.matrix <- function(object,
 #' @export
 setMethod("BICtune", signature(object="DNEAobj"), BICtune.DNEAobj)
 
-#' @rdname BICtune.matrix-methods
-#' @keywords internal
-#' @noRd
+#' @rdname BICtune-methods
+#' @aliases BICtune
+#' @export
 setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 
 #' Stability selection calculates selection probabilities for every
@@ -305,7 +305,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' @param nreps The total number of replicates to perform in stability
 #' selection. The default is 1000.
 #'
-#' @param optimal_lambda \emph{\strong{[OPTIONAL]}} The optimal lambda value to be
+#' @param optimal_lambda \emph{\strong{OPTIONAL -}} The optimal lambda value to be
 #' used in the model. This parameter is only necessary if
 #' \code{\link{BICtune}} is not performed prior.
 #'
@@ -538,7 +538,7 @@ stabilitySelection <- function(object,
 #' `aprox==FALSE`, sqrt(log(# features)/#samples) is used to approximate
 #' lambda.
 #'
-#' @param optimal_lambdas \emph{\strong{[OPTIONAL]}} The lambda value
+#' @param optimal_lambdas \emph{\strong{OPTIONAL -}} The lambda value
 #' to be used in analysis. If not provided, the lambda value is
 #' determined based on the input of the "aprox" parameter.
 
