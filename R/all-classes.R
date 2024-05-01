@@ -340,7 +340,7 @@ setValidity("DNEAobj", function(object){
     "Node list features do not match expression data"
   }
   ##check hyperparameter slot
-  if(!is.null(BICscores(object))){
+  if(!is.null(BICscores(object)) & !is.null(lambdas2Test(object))){
     if(length(BICscores(object)) != length(lambdas2Test(object))){
       "There was a problem with the tested lambda values"
     }
