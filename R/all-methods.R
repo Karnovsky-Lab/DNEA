@@ -600,8 +600,6 @@ lambdas2Test.DNEAobj <- function(x){
 #' @param x A \code{\link{DNEAobj}} or
 #' \code{\link{collapsed_DNEAobj}} object.
 #'
-#' @param value A list or numeric vector.
-#'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{BICtune}}

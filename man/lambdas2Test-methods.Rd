@@ -13,8 +13,6 @@ lambdas2Test(x)
 \arguments{
 \item{x}{A \code{\link{DNEAobj}} or
 \code{\link{collapsed_DNEAobj}} object.}
-
-\item{value}{A list or numeric vector.}
 }
 \value{
 The lambda values to evaluate in optimization.
