@@ -27,6 +27,12 @@ NULL
 #' of un-transformed, un-scaled expression data. The sample names
 #' should be column names and the feature names should be row names.
 #'
+#' @param scaled_expression_data A list of numeric \emph{m x n}
+#' matrices or data frames of transformed and/or scaled expression
+#' data. The sample names should be column names and the feature
+#' names should be row names. Each set of expression data should
+#' be aproximately normal.
+#'
 #' @param group_labels A factor vector of experimental group labels
 #' named with the corresponding sample name.
 #'
@@ -89,25 +95,40 @@ NULL
 #' @export
 createDNEAobject <- function(project_name,
                              expression_data,
+                             scaled_expression_data,
                              group_labels){
-  ##checks
-  if(!missing(expression_data) & !missing(group_labels)){
-    if(!(all(names(group_labels) == colnames(expression_data)))){
-      stop("Group labels do not match sample order in expression data!")
-    }
-    if(!is.factor(group_labels)){
-      group_labels <- factor(group_labels)
-      message("Condition for expression_data should be of class factor. ",
-              "Converting now.\n",
-              "Condition is now a factor with levels:\n1. ",
-              levels(group_labels)[1],"\n2. ",
-              levels(group_labels)[2])
-    }
+  if(!is.factor(group_labels)){
+    group_labels <- factor(group_labels)
+    message("Condition for expression_data should be of class factor. ",
+            "Converting now.\n",
+            "Condition is now a factor with levels:\n1. ",
+            levels(group_labels)[1],"\n2. ",
+            levels(group_labels)[2])
+  }
+
+  if(!missing(expression_data)){
     ##restructure data
     restructured_data <- restructure_input_data(expression_data=expression_data,
                                                 condition_values=group_labels)
-  } else{
-    stop('Expression data must be provided to create DNEAobject')
+    #data to be used in DE analysis later
+    de_input <- restructured_data[["assays"]][["log_input_data"]]
+    if(!missing(scaled_expression_data)){
+      restructured_data[["assays"]][["DNEA_scaled_data"]] <- restructured_data[["assays"]][["scaled_expression_data"]]
+      restructured_data[["assays"]][["scaled_expression_data"]] <- restructure_scaled_input_data(expression_data=expression_data,
+                                                                                                 condition_values=group_labels)[["assays"]][["scaled_expression_data"]]
+    }
+  }else{
+    restructured_data <- restructure_scaled_input_data(scaled_expression_data=scaled_expression_data,
+                                                       condition_values=group_labels)
+    warning("Raw peak intensity/concentration data is necessary for accurate analysis ",
+            "in several steps of DNEA. If available, please input the raw ",
+            "peak intensity/concentration data as well.")
+
+    #data to be used in DE analysis later
+    de_input <- do.call(cbind, restructured_data[["assays"]][["scaled_expression_data"]])
+    warning("Scaling each condition prior to differential expression analysis may ",
+            "lead to erroneous results. We strongly reccommend inputing ",
+            "Raw peak intensity/concentration data!")
   }
 
   ##gather network information for use later
@@ -121,9 +142,9 @@ createDNEAobject <- function(project_name,
                              conditions=network_group_IDs)
 
   ##perform differential expression on the features
-  de_test <- metabDE(mat=restructured_data[["assays"]][["log_input_data"]],
+  de_test <- metabDE(mat=de_input,
                      condition_values=network_groups,
-                     conditions=network_group_IDs)
+                     conditions=network_group_IDs[colnames(de_input)])
 
   ##initiate DNEA object
   object <- new("DNEAobj",
@@ -154,8 +175,7 @@ createDNEAobject <- function(project_name,
 #'
 #' @param expression_data A matrix or data frame of expression data.
 #' The sample names should be column names and the feature names
-#' should be row names. Column 1 should be a factor of the two
-#' conditions, followed by the numeric expression data.
+#' should be row names.
 #'
 #' @param condition_values A factor vector of experimental group labels named
 #' with the corresponding sample name
@@ -174,6 +194,8 @@ createDNEAobject <- function(project_name,
 #' @noRd
 restructure_input_data <- function(expression_data,
                                    condition_values){
+  if(!(all(names(condition_values) == colnames(expression_data)))){
+    stop("Group labels do not match sample order in expression data!")}
 
   ##initialize output data structures
   meta_key <- c("samples", "features")
@@ -221,7 +243,82 @@ restructure_input_data <- function(expression_data,
 
   return(list(assays=assays, metadata=metadata))
 }
+################################################################################
+#' Restructure scaled input data for initiation of DNEAobj object
+#'
+#' This function takes as input a list of matrices representing scaled
+#' expression data and the experimental group labels in order to restructure
+#' the input for initiation of a DNEAobj object.
+#'
+#' @param expression_data A list of matrices or data frames of expression
+#' data. The sample names should be column names and the feature names
+#' should be row names.
+#'
+#' @param condition_values A factor vector of experimental group labels named
+#' with the corresponding sample name
+#'
+#' @returns A list containing two lists. The first list, named "assays",
+#' contains the un-scaled data (if provided) in position 1 and a list
+#' of the scaled data for each condition in position 2.
+#' The second list, named metadata, contains the metadata parsed
+#' from the input data.
+#'
+#' @author Christopher Patsalis
+#'
+#' @import methods
+#' @importFrom janitor make_clean_names
+#' @keywords internal
+#' @noRd
+restructure_scaled_input_data <- function(scaled_expression_data,
+                                          condition_values){
+  if(length(scaled_expression_data) != 2) stop("DNEA requires two conditions!")
+  if(!all(names(scaled_expression_data) %in% levels(condition_values))){
+    stop("input list of matrices not named after experimental groups!")
+  }
+  if(!all(colnames(scaled_expression_data[[1]]) %in% names(condition_values)) &
+     !all(colnames(scaled_expression_data[[2]]) %in% names(condition_values))){
+    stop("group labels names do not match sample names!")
+  }
+  # if(all(rownames(scaled_expression_data[[1]]) == rownames(scaled_expression_data[[2]]))){
+  #   stop("The feature order of matrices does not match!")
+  # }
 
+  ##initialize output data structures
+  meta_key <- c("samples", "features")
+  metadata <- vector(mode='list', length=length(meta_key))
+  names(metadata) <- meta_key
+
+  assays_key <- c('scaled_expression_data')
+  assays <- vector(mode='list', length=length(assays_key))
+  names(assays) <- assays_key
+
+  feature_names <- rownames(scaled_expression_data[[levels(condition_values)[[1]]]])
+  clean_feature_names <- make_clean_names(feature_names)
+  sample_names <- c(colnames(scaled_expression_data[[levels(condition_values)[[1]]]]),
+                    colnames(scaled_expression_data[[levels(condition_values)[[2]]]]))
+
+  for(i in seq(length(scaled_expression_data))){
+    ##convert expression data to matrix
+    scaled_expression_data[[i]] <- as.matrix(scaled_expression_data[[i]])
+
+    ##clean feature names to avoid R conflicts
+    rownames(scaled_expression_data[[i]]) <- clean_feature_names
+  }
+
+  message("Normalized data was provided, no additional transformations performed.",
+          " Data can be found in the scaled_expression_data assay!")
+
+  ##concatenate output
+  assays[['scaled_expression_data']] <- scaled_expression_data
+  metadata[["samples"]] <- data.frame(samples=sample_names,
+                                      conditions=condition_values,
+                                      row.names=sample_names)
+  metadata[["features"]] <- data.frame(feature_names=feature_names,
+                                       clean_feature_names=clean_feature_names,
+                                       row.names=feature_names)
+
+  return(list(assays=assays, metadata=metadata))
+}
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
 #' This function takes as input a \code{\link{DNEAobj}} object and
