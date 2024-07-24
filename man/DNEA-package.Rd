@@ -28,6 +28,7 @@ This can be accessed by running \code{vignette("DNEA")} in the console.
 Useful links:
 \itemize{
   \item \url{https://github.com/Karnovsky-Lab/DNEA}
+  \item Report bugs at \url{https://github.com/Karnovsky-Lab/DNEA/issues}
 }
 
 }
