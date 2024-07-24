@@ -4,7 +4,12 @@
 \alias{createDNEAobject}
 \title{Initialize a DNEAobj object}
 \usage{
-createDNEAobject(project_name, expression_data, group_labels)
+createDNEAobject(
+  project_name,
+  expression_data,
+  scaled_expression_data,
+  group_labels
+)
 }
 \arguments{
 \item{project_name}{A character string name for the experiment.}
@@ -12,6 +17,12 @@ createDNEAobject(project_name, expression_data, group_labels)
 \item{expression_data}{A numeric \emph{m x n} matrix or data frame
 of un-transformed, un-scaled expression data. The sample names
 should be column names and the feature names should be row names.}
+
+\item{scaled_expression_data}{A list of numeric \emph{m x n}
+matrices or data frames of transformed and/or scaled expression
+data. The sample names should be column names and the feature
+names should be row names. Each set of expression data should
+be aproximately normal.}
 
 \item{group_labels}{A factor vector of experimental group labels
 named with the corresponding sample name.}
