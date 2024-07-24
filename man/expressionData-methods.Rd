@@ -7,10 +7,7 @@
 \usage{
 expressionData(x, assay)
 
-\S4method{expressionData}{DNEAobj}(
-  x,
-  assay = c("input_data", "log_input_data", "scaled_expression_data")
-)
+\S4method{expressionData}{DNEAobj}(x, assay = names(assays.DNEAobj(x)))
 }
 \arguments{
 \item{x}{A \code{\link{DNEAobj}} object.}
@@ -18,10 +15,12 @@ expressionData(x, assay)
 \item{assay}{A character string corresponding to the
 data to retrieve: "input_data" retrieves the data as
 it was input, "log_input_data" retrieves the input data
-after log transforming, and "scaled_expression_data"
+after log transforming, and "log-scaled_data"
 retrieves a list of matrices corresponding to the
 log-scaled data for each experimental condition,
-respectively.}
+respectively. Any other externally transformed
+data that is stored in the DNEAobj can be accessed
+by providing its name to the assay parameter.}
 }
 \value{
 The expression matrix specified by the user.
@@ -50,7 +49,7 @@ dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 
 expressionData(x=dnw, assay="input_data")
 expressionData(x=dnw, assay="log_input_data")
-expressionData(x=dnw, assay="scaled_expression_data")
+expressionData(x=dnw, assay="log-scaled_data")
 }
 \seealso{
 \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}
