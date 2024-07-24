@@ -97,7 +97,6 @@ createDNEAobject <- function(project_name,
                              expression_data,
                              scaled_expression_data,
                              group_labels){
-  analysis_assay <- "log-scaled_data"
   if(!is.factor(group_labels)){
     group_labels <- factor(group_labels)
     message("Condition for expression_data should be of class factor. ",
@@ -114,7 +113,6 @@ createDNEAobject <- function(project_name,
     de_input <- restructured_data[["assays"]][["log_input_data"]]
     ds_input <- restructured_data[["assays"]][["log-scaled_data"]]
     if(!missing(scaled_expression_data)){
-      analysis_assay <- "scaled_expression_assay"
       restructured_data[["assays"]][["scaled_expression_data"]] <- sumExp_data_check(dat=list(scaled_expression_data),
                                                                                      feature.names=rownames(expression_data),
                                                                                      group_labels=group_labels)
@@ -157,8 +155,7 @@ createDNEAobject <- function(project_name,
                 metadata=list(samples=restructured_data[["metadata"]]$samples,
                                 features=restructured_data[["metadata"]]$features,
                                 network_group_IDs=network_group_IDs,
-                                network_groups=network_groups,
-                                analysis_assay=analysis_assay),
+                                network_groups=network_groups),
                 dataset_summary=ds_test, node_list=de_test,
                 hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL,
                                     tested_lambda_values=NULL),
@@ -178,7 +175,6 @@ sumExp2DNEAobj <- function(project_name,
                            object,
                            scaled_expression_assay,
                            group_label_col){
-  analysis_assay <- "log-scaled_data"
   group_labels <- colData(object)[[group_label_col]]
   names(group_labels) <- rownames(colData(object))
   if(!is.factor(group_labels)){
@@ -206,7 +202,6 @@ sumExp2DNEAobj <- function(project_name,
   restructured_data[["assays"]] <- append(restructured_data[["assays"]],
                                           tmp_dat[-match("counts", names(tmp_dat))])
   if(!missing(scaled_expression_assay)){
-    analysis_assay <- scaled_expression_assay
     de_input <- do.call(cbind, restructured_data[["assays"]][[scaled_expression_assay]])
     ds_input <- restructured_data[["assays"]][[scaled_expression_assay]]
     message(scaled_expression_assay, " will be used for further analysis!")
@@ -248,8 +243,7 @@ sumExp2DNEAobj <- function(project_name,
                 metadata=list(samples=restructured_data[["metadata"]]$samples,
                               features=restructured_data[["metadata"]]$features,
                               network_group_IDs=network_group_IDs,
-                              network_groups=network_groups,
-                              analysis_assay=analysis_assay),
+                              network_groups=network_groups),
                 dataset_summary=ds_test, node_list=de_test,
                 hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL,
                                     tested_lambda_values=NULL),
