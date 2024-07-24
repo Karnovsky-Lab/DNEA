@@ -97,6 +97,7 @@ createDNEAobject <- function(project_name,
                              expression_data,
                              scaled_expression_data,
                              group_labels){
+  analysis_assay <- "log-scaled_data"
   if(!is.factor(group_labels)){
     group_labels <- factor(group_labels)
     message("Condition for expression_data should be of class factor. ",
@@ -110,12 +111,14 @@ createDNEAobject <- function(project_name,
     ##restructure data
     restructured_data <- restructure_input_data(expression_data=expression_data,
                                                 condition_values=group_labels)
-    #data to be used in DE analysis later
     de_input <- restructured_data[["assays"]][["log_input_data"]]
+    ds_input <- restructured_data[["assays"]][["log-scaled_data"]]
     if(!missing(scaled_expression_data)){
-      restructured_data[["assays"]][["DNEA_scaled_data"]] <- restructured_data[["assays"]][["scaled_expression_data"]]
-      restructured_data[["assays"]][["scaled_expression_data"]] <- restructure_scaled_input_data(expression_data=expression_data,
-                                                                                                 condition_values=group_labels)[["assays"]][["scaled_expression_data"]]
+      analysis_assay <- "scaled_expression_assay"
+      restructured_data[["assays"]][["scaled_expression_data"]] <- sumExp_data_check(dat=list(scaled_expression_data),
+                                                                                     feature.names=rownames(expression_data),
+                                                                                     group_labels=group_labels)
+      ds_input <- restructured_data[["assays"]][["scaled_expression_data"]]
     }
   }else{
     restructured_data <- restructure_scaled_input_data(scaled_expression_data=scaled_expression_data,
@@ -126,6 +129,7 @@ createDNEAobject <- function(project_name,
 
     #data to be used in DE analysis later
     de_input <- do.call(cbind, restructured_data[["assays"]][["scaled_expression_data"]])
+    ds_input <- restructured_data[["assays"]][["scaled_expression_data"]]
     warning("Scaling each condition prior to differential expression analysis may ",
             "lead to erroneous results. We strongly reccommend inputing ",
             "Raw peak intensity/concentration data!")
@@ -137,7 +141,7 @@ createDNEAobject <- function(project_name,
   network_groups <- levels(restructured_data[["metadata"]]$samples$conditions)
 
   ##perform diagnostic testing on dataset
-  ds_test <- dataDiagnostics(mat=restructured_data[["assays"]][["scaled_expression_data"]],
+  ds_test <- dataDiagnostics(mat=ds_input,
                              condition_values=network_groups,
                              conditions=network_group_IDs)
 
@@ -153,7 +157,99 @@ createDNEAobject <- function(project_name,
                 metadata=list(samples=restructured_data[["metadata"]]$samples,
                                 features=restructured_data[["metadata"]]$features,
                                 network_group_IDs=network_group_IDs,
-                                network_groups=network_groups),
+                                network_groups=network_groups,
+                                analysis_assay=analysis_assay),
+                dataset_summary=ds_test, node_list=de_test,
+                hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL,
+                                    tested_lambda_values=NULL),
+                adjacency_matrix=list(weighted_adjacency=NULL,
+                                      unweighted_adjacency=NULL),
+                stable_networks=list(selection_results=NULL,
+                                     selection_probabilities=NULL))
+
+  message("Diagnostic criteria are as follows: ")
+  show(ds_test)
+  return(object)
+}
+
+#' @importFrom SummarizedExperiment assays colData
+#' @export
+sumExp2DNEAobj <- function(project_name,
+                           object,
+                           scaled_expression_assay,
+                           group_label_col){
+  analysis_assay <- "log-scaled_data"
+  group_labels <- colData(object)[[group_label_col]]
+  names(group_labels) <- rownames(colData(object))
+  if(!is.factor(group_labels)){
+    group_labels <- factor(group_labels)
+    message("Condition for expression_data should be of class factor. ",
+            "Converting now.\n",
+            "Condition is now a factor with levels:\n1. ",
+            levels(group_labels)[1],"\n2. ",
+            levels(group_labels)[2])
+  }
+
+  tmp_dat <- as.list(SummarizedExperiment::assays(object))
+  tmp_dat <- sumExp_data_check(dat = tmp_dat,
+                               group_labels = group_labels,
+                               feature.names = rownames(tmp_dat[[1]]))
+  tmp_dat[["counts"]] <- SummarizedExperiment::assays(object)$counts+1
+  if(!is.null(tmp_dat$counts)){
+    ##restructure data
+    restructured_data <- restructure_input_data(expression_data=tmp_dat$counts,
+                                                condition_values=group_labels)
+  }else{
+    restructured_data <- restructure_scaled_input_data(scaled_expression_data=tmp_dat[[scaled_expression_assay]],
+                                                       condition_values=group_labels)
+  }
+  restructured_data[["assays"]] <- append(restructured_data[["assays"]],
+                                          tmp_dat[-match("counts", names(tmp_dat))])
+  if(!missing(scaled_expression_assay)){
+    analysis_assay <- scaled_expression_assay
+    de_input <- do.call(cbind, restructured_data[["assays"]][[scaled_expression_assay]])
+    ds_input <- restructured_data[["assays"]][[scaled_expression_assay]]
+    message(scaled_expression_assay, " will be used for further analysis!")
+  }else{
+    de_input <- restructured_data[["assays"]][["log_input_data"]]
+    ds_input <- restructured_data[["assays"]][["log-scaled_data"]]
+    message("The log-scaled data will be used for further analysis! ",
+            "This can be changed by specifying scaled_expression_assay")
+  }
+  restructured_data[["metadata"]][["samples"]] <- merge(restructured_data[["metadata"]][["samples"]],
+                                                        as.data.frame(colData(object)),
+                                                        by.x = "samples",
+                                                        by.y = "row.names",
+                                                        all = TRUE)
+  restructured_data[["metadata"]][["features"]] <- merge(restructured_data[["metadata"]][["features"]],
+                                                        as.data.frame(rowData(object)),
+                                                        by.x = "feature_names",
+                                                        by.y = "row.names",
+                                                        all = TRUE)
+  ##gather network information for use later
+  network_group_IDs <- structure(restructured_data[["metadata"]]$samples$conditions,
+                                 names=restructured_data[["metadata"]]$samples$samples)
+  network_groups <- levels(restructured_data[["metadata"]]$samples$conditions)
+
+  ##perform diagnostic testing on dataset
+  ds_test <- dataDiagnostics(mat=ds_input,
+                             condition_values=network_groups,
+                             conditions=network_group_IDs)
+
+  ##perform differential expression on the features
+  de_test <- metabDE(mat=de_input,
+                     condition_values=network_groups,
+                     conditions=network_group_IDs[colnames(de_input)])
+
+  ##initiate DNEA object
+  object <- new("DNEAobj",
+                project_name=project_name,
+                assays= restructured_data[["assays"]],
+                metadata=list(samples=restructured_data[["metadata"]]$samples,
+                              features=restructured_data[["metadata"]]$features,
+                              network_group_IDs=network_group_IDs,
+                              network_groups=network_groups,
+                              analysis_assay=analysis_assay),
                 dataset_summary=ds_test, node_list=de_test,
                 hyperparameter=list(BIC_scores=NULL, optimized_lambda=NULL,
                                     tested_lambda_values=NULL),
@@ -202,7 +298,7 @@ restructure_input_data <- function(expression_data,
   metadata <- vector(mode='list', length=length(meta_key))
   names(metadata) <- meta_key
 
-  assays_key <- c('input_data', 'log_input_data', 'scaled_expression_data')
+  assays_key <- c('input_data', 'log_input_data', 'log-scaled_data')
   assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
@@ -230,10 +326,10 @@ restructure_input_data <- function(expression_data,
   condition_values <- condition_values[colnames(expression_data)]
 
   message("Data has been normalized for further analysis.",
-  " New data can be found in the scaled_expression_data assay!")
+  " New data can be found in the log-scaled_data assay!")
 
   ##concatenate output
-  assays[['scaled_expression_data']] <- scaled_expression_data
+  assays[['log-scaled_data']] <- scaled_expression_data
   metadata[["samples"]] <- data.frame(samples=sample_names,
                                       conditions=condition_values,
                                       row.names=sample_names)
@@ -271,24 +367,14 @@ restructure_input_data <- function(expression_data,
 #' @noRd
 restructure_scaled_input_data <- function(scaled_expression_data,
                                           condition_values){
-  if(length(scaled_expression_data) != 2) stop("DNEA requires two conditions!")
-  if(!all(names(scaled_expression_data) %in% levels(condition_values))){
-    stop("input list of matrices not named after experimental groups!")
-  }
-  if(!all(colnames(scaled_expression_data[[1]]) %in% names(condition_values)) &
-     !all(colnames(scaled_expression_data[[2]]) %in% names(condition_values))){
-    stop("group labels names do not match sample names!")
-  }
-  # if(all(rownames(scaled_expression_data[[1]]) == rownames(scaled_expression_data[[2]]))){
-  #   stop("The feature order of matrices does not match!")
-  # }
+
 
   ##initialize output data structures
   meta_key <- c("samples", "features")
   metadata <- vector(mode='list', length=length(meta_key))
   names(metadata) <- meta_key
 
-  assays_key <- c('scaled_expression_data')
+  assays_key <- c("log-scaled_data")
   assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
@@ -306,10 +392,10 @@ restructure_scaled_input_data <- function(scaled_expression_data,
   }
 
   message("Normalized data was provided, no additional transformations performed.",
-          " Data can be found in the scaled_expression_data assay!")
+          " Data can be found in the log-scaled_data assay!")
 
   ##concatenate output
-  assays[['scaled_expression_data']] <- scaled_expression_data
+  assays[["log-scaled_data"]] <- scaled_expression_data
   metadata[["samples"]] <- data.frame(samples=sample_names,
                                       conditions=condition_values,
                                       row.names=sample_names)
@@ -318,6 +404,35 @@ restructure_scaled_input_data <- function(scaled_expression_data,
                                        row.names=feature_names)
 
   return(list(assays=assays, metadata=metadata))
+}
+
+#' @keywords internal
+#' @noRd
+sumExp_data_check <- function(dat,
+                              feature.names,
+                              group_labels){
+  output <- list()
+  for(i in seq(length(dat))){
+    tmp <- split_by_condition(dat[[i]],
+                              condition_levels = levels(group_labels),
+                              condition_by_sample = group_labels)
+    if(length(tmp) != 2) stop("DNEA requires two conditions!")
+    if(!all(names(tmp) %in% levels(group_labels))){
+      stop("input list of matrices not named after experimental groups!")
+    }
+    if(!all(colnames(tmp[[1]]) %in% names(group_labels)) &
+       !all(colnames(tmp[[2]]) %in% names(group_labels))){
+      stop("group labels names do not match sample names!")
+    }
+    if(!all(rownames(tmp[[1]]) == feature.names)){
+      stop("The feature order of matrices does not match!")
+    }
+    tmp <- list(tmp)
+    names(tmp) <- names(dat)[i]
+    output <- append(output, tmp)
+  }
+
+  return(output)
 }
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
@@ -473,7 +588,6 @@ metabDE <- function(mat,
 
   ##set necessary parameters and output
   num_features <- nrow(mat)
-  num_samples <- ncol(mat)
   feature_info <- data.frame(clean_feature_names=rownames(mat),
                              row.names=rownames(mat))
   cond_data <- split_by_condition(dat=mat,
