@@ -4,16 +4,21 @@
 \alias{addExpressionData}
 \title{Include custom normalized data in the DNEAobj object}
 \usage{
-addExpressionData(object, data)
+addExpressionData(object, dat, assay_name)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}} object.}
 
-\item{data}{A list of \emph{m x n} numeric matrices of
+\item{dat}{A list of \emph{m x n} numeric matrices of
 custom-normalized expression data, one matrix for each
 experimental condition. The list elements should be
-labeled for their respective. These should match the
-labels returned by \code{\link{networkGroups}}.}
+labeled for their respective condition. These should
+match the labels returned by
+\code{\link{networkGroups}}.}
+
+\item{assay_name}{A character string corresponding
+to the name the new data will be stored under in the
+assays slot of the \code{\link{DNEAobj}}.}
 }
 \value{
 A \code{\link{DNEAobj}} object with the added
@@ -73,7 +78,7 @@ for(cond in seq(length(dat))){
 names(newdat) <- names(dat)
 
 #add data
-dnw <- addExpressionData(object=dnw, data=newdat)
+dnw <- addExpressionData(object=dnw, dat=newdat, assay_name="median_scaled_data")
 
 }
 \seealso{

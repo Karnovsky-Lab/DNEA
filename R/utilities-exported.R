@@ -74,11 +74,16 @@ includeMetadata <- function(object,
 #' \code{\link{DNEAobj}} object for use in DNEA analysis.
 #'
 #' @param object A \code{\link{DNEAobj}} object.
-#' @param data A list of \emph{m x n} numeric matrices of
+#' @param dat A list of \emph{m x n} numeric matrices of
 #' custom-normalized expression data, one matrix for each
 #' experimental condition. The list elements should be
-#' labeled for their respective. These should match the
-#' labels returned by \code{\link{networkGroups}}.
+#' labeled for their respective condition. These should
+#' match the labels returned by
+#' \code{\link{networkGroups}}.
+#'
+#' @param assay_name A character string corresponding
+#' to the name the new data will be stored under in the
+#' assays slot of the \code{\link{DNEAobj}}.
 #'
 #' @author Christopher Patsalis
 #'
@@ -138,12 +143,13 @@ includeMetadata <- function(object,
 #' names(newdat) <- names(dat)
 #'
 #' #add data
-#' dnw <- addExpressionData(object=dnw, data=newdat)
+#' dnw <- addExpressionData(object=dnw, dat=newdat, assay_name="median_scaled_data")
 #'
 #' @rdname addExpressionData
 #' @export
 addExpressionData <- function(object,
-                              data){
+                              dat,
+                              assay_name){
 
   ##test for proper input
   sample_names <- sampleNames(object)
@@ -151,20 +157,18 @@ addExpressionData <- function(object,
   group2 <- names(networkGroupIDs(object)[networkGroupIDs(object) == networkGroups(object)[2]])
   metab_names <- featureNames(object)
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(!all(vapply(seq(data), function(x) is.numeric(data[[x]]) & inherits(data[[x]], "matrix"), logical(1)))){
+  if(!all(vapply(seq(dat), function(x) is.numeric(dat[[x]]) & inherits(dat[[x]], "matrix"), logical(1)))){
     stop("The new data should be a list of numeric matrices!")
   }
-  if(!all(vapply(seq(length(data)), function(x) all(rownames(data[[x]]) == metab_names), logical(1)))) {
+  if(!all(vapply(seq(length(dat)), function(x) all(rownames(dat[[x]]) == metab_names), logical(1)))) {
     stop("The feature order of new data does not match order in DNEAobj!")
   }
-  if(!all(colnames(data[["scaled_expression_data"]]) == sample_names) |
-     !all(colnames(data[[networkGroups(object)[1]]]) == group1) |
-     !all(colnames(data[[networkGroups(object)[2]]]) == group2)) {
+  if(!all(colnames(dat[[networkGroups(object)[1]]]) == group1) |
+     !all(colnames(dat[[networkGroups(object)[2]]]) == group2)) {
     stop("The sample order of new data does not match order in DNEAobj!")
   }
 
-  object@assays[["DNEA_scaled_data"]] <- expressionData(x=object, assay="scaled_expression_data")
-  object@assays[["scaled_expression_data"]] <- data
+  assays(object)[["assay_name"]] <- dat
 
   validObject(object)
   return(object)
@@ -315,7 +319,7 @@ plotNetworks <- function(object,
     edge_list <- edgeList(object)
     if(subtype == "All"){
 
-      subtype_network <- induced.subgraph(network_graph, V(network_graph)$name)
+      subtype_network <- induced_subgraph(network_graph, V(network_graph)$name)
     }else{
 
       ##check the subtype exists
@@ -326,7 +330,7 @@ plotNetworks <- function(object,
       subgroup_nodes <- unique(c(edge_list$Metabolite.A[edge_list$edge == subtype | edge_list$edge == "Both"],
                                  edge_list$Metabolite.B[edge_list$edge == subtype | edge_list$edge == "Both"]))
       ##threshold network_graph network
-      subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[match(subgroup_nodes, V(network_graph)$name)])
+      subtype_network <- induced_subgraph(network_graph, V(network_graph)$name[match(subgroup_nodes, V(network_graph)$name)])
     }
 
   }else if(type == "sub_networks"){
@@ -337,7 +341,7 @@ plotNetworks <- function(object,
       "\nPlease specify a value contained in the membership column of the node list")
     }
     ##threshold network_graph network
-    subtype_network <- induced.subgraph(network_graph, V(network_graph)$name[node_list$membership == subtype])
+    subtype_network <- induced_subgraph(network_graph, V(network_graph)$name[node_list$membership == subtype])
   }
   ##set graph layout
   if(missing(layout_func)){
