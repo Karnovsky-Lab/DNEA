@@ -32,11 +32,14 @@ stored within a \code{\link{DNEAobj}} object.
 \describe{
 \item{\code{project_name}}{A character string name for the experiment.}
 
-\item{\code{assays}}{A list of matrices, "expression_data" being
-non-normalized, non-transformed data and "scaled_expression_data"
-being log-transformed, scaled data. The row names and column names
-between the two must be identical (the expression data can be
-accessed via the \code{\link{expressionData}} function).}
+\item{\code{assays}}{A list of matrices, "input_data" being the original
+non-normalized, non-transformed data, "log_input_data" is the
+input data log transformed, and "log-scaled_input" is the input
+data log-transformed and auto-scaled. The row names between the
+input assays must be identical (the expression data can be
+accessed via the \code{\link{expressionData}} function).
+Any other assay input into the DNEAobj can be accessed
+by supplying its name to the assay parameter.}
 
 \item{\code{metadata}}{A list of information about the data, including a
 data frame for sample metadata (the row names must match the
