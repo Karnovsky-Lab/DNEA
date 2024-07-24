@@ -141,9 +141,7 @@ projectName.DNEAobj <- function(x){
 setMethod("projectName", signature(x= "DNEAobj"),
           projectName.DNEAobj)
 
-expressionData.DNEAobj <- function(x, assay=c("input_data",
-                                              "log_input_data",
-                                              "scaled_expression_data")){
+expressionData.DNEAobj <- function(x, assay=names(assays.DNEAobj(x))){
 
   assay <- match.arg(assay)
   output <- x@assays[[assay]]
@@ -162,10 +160,12 @@ expressionData.DNEAobj <- function(x, assay=c("input_data",
 #' @param assay A character string corresponding to the
 #' data to retrieve: "input_data" retrieves the data as
 #' it was input, "log_input_data" retrieves the input data
-#' after log transforming, and "scaled_expression_data"
+#' after log transforming, and "log-scaled_data"
 #' retrieves a list of matrices corresponding to the
 #' log-scaled data for each experimental condition,
-#' respectively.
+#' respectively. Any other externally transformed
+#' data that is stored in the DNEAobj can be accessed
+#' by providing its name to the assay parameter.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -190,7 +190,7 @@ expressionData.DNEAobj <- function(x, assay=c("input_data",
 #'
 #' expressionData(x=dnw, assay="input_data")
 #' expressionData(x=dnw, assay="log_input_data")
-#' expressionData(x=dnw, assay="scaled_expression_data")
+#' expressionData(x=dnw, assay="log-scaled_data")
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
