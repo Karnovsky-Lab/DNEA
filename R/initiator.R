@@ -39,7 +39,8 @@ NULL
 #' @author Christopher Patsalis
 #'
 #' @seealso
-#' \code{\link{BICtune}}, \code{\link{stabilitySelection}}
+#' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
+#' \code{\link{sumExp2DNEAobj}}
 #'
 #' @details
 #' ## Diagnostics Motivation
@@ -91,7 +92,6 @@ NULL
 #' DNEA <- createDNEAobject(expression_data=TEDDY,
 #'                          project_name="TEDDYmetabolomics",
 #'                          group_labels=group_labels)
-#'
 #' @export
 createDNEAobject <- function(project_name,
                              expression_data,
@@ -168,8 +168,59 @@ createDNEAobject <- function(project_name,
   show(ds_test)
   return(object)
 }
-
-#' @importFrom SummarizedExperiment assays colData
+#' Initialize a DNEAobj from SummarizedExperiment
+#'
+#' @description
+#' This function takes as input a
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
+#'  object non-transformed in order to initiate a
+#' \code{\link{DNEAobj}} object. Differential expression analysis
+#' is performed using a student's T-test and Benjamini-Hochberg
+#' for multiple-testing corrections. Diagnostic testing is done
+#' on the input data by checking the minimum eigen value and
+#' condition number of the expression data for each
+#' experimental condition.
+#'
+#' ## IMPORTANT:
+#' Special attention should be given to the diagnostic criteria that is
+#' output. The minimum eigen value and condition number are calculated for
+#' the whole data set as well as for each condition to determine mathematic
+#' stability of the data set and subsequent results from a GGM model. More
+#' information about interpretation can be found in the
+#' \strong{\emph{Details}} section below.
+#'
+#'
+#' @param object a SummarizedExperiment object
+#'  object.
+#' @param scaled_expression_assay A character string corresponding to
+#' the assay in the summarizedExperiment object that should be used
+#' for analysis.
+#' @param group_label_col A character string corresponding to the
+#' column in the sample metadata stored in the SummarizedExperiment object
+#' to use as the group labels.
+#' @inheritParams createDNEAobject
+#'
+#' @inherit createDNEAobject details
+#' @author Christopher Patsalis
+#'
+#' @seealso
+#' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
+#' \code{\link{createDNEAobject}}
+#'
+#' @returns A \code{\link{DNEAobj}} object.
+#'
+#' @examples
+#' #load example data from airway package
+#' library(airway)
+#' data(airway)
+#'
+#' airway <- airway[1:50,]
+#' airway <- airway[rowSums(SummarizedExperiment::assays(airway)$counts) > 5, ]
+#' DNEA <- sumExp2DNEAobj(project_name = "airway",
+#'                          object = airway,
+#'                          group_label_col = "dex")
+#'
+#' @importFrom SummarizedExperiment assays colData rowData
 #' @export
 sumExp2DNEAobj <- function(project_name,
                            object,

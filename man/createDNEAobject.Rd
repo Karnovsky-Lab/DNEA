@@ -100,10 +100,10 @@ names(group_labels) <- rownames(T1Dmeta)
 DNEA <- createDNEAobject(expression_data=TEDDY,
                          project_name="TEDDYmetabolomics",
                          group_labels=group_labels)
-
 }
 \seealso{
-\code{\link{BICtune}}, \code{\link{stabilitySelection}}
+\code{\link{BICtune}}, \code{\link{stabilitySelection}},
+\code{\link{sumExp2DNEAobj}}
 }
 \author{
 Christopher Patsalis
