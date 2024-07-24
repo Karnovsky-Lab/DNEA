@@ -208,7 +208,7 @@ aggregateFeatures <- function(object,
                           project_name=projectName(reduced_object),
                           assays=list(input_data=expressionData(x=reduced_object, assay="input_data"),
                                       log_input_data=expressionData(x=reduced_object, assay="log_input_data"),
-                                      scaled_expression_data=expressionData(x=reduced_object, assay="scaled_expression_data")),
+                                      scaled_expression_data=expressionData(x=reduced_object, assay="log-scaled_data")),
                           metadata=list(samples=data.frame(samples=sampleNames(reduced_object),
                                                            conditions=networkGroupIDs(reduced_object),
                                                            row.names=sampleNames(reduced_object)),
@@ -298,10 +298,10 @@ collapseNodes_cor <- function(dat, correlation_threshold=0.9) {
       }
     }
   }
-  adjacency_graph <- graph.adjacency(group_matrix, mode="max", weighted=TRUE)
+  adjacency_graph <- graph_from_adjacency_matrix(group_matrix, mode="max", weighted=TRUE)
 
   ##edge list from adjacency graph
-  edge_list <- cbind.data.frame(get.edgelist(adjacency_graph),
+  edge_list <- cbind.data.frame(as_edgelist(adjacency_graph),
                                 data.frame(weights=E(adjacency_graph)$weight))
 
 
