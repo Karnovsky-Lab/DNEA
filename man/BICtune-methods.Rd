@@ -12,6 +12,7 @@ BICtune(
   lambda_values,
   interval = 0.001,
   informed = TRUE,
+  assay = "log-scaled_data",
   eps_threshold = 1e-06,
   eta_value = 0.1,
   BPPARAM = bpparam(),
@@ -23,6 +24,7 @@ BICtune(
   lambda_values,
   interval = 0.001,
   informed = TRUE,
+  assay = "log-scaled_data",
   eps_threshold = 1e-06,
   eta_value = 0.1,
   BPPARAM = bpparam(),
@@ -55,6 +57,10 @@ be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 \item{informed}{TRUE/FALSE indicating whether the asymptotic properties
 of lambda for large data sets should be utilized to tune the parameter.
 This reduces the necessary number of computations for optimization.}
+
+\item{assay}{A character string indicating which expression assay to
+use for analysis. The default is the "log-scaled_data" assay that is
+created during \code{\link{createDNEAobject}}.}
 
 \item{eps_threshold}{A significance cut-off for thresholding network
 edges. The default value is 1e-06.

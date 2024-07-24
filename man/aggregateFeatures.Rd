@@ -8,7 +8,8 @@ aggregateFeatures(
   object,
   method = c("correlation", "knowledge", "hybrid"),
   correlation_threshold = NULL,
-  feature_groups = NULL
+  feature_groups = NULL,
+  assay = "input_data"
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ methods.}
 \item{feature_groups}{A data frame containing group information
 for the algorithm indicated by the "knowledge" and "hybrid"
 methods.}
+
+\item{assay}{A character string indicating which expression assay to
+use for analysis. The default is the non-transformed input data that
+is stored as the"input_data" assay. It is highly recommended that
+this setting is used.}
 }
 \value{
 A \code{collapsed_DNEAobj} object.

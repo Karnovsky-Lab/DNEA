@@ -10,6 +10,7 @@ stabilitySelection(
   subSample = FALSE,
   nreps = 500,
   optimal_lambda,
+  assay = "log-scaled_data",
   BPPARAM = bpparam(),
   BPOPTIONS = bpoptions()
 )
@@ -27,6 +28,10 @@ selection. The default is 1000.}
 \item{optimal_lambda}{\emph{\strong{OPTIONAL -}} The optimal lambda value to be
 used in the model. This parameter is only necessary if
 \code{\link{BICtune}} is not performed prior.}
+
+\item{assay}{A character string indicating which expression assay to
+use for analysis. The default is the "log-scaled_data" assay that is
+created during \code{\link{createDNEAobject}}.}
 
 \item{BPPARAM}{a BiocParallel object.}
 

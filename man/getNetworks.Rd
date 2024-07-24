@@ -10,6 +10,7 @@ getNetworks(
   aprox = FALSE,
   informed = TRUE,
   interval = 0.001,
+  assay = "log-scaled_data",
   eps_threshold = 1e-06,
   eta_value = 0.1,
   optimal_lambdas,
@@ -38,6 +39,10 @@ This reduces the necessary number of computations for optimization.}
 \item{interval}{A numeric value indicating the specifity by which to
 optimize lambda. The default value is 1e-3, which indicates lambda will
 be optimized to 3 decimal places. The value should be between 0 and 0.1.}
+
+\item{assay}{A character string indicating which expression assay to
+use for analysis. The default is the "log-scaled_data" assay that is
+created during \code{\link{createDNEAobject}}.}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to
 threshold the partial correlation values for edge identification.

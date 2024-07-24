@@ -5,7 +5,7 @@
 \title{Identify metabolic modules that are enriched across
 experimental conditions using NetGSA}
 \usage{
-runNetGSA(object, min_size = 5)
+runNetGSA(object, min_size = 5, assay = "log_input_data")
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}}.}
@@ -13,6 +13,10 @@ runNetGSA(object, min_size = 5)
 \item{min_size}{The minimum size of a given metabolic
 module for to be tested for enrichment across the
 experimental condition.}
+
+\item{assay}{A character string indicating which expression assay to
+use for analysis. The default is the "log_input-data" assay that is
+created during \code{\link{createDNEAobject}}.}
 }
 \value{
 A \code{\link{DNEAobj}} object after populating the @netGSA

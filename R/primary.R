@@ -12,6 +12,7 @@ BICtune.DNEAobj <- function(object,
                             lambda_values,
                             interval=1e-3,
                             informed=TRUE,
+                            assay = "log-scaled_data",
                             eps_threshold=1e-06,
                             eta_value=0.1,
                             BPPARAM=bpparam(),
@@ -24,7 +25,7 @@ BICtune.DNEAobj <- function(object,
   if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
 
   ##initialize input parameters
-  dat <- expressionData(x=object, assay="scaled_expression_data")
+  dat <- expressionData(x=object, assay=assay)
   n4cov <- max(vapply(dat, ncol, numeric(1)))
   trainX <- t(do.call(cbind, dat))
   trainY <- c(rep(1, ncol(dat[[1]])),
@@ -192,7 +193,10 @@ BICtune.matrix <- function(object,
 #' @param informed TRUE/FALSE indicating whether the asymptotic properties
 #' of lambda for large data sets should be utilized to tune the parameter.
 #' This reduces the necessary number of computations for optimization.
-
+#'
+#' @param assay A character string indicating which expression assay to
+#' use for analysis. The default is the "log-scaled_data" assay that is
+#' created during \code{\link{createDNEAobject}}.
 #' @param eps_threshold A significance cut-off for thresholding network
 #' edges. The default value is 1e-06.
 #' This value generally should not change.
@@ -309,6 +313,10 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' used in the model. This parameter is only necessary if
 #' \code{\link{BICtune}} is not performed prior.
 #'
+#' @param assay A character string indicating which expression assay to
+#' use for analysis. The default is the "log-scaled_data" assay that is
+#' created during \code{\link{createDNEAobject}}.
+#'
 #' @param BPPARAM a BiocParallel object.
 #'
 #' @param BPOPTIONS a list of options for BiocParallel created using
@@ -408,6 +416,7 @@ stabilitySelection <- function(object,
                                subSample=FALSE,
                                nreps=500,
                                optimal_lambda,
+                               assay="log-scaled_data",
                                BPPARAM=bpparam(),
                                BPOPTIONS=bpoptions()){
 
@@ -456,7 +465,7 @@ stabilitySelection <- function(object,
             "if the dataset contains ~500 or more samples.")
   }
 
-  data_split_by_condition <- lapply(expressionData(x=object, assay="scaled_expression_data"),
+  data_split_by_condition <- lapply(expressionData(x=object, assay=assay),
                                     function(d) t(d))
 
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
@@ -550,6 +559,10 @@ stabilitySelection <- function(object,
 #' optimize lambda. The default value is 1e-3, which indicates lambda will
 #' be optimized to 3 decimal places. The value should be between 0 and 0.1.
 #'
+#' @param assay A character string indicating which expression assay to
+#' use for analysis. The default is the "log-scaled_data" assay that is
+#' created during \code{\link{createDNEAobject}}.
+#'
 #' @param eps_threshold A significance cut-off for thresholding network edges.
 #'        The default value is 1e-06. This value generally should not change.
 #'
@@ -613,6 +626,7 @@ getNetworks <- function(object,
                         aprox=FALSE,
                         informed=TRUE,
                         interval=1e-3,
+                        assay="log-scaled_data",
                         eps_threshold=1e-06,
                         eta_value=0.1,
                         optimal_lambdas,
@@ -628,7 +642,7 @@ getNetworks <- function(object,
   }
 
   ##initialize input parameters
-  data_split_by_condition <- expressionData(x=object, assay="scaled_expression_data")
+  data_split_by_condition <- expressionData(x=object, assay=assay)
   num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE=numeric(1))
   names(num_samples) <- names(data_split_by_condition)
   num_features <- numFeatures(object)
@@ -948,6 +962,10 @@ clusterNet <- function(object,
 #' module for to be tested for enrichment across the
 #' experimental condition.
 #'
+#' @param assay A character string indicating which expression assay to
+#' use for analysis. The default is the "log_input-data" assay that is
+#' created during \code{\link{createDNEAobject}}.
+#'
 #' @author Christopher Patsalis
 #'
 #' @seealso
@@ -987,7 +1005,8 @@ clusterNet <- function(object,
 #' @importFrom netgsa NetGSA
 #' @export
 runNetGSA <- function(object,
-                      min_size=5){
+                      min_size=5,
+                      assay="log_input_data"){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -997,7 +1016,7 @@ runNetGSA <- function(object,
   adjacency_matrices <- list(list(adjacencyMatrix(x=object, weighted=TRUE)[[1]]),
                              list(adjacencyMatrix(x=object, weighted=TRUE)[[2]]))
 
-  expression_data <- expressionData(x=object, assay="log_input_data")
+  expression_data <- expressionData(x=object, assay=assay)
   data_groups <- ifelse(networkGroupIDs(object) == networkGroups(object)[1], 1, 2)
   subnetworks <- as.matrix(subnetworkMembership(object))
 

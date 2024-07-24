@@ -35,6 +35,11 @@
 #' for the algorithm indicated by the "knowledge" and "hybrid"
 #' methods.
 #'
+#' @param assay A character string indicating which expression assay to
+#' use for analysis. The default is the non-transformed input data that
+#' is stored as the"input_data" assay. It is highly recommended that
+#' this setting is used.
+#'
 #' @author Christopher Patsalis
 #'
 #' @seealso
@@ -147,16 +152,17 @@ aggregateFeatures <- function(object,
                                        "knowledge",
                                        "hybrid"),
                               correlation_threshold=NULL,
-                              feature_groups=NULL){
+                              feature_groups=NULL,
+                              assay="input_data"){
 
   ##input checks
   method <- match.arg(method)
   feature_membership <- NULL
-  if(is.null(expressionData(x=object, assay="input_data"))){
+  if(is.null(expressionData(x=object, assay=assay))){
     stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!")
   }
 
-  if(!(all(rownames(expressionData(x=object, assay="input_data")) ==
+  if(!(all(rownames(expressionData(x=object, assay=assay)) ==
            rownames(feature_groups)))){
     stop("feature_groups order does not match expression data order!")
   }
@@ -172,7 +178,7 @@ aggregateFeatures <- function(object,
   ##perform feature aggregation
   collapse_dat <- data.frame(samples=sampleNames(object),
                              groups=networkGroupIDs(object),
-                             t(expressionData(x=object, assay="input_data")))
+                             t(expressionData(x=object, assay=assay)))
   if (method == "correlation") {
     res <- collapseNodes_cor(dat=collapse_dat,
                              correlation_threshold=correlation_threshold)
