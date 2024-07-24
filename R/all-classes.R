@@ -65,11 +65,14 @@ setClass(Class="DNEAinputSummary",
 #'
 #' @slot project_name A character string name for the experiment.
 #'
-#' @slot assays A list of matrices, "expression_data" being
-#' non-normalized, non-transformed data and "scaled_expression_data"
-#' being log-transformed, scaled data. The row names and column names
-#' between the two must be identical (the expression data can be
+#' @slot assays A list of matrices, "input_data" being the original
+#' non-normalized, non-transformed data, "log_input_data" is the
+#' input data log transformed, and "log-scaled_input" is the input
+#' data log-transformed and auto-scaled. The row names between the
+#' input assays must be identical (the expression data can be
 #' accessed via the \code{\link{expressionData}} function).
+#' Any other assay input into the DNEAobj can be accessed
+#' by supplying its name to the assay parameter.
 #'
 #' @slot metadata A list of information about the data, including a
 #' data frame for sample metadata (the row names must match the
@@ -226,8 +229,7 @@ setValidity("DNEAinputSummary", function(object){
 #' @keywords internal
 #' @noRd
 assaysCheck <- function(object){
-  assays2check <- c("input_data", "log_input_data",
-                    "scaled_expression_data", "DNEA_scaled_data")
+  assays2check <- names(assays.DNEAobj(object))
   for(i in assays2check){
     if(is.null(assays(object)[[i]])){
       break
