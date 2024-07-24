@@ -7,7 +7,7 @@
 \usage{
 expressionData(x, assay)
 
-\S4method{expressionData}{DNEAobj}(x, assay = names(assays.DNEAobj(x)))
+\S4method{expressionData}{DNEAobj}(x, assay = names(assays(x)))
 }
 \arguments{
 \item{x}{A \code{\link{DNEAobj}} object.}
