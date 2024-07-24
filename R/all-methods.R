@@ -141,10 +141,9 @@ projectName.DNEAobj <- function(x){
 setMethod("projectName", signature(x= "DNEAobj"),
           projectName.DNEAobj)
 
-expressionData.DNEAobj <- function(x, assay=names(assays.DNEAobj(x))){
-
+expressionData.DNEAobj <- function(x, assay=names(assays(x))){
   assay <- match.arg(assay)
-  output <- x@assays[[assay]]
+  output <- assays(x)[[assay]]
   return(output)
 }
 #' Access expression data within a DNEAobj object,
@@ -209,7 +208,7 @@ setMethod("assays", signature(x="DNEAobj"),
           assays.DNEAobj)
 
 assaysReplace.DNEAobj <- function(x, value){
-  x@assays <- append(x@assays, value)
+  x@assays <- value
   validObject(x)
   x
 }
