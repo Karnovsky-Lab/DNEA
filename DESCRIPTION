@@ -43,8 +43,10 @@ Imports:
     netgsa,
     stats,
     stringr,
-    utils
+    utils,
+    SummarizedExperiment
 Collate: 
+    'DNEA-package.R'
     'JSEM-internals.R'
     'aggregate-features.R'
     'all-classes.R'
