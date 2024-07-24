@@ -7,8 +7,6 @@ Authors@R: c(
              comment = c(ORCID = "0009-0003-4585-0017")),
       person(given = "Gayatri", family = "Iyer", 
              email = "griyer@umich.edu", role = c("aut")))
-URL: https://github.com/Karnovsky-Lab/DNEA/
-BugReports: https://github.com/Karnovsky-Lab/DNEA/issues
 Description: The DNEA R package is the latest implementation of the 
              Differential Network Enrichment Analysis algorithm and 
              is the successor to the Filigree Java-application 
@@ -48,7 +46,6 @@ Imports:
     utils,
     SummarizedExperiment
 Collate: 
-    'DNEA-package.R'
     'JSEM-internals.R'
     'aggregate-features.R'
     'all-classes.R'
@@ -75,6 +72,7 @@ Suggests:
     withr,
     airway
 URL: https://github.com/Karnovsky-Lab/DNEA
+BugReports: https://github.com/Karnovsky-Lab/DNEA/issues
 biocViews: Metabolomics, Proteomics, Lipidomics, 
            DifferentialExpression, NetworkEnrichment, 
            Network, Clustering, DataImport
