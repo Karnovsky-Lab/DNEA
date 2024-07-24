@@ -208,10 +208,22 @@ assays.DNEAobj <- function(x){
 setMethod("assays", signature(x="DNEAobj"),
           assays.DNEAobj)
 
+assaysReplace.DNEAobj <- function(x, value){
+  x@assays <- append(x@assays, value)
+  validObject(x)
+  x
+}
+#' @rdname assays-methods
+#' @aliases assays
+#' @keywords internal
+#' @noRd
+setReplaceMethod("assays", signature(x="DNEAobj"),
+                 assaysReplace.DNEAobj)
 networkGroupIDs.DNEAobj <- function(x){
 
   x@metadata$network_group_IDs
 }
+
 #' Access and set the experimental group labels
 #'
 #' This function accesses the experimental group labels for

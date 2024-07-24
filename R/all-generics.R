@@ -33,6 +33,13 @@ setGeneric("expressionData", function(x, assay)
 setGeneric("assays", function(x)
   standardGeneric("assays"))
 
+#' @rdname assays-methods
+#' @aliases assays
+#' @keywords internal
+#' @noRd
+setGeneric("assays<-", function(x, value)
+  standardGeneric("assays<-"))
+
 #' @rdname networkGroups-methods
 #' @aliases networkGroups
 #' @export
