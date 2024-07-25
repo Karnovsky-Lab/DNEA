@@ -143,7 +143,9 @@ includeMetadata <- function(object,
 #' names(newdat) <- names(dat)
 #'
 #' #add data
-#' dnw <- addExpressionData(object=dnw, dat=newdat, assay_name="median_scaled_data")
+#' dnw <- addExpressionData(object=dnw,
+#'                          dat=newdat,
+#'                          assay_name="median_scaled_data")
 #'
 #' @rdname addExpressionData
 #' @export

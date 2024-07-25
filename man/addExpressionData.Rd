@@ -78,7 +78,9 @@ for(cond in seq(length(dat))){
 names(newdat) <- names(dat)
 
 #add data
-dnw <- addExpressionData(object=dnw, dat=newdat, assay_name="median_scaled_data")
+dnw <- addExpressionData(object=dnw,
+                         dat=newdat,
+                         assay_name="median_scaled_data")
 
 }
 \seealso{
