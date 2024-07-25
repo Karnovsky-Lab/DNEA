@@ -36,7 +36,7 @@ Imports:
     dplyr,
     gdata,
     glasso,
-    igraph,
+    igraph (>= 2.0.3),
     janitor,
     Matrix,
     methods,
@@ -58,7 +58,7 @@ Collate:
     'utilities-exported.R'
     'primary.R'
 Depends: 
-    R (>= 4.3.0)
+    R (>= 4.4.0)
 LazyData: false
 Suggests: 
     BiocStyle,
