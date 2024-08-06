@@ -192,7 +192,7 @@ library(pheatmap)
 library(Hmisc)
 
 #grab the DM:case data from the DNEAobj object
-expr_dat <- expressionData(TEDDYdat, assay = "scaled_expression_data")[["DM:case"]]
+expr_dat <- expressionData(TEDDYdat, assay = "log-scaled_data")[["DM:case"]]
 
 #create a pearson correlation matrix - data should be transposed first so features are in columns
 cor_dat <- Hmisc::rcorr(t(expr_dat), type = "pearson")$r
@@ -333,7 +333,7 @@ names(newdat) <- names(dat)
 
 #add data
 TEDDYdatCustomInput <- addExpressionData(object = TEDDYdat,
-                                         data = newdat,
+                                         dat = newdat,
                                          assay_name="median_scaled_data")
 ```
 This function inserts the provided data into the `scaled_expression_data` list element in the assays slot and moves the log-transformed and auto-scaled expression data created by DNEA to the `DNEA_scaled_data` list element. We are going to proceed with the *TEDDYdat* object and the log-scaled data inherent to DNEA in the next step.
