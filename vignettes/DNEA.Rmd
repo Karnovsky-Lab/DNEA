@@ -406,15 +406,24 @@ To perform stability selection, we need to pass *TEDDYdat* to the `stabilitySele
 
 When the sample groups are very unbalanced, the selection probabilities from stability selection strongly favor the larger group resulting in unstable edges. We combat this by employing a sub-sampling protocol during stability selection that was first introduced in @Filigree2021 by setting `subSample = TRUE`. This method ensures that each group is equally represented in stability selection. Since nearly all of the data for the smaller group is used *with* additional sub-sampling, only one model is fit per replicate. When utilizing the sub-sampling protocol, `nreps` should be set to 1000.
 
-If you elect to optimize the $\lambda$ parameter using a different method than `BICtune()`, you can specify the value to use with the `optimal_lambda` parameter. Only 50 of our 322 samples are "DM:case", therefore, it is most apropriate to use the subsampling protocol by setting `subSample = TRUE`. In this scenario, we recommend running 1000 replicates by setting `nreps=1000`. However, this is the most computationally expensive step in the algorithm, and the workflow up to this point takes ~15 minutes using 4 cores on a 2.5 GHz Quad-Core Intel Core i7 processor. For the sake of this example, we will set `nreps=100`.
+If you elect to optimize the $\lambda$ parameter using a different method than `BICtune()`, you can specify the value to use with the `optimal_lambda` parameter. Only 50 of our 322 samples are "DM:case", therefore, it is most apropriate to use the subsampling protocol by setting `subSample = TRUE`. In this scenario, we recommend running 1000 replicates by setting `nreps=1000`. This is the most computationally expensive step in the algorithm, and the workflow up to this point takes ~15 minutes using 4 cores on a 2.5 GHz Quad-Core Intel Core i7 processor.
 
-```{r, stabsel show, eval = TRUE, echo = TRUE, strip.white=TRUE}
+```{r, stabsel show, eval = FALSE, echo = TRUE, strip.white=TRUE}
 #perform stability selection
 TEDDYdat <- stabilitySelection(TEDDYdat,
                                subSample = TRUE,
                                nreps = 1000,
                                BPPARAM = BPPARAM,
                                BPOPTIONS = bpoptions(progressbar=FALSE))
+```
+```{r, stabsel message, eval=TRUE, echo=FALSE, strip.white=TRUE}
+message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
+            'accessed via the optimizedLambda() function')
+message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat), "!\n",
+          "stabilitySelection will be performed with 1000 replicates!")
+message("Additional sub-sampling will be performed on uneven groups\n")
+message("Calculating selection probabilities WITH subsampling for...DM:case...\n")
+message("Calculating selection probabilities WITH subsampling for...DM:control...")
 ```
 # Step 3: Constructing the Networks and Consensus Clustering
 Now that we have optimized the input parameters, we can jointly estimate the biological networks. We will construct a glasso model to calculate the partial correlation value for each metabolite-metabolite interaction. We can then perform consensus clustering to identify metabolic modules, or sub networks, within the larger experimental group networks.
