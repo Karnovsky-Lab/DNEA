@@ -31,6 +31,11 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 ```
+<style>
+.message-output {
+  color: red;
+}
+</style>
 # Downloading DNEA
 The DNEA R package is currrently available on the [Karnovsky Lab github](https://www.github.com/Karnovsky-Lab/DNEA). Any troubleshooting or issues with the software can be reported there. The package can be installed using devtools. BiocManager is also needed to install several package dependencies stored on Bioconductor. Let's download those packages if necessary, and load them into R.
 
@@ -360,7 +365,7 @@ library(BiocParallel)
 BPPARAM <- BiocParallel::SnowParam(workers = 2, RNGseed = 417, progressbar = TRUE)
 ```
 
-```{r, load processed data, include=FALSE}
+```{r, load processed data, eval = TRUE, echo = FALSE}
 
 #load processed results since 500 reps would take ~28 min
 data("dnw")
@@ -368,7 +373,7 @@ TEDDYdat <- dnw
 rm(dnw)
 ```
 Now that we have our workers set up, we can optimize $\lambda$. If you are performing this step on a high-performance computer, we can silence the progress bar using `BPOPTIONS.`
-```{r, BICtune, eval = TRUE, echo = TRUE, strip.white=TRUE}
+```{r, BICtune_show, eval = TRUE, echo = TRUE, strip.white=TRUE}
 
 #optimize lambda
 TEDDYdat <- BICtune(TEDDYdat, 
@@ -406,16 +411,26 @@ To perform stability selection, we need to pass *TEDDYdat* to the `stabilitySele
 
 When the sample groups are very unbalanced, the selection probabilities from stability selection strongly favor the larger group resulting in unstable edges. We combat this by employing a sub-sampling protocol during stability selection that was first introduced in @Filigree2021 by setting `subSample = TRUE`. This method ensures that each group is equally represented in stability selection. Since nearly all of the data for the smaller group is used *with* additional sub-sampling, only one model is fit per replicate. When utilizing the sub-sampling protocol, `nreps` should be set to 1000.
 
-If you elect to optimize the $\lambda$ parameter using a different method than `BICtune()`, you can specify the value to use with the `optimal_lambda` parameter. Only 50 of our 322 samples are "DM:case", therefore, it is most apropriate to use the subsampling protocol by setting `subSample = TRUE`. In this scenario, we recommend running 1000 replicates by setting `nreps=1000`. However, this is the most computationally expensive step in the algorithm, and the workflow up to this point takes ~15 minutes using 4 cores on a 2.5 GHz Quad-Core Intel Core i7 processor. For the sake of this example, we will set `nreps=100`.
-
-```{r, stabsel show, eval = TRUE, echo = TRUE, strip.white=TRUE}
+If you elect to optimize the $\lambda$ parameter using a different method than `BICtune()`, you can specify the value to use with the `optimal_lambda` parameter. Only 50 of our 322 samples are "DM:case", therefore, it is most apropriate to use the subsampling protocol by setting `subSample = TRUE`. In this scenario, we recommend running 1000 replicates by setting `nreps=1000`. This is the most computationally expensive step in the algorithm, and the workflow up to this point takes ~15 minutes using 4 cores on a 2.5 GHz Quad-Core Intel Core i7 processor. 
+```{r, stabsel show, eval=FALSE, echo=TRUE, strip.white=TRUE}
 #perform stability selection
 TEDDYdat <- stabilitySelection(TEDDYdat,
                                subSample = TRUE,
                                nreps = 1000,
                                BPPARAM = BPPARAM,
                                BPOPTIONS = bpoptions(progressbar=FALSE))
+
 ```
+```{r, stabsel message, eval=TRUE, echo=FALSE, strip.white=TRUE}
+
+message("The lambda value stored in the DNEAobj will be used for analysis (this can be accessed via the optimizedLambda() function")
+message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat))
+message("stabilitySelection will be performed with 1000 replicates!")
+message("Additional sub-sampling will be performed on uneven groups")
+message("Calculating selection probabilities WITH subsampling for...DM:control...")
+message("Calculating selection probabilities WITH subsampling for...DM:case...")
+```
+
 # Step 3: Constructing the Networks and Consensus Clustering
 Now that we have optimized the input parameters, we can jointly estimate the biological networks. We will construct a glasso model to calculate the partial correlation value for each metabolite-metabolite interaction. We can then perform consensus clustering to identify metabolic modules, or sub networks, within the larger experimental group networks.
 
