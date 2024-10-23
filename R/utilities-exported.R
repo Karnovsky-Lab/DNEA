@@ -220,11 +220,11 @@ getNetworkFiles <- function(object,
   }
   #save node list
   write.csv(nodeList(object), paste0(file_path, "/", object@project_name,'_nodelist_',Sys.Date(),'.csv'),
-            row.names=FALSE)
+            row.names=FALSE, quote=FALSE)
 
   #save edge list
   write.csv(edgeList(object), paste0(file_path, "/", object@project_name,'_edgelist_',Sys.Date(),'.csv'),
-            row.names=FALSE)
+            row.names=FALSE, quote=FALSE)
 
   return(object)
 }
