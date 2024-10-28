@@ -253,7 +253,7 @@ assaysCheck <- function(object){
       }
       if(is.null(names(data2check)[y])){
         if(numSamples(object) !=
-           ncol(expressionData(x=object, assay="input_data"))){
+           ncol(expressionData(x=object, assay=names(assays(object))[1]))){
           "There was a problem with the sample number"
         }
         if(!all(colnames(data2check[[y]]) == sampleNames(object))){
@@ -287,7 +287,7 @@ metadataCheck <- function(object){
   if(!(is.data.frame(samps)))"sample metadata should be a data.frame"
   if(!(is.character(samps$samples)))"sample labels should be character strings"
   if(!all(samps$samples ==
-         colnames(expressionData(x=object, assay="input_data")))){
+         colnames(expressionData(x=object, assay=names(assays(object))[1])))){
     "sample metadata does not match order of expression data"
   }
 
@@ -298,7 +298,7 @@ metadataCheck <- function(object){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
   if(!all(metabs$clean_feature_names ==
-         rownames(expressionData(x=object, assay="input_data")))){
+         rownames(expressionData(x=object, assay=names(assays(object))[1])))){
     "feature metadata does not match order of expression data"
   }
 
@@ -355,7 +355,7 @@ setValidity("DNEAobj", function(object){
   ##check adjacency matrices
   if(!is.null(adjacencyMatrix(object, weighted=TRUE))){
     if(all(rownames(adjacencyMatrix(object, weighted=TRUE)) !=
-           colnames(expressionData(x=object, assay="input_data")))){
+           colnames(expressionData(x=object, assay=names(assays(object))[1])))){
       "there was a problem with the adjacency matrices"
     }}
   ##check stable networks
