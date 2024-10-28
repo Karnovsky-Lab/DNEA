@@ -366,16 +366,16 @@ sumExp2DNEAobj <- function(project_name,
 #'           sample_info_note = sample_info_note,
 #'           variable_info_note = variable_info_note)
 #'
-#' DNEA <- mass_dataset2DNEAobj(project_name = "mass_dataset",
+#' DNEA <- massDataset2DNEAobj(project_name = "mass_dataset",
 #'                              object = object,
 #'                              group_label_col = "group")
 #'
 #' @importFrom SummarizedExperiment assays colData rowData
 #' @export
-mass_dataset2DNEAobj <- function(project_name,
-                                 object,
-                                 group_label_col,
-                                 scaled_input=FALSE){
+massDataset2DNEAobj <- function(project_name,
+                                object,
+                                group_label_col,
+                                scaled_input=FALSE){
   variable_info <- data.frame(extract_variable_info(object))
   variable_info <- variable_info[, c("variable_id",
                                      "mz", "rt",
