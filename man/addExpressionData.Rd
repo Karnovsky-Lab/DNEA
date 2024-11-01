@@ -30,6 +30,7 @@ This function allows the user to input custom-normalized data into the
 }
 \examples{
 #load example data
+#load example data
 data(TEDDY)
 data(T1Dmeta)
 
@@ -42,7 +43,7 @@ names(group_labels) <- rownames(T1Dmeta)
 
 #initiate DNEAobj
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
-                            group_labels = group_labels)
+                        group_labels = group_labels)
 
 #transpose TEDDY data
 TEDDY <- t(log(TEDDY))
@@ -50,16 +51,19 @@ TEDDY <- t(log(TEDDY))
 #make sure metadata and expression data are in same order
 T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 
-dat <- list('DM:control'=TEDDY[T1Dmeta$group == "DM:control",],
-            'DM:case'=TEDDY[T1Dmeta$group == "DM:case",])
+dat <- list()
+for(cond in networkGroups(dnw)){
+  dat[[cond]] <- TEDDY[names(group_labels)[group_labels == cond],]
+}
+
 
 #log-transform and median center the expression data without scaling
 newdat <- list()
-for(cond in seq(length(dat))){
+for(cond in networkGroups(dnw)){
 
   group_dat <- dat[[cond]]
   for(i in seq(1, ncol(group_dat))){
-    metab_median=median(group_dat[, i], na.rm=TRUE)
+   metab_median=median(group_dat[, i], na.rm=TRUE)
     metab_range=range(group_dat[, i], na.rm=TRUE)
     scale_factor=max(abs(metab_range - metab_median))
     group_dat[, i] <- (group_dat[, i] - metab_median) / scale_factor
@@ -67,7 +71,6 @@ for(cond in seq(length(dat))){
     rm(metab_median, metab_range, scale_factor)
   }
 
-  group_dat <- group_dat[rownames(dat[[cond]]),colnames(dat[[cond]])]
   group_dat <- t(group_dat)
   newdat <- append(newdat, list(group_dat))
 
