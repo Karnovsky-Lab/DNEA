@@ -12,7 +12,7 @@ BICtune.DNEAobj <- function(object,
                             lambda_values,
                             interval=1e-3,
                             informed=TRUE,
-                            assay = "log-scaled_data",
+                            assay,
                             eps_threshold=1e-06,
                             eta_value=0.1,
                             BPPARAM=bpparam(),
@@ -23,7 +23,16 @@ BICtune.DNEAobj <- function(object,
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
   if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
-
+  if(missing(assay)){
+    if("log-scaled_data" %in% names(assays(object))){
+      assay <- "log-scaled_data"
+    }else if(length(names(assays(object))) == 1){
+      assay <- names(assay(object))
+    }else{
+      stop("Please specify which expression to use for analysis ",
+           "via the assay parameter")
+    }
+  }
   ##initialize input parameters
   dat <- expressionData(x=object, assay=assay)
   n4cov <- max(vapply(dat, ncol, numeric(1)))
@@ -34,8 +43,8 @@ BICtune.DNEAobj <- function(object,
   bic2 <- NULL
 
   message("Optimizing the lambda hyperparameter using Bayesian-Information Criterion outlined in Guo et al. (2011)\n",
-          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console\n")
-
+          "A Link to this reference can be found in the function documentation by running ?BICtune() in the console.")
+  message("The ", assay, " expression data will be used for analysis.\n")
   ##Pre-define a range of lambda values to evaluate during optimization if none are provided
   if(missing(lambda_values)){
 
@@ -416,7 +425,7 @@ stabilitySelection <- function(object,
                                subSample=FALSE,
                                nreps=500,
                                optimal_lambda,
-                               assay="log-scaled_data",
+                               assay,
                                BPPARAM=bpparam(),
                                BPOPTIONS=bpoptions()){
 
@@ -431,7 +440,16 @@ stabilitySelection <- function(object,
   if(!is.logical(subSample)) {
     stop('"subSample" parameter should be TRUE or FALSE!')
   }
-
+  if(missing(assay)){
+    if("log-scaled_data" %in% names(assays(object))){
+      assay <- "log-scaled_data"
+    }else if(length(names(assays(object))) == 1){
+      assay <- names(assay(object))
+    }else{
+      stop("Please specify which expression to use for analysis ",
+           "via the assay parameter")
+    }
+  }
   ## stabilitySelection requires lambda hyper-parameter. Will use
   ## optimal_lambda if supplied, otherwise looks for
   ## @hyperparameter[["optimized_lambda"]] in DNEAobject
@@ -470,6 +488,7 @@ stabilitySelection <- function(object,
 
   message("Using Lambda hyper-parameter: ", optimized_lambda, "!\n",
           "stabilitySelection will be performed with ", nreps, " replicates!")
+  message("The ", assay, " expression data will be used for analysis.\n")
 
   ##set internal function to use
   if(subSample){
@@ -626,7 +645,7 @@ getNetworks <- function(object,
                         aprox=FALSE,
                         informed=TRUE,
                         interval=1e-3,
-                        assay="log-scaled_data",
+                        assay,
                         eps_threshold=1e-06,
                         eta_value=0.1,
                         optimal_lambdas,
@@ -640,7 +659,17 @@ getNetworks <- function(object,
   if(eps_threshold <=0 | eps_threshold >= 1) {
     stop("eps_threshold should be between 0 and 1 only!")
   }
-
+  if(missing(assay)){
+    if("log-scaled_data" %in% names(assays(object))){
+      assay <- "log-scaled_data"
+    }else if(length(names(assays(object))) == 1){
+      assay <- names(assay(object))
+    }else{
+      stop("Please specify which expression to use for analysis ",
+           "via the assay parameter")
+    }
+  }
+  message("The ", assay, " expression data will be used for analysis.")
   ##initialize input parameters
   data_split_by_condition <- expressionData(x=object, assay=assay)
   num_samples <- vapply(data_split_by_condition, function(x) ncol(x), FUN.VALUE=numeric(1))
@@ -1007,12 +1036,22 @@ clusterNet <- function(object,
 #' @export
 runNetGSA <- function(object,
                       min_size=5,
-                      assay="log_input_data"){
+                      assay){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
-
+  if(missing(assay)){
+    if("log_input_data" %in% names(assays(object))){
+      assay <- "log_input_data"
+    }else if(length(names(assays(object))) == 1){
+      assay <- names(assay(object))
+    }else{
+      stop("Please specify which expression to use for analysis ",
+           "via the assay parameter")
+    }
+  }
+  message("The ", assay, " expression data will be used for analysis.")
   ##set input variables
   adjacency_matrices <- list(list(adjacencyMatrix(x=object, weighted=TRUE)[[1]]),
                              list(adjacencyMatrix(x=object, weighted=TRUE)[[2]]))
