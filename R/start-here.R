@@ -94,15 +94,16 @@ NULL
 #' supported by NIH grant, U2C- DK119886.
 "TEDDY"
 
-#' Meta data for the The Environmental Determinants
+#' Sample meta data for the The Environmental Determinants
 #' of Diabetes in the Young (TEDDY) clinical trial
 #'
 #' This is a data frame containing metadata for the samples
 #' in the corresponding \code{\link{TEDDY}} example data from
-#' "The Environmental Determinants of Diabetes in the Young" clinical trial.
+#' "The Environmental Determinants of Diabetes in the Young"
+#' clinical trial.
 #'
-#' @returns A data frame containing the metadata for the TEDDY
-#' metabolomics study
+#' @returns A data frame containing the sample metadata for
+#' the TEDDY metabolomics study
 #' @docType data
 #' @keywords datasets
 #' @name T1Dmeta
@@ -135,6 +136,41 @@ NULL
 #' under study ID \strong{ST001386}:
 #' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
 "T1Dmeta"
+
+#' Feature meta data for the The Environmental Determinants
+#' of Diabetes in the Young (TEDDY) clinical trial
+#'
+#' This is a data frame containing metadata for the metabolites
+#' in the corresponding \code{\link{TEDDY}} example data from
+#' "The Environmental Determinants of Diabetes in the Young"
+#' clinical trial.
+#'
+#' @returns A data frame containing the metabolite metadata
+#' for the TEDDY metabolomics study
+#' @docType data
+#' @keywords datasets
+#' @name metab_data
+#' @usage data("metab_data")
+#' @format A data frame with 134 rows and 3 columns. Each row corresponds
+#' to a metabolite, and each column corresponds to:
+#' \describe{
+#' \item{variable_id}{The metabolite name}
+#' \item{mz}{The mass/charge ratio for a given metabolite}
+#' \item{rt}{The retention time for a given metabolite}}
+#'
+#' @references Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C,
+#' Lynch K, Hadley D, Rewers M, Simell O, She JX, Hagopian B,
+#' Lernmark A, Akolkar B, Ziegler AG, Krischer JP; TEDDY study group.
+#' Biomarker discovery study design for type 1 diabetes in The
+#' Environmental Determinants of Diabetes in the Young (TEDDY) study.
+#' Diabetes Metab Res Rev. 2014 Jul;30(5):424-34. doi: 10.1002/dmrr.2510.
+#' PMID: 24339168; PMCID: PMC4058423.
+#' \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4058423/}
+#'
+#' @source The raw data can be downloaded from the Metabolomics workbench
+#' under study ID \strong{ST001386}:
+#' \url{https://www.metabolomicsworkbench.org/data/DRCCStudySummary.php?Mode=SetupRawDataDownload&StudyID=ST001386}
+"metab_data"
 
 #' Example results for DNEA
 #'
