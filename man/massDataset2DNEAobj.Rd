@@ -93,6 +93,9 @@ data(metab_data)
 T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 T1Dmeta <- T1Dmeta[, c(6,7,7)]
 colnames(T1Dmeta) <- c("sample_id", "group", "class")
+
+metab_data <- metab_data[rownames(TEDDY), ]
+
 sample_info_note = data.frame(name = c("sample_id", "group", "class"),
                               meaning = c("sample", "group", "class"))
 variable_info_note = data.frame(name = c("variable_id", "mz", "rt"),

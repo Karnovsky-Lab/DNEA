@@ -263,8 +263,8 @@ createDNEAobject <- function(project_name,
 #' airway <- airway[1:50,]
 #' airway <- airway[rowSums(SummarizedExperiment::assays(airway)$counts) > 5, ]
 #' DNEA <- sumExp2DNEAobj(project_name = "airway",
-#'                          object = airway,
-#'                          group_label_col = "dex")
+#'                        object = airway,
+#'                        group_label_col = "dex")
 #'
 #' @importFrom SummarizedExperiment assays colData rowData
 #' @export
@@ -296,12 +296,18 @@ sumExp2DNEAobj <- function(project_name,
                                sample_names = sample_names,
                                feature_names = feature_names)
 
-  scaled_data <- list()
-  scaled_data[[scaled_expression_assay]] <- tmp_dat[[scaled_expression_assay]]
-  output <- createDNEAobject(project_name = project_name,
-                             expression_data = expression_data,
-                             scaled_expression_data = scaled_data,
-                             group_labels = group_labels)
+  if(!missing(scaled_expression_assay)){
+    scaled_data <- list()
+    scaled_data[[scaled_expression_assay]] <- tmp_dat[[scaled_expression_assay]]
+    output <- createDNEAobject(project_name = project_name,
+                               expression_data = expression_data,
+                               scaled_expression_data = scaled_data,
+                               group_labels = group_labels)
+  }else{
+    output <- createDNEAobject(project_name = project_name,
+                               expression_data = expression_data,
+                               group_labels = group_labels)
+  }
 
   #add sample metadata
   sample_info <- sample_info[rownames(metaData(output, type = "samples")),]
@@ -378,6 +384,9 @@ sumExp2DNEAobj <- function(project_name,
 #' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 #' T1Dmeta <- T1Dmeta[, c(6,7,7)]
 #' colnames(T1Dmeta) <- c("sample_id", "group", "class")
+#'
+#' metab_data <- metab_data[rownames(TEDDY), ]
+#'
 #' sample_info_note = data.frame(name = c("sample_id", "group", "class"),
 #'                               meaning = c("sample", "group", "class"))
 #' variable_info_note = data.frame(name = c("variable_id", "mz", "rt"),
@@ -408,10 +417,11 @@ massDataset2DNEAobj <- function(project_name,
   feature_names <- rownames(expression_data)
 
   variable_info <- data.frame(extract_variable_info(object))
-  variable_info <- variable_info[, c("variable_id",
-                                     "mz", "rt",
-                                     "fc", "p_value",
-                                     "p_value_adjust")]
+  var_cols <- colnames(variable_info) %in% c("variable_id",
+                                             "mz", "rt",
+                                             "fc", "p_value",
+                                             "p_value_adjust")
+  variable_info <- variable_info[, var_cols]
   sample_info <- data.frame(extract_sample_info(object))
   rownames(sample_info) <- sample_info$sample_id
 

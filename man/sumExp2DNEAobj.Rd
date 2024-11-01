@@ -88,8 +88,8 @@ data(airway)
 airway <- airway[1:50,]
 airway <- airway[rowSums(SummarizedExperiment::assays(airway)$counts) > 5, ]
 DNEA <- sumExp2DNEAobj(project_name = "airway",
-                         object = airway,
-                         group_label_col = "dex")
+                       object = airway,
+                       group_label_col = "dex")
 
 }
 \seealso{
