@@ -1,6 +1,6 @@
 Package: DNEA
 Title: Differential Network Enrichment Analysis for Biological Data
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: c(
       person(given = "Christopher", family = "Patsalis", 
              email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
@@ -44,7 +44,8 @@ Imports:
     stats,
     stringr,
     utils,
-    SummarizedExperiment
+    SummarizedExperiment,
+    massdataset
 Collate: 
     'JSEM-internals.R'
     'aggregate-features.R'
