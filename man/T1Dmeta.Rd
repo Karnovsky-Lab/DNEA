@@ -3,7 +3,7 @@
 \docType{data}
 \name{T1Dmeta}
 \alias{T1Dmeta}
-\title{Meta data for the The Environmental Determinants
+\title{Sample meta data for the The Environmental Determinants
 of Diabetes in the Young (TEDDY) clinical trial}
 \format{
 A data frame with 322 rows and 9 columns. Each row corresponds
@@ -30,13 +30,14 @@ under study ID \strong{ST001386}:
 data("T1Dmeta")
 }
 \value{
-A data frame containing the metadata for the TEDDY
-metabolomics study
+A data frame containing the sample metadata for
+the TEDDY metabolomics study
 }
 \description{
 This is a data frame containing metadata for the samples
 in the corresponding \code{\link{TEDDY}} example data from
-"The Environmental Determinants of Diabetes in the Young" clinical trial.
+"The Environmental Determinants of Diabetes in the Young"
+clinical trial.
 }
 \references{
 Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C,
