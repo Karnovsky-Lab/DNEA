@@ -8,7 +8,8 @@ createDNEAobject(
   project_name,
   expression_data,
   scaled_expression_data,
-  group_labels
+  group_labels,
+  assay
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ be aproximately normal.}
 
 \item{group_labels}{A factor vector of experimental group labels
 named with the corresponding sample name.}
+
+\item{assay}{A character string indicating which assay to use for
+diagnostics and differential expression analysis NOTE: The
+function always defaults to using log transformed data for
+differential expression analysis if provided.}
 }
 \value{
 A \code{\link{DNEAobj}} object.
@@ -37,7 +43,11 @@ DNEAobj object. Differential expression analysis is performed using a
 student's T-test and Benjamini-Hochberg for multiple-testing corrections.
 Diagnostic testing is done on the input data by checking the minimum
 eigen value and condition number of the expression data for each
-experimental condition.
+experimental condition. To initialize a \emph{DNEAobj} from a
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
+or a \code{\link[massdataset:mass_dataset-class]{mass_dataset-class}},
+please see \code{\link{sumExp2DNEAobj}} and
+\code{\link{massDataset2DNEAobj}}, respectively.
 \subsection{IMPORTANT:}{
 
 Special attention should be given to the diagnostic criteria that is
@@ -103,7 +113,7 @@ DNEA <- createDNEAobject(expression_data=TEDDY,
 }
 \seealso{
 \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-\code{\link{sumExp2DNEAobj}}
+\code{\link{sumExp2DNEAobj}}, \code{\link{massDataset2DNEAobj}}
 }
 \author{
 Christopher Patsalis
