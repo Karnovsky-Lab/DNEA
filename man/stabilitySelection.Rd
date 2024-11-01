@@ -10,7 +10,7 @@ stabilitySelection(
   subSample = FALSE,
   nreps = 500,
   optimal_lambda,
-  assay = "log-scaled_data",
+  assay,
   BPPARAM = bpparam(),
   BPOPTIONS = bpoptions()
 )

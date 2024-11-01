@@ -5,7 +5,7 @@
 \title{Identify metabolic modules that are enriched across
 experimental conditions using NetGSA}
 \usage{
-runNetGSA(object, min_size = 5, assay = "log_input_data")
+runNetGSA(object, min_size = 5, assay)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}}.}

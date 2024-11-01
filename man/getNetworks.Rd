@@ -10,7 +10,7 @@ getNetworks(
   aprox = FALSE,
   informed = TRUE,
   interval = 0.001,
-  assay = "log-scaled_data",
+  assay,
   eps_threshold = 1e-06,
   eta_value = 0.1,
   optimal_lambdas,
