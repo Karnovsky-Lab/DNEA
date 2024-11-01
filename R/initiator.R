@@ -304,6 +304,7 @@ sumExp2DNEAobj <- function(project_name,
                                scaled_expression_data = scaled_data,
                                group_labels = group_labels)
   }else{
+    scaled_expression_assay <- NULL
     output <- createDNEAobject(project_name = project_name,
                                expression_data = expression_data,
                                group_labels = group_labels)
