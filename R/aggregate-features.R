@@ -162,8 +162,8 @@ aggregateFeatures <- function(object,
     stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!")
   }
 
-  if(!(all(rownames(expressionData(x=object, assay=assay)) ==
-           rownames(feature_groups)))){
+  if(!vector_compare(rownames(expressionData(x=object, assay=assay)),
+                     rownames(feature_groups))){
     stop("feature_groups order does not match expression data order!")
   }
 

@@ -21,7 +21,7 @@ split_by_condition <- function(dat, condition_levels, condition_by_sample){
   if(any(is.null(names(condition_by_sample)))){
     stop("each element in condition_by_sample must be named for its corresponding sample!")
   }
-  if(!all(colnames(dat) == names(condition_by_sample))) {
+  if(!vector_compare(colnames(dat), names(condition_by_sample))) {
     stop("The provided conditions do not correspond to the samples in expression matrix!")
   }
 

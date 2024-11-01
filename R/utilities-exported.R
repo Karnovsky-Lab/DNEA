@@ -59,7 +59,8 @@ includeMetadata <- function(object,
   if(is.null(rownames(metadata))) stop("dat must have row names!")
 
   type <- match.arg(type)
-  if(all(rownames(metaData(x=object, type=type)) == rownames(metadata))){
+  if(vector_compare(rownames(metaData(x=object, type=type)),
+                    rownames(metadata))){
     new_metadata <- cbind(metaData(object, type=type),
                           metadata)
     metaData(object, type=type) <- new_metadata

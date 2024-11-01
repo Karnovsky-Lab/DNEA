@@ -256,7 +256,8 @@ assaysCheck <- function(object){
            ncol(expressionData(x=object, assay=names(assays(object))[1]))){
           "There was a problem with the sample number"
         }
-        if(!all(colnames(data2check[[y]]) == sampleNames(object))){
+
+        if(!vector_compare(colnames(data2check[[y]]), sampleNames(object))){
           paste0("The ", i, " matrix should contain the same samples ",
                  "and in the same order as the input data")
         }
@@ -264,7 +265,7 @@ assaysCheck <- function(object){
         group_samples <- metaData(object, type = "samples")
         samps <- group_samples$conditions == names(data2check)[y]
         group_samples <- rownames(group_samples)[samps]
-        if(!all(colnames(data2check[[y]]) == group_samples)){
+        if(!vector_compare(colnames(data2check[[y]]), group_samples)){
           paste0("The ", i,": ",  names(data2check)[y],
                  " does not contain the correct group samples")
         }
@@ -286,8 +287,9 @@ metadataCheck <- function(object){
   samps <- metaData(object, type="samples")
   if(!(is.data.frame(samps)))"sample metadata should be a data.frame"
   if(!(is.character(samps$samples)))"sample labels should be character strings"
-  if(!all(samps$samples ==
-         colnames(expressionData(x=object, assay=names(assays(object))[1])))){
+
+  if(!vector_compare(samps$samples,
+                     colnames(expressionData(x=object, assay=names(assays(object))[1])))){
     "sample metadata does not match order of expression data"
   }
 
@@ -297,8 +299,8 @@ metadataCheck <- function(object){
   if(!(is.character(metabs$clean_feature_names))){
     "@metadata$features$clean_Feature_Names should be of class character"
   }
-  if(!all(metabs$clean_feature_names ==
-         rownames(expressionData(x=object, assay=names(assays(object))[1])))){
+  if(!vector_compare(metabs$clean_feature_names,
+                     rownames(expressionData(x=object, assay=names(assays(object))[1])))){
     "feature metadata does not match order of expression data"
   }
 
@@ -310,8 +312,8 @@ metadataCheck <- function(object){
 
   if(length(networkGroupIDs(object)) ==
      length(sampleNames(object))){
-    if(!all(names(networkGroupIDs(object)) ==
-            sampleNames(object))){
+    if(!vector_compare(names(networkGroupIDs(object)),
+                       sampleNames(object))){
       "Group ID's are not aligned with their respective samples"
     }
   }else{
@@ -337,8 +339,8 @@ setValidity("DNEAobj", function(object){
   ##check nodelist
   metabs <- nodeList(object)$clean_feature_name
   feats <- featureNames(object, original=FALSE)
-  if(!all(metabs[order(metabs)] ==
-          feats[order(feats)])){
+
+  if(!vector_compare(metabs[order(metabs)], feats[order(feats)])){
     "Node list features do not match expression data"
   }
   ##check hyperparameter slot
