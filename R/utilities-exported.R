@@ -42,7 +42,7 @@
 #' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 #'
 #' #add new metadata to DNEAobj object
-#' dnw <- includeMetadata(object=dnw, type="sample", metadata=T1Dmeta)
+#' dnw <- includeMetadata(object=dnw, type="samples", metadata=T1Dmeta)
 #'
 #' @export
 includeMetadata <- function(object,
@@ -50,6 +50,7 @@ includeMetadata <- function(object,
                             metadata){
 
   ##test for proper input
+  if(!type %in% c('samples', 'features')) stop('type can be "samples" or "features"')
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
   if(!any(inherits(metadata, "matrix") | inherits(metadata, "data.frame"))) {
     stop('the input metadata should be of class "matrix" or "data.frame"!')
@@ -63,7 +64,7 @@ includeMetadata <- function(object,
                           metadata)
     metaData(object, type=type) <- new_metadata
   }else{
-    stop('new metadata order does not match', type, 'order')
+    stop('new metadata order does not match ', type, ' order!')
   }
   return(object)
 }
@@ -95,6 +96,7 @@ includeMetadata <- function(object,
 #'
 #' @examples
 #' #load example data
+#' #load example data
 #' data(TEDDY)
 #' data(T1Dmeta)
 #'
@@ -107,7 +109,7 @@ includeMetadata <- function(object,
 #'
 #' #initiate DNEAobj
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
-#'                             group_labels = group_labels)
+#'                         group_labels = group_labels)
 #'
 #' #transpose TEDDY data
 #' TEDDY <- t(log(TEDDY))
@@ -115,16 +117,19 @@ includeMetadata <- function(object,
 #' #make sure metadata and expression data are in same order
 #' T1Dmeta <- T1Dmeta[rownames(TEDDY),]
 #'
-#' dat <- list('DM:control'=TEDDY[T1Dmeta$group == "DM:control",],
-#'             'DM:case'=TEDDY[T1Dmeta$group == "DM:case",])
+#' dat <- list()
+#' for(cond in networkGroups(dnw)){
+#'   dat[[cond]] <- TEDDY[names(group_labels)[group_labels == cond],]
+#' }
+#'
 #'
 #' #log-transform and median center the expression data without scaling
 #' newdat <- list()
-#' for(cond in seq(length(dat))){
+#' for(cond in networkGroups(dnw)){
 #'
 #'   group_dat <- dat[[cond]]
 #'   for(i in seq(1, ncol(group_dat))){
-#'     metab_median=median(group_dat[, i], na.rm=TRUE)
+#'    metab_median=median(group_dat[, i], na.rm=TRUE)
 #'     metab_range=range(group_dat[, i], na.rm=TRUE)
 #'     scale_factor=max(abs(metab_range - metab_median))
 #'     group_dat[, i] <- (group_dat[, i] - metab_median) / scale_factor
@@ -132,7 +137,6 @@ includeMetadata <- function(object,
 #'     rm(metab_median, metab_range, scale_factor)
 #'   }
 #'
-#'   group_dat <- group_dat[rownames(dat[[cond]]),colnames(dat[[cond]])]
 #'   group_dat <- t(group_dat)
 #'   newdat <- append(newdat, list(group_dat))
 #'
@@ -152,25 +156,17 @@ includeMetadata <- function(object,
 addExpressionData <- function(object,
                               dat,
                               assay_name){
-
-  ##test for proper input
-  sample_names <- sampleNames(object)
-  group1 <- names(networkGroupIDs(object)[networkGroupIDs(object) == networkGroups(object)[1]])
-  group2 <- names(networkGroupIDs(object)[networkGroupIDs(object) == networkGroups(object)[2]])
-  metab_names <- featureNames(object)
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
-  if(!all(vapply(seq(dat), function(x) is.numeric(dat[[x]]) & inherits(dat[[x]], "matrix"), logical(1)))){
-    stop("The new data should be a list of numeric matrices!")
-  }
-  if(!all(vapply(seq(length(dat)), function(x) all(rownames(dat[[x]]) == metab_names), logical(1)))) {
-    stop("The feature order of new data does not match order in DNEAobj!")
-  }
-  if(!all(colnames(dat[[networkGroups(object)[1]]]) == group1) |
-     !all(colnames(dat[[networkGroups(object)[2]]]) == group2)) {
-    stop("The sample order of new data does not match order in DNEAobj!")
+  feature_names <- featureNames(object)
+
+  for(i in seq(length(dat))){
+    tmp_samples <- names(networkGroupIDs(object)[networkGroupIDs(object)==networkGroups(object)[i]])
+    table_metadata_check(dat[[i]],
+                         sample_names = tmp_samples,
+                         feature_names = feature_names)
   }
 
-  assays(object)[["assay_name"]] <- dat
+  assays(object)[[assay_name]] <- dat
 
   validObject(object)
   return(object)
