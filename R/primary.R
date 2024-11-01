@@ -995,6 +995,13 @@ clusterNet <- function(object,
 #' use for analysis. The default is the "log_input-data" assay that is
 #' created during \code{\link{createDNEAobject}}.
 #'
+#' @param pathways An adjacency matrix indicating feature inclusion for
+#' a given pathway. Features should be columns (with corresponding column
+#' names) and pathways should be rows(with corresponding row names). 1
+#' indicates a feature is included in a given pathway and 0 indicates that
+#' it is not. Please see \code{\link[netgsa:NetGSA]{NetGSA}} for more
+#' information.
+#'
 #' @author Christopher Patsalis
 #'
 #' @seealso
@@ -1036,7 +1043,8 @@ clusterNet <- function(object,
 #' @export
 runNetGSA <- function(object,
                       min_size=5,
-                      assay){
+                      assay,
+                      pathways){
 
   ##test for proper input
   if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
@@ -1062,7 +1070,19 @@ runNetGSA <- function(object,
 
   ##filter subnetworks to only include those greater than or equal to min_size
   sub_membership <- subnetworkMembership(object)
-  filtered_subnetworks <- as.matrix(sub_membership[rowSums(sub_membership) >= min_size, ])
+  if(missing(pathways)){
+    filtered_subnetworks <- as.matrix(sub_membership[rowSums(sub_membership) >= min_size, ])
+  }else{
+    if(!(inherits(pathways, "matrix") | inherits(pathways, "data.frame"))){
+      stop("pathways should be a matrix or data frame!")
+    }
+    if(!all(pathways %in% c(0,1))){
+      stop("pathways values should be 1 to indicate feature inclusion in a ",
+           "pathway or 0 to indicate it is not included")
+    }
+    filtered_subnetworks <- pathways
+  }
+
 
   ##run netgsa
   netgsa_results <- NetGSA(A=adjacency_matrices,

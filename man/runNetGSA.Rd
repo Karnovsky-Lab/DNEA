@@ -5,7 +5,7 @@
 \title{Identify metabolic modules that are enriched across
 experimental conditions using NetGSA}
 \usage{
-runNetGSA(object, min_size = 5, assay)
+runNetGSA(object, min_size = 5, assay, pathways)
 }
 \arguments{
 \item{object}{A \code{\link{DNEAobj}}.}
@@ -17,6 +17,13 @@ experimental condition.}
 \item{assay}{A character string indicating which expression assay to
 use for analysis. The default is the "log_input-data" assay that is
 created during \code{\link{createDNEAobject}}.}
+
+\item{pathways}{An adjacency matrix indicating feature inclusion for
+a given pathway. Features should be columns (with corresponding column
+names) and pathways should be rows(with corresponding row names). 1
+indicates a feature is included in a given pathway and 0 indicates that
+it is not. Please see \code{\link[netgsa:NetGSA]{NetGSA}} for more
+information.}
 }
 \value{
 A \code{\link{DNEAobj}} object after populating the @netGSA
