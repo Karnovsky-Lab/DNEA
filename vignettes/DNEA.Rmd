@@ -131,7 +131,9 @@ TEDDY[1:10, 1:4]
 ```
 ```{r, TEDDY examine, echo=FALSE}
 TEDDY_table <- knitr::kable(TEDDY[1:10, 1:4])
-kable_styling(TEDDY_table, "striped", position = "left", full_width = TRUE)
+kable_paper(TEDDY_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 
 #remove table
 rm(TEDDY_table)
@@ -150,7 +152,9 @@ T1Dmeta[1:10, c(1,5,6,7)]
 ```
 ```{r, T1Dmeta examine, echo=FALSE}
 T1Dmeta_table <- knitr::kable(T1Dmeta[1:10, c(1,5,6,7)])
-kable_styling(T1Dmeta_table, "striped", position = "left", full_width = TRUE)
+kable_paper(T1Dmeta_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 
 #remove table
 rm(T1Dmeta_table)
@@ -182,6 +186,8 @@ TEDDYdat <- createDNEAobject(project_name = "TEDDYmetabolomics",
                              group_labels = group_labels)
 ```
 Eigenvalues close to or below zero, or similarly extremely large condition numbers, represent instability in the data set and triggers a warning that recommends highly correlated metabolites be aggregated into single features prior to analysis. As you can see above, the TEDDY data set has a negative eigenvalue for the "DM:case" experimental group, triggering a warning.
+
+*NOTE: To initiate a `DNEAobj` from a `summarizedExperiment-class` or `mass_dataset-class` object, the `sumExp2DNEAobj()` and `massDataset2DNEAobj()` functions can be used, respectively.*
 
 **WHAT CAUSED THIS WARNING?**  
 
@@ -224,7 +230,9 @@ nodeList(TEDDYdat)[1:5,]
 ```
 ```{r, node list examine, echo=FALSE}
 nodelist_table <- knitr::kable(nodeList(TEDDYdat)[1:5,])
-kable_styling(nodelist_table, "striped", position = "left", full_width = TRUE)
+kable_paper(nodelist_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 
 #remove table
 rm(nodelist_table)
@@ -272,7 +280,9 @@ TEDDY_groups[1:10, ]
 ```
 ```{r, node collapse groups, echo=FALSE}
 netGSA_table <- knitr::kable(TEDDY_groups[1:10, ])
-kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
+kable_paper(netGSA_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 ```
 
 For the "hybrid" method we also have to provide a `correlation_threshold` value. The algorithm will only aggregate metabolites within a specified group that have a stronger correlation than the `correlation_threshold` value provided.
@@ -368,7 +378,7 @@ TEDDYdat <- dnw
 rm(dnw)
 ```
 Now that we have our workers set up, we can optimize $\lambda$. If you are performing this step on a high-performance computer, we can silence the progress bar using `BPOPTIONS.`
-```{r, BICtune, eval = TRUE, echo = TRUE, strip.white=TRUE}
+```{r, BICtune, eval = FALSE, echo = TRUE, strip.white=TRUE}
 
 #optimize lambda
 TEDDYdat <- BICtune(TEDDYdat, 
@@ -376,6 +386,16 @@ TEDDYdat <- BICtune(TEDDYdat,
                     interval = 1e-3, 
                     BPPARAM = BPPARAM, 
                     BPOPTIONS = bpoptions(progressbar = FALSE))
+```
+```{r, BICtune message, eval=TRUE, echo=FALSE, strip.white=TRUE}
+message("Optimizing the lambda hyperparameter using Bayesian-Information ",
+        "Criterion outlined in Guo et al. (2011)")
+message("A Link to this reference can be found in the function documentation ",
+        "by running ?BICtune() in the console")
+message("The log-scaled_data expression data will be used for analysis.\n")
+message("Estimating optimal c constant range for asymptotic lambda...\n")
+message("Fine-tuning Lambda...\n")
+message("The optimal Lambda hyper-parameter has been set to: 0.05072355!")
 ```
 Our tuned lambda value is 0.05072355. This was selected by minimizing the BIC score. To illustrate BIC optimization, we can plot the BIC scores as a function of $\lambda$
 ```{r, BIC plot, eval=TRUE}
@@ -421,6 +441,7 @@ message('The lambda value stored in the DNEAobj will be used for analysis (this 
             'accessed via the optimizedLambda() function')
 message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat), "!\n",
           "stabilitySelection will be performed with 1000 replicates!")
+message("The log-scaled_data expression data will be used for analysis.\n")
 message("Additional sub-sampling will be performed on uneven groups\n")
 message("Calculating selection probabilities WITH subsampling for...DM:case...\n")
 message("Calculating selection probabilities WITH subsampling for...DM:control...")
@@ -453,7 +474,9 @@ edge_list <- edgeList(TEDDYdat)
 
 #create kable
 edge_table <- knitr::kable(edge_list[1:10,])
-kable_styling(edge_table, "striped", position = "left", full_width = TRUE)
+kable_paper(edge_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 
 #clean up space
 rm(edge_table)
@@ -489,7 +512,9 @@ CCsummary(TEDDYdat)
 We can access information about the clustering results with `CCsummary()`. The summary shows you the number of nodes and edges per network as well as how many were differentially expressed, respectively. 132 of the 134 metabolites clustered into the 13 sub networks, whil the remaining 2 were left as independent metabolites.
 ```{r, CCsummary kable, echo=FALSE}
 clust_table <- knitr::kable(CCsummary(TEDDYdat))
-kable_styling(clust_table, "striped", position = "left", full_width = TRUE)
+kable_paper(clust_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 ```
 
 
@@ -508,7 +533,9 @@ netGSAresults(TEDDYdat)
 ```
 ```{r, netGSAresults kable, echo=FALSE}
 netGSA_table <- knitr::kable(netGSAresults(TEDDYdat))
-kable_styling(netGSA_table, "striped", position = "left", full_width = TRUE)
+kable_paper(netGSA_table, "striped",
+              position = "center", full_width = FALSE,
+              bootstrap_options = "condensed")
 ```
 11 of the 13 subnetworks contained 5+ metabolites and were therefore tested for enrichment. 8 of the 11 sub networks tested were significantly enriched at $/alpha$ = 0.05. <font color = red>***NOTE:*** *The sub networks have been reordered by their false-discovery rate calculated during enrichment analysis, so the sub network numbering may look different after pathway analysis as compared to prior.*</font>
 
