@@ -84,24 +84,26 @@ feature-feature associations.
 }
 }
 \examples{
-#create mass_dataset object from TEDDY
+#load data
 data(TEDDY)
 data(T1Dmeta)
 data(metab_data)
+
 #make sure metadata and expression data are in same order
 T1Dmeta <- T1Dmeta[colnames(TEDDY),]
-T1Dmeta <- T1Dmeta[, c(6,7)]
-
+T1Dmeta <- T1Dmeta[, c(6,7,7)]
+colnames(T1Dmeta) <- c("sample_id", "group", "class")
 sample_info_note = data.frame(name = c("sample_id", "group", "class"),
                               meaning = c("sample", "group", "class"))
 variable_info_note = data.frame(name = c("variable_id", "mz", "rt"),
                                 meaning = c("variable_id", "mz", "rt"))
-object <- create_mass_dataset(
-          expression_data = data.frame(TEDDY),
-          sample_info = T1Dmeta,
-          variable_info = metab_meta,
-          sample_info_note = sample_info_note,
-          variable_info_note = variable_info_note)
+
+#create mass_dataset object from TEDDY
+object <- massdataset::create_mass_dataset(expression_data = data.frame(TEDDY),
+                                           sample_info = T1Dmeta,
+                                           variable_info = metab_data,
+                                           sample_info_note = sample_info_note,
+                                           variable_info_note = variable_info_note)
 
 DNEA <- massDataset2DNEAobj(project_name = "mass_dataset",
                              object = object,
