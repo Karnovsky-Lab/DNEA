@@ -44,10 +44,8 @@ student's T-test and Benjamini-Hochberg for multiple-testing corrections.
 Diagnostic testing is done on the input data by checking the minimum
 eigen value and condition number of the expression data for each
 experimental condition. To initialize a \emph{DNEAobj} from a
-\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
-or a \code{\link[massdataset:mass_dataset-class]{mass_dataset-class}},
-please see \code{\link{sumExp2DNEAobj}} and
-\code{\link{massDataset2DNEAobj}}, respectively.
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}},
+please see the \code{\link{sumExp2DNEAobj}} documentation.
 \subsection{IMPORTANT:}{
 
 Special attention should be given to the diagnostic criteria that is
@@ -113,7 +111,7 @@ DNEA <- createDNEAobject(expression_data=TEDDY,
 }
 \seealso{
 \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-\code{\link{sumExp2DNEAobj}}, \code{\link{massDataset2DNEAobj}}
+\code{\link{sumExp2DNEAobj}}
 }
 \author{
 Christopher Patsalis

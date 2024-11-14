@@ -11,10 +11,8 @@ NULL
 #' Diagnostic testing is done on the input data by checking the minimum
 #' eigen value and condition number of the expression data for each
 #' experimental condition. To initialize a *DNEAobj* from a
-#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
-#' or a \code{\link[massdataset:mass_dataset-class]{mass_dataset-class}},
-#' please see \code{\link{sumExp2DNEAobj}} and
-#' \code{\link{massDataset2DNEAobj}}, respectively.
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}},
+#' please see the \code{\link{sumExp2DNEAobj}} documentation.
 #'
 #' ## IMPORTANT:
 #' Special attention should be given to the diagnostic criteria that is
@@ -49,7 +47,7 @@ NULL
 #'
 #' @seealso
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-#' \code{\link{sumExp2DNEAobj}}, \code{\link{massDataset2DNEAobj}}
+#' \code{\link{sumExp2DNEAobj}}
 #'
 #' @details
 #' ## Diagnostics Motivation
@@ -334,141 +332,7 @@ sumExp2DNEAobj <- function(project_name,
 
   return(output)
 }
-#' Initialize a DNEAobj from a mass_dataset object
-#'
-#' @description
-#' This function takes as input a
-#' \code{\link[massdataset:mass_dataset-class]{mass_dataset-class}}
-#'  object non-transformed in order to initiate a
-#' \code{\link{DNEAobj}} object. Differential expression analysis
-#' is performed using a student's T-test and Benjamini-Hochberg
-#' for multiple-testing corrections. Diagnostic testing is done
-#' on the input data by checking the minimum eigen value and
-#' condition number of the expression data for each
-#' experimental condition.
-#'
-#' ## IMPORTANT:
-#' Special attention should be given to the diagnostic criteria that is
-#' output. The minimum eigen value and condition number are calculated for
-#' the whole data set as well as for each condition to determine mathematic
-#' stability of the data set and subsequent results from a GGM model. More
-#' information about interpretation can be found in the
-#' \strong{\emph{Details}} section below.
-#'
-#'
-#' @param object a mass_dataset object.
-#'
-#' @param group_label_col A character string corresponding to the
-#' column in the sample metadata stored in the mass_dataset object
-#' to use as the group labels.
-#'
-#' @param scaled_input A TRUE/FALSE indicating whether the input data
-#' is already normalized
-#' @inheritParams createDNEAobject
-#'
-#' @inherit createDNEAobject details
-#' @author Christopher Patsalis
-#'
-#' @seealso
-#' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-#' \code{\link{createDNEAobject}}
-#'
-#' @returns A \code{\link{DNEAobj}} object.
-#'
-#' @examples
-#' #load data
-#' data(TEDDY)
-#' data(T1Dmeta)
-#' data(metab_data)
-#'
-#' #make sure metadata and expression data are in same order
-#' T1Dmeta <- T1Dmeta[colnames(TEDDY),]
-#' T1Dmeta <- T1Dmeta[, c(6,7,7)]
-#' colnames(T1Dmeta) <- c("sample_id", "group", "class")
-#'
-#' metab_data <- metab_data[rownames(TEDDY), ]
-#'
-#' sample_info_note = data.frame(name = c("sample_id", "group", "class"),
-#'                               meaning = c("sample", "group", "class"))
-#' variable_info_note = data.frame(name = c("variable_id", "mz", "rt"),
-#'                                 meaning = c("variable_id", "mz", "rt"))
-#'
-#' #create mass_dataset object from TEDDY
-#' object <- massdataset::create_mass_dataset(expression_data = data.frame(TEDDY),
-#'                                            sample_info = T1Dmeta,
-#'                                            variable_info = metab_data,
-#'                                            sample_info_note = sample_info_note,
-#'                                            variable_info_note = variable_info_note)
-#'
-#' DNEA <- massDataset2DNEAobj(project_name = "mass_dataset",
-#'                              object = object,
-#'                              group_label_col = "group")
-#'
-#' @importFrom massdataset extract_expression_data
-#' @importFrom massdataset extract_sample_info
-#' @importFrom massdataset extract_variable_info
-#' @importFrom massdataset create_mass_dataset
-#' @export
-massDataset2DNEAobj <- function(project_name,
-                                object,
-                                group_label_col,
-                                scaled_input=FALSE){
-  expression_data <- as.data.frame(extract_expression_data(object))
-  sample_names <- colnames(expression_data)
-  feature_names <- rownames(expression_data)
 
-  variable_info <- data.frame(extract_variable_info(object))
-  var_cols <- colnames(variable_info) %in% c("variable_id",
-                                             "mz", "rt",
-                                             "fc", "p_value",
-                                             "p_value_adjust")
-  variable_info <- variable_info[, var_cols]
-  sample_info <- data.frame(extract_sample_info(object))
-  rownames(sample_info) <- sample_info$sample_id
-
-  group_labels <- sample_info[[group_label_col]]
-  names(group_labels) <- sample_info[["sample_id"]]
-  group_labels <- group_labels[colnames(expression_data)]
-  if(!is.factor(group_labels)){
-    group_labels <- factor(group_labels)
-    message("Condition for expression_data should be of class factor. ",
-            "Converting now.\n",
-            "Condition is now a factor with levels:\n1. ",
-            levels(group_labels)[1],"\n2. ",
-            levels(group_labels)[2])
-  }
-
-  tmp_dat <- list()
-  tmp_dat[["mass_dataset"]] <- expression_data
-  tmp_dat <- object_data_check(dat = tmp_dat,
-                               group_labels = group_labels,
-                               sample_names = sample_names,
-                               feature_names = feature_names)
-
-  if(scaled_input){
-    output <- createDNEAobject(project_name = project_name,
-                               scaled_expression_data = tmp_dat,
-                               assay = names(tmp_dat),
-                               group_labels = group_labels)
-  }else{
-    output <- createDNEAobject(project_name = project_name,
-                               expression_data = expression_data,
-                               group_labels = group_labels)
-  }
-  #add sample metadata
-  sample_info <- sample_info[rownames(metaData(output, type = "samples")),]
-  output <- includeMetadata(object = output,
-                            type = "samples",
-                            metadata = sample_info)
-
-  #add feature metadata
-  variable_info <- variable_info[rownames(metaData(output, type = "features")),]
-  output <- includeMetadata(object = output,
-                            type = "features",
-                            metadata = variable_info)
-
-  return(output)
-}
 ################################################################################
 #' Restructure input data for initiation of DNEAobj object
 #'

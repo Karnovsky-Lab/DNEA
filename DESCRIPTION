@@ -44,8 +44,7 @@ Imports:
     stats,
     stringr,
     utils,
-    SummarizedExperiment,
-    massdataset
+    SummarizedExperiment
 Collate: 
     'JSEM-internals.R'
     'aggregate-features.R'
