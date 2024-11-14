@@ -345,7 +345,7 @@ plotNetworks <- function(object,
   ##set graph layout
   if(missing(layout_func)){
 
-    graph_layout <- layout.fruchterman.reingold(graph=subtype_network)
+    graph_layout <- layout_with_fr(graph=subtype_network)
   }else{
 
     graph_layout <- layout_func(graph=subtype_network)
