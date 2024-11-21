@@ -178,7 +178,7 @@ group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 
 # STEP 1: Data pre-processing and feature aggregation
 ## Data pre-processing
-DNEA is an object-oriented workflow built around a custom s4 object, `DNEAobj`. We provide an initiator function that encompasses several necessary steps to begin DNEA. First, the data is restructured for input into a `DNEAobj` object, and differential expression (DE) analysis is performed on the log-transformed input data. The data is then split by experimental condition and auto-scaled. An eigen decomposition is performed to check the minimum eigenvalue and the condition number of the correlation matrix for the whole data set, as well as each experimental group individually.
+DNEA is an object-oriented workflow built around a custom s4 object, `DNEAobj`. We provide a helper function that encompasses several necessary steps to begin DNEA. Additionally, the `sumExp2DNEAobj` and `massDataset2DNEAobj` helper functions are provided to enable creation of a `DNEAobj` from a `SummarizedExperiment` and `mass_dataset` object, respectively. First, the data is restructured for input into a `DNEAobj` object, and differential expression (DE) analysis is performed on the log-transformed input data. The data is then split by experimental condition and auto-scaled. An eigen decomposition is performed to check the minimum eigenvalue and the condition number of the correlation matrix for the whole data set, as well as each experimental group individually.
 ```{r, start DNEA, eval=TRUE}
 #initiate DNEAobj object
 TEDDYdat <- createDNEAobject(project_name = "TEDDYmetabolomics",
