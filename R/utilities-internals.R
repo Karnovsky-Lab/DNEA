@@ -56,7 +56,7 @@ table_metadata_check <- function(dat,
     stop("sample names in input data do not match samples in object!")
   }
   if(!vector_compare(rownames(dat), feature_names)){
-    message("Features in input data do not match features in object!")
+    stop("Features in input data do not match features in object!")
   }
 
   if(!any(inherits(dat, "matrix") | inherits(dat, "data.frame"))) {
