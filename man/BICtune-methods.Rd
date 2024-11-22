@@ -120,6 +120,7 @@ data(TEDDY)
 data(T1Dmeta)
 
 #make sure metadata and expression data are in same order
+TEDDY <- TEDDY[seq(50), ]
 T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 
 #create group labels

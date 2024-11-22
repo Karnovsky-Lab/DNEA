@@ -99,11 +99,26 @@ found in Ma et al. (2019) referenced below.
 #import BiocParallel package
 library(BiocParallel)
 
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
-data(dnw)
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+TEDDY <- TEDDY[seq(50), ]
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEAobj
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
+
+#optimize lambda parameter
+dnw <- BICtune(object=dnw,
+               informed=TRUE,
+               interval=0.01)
 
 # perform stability selection
 dnw <- stabilitySelection(object=dnw,
