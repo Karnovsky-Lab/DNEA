@@ -32,31 +32,12 @@ library(knitr)
 library(kableExtra)
 ```
 # Downloading DNEA
-The DNEA R package is currrently available on the [Karnovsky Lab github](https://www.github.com/Karnovsky-Lab/DNEA). Any troubleshooting or issues with the software can be reported there. The package can be installed using devtools. BiocManager is also needed to install several package dependencies stored on Bioconductor. Let's download those packages if necessary, and load them into R.
-
+The DNEA R package is currently available for download from Bioconductor. The source code is open-source and available for review on the [Karnovsky Lab github](https://www.github.com/Karnovsky-Lab/DNEA). Any troubleshooting or issues with the software can be reported there. The package can be installed using the BiocManager R package.
 ```{r, install , eval=FALSE}
-#install BiocManager if not already
-if(!nzchar(system.file(package = "BiocManager"))){
-  install.packages("BiocManager")
-}
+if (!require("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
 
-#install devtools if not already
-if(!nzchar(system.file(package = "devtools"))){
-  install.packages("devtools")
-}
-
-#load packages
-library(devtools)
-library(BiocManager)
-```
-Now  we can install DNEA and its dependencies.
-```{r, install DNEA, eval=FALSE}
-#install dependency packages
-BiocManager::install(c("BiocParallel","dplyr","gdata","glasso","igraph",
-                       "janitor","Matrix","stringr","netgsa"))
-
-#install DNEA
-devtools::install_github("Karnovsky-Lab/DNEA")
+BiocManager::install("DNEA")
 ```
 # Basic DNEA workflow
 This package is the most customizable implementation of DNEA to date, allowing the user to create the best analysis for their data. This vignette aims to walk you through a typical DNEA workflow, and describe the parameters that may be modified in common use cases.  
