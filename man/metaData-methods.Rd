@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{metaData}
 \alias{metaData}
-\alias{metaData,DNEAobj-method}
-\title{Retrieve metadata stored in a DNEAobj}
+\alias{metaData,DNEA-method}
+\title{Retrieve metadata stored in a DNEA}
 \usage{
 metaData(x, type)
 
-\S4method{metaData}{DNEAobj}(x, type = c("samples", "features"))
+\S4method{metaData}{DNEA}(x, type = c("samples", "features"))
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{type}{A character string indicating the type
 of metadata to access. Can be "sample" or "feature".}
@@ -21,7 +21,7 @@ A data frame of the indicated metadata
 \description{
 This function retrieves the specified metadata stored
 in the metadata slot of the
-\code{\link{DNEAobj}} object.
+\code{\link{DNEA}} object.
 }
 \examples{
 #load example data
@@ -35,7 +35,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

@@ -2,33 +2,34 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{subnetworkMembership}
 \alias{subnetworkMembership}
-\alias{subnetworkMembership,DNEAobj-method}
+\alias{subnetworkMembership,DNEA-method}
 \alias{subnetworkMembership,consensusClusteringResults-method}
 \title{Retrieve the subnetwork membership for each feature}
 \usage{
 subnetworkMembership(x)
 
-\S4method{subnetworkMembership}{DNEAobj}(x)
+\S4method{subnetworkMembership}{DNEA}(x)
 
 \S4method{subnetworkMembership}{consensusClusteringResults}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 A data frame that corresponds to the results of
 consensus clustering.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}}
+The function takes as input a \code{\link{DNEA}}
 object and returns the results of consensus clustering
 determined via \code{\link{clusterNet}}.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 subnetworkMembership(dnw)

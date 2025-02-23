@@ -2,25 +2,25 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{datasetSummary}
 \alias{datasetSummary}
-\alias{datasetSummary,DNEAobj-method}
-\title{Access the dataset_summary slot of a DNEAobj object}
+\alias{datasetSummary,DNEA-method}
+\title{Access the dataset_summary slot of a DNEA object}
 \usage{
 datasetSummary(x)
 
-\S4method{datasetSummary}{DNEAobj}(x)
+\S4method{datasetSummary}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 The numbers of samples/features and diagnostic values
 of the input data stored in the dataset_summary slot of the
-\code{\link{DNEAobj}}.
+\code{\link{DNEA}}.
 }
 \description{
 This function prints to console the number of samples, number of
 features, and diagnostic values of the input data stored in the
-dataset_summary slot of the \code{\link{DNEAobj}}.
+dataset_summary slot of the \code{\link{DNEA}}.
 }
 \examples{
 #load example data
@@ -34,7 +34,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

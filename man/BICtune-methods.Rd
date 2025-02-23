@@ -2,7 +2,7 @@
 % Please edit documentation in R/all-generics.R, R/primary.R
 \name{BICtune}
 \alias{BICtune}
-\alias{BICtune,DNEAobj-method}
+\alias{BICtune,DNEA-method}
 \alias{BICtune,matrix-method}
 \title{Optimize the lambda regularization parameter for the glasso-based
 network models using Bayesian-information Criterion}
@@ -19,7 +19,7 @@ BICtune(
   BPOPTIONS = bpoptions()
 )
 
-\S4method{BICtune}{DNEAobj}(
+\S4method{BICtune}{DNEA}(
   object,
   lambda_values,
   interval = 0.001,
@@ -43,7 +43,7 @@ BICtune(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}}
+\item{object}{A \code{\link{DNEA}} object. See \code{\link{createDNEAobject}}}
 
 \item{lambda_values}{\emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
@@ -76,7 +76,7 @@ calculate its inverse. The default value is 0.01.}
 the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
-A \code{\link{DNEAobj}} object containing the BIC and likelihood
+A \code{\link{DNEA}} object containing the BIC and likelihood
 scores for every lambda value tested, as well as the
 optimized lambda value
 }
@@ -85,7 +85,7 @@ This function will calculate the Bayesian information criterion (BIC)
 and likelihood for a range of lambda values that are automatically
 generated (\emph{please see \strong{Details} for more info}) or that are
 user-specified. The lambda value with the minimum BIC score is the optimal
-lambda value for the data set and is stored in the DNEAobj object for use in
+lambda value for the data set and is stored in the DNEA object for use in
 stability selection using \code{\link{stabilitySelection}}.
 }
 \details{
@@ -127,7 +127,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

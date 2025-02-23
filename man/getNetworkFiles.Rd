@@ -7,7 +7,7 @@
 getNetworkFiles(object, file_path = getwd())
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{file_path}{The file path to save the node and edge lists
 to. If \strong{NULL}, the files will be saved to the working directory.}
@@ -22,10 +22,11 @@ to the specified directory. The files are already formatted for
 input into Cytoscape.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 #filepath wherein to save the networks files

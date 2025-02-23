@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{featureNames}
 \alias{featureNames}
-\alias{featureNames,DNEAobj-method}
+\alias{featureNames,DNEA-method}
 \title{Retrieve the feature names from the metadata slot.}
 \usage{
 featureNames(x, original = TRUE)
 
-\S4method{featureNames}{DNEAobj}(x, original = FALSE)
+\S4method{featureNames}{DNEA}(x, original = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{original}{"TRUE" returns the original feature names
 and "FALSE" returns the feature names that have been
@@ -22,7 +22,7 @@ A character vector of feature names.
 }
 \description{
 This function accesses the feature names stored in the
-metadata slot of the \code{\link{DNEAobj}} object.
+metadata slot of the \code{\link{DNEA}} object.
 }
 \examples{
 #load example data
@@ -36,7 +36,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

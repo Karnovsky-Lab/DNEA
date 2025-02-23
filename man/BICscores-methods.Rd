@@ -3,20 +3,20 @@
 \name{BICscores}
 \alias{BICscores}
 \alias{BICscores<-}
-\alias{BICscores,DNEAobj-method}
-\alias{BICscores<-,DNEAobj-method}
+\alias{BICscores,DNEA-method}
+\alias{BICscores<-,DNEA-method}
 \title{Access the BIC scores for each lambda value evaluated}
 \usage{
 BICscores(x)
 
 BICscores(x) <- value
 
-\S4method{BICscores}{DNEAobj}(x)
+\S4method{BICscores}{DNEA}(x)
 
-\S4method{BICscores}{DNEAobj}(x) <- value
+\S4method{BICscores}{DNEA}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{value}{a list of two lists that consist of the
 likelihood and BIC scores for each tested lambda value.}
@@ -25,13 +25,13 @@ likelihood and BIC scores for each tested lambda value.}
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}}
+The function takes as input a \code{\link{DNEA}}
 object and returns the BIC values for each lambda tested
 during hyper parameter optimization performed via
 \code{\link{BICtune}}.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
+#dnw is a DNEA with the results generated for the example data
 #accessed by running data(TEDDY) in the console. The workflow
 #for this data can be found in the vignette accessed by
 #running browseVignettes("DNEA") in the console.

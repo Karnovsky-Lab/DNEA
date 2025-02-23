@@ -2,12 +2,12 @@
 % Please edit documentation in R/utilities-exported.R
 \name{includeMetadata}
 \alias{includeMetadata}
-\title{Add additional metadata to the DNEAobj object}
+\title{Add additional metadata to the DNEA object}
 \usage{
 includeMetadata(object, type = c("samples", "features"), metadata)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{type}{A character string corresponding to the type of metadata
 being included. Can be either "samples" or "features"}
@@ -16,7 +16,7 @@ being included. Can be either "samples" or "features"}
 names should be either the sample names or feature names, respectively}
 }
 \value{
-A \code{\link{DNEAobj}} object with the specified additions.
+A \code{\link{DNEA}} object with the specified additions.
 }
 \description{
 This function will take additional metadata and add it to the specified
@@ -36,14 +36,14 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 
-#make sure metadata has same sample order as DNEAobj object
+#make sure metadata has same sample order as DNEA object
 T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 
-#add new metadata to DNEAobj object
+#add new metadata to DNEA object
 dnw <- includeMetadata(object=dnw, type="samples", metadata=T1Dmeta)
 
 }

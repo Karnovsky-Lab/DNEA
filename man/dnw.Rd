@@ -15,11 +15,11 @@ the \code{\link{TEDDY}} example data, as described above.
 data("dnw")
 }
 \value{
-A \code{\link{DNEAobj}} object containing the results of a
+A \code{\link{DNEA}} object containing the results of a
 DNEA experiment.
 }
 \description{
-"dnw" is a DNEAobj object containing the results for the full
+"dnw" is a DNEA object containing the results for the full
 DNEA workflow on the \code{\link{TEDDY}} example data. The
 exact workflow to produce these results can be replicated by
 following the package vignette accessed by entering

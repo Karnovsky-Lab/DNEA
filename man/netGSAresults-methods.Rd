@@ -2,29 +2,30 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{netGSAresults}
 \alias{netGSAresults}
-\alias{netGSAresults,DNEAobj-method}
-\title{Access the netGSA slot of a DNEAobj object}
+\alias{netGSAresults,DNEA-method}
+\title{Access the netGSA slot of a DNEA object}
 \usage{
 netGSAresults(x)
 
-\S4method{netGSAresults}{DNEAobj}(x)
+\S4method{netGSAresults}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 A data frame of the results from \code{\link{runNetGSA}}.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}}
+The function takes as input a \code{\link{DNEA}}
 object and returns a summary of the enrichment
 analysis results stored in the netGSA slot.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 netGSAresults(dnw)

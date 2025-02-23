@@ -35,7 +35,7 @@ setClass(Class="consensusClusteringResults",
 #' DNEAinputSummary
 #'
 #' An s4 class to represent the results from diagnostic testing
-#' on the input data to a \code{\link{DNEAobj}}.
+#' on the input data to a \code{\link{DNEA}}.
 #'
 #' @slot num_samples a single-value numeric vector corresponding
 #' to the number of samples in the data set.
@@ -59,7 +59,7 @@ setClass(Class="DNEAinputSummary",
                  num_features="numeric",
                  diagnostic_values="data.frame"))
 
-#' DNEAobj
+#' DNEA object
 #'
 #' An s4 class to represent the DNEA workflow
 #'
@@ -71,7 +71,7 @@ setClass(Class="DNEAinputSummary",
 #' data log-transformed and auto-scaled. The row names between the
 #' input assays must be identical (the expression data can be
 #' accessed via the \code{\link{expressionData}} function).
-#' Any other assay input into the DNEAobj can be accessed
+#' Any other assay input into the DNEA object can be accessed
 #' by supplying its name to the assay parameter.
 #'
 #' @slot metadata A list of information about the data, including a
@@ -131,12 +131,12 @@ setClass(Class="DNEAinputSummary",
 #' \code{\link{runNetGSA}},\code{\link{selectionProbabilities}},
 #' \code{\link{selectionResults}},\code{\link{createDNEAobject}},
 #'
-#' @returns A DNEAobj object
+#' @returns A DNEA object
 #' @import methods
-#' @name DNEAobj-class
-#' @rdname DNEAobj-class
-#' @aliases DNEAobj
-setClass(Class="DNEAobj",
+#' @name DNEA-class
+#' @rdname DNEA-class
+#' @aliases DNEA
+setClass(Class="DNEA",
          slots=c(
            project_name='character',
            assays='list',
@@ -151,13 +151,13 @@ setClass(Class="DNEAobj",
            netGSA='data.frame')
 )
 
-#' collapsed_DNEAobj
+#' collapsed_DNEA
 #'
 #' An s4 class to represent the DNEA workflow, including collapsing
 #' features. This class inherits from the
-#' \code{\link{DNEAobj}} class.
+#' \code{\link{DNEA}} class.
 #'
-#' @slot original_experiment The \code{\link{DNEAobj}} object input
+#' @slot original_experiment The \code{\link{DNEA}} object input
 #' to \code{\link{aggregateFeatures}}.
 #'
 #' @slot feature_membership A data frame containing all of the
@@ -170,15 +170,15 @@ setClass(Class="DNEAobj",
 #' \code{\link{aggregateFeatures}},
 #' \code{\link{createDNEAobject}}
 #'
-#' @returns A collapsed_DNEAobj object
+#' @returns A collapsed_DNEA object
 #' @docType class
 #' @import methods
-#' @rdname collapsed_DNEAobj-class
-#' @aliases collapsed_DNEAobj
-setClass(Class="collapsed_DNEAobj",
-         slots=c(original_experiment="DNEAobj",
+#' @rdname collapsed_DNEA-class
+#' @aliases collapsed_DNEA
+setClass(Class="collapsed_DNEA",
+         slots=c(original_experiment="DNEA",
                  feature_membership="data.frame"),
-         contains="DNEAobj")
+         contains="DNEA")
 
 #' check validity of "consensusClusteringResults"
 #' @docType methods
@@ -229,7 +229,7 @@ setValidity("DNEAinputSummary", function(object){
 #' @keywords internal
 #' @noRd
 assaysCheck <- function(object){
-  assays2check <- names(assays.DNEAobj(object))
+  assays2check <- names(assays.DNEA(object))
   for(i in assays2check){
     if(is.null(assays(object)[[i]])){
       break
@@ -321,12 +321,12 @@ metadataCheck <- function(object){
   }
 }
 
-#' Check Validity of "DNEAobj" object
+#' Check Validity of "DNEA" object
 #' @aliases DNEA-validator
 #' @docType methods
 #' @import methods
 #' @noRd
-setValidity("DNEAobj", function(object){
+setValidity("DNEA", function(object){
 
   assaysCheck(object)
   metadataCheck(object)

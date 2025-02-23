@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{adjacencyMatrix}
 \alias{adjacencyMatrix}
-\alias{adjacencyMatrix,DNEAobj-method}
+\alias{adjacencyMatrix,DNEA-method}
 \title{Retrieve the weighted or unweighted adjacency matrix}
 \usage{
 adjacencyMatrix(x, weighted)
 
-\S4method{adjacencyMatrix}{DNEAobj}(x, weighted = FALSE)
+\S4method{adjacencyMatrix}{DNEA}(x, weighted = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{weighted}{TRUE/FALSE indicating whether the
 weighted unweighted adjacency matrix should be
@@ -21,17 +21,17 @@ A matrix corresponding to the adjacency
 matrix specified.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object
+The function takes as input a \code{\link{DNEA}} object
 and returns the weighted or un-weighted adjacency matrix for
 each group network constructed via the
 \code{\link{getNetworks}} function.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
-data(dnw)
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 
 adjacencyMatrix(dnw, weighted=TRUE)
 }

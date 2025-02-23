@@ -8,19 +8,19 @@
 #' @include start-here.R
 NULL
 
-BICtune.DNEAobj <- function(object,
-                            lambda_values,
-                            interval=1e-3,
-                            informed=TRUE,
-                            assay,
-                            eps_threshold=1e-06,
-                            eta_value=0.1,
-                            BPPARAM=bpparam(),
-                            BPOPTIONS=bpoptions()){
+BICtune.DNEA <- function(object,
+                         lambda_values,
+                         interval=1e-3,
+                         informed=TRUE,
+                         assay,
+                         eps_threshold=1e-06,
+                         eta_value=0.1,
+                         BPPARAM=bpparam(),
+                         BPOPTIONS=bpoptions()){
 
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) stop('the input object should be of class "DNEA"!')
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
   if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
   if(missing(assay)){
@@ -186,10 +186,10 @@ BICtune.matrix <- function(object,
 #' and likelihood for a range of lambda values that are automatically
 #' generated (\emph{please see \strong{Details} for more info}) or that are
 #' user-specified. The lambda value with the minimum BIC score is the optimal
-#' lambda value for the data set and is stored in the DNEAobj object for use in
+#' lambda value for the data set and is stored in the DNEA object for use in
 #' stability selection using \code{\link{stabilitySelection}}.
 #'
-#' @param object A \code{\link{DNEAobj}} object. See \code{\link{createDNEAobject}}
+#' @param object A \code{\link{DNEA}} object. See \code{\link{createDNEAobject}}
 #' @param lambda_values \emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
 #' based on the theoretical value for the asymptotically valid lambda. More
@@ -256,7 +256,7 @@ BICtune.matrix <- function(object,
 #' deployed here can be found in the Guo et al. (2011)
 #' paper referenced below.
 #'
-#' @returns A \code{\link{DNEAobj}} object containing the BIC and likelihood
+#' @returns A \code{\link{DNEA}} object containing the BIC and likelihood
 #' scores for every lambda value tested, as well as the
 #' optimized lambda value
 #'
@@ -276,7 +276,7 @@ BICtune.matrix <- function(object,
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -290,7 +290,7 @@ BICtune.matrix <- function(object,
 #' @rdname BICtune-methods
 #' @aliases BICtune
 #' @export
-setMethod("BICtune", signature(object="DNEAobj"), BICtune.DNEAobj)
+setMethod("BICtune", signature(object="DNEA"), BICtune.DNEA)
 
 #' @rdname BICtune-methods
 #' @aliases BICtune
@@ -310,7 +310,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' performed. More information can be found in the
 #' \strong{\emph{Details}} section.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param subSample TRUE/FALSE indicating whether the number of samples
 #' are unevenly split by condition and subsampling should be performed
@@ -398,7 +398,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{\link{DNEAobj}} object after populating the
+#' @returns A \code{\link{DNEA}} object after populating the
 #' stable_networks slot of the object. It contains the selection
 #' results from stability selection as well as the calculated
 #' selection probabilities.
@@ -419,7 +419,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -446,8 +446,8 @@ stabilitySelection <- function(object,
                                BPOPTIONS=bpoptions()){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")){
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")){
+    stop('the input object should be of class "DNEA"!')
   }
   if(nreps < 1 | !is.numeric(nreps)) {
     stop("nreps must be positive - ",
@@ -468,7 +468,7 @@ stabilitySelection <- function(object,
   }
   ## stabilitySelection requires lambda hyper-parameter. Will use
   ## optimal_lambda if supplied, otherwise looks for
-  ## @hyperparameter[["optimized_lambda"]] in DNEAobject
+  ## @hyperparameter[["optimized_lambda"]] in DNEA object
   if(!missing(optimal_lambda)){
 
     if(optimal_lambda < 0 | optimal_lambda > 1){
@@ -486,8 +486,8 @@ stabilitySelection <- function(object,
     }
   }else if(!is.null(optimizedLambda(object))){
     optimized_lambda <- optimizedLambda(object)
-    message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
-            'accessed via the optimizedLambda() function')
+    message('The lambda value stored in the DNEA object will be used for ',
+            'analysis (this can be accessed via the optimizedLambda() function')
   }else{
     ##setting optimized_lambda=NULL will default to a lambda of
     ##sqrt(log(# features) / # samples) in adjDGlasso_minimal
@@ -569,7 +569,7 @@ stabilitySelection <- function(object,
 #' section of \code{\link{stabilitySelection}} for more information).
 #'
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
@@ -635,15 +635,16 @@ stabilitySelection <- function(object,
 #' 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384;
 #' PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 #'
-#' @returns A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
+#' @returns A \code{\link{DNEA}} object after populating the adjaceny_matrix
 #' and edge_list slots with the corresponding adjacency_matrix for each
 #' sample condition as well as the network edge list.
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #construct the networks
@@ -669,8 +670,8 @@ getNetworks <- function(object,
                         BPOPTIONS=bpoptions()){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")){
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")){
+    stop('the input object should be of class "DNEA"!')
   }
   if(eps_threshold <=0 | eps_threshold >= 1) {
     stop("eps_threshold should be between 0 and 1 only!")
@@ -811,7 +812,7 @@ getNetworks <- function(object,
 #' Only sub networks with consensus that meets or exceeds tau are
 #' identified as real.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param tau The % agreement among the clustering algorithms
 #' for a node to be included in a sub network.
@@ -856,17 +857,18 @@ getNetworks <- function(object,
 #' "max_iterations" is reached
 #' \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{\link{DNEAobj}} object containing sub network
+#' @returns A \code{\link{DNEA}} object containing sub network
 #' determinations for the nodes within the input network. A summary of the
 #' consensus clustering results can be viewed using \code{\link{CCsummary}}.
 #' Sub network membership for each node can be found in the "membership"
 #' column of the node list, which can be accessed using \code{\link{nodeList}}.
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #identify metabolic modules via consensus clustering
@@ -883,8 +885,8 @@ clusterNet <- function(object,
                        verbose=TRUE){
 
   ##test for proper inputs
-  if(!inherits(object, "DNEAobj")) {
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) {
+    stop('the input object should be of class "DNEA"!')
   }
   if(tau < 0.5 | tau > 1.0) {
     stop("tau corresponds to a percent agreement among the clustering methods. ",
@@ -982,7 +984,7 @@ clusterNet <- function(object,
                              sum(nodeList(object)$DEstatus[consensus_membership == "independent"]),
                              0))
 
-  ##add results to DNEAobj object
+  ##add results to DNEA object
   nodeList(object)[["membership"]] <- consensus_membership
   object@consensus_clustering <- new(Class="consensusClusteringResults",
                                      summary=summary_stat,
@@ -1001,7 +1003,7 @@ clusterNet <- function(object,
 #' modules identified via \code{\link{clusterNet}} using the
 #' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{\link{DNEAobj}}.
+#' @param object A \code{\link{DNEA}}.
 #'
 #' @param min_size The minimum size of a given metabolic
 #' module for to be tested for enrichment across the
@@ -1035,15 +1037,16 @@ clusterNet <- function(object,
 #' \url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 #'
 #'
-#' @returns A \code{\link{DNEAobj}} object after populating the @@netGSA
+#' @returns A \code{\link{DNEA}} object after populating the @@netGSA
 #' slot. A summary of the NetGSA results can be viewed
 #' using \code{\link{netGSAresults}}.
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #perform pathway enrichment analysis using netGSA
@@ -1063,7 +1066,7 @@ runNetGSA <- function(object,
                       pathways){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) stop('the input object should be of class "DNEA"!')
   if(min_size <1) stop("min_size parameter should be a positive integer greater than zero!")
   if(missing(assay)){
     if("log_input_data" %in% names(assays(object))){
@@ -1144,7 +1147,7 @@ runNetGSA <- function(object,
   sub_membership <- sub_membership[new_cluster_order$subnetworks, ]
   rownames(sub_membership) <- paste0("subnetwork", seq(1, nrow(sub_membership)))
 
-  ##update DNEAobject
+  ##update DNEA object
   netGSAresults(object) <- res
   CCsummary(object) <- cluster_names
   subnetworkMembership(object) <- sub_membership

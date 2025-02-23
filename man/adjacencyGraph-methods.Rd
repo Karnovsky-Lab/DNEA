@@ -2,19 +2,19 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{adjacencyGraph}
 \alias{adjacencyGraph}
-\alias{adjacencyGraph,DNEAobj-method}
+\alias{adjacencyGraph,DNEA-method}
 \alias{adjacencyGraph,consensusClusteringResults-method}
 \title{Retrieve the adjacency graph for the case, control,
 or joint network}
 \usage{
 adjacencyGraph(x, graph)
 
-\S4method{adjacencyGraph}{DNEAobj}(x, graph)
+\S4method{adjacencyGraph}{DNEA}(x, graph)
 
 \S4method{adjacencyGraph}{consensusClusteringResults}(x, graph)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}}}
+\item{x}{A \code{\link{DNEA}}}
 
 \item{graph}{A character string indicating which of
 the adjacency graphs to return. Values can be "joint_graph"
@@ -31,11 +31,11 @@ the case, control, or joint network constructed via
 consensus clustering using \code{\link{clusterNet}}.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
-data(dnw)
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 
 adjacencyGraph(dnw, graph="DM:case")
 }

@@ -19,7 +19,7 @@ getNetworks(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{lambda_values}{\strong{OPTIONAL} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
@@ -63,7 +63,7 @@ determined based on the input of the "aprox" parameter.}
 the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
-A \code{\link{DNEAobj}} object after populating the adjaceny_matrix
+A \code{\link{DNEA}} object after populating the adjaceny_matrix
 and edge_list slots with the corresponding adjacency_matrix for each
 sample condition as well as the network edge list.
 }
@@ -77,10 +77,11 @@ when constructing the networks (please see the \strong{\emph{Details}}
 section of \code{\link{stabilitySelection}} for more information).
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 #construct the networks

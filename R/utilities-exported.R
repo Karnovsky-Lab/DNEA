@@ -1,12 +1,12 @@
 
-#' Add additional metadata to the DNEAobj object
+#' Add additional metadata to the DNEA object
 #'
 #' This function will take additional metadata and add it to the specified
 #' data frame in the metadata slot. \strong{\emph{NOTE:}} The row names
 #' of the new metadata must match the order of the input sample names
 #' or feature names, respectively.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param type A character string corresponding to the type of metadata
 #' being included. Can be either "samples" or "features"
@@ -20,7 +20,7 @@
 #' \code{\link{featureNames}},\code{\link{sampleNames}},
 #' \code{\link{metaData}}
 #'
-#' @returns A \code{\link{DNEAobj}} object with the specified additions.
+#' @returns A \code{\link{DNEA}} object with the specified additions.
 #'
 #' @examples
 #' #load example data
@@ -34,14 +34,14 @@
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
-#' #make sure metadata has same sample order as DNEAobj object
+#' #make sure metadata has same sample order as DNEA object
 #' T1Dmeta <- T1Dmeta[sampleNames(dnw), ]
 #'
-#' #add new metadata to DNEAobj object
+#' #add new metadata to DNEA object
 #' dnw <- includeMetadata(object=dnw, type="samples", metadata=T1Dmeta)
 #'
 #' @export
@@ -51,7 +51,7 @@ includeMetadata <- function(object,
 
   ##test for proper input
   if(!type %in% c('samples', 'features')) stop('type can be "samples" or "features"')
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) stop('the input object should be of class "DNEA"!')
   if(!any(inherits(metadata, "matrix") | inherits(metadata, "data.frame"))) {
     stop('the input metadata should be of class "matrix" or "data.frame"!')
   }
@@ -70,12 +70,12 @@ includeMetadata <- function(object,
   return(object)
 }
 
-#' Include custom normalized data in the DNEAobj object
+#' Include custom normalized data in the DNEA object
 #'
 #' This function allows the user to input custom-normalized data into the
-#' \code{\link{DNEAobj}} object for use in DNEA analysis.
+#' \code{\link{DNEA}} object for use in DNEA analysis.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #' @param dat A list of \emph{m x n} numeric matrices of
 #' custom-normalized expression data, one matrix for each
 #' experimental condition. The list elements should be
@@ -85,14 +85,14 @@ includeMetadata <- function(object,
 #'
 #' @param assay_name A character string corresponding
 #' to the name the new data will be stored under in the
-#' assays slot of the \code{\link{DNEAobj}}.
+#' assays slot of the \code{\link{DNEA}}.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso
-#' \code{\link{createDNEAobject}},\code{\link{DNEAobj}},
+#' \code{\link{createDNEAobject}},\code{\link{DNEA}},
 #'
-#' @returns A \code{\link{DNEAobj}} object with the added
+#' @returns A \code{\link{DNEA}} object with the added
 #' expression data in the @@assays slot
 #'
 #' @examples
@@ -108,7 +108,7 @@ includeMetadata <- function(object,
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                         group_labels = group_labels)
 #'
@@ -157,7 +157,7 @@ includeMetadata <- function(object,
 addExpressionData <- function(object,
                               dat,
                               assay_name){
-  if(!inherits(object, "DNEAobj")) stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) stop('the input object should be of class "DNEA"!')
   feature_names <- featureNames(object)
 
   for(i in seq(length(dat))){
@@ -180,7 +180,7 @@ addExpressionData <- function(object,
 #' to the specified directory. The files are already formatted for
 #' input into Cytoscape.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #' @param file_path The file path to save the node and edge lists
 #' to. If **NULL**, the files will be saved to the working directory.
 #'
@@ -192,10 +192,11 @@ addExpressionData <- function(object,
 #' @returns Two .csv files, one for the node list and one for
 #' the edge list, saved to the specified file path
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #filepath wherein to save the networks files
@@ -209,8 +210,8 @@ getNetworkFiles <- function(object,
                             file_path=getwd()){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) {
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) {
+    stop('the input object should be of class "DNEA"!')
   }
   if(!is.character(file_path)) {
     stop('"file_path" should be a character string file path!')
@@ -233,7 +234,7 @@ getNetworkFiles <- function(object,
 #' features, green indicates edges specific to group 1, and red indicates
 #' edges specific to group 2.
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param type There are two possible arguments to \strong{type}:
 #' \emph{"group_networks"} specifies the whole network or condition networks.
@@ -281,10 +282,11 @@ getNetworkFiles <- function(object,
 #' @returns A plot of the specified network
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #plot the networks
@@ -304,8 +306,8 @@ plotNetworks <- function(object,
                          label_font=1){
 
   ##test for proper input
-  if(!inherits(object, "DNEAobj")) {
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(object, "DNEA")) {
+    stop('the input object should be of class "DNEA"!')
   }
 
   #set up parameters
@@ -360,13 +362,13 @@ plotNetworks <- function(object,
 
 }
 
-filterNetworks.DNEAobj <- function(data,
-                                   pcor,
-                                   top_percent_edges){
+filterNetworks.DNEA <- function(data,
+                                pcor,
+                                top_percent_edges){
 
   ##test for proper input
-  if(!inherits(data, "DNEAobj")) {
-    stop('the input object should be of class "DNEAobj"!')
+  if(!inherits(data, "DNEA")) {
+    stop('the input object should be of class "DNEA"!')
   }
 
   ##grab adjacency matrices
@@ -412,7 +414,7 @@ filterNetworks.DNEAobj <- function(data,
     stop("Neither pcor nor top_percent_edges were specified - No filtering was performed!")
   }
 
-  ##store the adjacency matrices in DNEAobj object
+  ##store the adjacency matrices in DNEA object
   adjacencyMatrix(x=data, weighted=TRUE) <- weighted_adjacency_matrices
   adjacencyMatrix(x=data, weighted=FALSE) <- unweighted_adjacency_matrices
 
@@ -460,7 +462,7 @@ filterNetworks.DNEAobj <- function(data,
 #' filter conditions
 #'
 #' @description
-#' This function takes as input a \code{\link{DNEAobj}} object and
+#' This function takes as input a \code{\link{DNEA}} object and
 #' allows the user to filter the network edges by one of two methods:
 #'
 #' \enumerate{
@@ -474,7 +476,7 @@ filterNetworks.DNEAobj <- function(data,
 #' Filtering is performed on the case and control adjacency matrices
 #' separately. \cr
 #'
-#' @param data A \code{\link{DNEAobj}} object.
+#' @param data A \code{\link{DNEA}} object.
 #'
 #' @param pcor A partial correlation value of which to threshold
 #' the adjacency matrices. Edges with pcor values <= to this
@@ -492,10 +494,11 @@ filterNetworks.DNEAobj <- function(data,
 #' network according to the specified parameters.
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' #filter the networks by a correlation threshold of 0.166
@@ -508,7 +511,7 @@ filterNetworks.DNEAobj <- function(data,
 #' @rdname filterNetworks-methods
 #' @aliases filterNetworks
 #' @export
-setMethod("filterNetworks", signature(data="DNEAobj"), filterNetworks.DNEAobj)
+setMethod("filterNetworks", signature(data="DNEA"), filterNetworks.DNEA)
 
 filterNetworks.list <- function(data,
                                 pcor,

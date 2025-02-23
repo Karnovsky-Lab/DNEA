@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{expressionData}
 \alias{expressionData}
-\alias{expressionData,DNEAobj-method}
-\title{Access expression data within a DNEAobj object,}
+\alias{expressionData,DNEA-method}
+\title{Access expression data within a DNEA object,}
 \usage{
 expressionData(x, assay)
 
-\S4method{expressionData}{DNEAobj}(x, assay = names(assays(x)))
+\S4method{expressionData}{DNEA}(x, assay = names(assays(x)))
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{assay}{A character string corresponding to the
 data to retrieve: "input_data" retrieves the data as
@@ -19,7 +19,7 @@ after log transforming, and "log-scaled_data"
 retrieves a list of matrices corresponding to the
 log-scaled data for each experimental condition,
 respectively. Any other externally transformed
-data that is stored in the DNEAobj can be accessed
+data that is stored in the DNEA object can be accessed
 by providing its name to the assay parameter.}
 }
 \value{
@@ -27,7 +27,7 @@ The expression matrix specified by the user.
 }
 \description{
 This function accesses the expression data stored in the
-assays slot of the \code{\link{DNEAobj}} object. The
+assays slot of the \code{\link{DNEA}} object. The
 output is an \emph{n x m} matrix with one row for each
 sample and one column for each feature in the data.
 }
@@ -43,7 +43,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

@@ -2,7 +2,6 @@
 % Please edit documentation in R/start-here.R
 \docType{package}
 \name{DNEA-package}
-\alias{DNEA}
 \alias{DNEA-package}
 \title{DNEA: Differential Network Enrichment Analysis for Biological Data}
 \description{

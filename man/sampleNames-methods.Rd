@@ -2,22 +2,22 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{sampleNames}
 \alias{sampleNames}
-\alias{sampleNames,DNEAobj-method}
+\alias{sampleNames,DNEA-method}
 \title{Retrieve the sample names from the metadata slot.}
 \usage{
 sampleNames(x)
 
-\S4method{sampleNames}{DNEAobj}(x)
+\S4method{sampleNames}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 A character vector of sample names.
 }
 \description{
 This function accesses the sample names stored in the
-metadata slot of the \code{\link{DNEAobj}} object.
+metadata slot of the \code{\link{DNEA}} object.
 }
 \examples{
 #load example data
@@ -31,7 +31,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

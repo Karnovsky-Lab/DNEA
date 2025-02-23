@@ -2,22 +2,22 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{networkGroups}
 \alias{networkGroups}
-\alias{networkGroups,DNEAobj-method}
+\alias{networkGroups,DNEA-method}
 \title{Retrieve the unique group values of the experimental condition}
 \usage{
 networkGroups(x)
 
-\S4method{networkGroups}{DNEAobj}(x)
+\S4method{networkGroups}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} or
-\code{\link{collapsed_DNEAobj}}}
+\item{x}{A \code{\link{DNEA}} or
+\code{\link{collapsed_DNEA}}}
 }
 \value{
 A vector of the condition values.
 }
 \description{
-This function takes in a \code{\link{DNEAobj}} object and
+This function takes in a \code{\link{DNEA}} object and
 returns the unique group labels of the experimental
 condition in the data set.
 }
@@ -33,7 +33,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

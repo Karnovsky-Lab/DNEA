@@ -1,7 +1,7 @@
 #' Aggregate correlated features into a single feature class
 #'
 #' @description
-#' This function takes as input a \code{\link{DNEAobj}} object
+#' This function takes as input a \code{\link{DNEA}} object
 #' and aggregates highly correlated features within the
 #' non-normalized, non-transformed data using one of three methods:
 #'
@@ -20,7 +20,7 @@
 #' each group, normalized data may alter erroneously alter the
 #' aggregated expression values
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #'
 #' @param method A character string that dictates the collapsing method
 #' to use. The available methods are:
@@ -105,7 +105,7 @@
 #'   correlated or uncorrelated features from being aggregated
 #'   into a single feature.}
 #'
-#' @returns A \code{collapsed_DNEAobj} object.
+#' @returns A \code{collapsed_DNEA} object.
 #'
 #' @examples
 #' #load example data
@@ -119,7 +119,7 @@
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -193,18 +193,18 @@ aggregateFeatures <- function(object,
 
   message("The raw peak intensity data was used for aggregation\n",
           "The aggregated log-scaled data is in the @assay slot\n",
-          "(The orginal DNEAobj can be found in the @original_experiment slot)")
+          "(The orginal DNEA object can be found in the @original_experiment slot)")
 
   new_dat <- t(res[["collapsed_data"]][,-c(1,2)])
   new_group_labels <- res[["collapsed_data"]][["groups"]]
   names(new_group_labels) <- res[["collapsed_data"]][["samples"]]
 
-  ##initialize new collapsed_DNEAobj object
+  ##initialize new collapsed_DNEA object
   reduced_object <- createDNEAobject(project_name=projectName(object),
                                      expression_data=new_dat,
                                      group_labels=new_group_labels)
 
-  collapsed_object <- new("collapsed_DNEAobj",
+  collapsed_object <- new("collapsed_DNEA",
                           project_name=projectName(reduced_object),
                           assays=list(input_data=expressionData(x=reduced_object, assay="input_data"),
                                       log_input_data=expressionData(x=reduced_object, assay="log_input_data"),

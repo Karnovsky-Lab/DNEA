@@ -2,7 +2,7 @@
 % Please edit documentation in R/initiator.R
 \name{createDNEAobject}
 \alias{createDNEAobject}
-\title{Initialize a DNEAobj object}
+\title{Initialize a DNEA object}
 \usage{
 createDNEAobject(
   project_name,
@@ -34,20 +34,20 @@ function always defaults to using log transformed data for
 differential expression analysis if provided.}
 }
 \value{
-A \code{\link{DNEAobj}} object.
+A \code{\link{DNEA}} object.
 }
 \description{
 This function takes as input a matrix of non-normalized, non-transformed
 expression data and the case/control group labels in order to initiate a
-DNEAobj object. Differential expression analysis is performed using a
+DNEA object. Differential expression analysis is performed using a
 student's T-test and Benjamini-Hochberg for multiple-testing corrections.
 Diagnostic testing is done on the input data by checking the minimum
 eigen value and condition number of the expression data for each
-experimental condition. To initialize a \emph{DNEAobj} from a
+experimental condition. To initialize a \emph{DNEA} from a
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}},
 or a mass_dataset-class from the massdataset package,
-please see the \code{\link{sumExp2DNEAobj}} and
-\code{\link{massDataset2DNEAobj}} documentation, respectively.
+please see the \code{\link{sumExp2DNEA}} and
+\code{\link{massDataset2DNEA}} documentation, respectively.
 \subsection{IMPORTANT:}{
 
 Special attention should be given to the diagnostic criteria that is
@@ -106,14 +106,14 @@ group_labels <- factor(T1Dmeta$group,
 names(group_labels) <- rownames(T1Dmeta)
 
 
-#initiate DNEAobj object
+#initiate DNEA object
 DNEA <- createDNEAobject(expression_data=TEDDY,
                          project_name="TEDDYmetabolomics",
                          group_labels=group_labels)
 }
 \seealso{
 \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-\code{\link{sumExp2DNEAobj}}, \code{\link{massDataset2DNEAobj}}
+\code{\link{sumExp2DNEA}}, \code{\link{massDataset2DNEA}}
 }
 \author{
 Christopher Patsalis

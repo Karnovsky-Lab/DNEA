@@ -2,21 +2,21 @@
 #' @include all-generics.R
 NULL
 
-#' Retrieve information about a DNEAobj object
+#' Retrieve information about a DNEA object
 #'
-#' @describeIn DNEAobj-class
+#' @describeIn DNEA-class
 #' This function will display a summary of the information
-#' stored within a \code{\link{DNEAobj}} object.
+#' stored within a \code{\link{DNEA}} object.
 #'
 #'
-#' @param object A \code{\link{DNEAobj}} object.
+#' @param object A \code{\link{DNEA}} object.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}},
 #' \code{\link{aggregateFeatures}}
 #'
 #' @returns A summary of the information stored in a
-#' \code{\link{DNEAobj}} object.
+#' \code{\link{DNEA}} object.
 #'
 #' @examples
 #' #load example data
@@ -30,13 +30,13 @@ NULL
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
 #' dnw
 #' @export
-setMethod("show", "DNEAobj", function(object) {
+setMethod("show", "DNEA", function(object) {
   cat(is(object)[[1]],
       "\n  Project Name -  ", object@project_name,
       "\n  Samples -  ", 'There are ',length(sampleNames(object)),
@@ -68,7 +68,7 @@ setMethod("show", "DNEAobj", function(object) {
 #' @describeIn DNEAinputSummary-class
 #' This function will display the number of samples, number of features,
 #' and diagnostics values of the input data set to a
-#' \code{\link{DNEAobj}} object.
+#' \code{\link{DNEA}} object.
 #'
 #' @param object A DNEAinputSummary object
 #' @author Christopher Patsalis
@@ -90,7 +90,7 @@ setMethod("show", "DNEAobj", function(object) {
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -104,7 +104,7 @@ setMethod("show", "DNEAinputSummary", function(object){
   print(as.matrix(diagnostics(object)))
 })
 
-projectName.DNEAobj <- function(x){
+projectName.DNEA <- function(x){
 
   x@project_name
 }
@@ -112,7 +112,7 @@ projectName.DNEAobj <- function(x){
 #'
 #' This function returns the name of the DNEA experiment.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @returns The name of the DNEA experiment.
 #' @examples
@@ -127,7 +127,7 @@ projectName.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -138,23 +138,23 @@ projectName.DNEAobj <- function(x){
 #' @rdname projectName-methods
 #' @aliases projectName
 #' @export
-setMethod("projectName", signature(x= "DNEAobj"),
-          projectName.DNEAobj)
+setMethod("projectName", signature(x= "DNEA"),
+          projectName.DNEA)
 
-expressionData.DNEAobj <- function(x, assay=names(assays(x))){
+expressionData.DNEA <- function(x, assay=names(assays(x))){
   assay <- match.arg(assay)
   output <- assays(x)[[assay]]
   return(output)
 }
-#' Access expression data within a DNEAobj object,
+#' Access expression data within a DNEA object,
 #'
 #' This function accesses the expression data stored in the
-#' assays slot of the \code{\link{DNEAobj}} object. The
+#' assays slot of the \code{\link{DNEA}} object. The
 #' output is an \emph{n x m} matrix with one row for each
 #' sample and one column for each feature in the data.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @param assay A character string corresponding to the
 #' data to retrieve: "input_data" retrieves the data as
@@ -163,7 +163,7 @@ expressionData.DNEAobj <- function(x, assay=names(assays(x))){
 #' retrieves a list of matrices corresponding to the
 #' log-scaled data for each experimental condition,
 #' respectively. Any other externally transformed
-#' data that is stored in the DNEAobj can be accessed
+#' data that is stored in the DNEA object can be accessed
 #' by providing its name to the assay parameter.
 #'
 #' @author Christopher Patsalis
@@ -183,7 +183,7 @@ expressionData.DNEAobj <- function(x, assay=names(assays(x))){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -193,10 +193,10 @@ expressionData.DNEAobj <- function(x, assay=names(assays(x))){
 #' @rdname expressionData-methods
 #' @aliases expressionData
 #' @export
-setMethod("expressionData",signature(x="DNEAobj"),
-          expressionData.DNEAobj)
+setMethod("expressionData",signature(x="DNEA"),
+          expressionData.DNEA)
 
-assays.DNEAobj <- function(x){
+assays.DNEA <- function(x){
 
   x@assays
 }
@@ -204,10 +204,10 @@ assays.DNEAobj <- function(x){
 #' @aliases assays
 #' @keywords internal
 #' @noRd
-setMethod("assays", signature(x="DNEAobj"),
-          assays.DNEAobj)
+setMethod("assays", signature(x="DNEA"),
+          assays.DNEA)
 
-assaysReplace.DNEAobj <- function(x, value){
+assaysReplace.DNEA <- function(x, value){
   x@assays <- value
   validObject(x)
   x
@@ -216,9 +216,9 @@ assaysReplace.DNEAobj <- function(x, value){
 #' @aliases assays
 #' @keywords internal
 #' @noRd
-setReplaceMethod("assays", signature(x="DNEAobj"),
-                 assaysReplace.DNEAobj)
-networkGroupIDs.DNEAobj <- function(x){
+setReplaceMethod("assays", signature(x="DNEA"),
+                 assaysReplace.DNEA)
+networkGroupIDs.DNEA <- function(x){
 
   x@metadata$network_group_IDs
 }
@@ -227,9 +227,9 @@ networkGroupIDs.DNEAobj <- function(x){
 #'
 #' This function accesses the experimental group labels for
 #' each sample stored in the metadata slot of a
-#' \code{\link{DNEAobj}} object.
+#' \code{\link{DNEA}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @param value a character string name corresponding to a column
 #' name of the sample metadata data frame.
@@ -249,7 +249,7 @@ networkGroupIDs.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -257,21 +257,21 @@ networkGroupIDs.DNEAobj <- function(x){
 #' @rdname networkGroupIDs-methods
 #' @aliases networkGroupIDs
 #' @export
-setMethod("networkGroupIDs", signature(x="DNEAobj"),
-          networkGroupIDs.DNEAobj)
+setMethod("networkGroupIDs", signature(x="DNEA"),
+          networkGroupIDs.DNEA)
 
-networkGroups.DNEAobj <- function(x){
+networkGroups.DNEA <- function(x){
 
   x@metadata$network_groups
 }
 #' Retrieve the unique group values of the experimental condition
 #'
-#' This function takes in a \code{\link{DNEAobj}} object and
+#' This function takes in a \code{\link{DNEA}} object and
 #' returns the unique group labels of the experimental
 #' condition in the data set.
 #'
-#' @param x A \code{\link{DNEAobj}} or
-#' \code{\link{collapsed_DNEAobj}}
+#' @param x A \code{\link{DNEA}} or
+#' \code{\link{collapsed_DNEA}}
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{networkGroupIDs}},
@@ -289,7 +289,7 @@ networkGroups.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -297,10 +297,10 @@ networkGroups.DNEAobj <- function(x){
 #' @rdname networkGroups-methods
 #' @aliases networkGroups
 #' @export
-setMethod("networkGroups", signature(x="DNEAobj"),
-          networkGroups.DNEAobj)
+setMethod("networkGroups", signature(x="DNEA"),
+          networkGroups.DNEA)
 
-metaData.DNEAobj <- function(x, type=c("samples", "features")){
+metaData.DNEA <- function(x, type=c("samples", "features")){
 
   type <- match.arg(type)
   if(type == "samples"){
@@ -309,13 +309,13 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
     x@metadata[["features"]]
   }
 }
-#' Retrieve metadata stored in a DNEAobj
+#' Retrieve metadata stored in a DNEA
 #'
 #' This function retrieves the specified metadata stored
 #' in the metadata slot of the
-#' \code{\link{DNEAobj}} object.
+#' \code{\link{DNEA}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #' @param type A character string indicating the type
 #' of metadata to access. Can be "sample" or "feature".
 #'
@@ -335,7 +335,7 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -344,10 +344,10 @@ metaData.DNEAobj <- function(x, type=c("samples", "features")){
 #' @rdname metaData-methods
 #' @aliases metaData
 #' @export
-setMethod("metaData", signature(x="DNEAobj"),
-          metaData.DNEAobj)
+setMethod("metaData", signature(x="DNEA"),
+          metaData.DNEA)
 
-metaDataReplace.DNEAobj <- function(x,
+metaDataReplace.DNEA <- function(x,
                                     type=c("samples", "features"),
                                     value){
 
@@ -358,19 +358,19 @@ metaDataReplace.DNEAobj <- function(x,
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("metaData", signature(x="DNEAobj"),
-                 metaDataReplace.DNEAobj)
+setReplaceMethod("metaData", signature(x="DNEA"),
+                 metaDataReplace.DNEA)
 
-sampleNames.DNEAobj <- function(x){
+sampleNames.DNEA <- function(x){
 
   x@metadata[["samples"]]$samples
 }
 #' Retrieve the sample names from the metadata slot.
 #'
 #' This function accesses the sample names stored in the
-#' metadata slot of the \code{\link{DNEAobj}} object.
+#' metadata slot of the \code{\link{DNEA}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -388,7 +388,7 @@ sampleNames.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -396,10 +396,10 @@ sampleNames.DNEAobj <- function(x){
 #' @rdname sampleNames-methods
 #' @aliases sampleNames
 #' @export
-setMethod("sampleNames", signature(x="DNEAobj"),
-          sampleNames.DNEAobj)
+setMethod("sampleNames", signature(x="DNEA"),
+          sampleNames.DNEA)
 
-featureNames.DNEAobj <- function(x, original=FALSE){
+featureNames.DNEA <- function(x, original=FALSE){
 
   if(isTRUE(original)){
     x@metadata[["features"]]$feature_names
@@ -410,9 +410,9 @@ featureNames.DNEAobj <- function(x, original=FALSE){
 #' Retrieve the feature names from the metadata slot.
 #'
 #' This function accesses the feature names stored in the
-#' metadata slot of the \code{\link{DNEAobj}} object.
+#' metadata slot of the \code{\link{DNEA}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #' @param original "TRUE" returns the original feature names
 #' and "FALSE" returns the feature names that have been
 #' modified to avoid errors as a result of special characters
@@ -434,7 +434,7 @@ featureNames.DNEAobj <- function(x, original=FALSE){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -442,10 +442,10 @@ featureNames.DNEAobj <- function(x, original=FALSE){
 #' @rdname featureNames-methods
 #' @aliases featureNames
 #' @export
-setMethod("featureNames", signature(x="DNEAobj"),
-          featureNames.DNEAobj)
+setMethod("featureNames", signature(x="DNEA"),
+          featureNames.DNEA)
 
-numFeatures.DNEAobj <- function(x){
+numFeatures.DNEA <- function(x){
   x@dataset_summary@num_features
 }
 #' Retrieve the total number of features in the dataset
@@ -453,7 +453,7 @@ numFeatures.DNEAobj <- function(x){
 #' This function prints to console the total number of
 #' features in the data set
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -471,7 +471,7 @@ numFeatures.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -479,8 +479,8 @@ numFeatures.DNEAobj <- function(x){
 #' @rdname numFeatures-methods
 #' @aliases numFeatures
 #' @export
-setMethod("numFeatures", signature(x="DNEAobj"),
-          numFeatures.DNEAobj)
+setMethod("numFeatures", signature(x="DNEA"),
+          numFeatures.DNEA)
 
 numFeatures.DNEAinputSummary <- function(x){
 
@@ -491,7 +491,7 @@ numFeatures.DNEAinputSummary <- function(x){
 setMethod("numFeatures", signature(x="DNEAinputSummary"),
           numFeatures.DNEAinputSummary)
 
-numSamples.DNEAobj <- function(x){
+numSamples.DNEA <- function(x){
 
   x@dataset_summary@num_samples
 }
@@ -500,7 +500,7 @@ numSamples.DNEAobj <- function(x){
 #' This function prints to console the total number of
 #' samples in the data set.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -518,7 +518,7 @@ numSamples.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -526,8 +526,8 @@ numSamples.DNEAobj <- function(x){
 #' @rdname numSamples-methods
 #' @aliases numSamples
 #' @export
-setMethod("numSamples", signature(x="DNEAobj"),
-          numSamples.DNEAobj)
+setMethod("numSamples", signature(x="DNEA"),
+          numSamples.DNEA)
 
 numSamples.DNEAinputSummary <- function(x){
 
@@ -539,18 +539,18 @@ numSamples.DNEAinputSummary <- function(x){
 setMethod("numSamples", signature(x="DNEAinputSummary"),
           numSamples.DNEAinputSummary)
 
-optimizedLambda.DNEAobj <- function(x){
+optimizedLambda.DNEA <- function(x){
 
   x@hyperparameter$optimized_lambda
 }
 #' Access the lambda value used in analysis
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
+#' The function takes as input a \code{\link{DNEA}} object and returns
 #' the hyper parameter (lambda) that is currently being used for the analysis.
 #' The user may also provide a single-value numeric vector to change the
 #' lambda value for analysis.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @param value a single-value numeric vector corresponding to the lambda
 #' value to use in analysis.
@@ -571,7 +571,7 @@ optimizedLambda.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -580,10 +580,10 @@ optimizedLambda.DNEAobj <- function(x){
 #' @rdname optimizedLambda-methods
 #' @aliases optimizedLambda
 #' @export
-setMethod("optimizedLambda", signature(x="DNEAobj"),
-          optimizedLambda.DNEAobj)
+setMethod("optimizedLambda", signature(x="DNEA"),
+          optimizedLambda.DNEA)
 
-optimizedLambdaReplace.DNEAobj <- function(x, value){
+optimizedLambdaReplace.DNEA <- function(x, value){
 
   x@hyperparameter$optimized_lambda <- value
   validObject(x)
@@ -592,24 +592,24 @@ optimizedLambdaReplace.DNEAobj <- function(x, value){
 #' @rdname optimizedLambda-methods
 #' @aliases optimizedLambda
 #' @export
-setReplaceMethod("optimizedLambda", signature(x="DNEAobj"),
-                 optimizedLambdaReplace.DNEAobj)
+setReplaceMethod("optimizedLambda", signature(x="DNEA"),
+                 optimizedLambdaReplace.DNEA)
 
-lambdas2Test.DNEAobj <- function(x){
+lambdas2Test.DNEA <- function(x){
 
   x@hyperparameter$tested_lambda_values
 }
 #' Access the lambda values tested during
 #' hyper parameter optimization
 #'
-#' The function takes as input a \code{\link{DNEAobj}}
+#' The function takes as input a \code{\link{DNEA}}
 #' object and returns the lambda values that were testing
 #' during hyper parameter optimization performed via
 #' \code{\link{BICtune}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} or
-#' \code{\link{collapsed_DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} or
+#' \code{\link{collapsed_DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -627,7 +627,7 @@ lambdas2Test.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -635,10 +635,10 @@ lambdas2Test.DNEAobj <- function(x){
 #' @rdname lambdas2Test-methods
 #' @aliases lambdas2Test
 #' @export
-setMethod("lambdas2Test", signature(x="DNEAobj"),
-          lambdas2Test.DNEAobj)
+setMethod("lambdas2Test", signature(x="DNEA"),
+          lambdas2Test.DNEA)
 
-lambdas2TestReplace.DNEAobj <- function(x, value){
+lambdas2TestReplace.DNEA <- function(x, value){
 
   x@hyperparameter$tested_lambda_values <- value
   validObject(x)
@@ -646,22 +646,22 @@ lambdas2TestReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("lambdas2Test", signature(x="DNEAobj"),
-                 lambdas2TestReplace.DNEAobj)
+setReplaceMethod("lambdas2Test", signature(x="DNEA"),
+                 lambdas2TestReplace.DNEA)
 
-BICscores.DNEAobj <- function(x){
+BICscores.DNEA <- function(x){
 
   x@hyperparameter$BIC_scores
 }
 #' Access the BIC scores for each lambda value evaluated
 #'
-#' The function takes as input a \code{\link{DNEAobj}}
+#' The function takes as input a \code{\link{DNEA}}
 #' object and returns the BIC values for each lambda tested
 #' during hyper parameter optimization performed via
 #' \code{\link{BICtune}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #' @param value a list of two lists that consist of the
 #' likelihood and BIC scores for each tested lambda value.
 #'
@@ -670,7 +670,7 @@ BICscores.DNEAobj <- function(x){
 #' \code{\link{BICtune}}
 #' @returns The optimized lambda hyperparameter.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
+#' #dnw is a DNEA with the results generated for the example data
 #' #accessed by running data(TEDDY) in the console. The workflow
 #' #for this data can be found in the vignette accessed by
 #' #running browseVignettes("DNEA") in the console.
@@ -680,10 +680,10 @@ BICscores.DNEAobj <- function(x){
 #' @rdname BICscores-methods
 #' @aliases BICscores
 #' @export
-setMethod("BICscores", signature(x="DNEAobj"),
-          BICscores.DNEAobj)
+setMethod("BICscores", signature(x="DNEA"),
+          BICscores.DNEA)
 
-BICscoresReplace.DNEAobj <- function(x, value){
+BICscoresReplace.DNEA <- function(x, value){
 
   x@hyperparameter$BIC_scores <- value
   validObject(x)
@@ -691,32 +691,32 @@ BICscoresReplace.DNEAobj <- function(x, value){
 }
 #' @rdname BICscores-methods
 #' @aliases BICscores
-setReplaceMethod("BICscores", signature(x="DNEAobj"),
-                 BICscoresReplace.DNEAobj)
+setReplaceMethod("BICscores", signature(x="DNEA"),
+                 BICscoresReplace.DNEA)
 
-selectionResults.DNEAobj <- function(x){
+selectionResults.DNEA <- function(x){
 
   x@stable_networks$selection_results
 }
 
 #' Access and set the edge selection results from stabilitySelection()
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns
+#' The function takes as input a \code{\link{DNEA}} object and returns
 #' an \emph{m x n} matrix of selection results for every possible network
 #' edge calculated during \code{\link{stabilitySelection}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{stabilitySelection}},\code{\link{selectionProbabilities}}
 #'
-#' @returns A \code{\link{DNEAobj}} object after filling the
+#' @returns A \code{\link{DNEA}} object after filling the
 #' selection_results section of the stable_networks slot.
 #'
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
+#' #dnw is a DNEA with the results generated for the example data
 #' #accessed by running data(TEDDY) in the console. The workflow
 #' #for this data can be found in the vignette accessed by
 #' #running browseVignettes("DNEA") in the console.
@@ -726,10 +726,10 @@ selectionResults.DNEAobj <- function(x){
 #' @rdname selectionResults-methods
 #' @aliases selectionResults
 #' @export
-setMethod("selectionResults", signature(x="DNEAobj"),
-          selectionResults.DNEAobj)
+setMethod("selectionResults", signature(x="DNEA"),
+          selectionResults.DNEA)
 
-selectionResultsReplace.DNEAobj <- function(x, value){
+selectionResultsReplace.DNEA <- function(x, value){
 
   x@stable_networks$selection_results <- value
   validObject(x)
@@ -737,44 +737,45 @@ selectionResultsReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("selectionResults", signature(x="DNEAobj"),
-                 selectionResultsReplace.DNEAobj)
+setReplaceMethod("selectionResults", signature(x="DNEA"),
+                 selectionResultsReplace.DNEA)
 
-selectionProbabilities.DNEAobj <- function(x){
+selectionProbabilities.DNEA <- function(x){
 
   x@stable_networks$selection_probabilities
 }
 
 #' Access and set the edge selection probabilities from stabilitySelection()
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and returns an
+#' The function takes as input a \code{\link{DNEA}} object and returns an
 #' \emph{m x n} matrix of selection probabilities for every possible network
 #' edge calculated during \code{\link{stabilitySelection}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{stabilitySelection}},\code{\link{selectionResults}}
 #'
-#' @returns A \code{\link{DNEAobj}} object after filling the
+#' @returns A \code{\link{DNEA}} object after filling the
 #' selection_probabilities section of the stable_networks slot.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results generated
+#' #for the example data accessed by running data(TEDDY) in the
+#' #console. The workflow for this data can be found in the
+#' #vignette accessed by running browseVignettes("DNEA")
+#' #in the console.
 #' data(dnw)
 #'
 #' selectionProbabilities(dnw)
 #' @rdname selectionProbabilities-methods
 #' @aliases selectionProbabilities
 #' @export
-setMethod("selectionProbabilities", signature(x="DNEAobj"),
-          selectionProbabilities.DNEAobj)
+setMethod("selectionProbabilities", signature(x="DNEA"),
+          selectionProbabilities.DNEA)
 
-selectionProbabilitiesReplace.DNEAobj <- function(x, value){
+selectionProbabilitiesReplace.DNEA <- function(x, value){
 
   x@stable_networks$selection_probabilities <- value
   validObject(x)
@@ -782,20 +783,20 @@ selectionProbabilitiesReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("selectionProbabilities", signature(x="DNEAobj"),
-                 selectionProbabilitiesReplace.DNEAobj)
+setReplaceMethod("selectionProbabilities", signature(x="DNEA"),
+                 selectionProbabilitiesReplace.DNEA)
 
-edgeList.DNEAobj <- function(x){
+edgeList.DNEA <- function(x){
 
   x@edge_list
 }
 #' Access the edge list
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and
+#' The function takes as input a \code{\link{DNEA}} object and
 #' returns the edge list created by the \code{\link{getNetworks}}
 #' function.
 #'
-#' @param x a \code{\link{DNEAobj}} object.
+#' @param x a \code{\link{DNEA}} object.
 #'
 #' @param value a data frame of edges in the network.
 #'
@@ -807,20 +808,21 @@ edgeList.DNEAobj <- function(x){
 #' @returns A data frame corresponding to the edge list
 #' determined by DNEA.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' edgeList(dnw)
 #' @rdname edgeList-methods
 #' @aliases edgeList
 #' @export
-setMethod("edgeList", signature(x="DNEAobj"),
-          edgeList.DNEAobj)
+setMethod("edgeList", signature(x="DNEA"),
+          edgeList.DNEA)
 
-edgeListReplace.DNEAobj <- function(x, value){
+edgeListReplace.DNEA <- function(x, value){
 
   x@edge_list <- value
   validObject(x)
@@ -828,20 +830,20 @@ edgeListReplace.DNEAobj <- function(x, value){
 }
 #' @rdname edgeList-methods
 #' @aliases edgeList
-setReplaceMethod("edgeList", signature(x="DNEAobj"),
-                 edgeListReplace.DNEAobj)
+setReplaceMethod("edgeList", signature(x="DNEA"),
+                 edgeListReplace.DNEA)
 
-nodeList.DNEAobj <- function(x){
+nodeList.DNEA <- function(x){
 
   x@node_list
 }
 #' Access the node list
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object
+#' The function takes as input a \code{\link{DNEA}} object
 #' and returns the node list created from the
 #' \code{\link{createDNEAobject}} function.
 #'
-#' @param x a \code{\link{DNEAobj}} object.
+#' @param x a \code{\link{DNEA}} object.
 #'
 #' @param value a data frame of nodes in the network.
 #'
@@ -864,7 +866,7 @@ nodeList.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -872,10 +874,10 @@ nodeList.DNEAobj <- function(x){
 #' @rdname nodeList-methods
 #' @aliases nodeList
 #' @export
-setMethod("nodeList", signature(x="DNEAobj"),
-          nodeList.DNEAobj)
+setMethod("nodeList", signature(x="DNEA"),
+          nodeList.DNEA)
 
-nodeListReplace.DNEAobj <- function(x, value){
+nodeListReplace.DNEA <- function(x, value){
 
   x@node_list <- value
   validObject(x)
@@ -883,10 +885,10 @@ nodeListReplace.DNEAobj <- function(x, value){
 }
 #' @rdname nodeList-methods
 #' @aliases nodeList
-setReplaceMethod("nodeList", signature(x="DNEAobj"),
-                 nodeListReplace.DNEAobj)
+setReplaceMethod("nodeList", signature(x="DNEA"),
+                 nodeListReplace.DNEA)
 
-diagnostics.DNEAobj <- function(x){
+diagnostics.DNEA <- function(x){
 
   x@dataset_summary@diagnostic_values
 }
@@ -896,7 +898,7 @@ diagnostics.DNEAobj <- function(x){
 #' for the input expression data by the
 #' \code{\link{createDNEAobject}} function.
 #'
-#' @param x \code{\link{DNEAobj}} or
+#' @param x \code{\link{DNEA}} or
 #' \code{DNEAinputSummary} object.
 #'
 #' @author Christopher Patsalis
@@ -917,7 +919,7 @@ diagnostics.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -925,10 +927,10 @@ diagnostics.DNEAobj <- function(x){
 #' @rdname diagnostics-methods
 #' @aliases diagnostics
 #' @export
-setMethod("diagnostics", signature(x="DNEAobj"),
-          diagnostics.DNEAobj)
+setMethod("diagnostics", signature(x="DNEA"),
+          diagnostics.DNEA)
 
-diagnosticsReplace.DNEAobj <- function(x, value){
+diagnosticsReplace.DNEA <- function(x, value){
 
   x@dataset_summary$diagnostic_values <- value
   validObject(x)
@@ -936,8 +938,8 @@ diagnosticsReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("diagnostics", signature(x="DNEAobj"),
-                 diagnosticsReplace.DNEAobj)
+setReplaceMethod("diagnostics", signature(x="DNEA"),
+                 diagnosticsReplace.DNEA)
 
 diagnostics.DNEAinputSummary <- function(x){
 
@@ -959,18 +961,18 @@ diagnosticsReplace.DNEAinputSummary <- function(x, value){
 setReplaceMethod("diagnostics", signature(x="DNEAinputSummary"),
                  diagnosticsReplace.DNEAinputSummary)
 
-datasetSummary.DNEAobj <- function(x){
+datasetSummary.DNEA <- function(x){
 
   x@dataset_summary
 }
-#' Access the dataset_summary slot of a DNEAobj object
+#' Access the dataset_summary slot of a DNEA object
 #'
 #' This function prints to console the number of samples, number of
 #' features, and diagnostic values of the input data stored in the
-#' dataset_summary slot of the \code{\link{DNEAobj}}.
+#' dataset_summary slot of the \code{\link{DNEA}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -978,7 +980,7 @@ datasetSummary.DNEAobj <- function(x){
 #'
 #' @returns The numbers of samples/features and diagnostic values
 #' of the input data stored in the dataset_summary slot of the
-#' \code{\link{DNEAobj}}.
+#' \code{\link{DNEA}}.
 #' @examples
 #' #load example data
 #' data(TEDDY)
@@ -991,7 +993,7 @@ datasetSummary.DNEAobj <- function(x){
 #' group_labels <- T1Dmeta$group
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
-#' #initiate DNEAobj
+#' #initiate DNEA object
 #' dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 #'                             group_labels = group_labels)
 #'
@@ -999,10 +1001,10 @@ datasetSummary.DNEAobj <- function(x){
 #' @rdname datasetSummary-methods
 #' @aliases datasetSummary
 #' @export
-setMethod("datasetSummary", signature(x="DNEAobj"),
-          datasetSummary.DNEAobj)
+setMethod("datasetSummary", signature(x="DNEA"),
+          datasetSummary.DNEA)
 
-datasetSummaryReplace.DNEAobj <- function(x, value){
+datasetSummaryReplace.DNEA <- function(x, value){
 
   x@dataset_summary <- value
   validObject(x)
@@ -1010,10 +1012,10 @@ datasetSummaryReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("datasetSummary", signature(x="DNEAobj"),
-                 datasetSummaryReplace.DNEAobj)
+setReplaceMethod("datasetSummary", signature(x="DNEA"),
+                 datasetSummaryReplace.DNEA)
 
-adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
+adjacencyMatrix.DNEA <- function(x, weighted=FALSE){
 
   if(weighted){
     x@adjacency_matrix$weighted_adjacency
@@ -1023,13 +1025,13 @@ adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
 }
 #' Retrieve the weighted or unweighted adjacency matrix
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object
+#' The function takes as input a \code{\link{DNEA}} object
 #' and returns the weighted or un-weighted adjacency matrix for
 #' each group network constructed via the
 #' \code{\link{getNetworks}} function.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #' @param weighted TRUE/FALSE indicating whether the
 #' weighted unweighted adjacency matrix should be
 #' returned.
@@ -1040,20 +1042,20 @@ adjacencyMatrix.DNEAobj <- function(x, weighted=FALSE){
 #' @returns A matrix corresponding to the adjacency
 #' matrix specified.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #'
 #' adjacencyMatrix(dnw, weighted=TRUE)
 #' @rdname adjacencyMatrix-methods
 #' @aliases adjacencyMatrix
 #' @export
-setMethod("adjacencyMatrix", signature(x="DNEAobj"),
-          adjacencyMatrix.DNEAobj)
+setMethod("adjacencyMatrix", signature(x="DNEA"),
+          adjacencyMatrix.DNEA)
 
-adjacencyMatrixReplace.DNEAobj <- function(x, weighted=FALSE, value){
+adjacencyMatrixReplace.DNEA <- function(x, weighted=FALSE, value){
 
   if(weighted){
     x@adjacency_matrix$weighted_adjacency <- value
@@ -1065,10 +1067,10 @@ adjacencyMatrixReplace.DNEAobj <- function(x, weighted=FALSE, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("adjacencyMatrix", signature(x="DNEAobj"),
-                 adjacencyMatrixReplace.DNEAobj)
+setReplaceMethod("adjacencyMatrix", signature(x="DNEA"),
+                 adjacencyMatrixReplace.DNEA)
 
-adjacencyGraph.DNEAobj <- function(x, graph){
+adjacencyGraph.DNEA <- function(x, graph){
 
   x@consensus_clustering@adjacency_graphs[[graph]]
 }
@@ -1080,7 +1082,7 @@ adjacencyGraph.DNEAobj <- function(x, graph){
 #' consensus clustering using \code{\link{clusterNet}}.
 #'
 #'
-#' @param x A \code{\link{DNEAobj}}
+#' @param x A \code{\link{DNEA}}
 #'
 #' @param graph A character string indicating which of
 #' the adjacency graphs to return. Values can be "joint_graph"
@@ -1093,21 +1095,22 @@ adjacencyGraph.DNEAobj <- function(x, graph){
 #' @returns An \code{\link{igraph}} graph object corresponding
 #' to the specified adjacency graph.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
+#' data("dnw")
 #'
 #' adjacencyGraph(dnw, graph="DM:case")
 
 #' @rdname adjacencyGraph-methods
 #' @aliases adjacencyGraph
 #' @export
-setMethod("adjacencyGraph", signature(x="DNEAobj"),
-          adjacencyGraph.DNEAobj)
+setMethod("adjacencyGraph", signature(x="DNEA"),
+          adjacencyGraph.DNEA)
 
-adjacencyGraphReplace.DNEAobj <- function(x, graph, value){
+adjacencyGraphReplace.DNEA <- function(x, graph, value){
 
   x@consensus_clustering@adjacency_graphs$graph <- value
   validObject(x)
@@ -1115,8 +1118,8 @@ adjacencyGraphReplace.DNEAobj <- function(x, graph, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("adjacencyGraph", signature(x="DNEAobj"),
-                 adjacencyGraphReplace.DNEAobj)
+setReplaceMethod("adjacencyGraph", signature(x="DNEA"),
+                 adjacencyGraphReplace.DNEA)
 
 adjacencyGraph.consensusClusteringResults <- function(x, graph){
 
@@ -1163,27 +1166,27 @@ summary.consensusClusteringResults <- function(object){
 setMethod("summary", signature(object="consensusClusteringResults"),
           summary.consensusClusteringResults)
 
-consensus_clustering.DNEAobj <- function(x){
+consensus_clustering.DNEA <- function(x){
 
   x@consensus_clustering
 }
 #' @keywords internal
 #' @noRd
-setMethod("consensus_clustering", signature(x="DNEAobj"),
-          consensus_clustering.DNEAobj)
+setMethod("consensus_clustering", signature(x="DNEA"),
+          consensus_clustering.DNEA)
 
-CCsummary.DNEAobj <- function(x){
+CCsummary.DNEA <- function(x){
 
   summary(x@consensus_clustering)
 }
 #' Retrieves the summary results of consensus clustering
 #'
-#' The function takes as input a \code{\link{DNEAobj}} object and
+#' The function takes as input a \code{\link{DNEA}} object and
 #' returns a summary  of the results of consensus clustering
 #' stored in the consensus_clustering slot as a
 #' \code{\link{consensusClusteringResults}} object.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -1191,20 +1194,21 @@ CCsummary.DNEAobj <- function(x){
 #' @returns A data frame summary of the consensus clustering
 #' results from DNEA.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' CCsummary(dnw)
 #' @rdname CCsummary-methods
 #' @aliases CCsummary
 #' @export
-setMethod("CCsummary", signature(x="DNEAobj"),
-          CCsummary.DNEAobj)
+setMethod("CCsummary", signature(x="DNEA"),
+          CCsummary.DNEA)
 
-CCsummaryReplace.DNEAobj <- function(x, value){
+CCsummaryReplace.DNEA <- function(x, value){
 
   x@consensus_clustering@summary <- value
   validObject(x)
@@ -1212,38 +1216,39 @@ CCsummaryReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("CCsummary", signature(x="DNEAobj"),
-                 CCsummaryReplace.DNEAobj)
+setReplaceMethod("CCsummary", signature(x="DNEA"),
+                 CCsummaryReplace.DNEA)
 
-subnetworkMembership.DNEAobj <- function(x){
+subnetworkMembership.DNEA <- function(x){
 
   x@consensus_clustering@subnetwork_membership
 }
 #' Retrieve the subnetwork membership for each feature
 #'
-#' The function takes as input a \code{\link{DNEAobj}}
+#' The function takes as input a \code{\link{DNEA}}
 #' object and returns the results of consensus clustering
 #' determined via \code{\link{clusterNet}}.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{clusterNet}}
 #' @returns A data frame that corresponds to the results of
 #' consensus clustering.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' subnetworkMembership(dnw)
 #' @rdname subnetworkMembership-methods
 #' @aliases subnetworkMembership
 #' @export
-setMethod("subnetworkMembership", signature(x="DNEAobj"),
-          subnetworkMembership.DNEAobj)
+setMethod("subnetworkMembership", signature(x="DNEA"),
+          subnetworkMembership.DNEA)
 
 subnetworkMembership.consensusClusteringResults <- function(x){
 
@@ -1254,7 +1259,7 @@ subnetworkMembership.consensusClusteringResults <- function(x){
 setMethod("subnetworkMembership", signature(x="consensusClusteringResults"),
           subnetworkMembership.consensusClusteringResults)
 
-subnetworkMembershipReplace.DNEAobj <- function(x, value){
+subnetworkMembershipReplace.DNEA <- function(x, value){
 
   x@consensus_clustering@subnetwork_membership <- value
   validObject(x)
@@ -1262,20 +1267,20 @@ subnetworkMembershipReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("subnetworkMembership", signature(x="DNEAobj"),
-                 subnetworkMembershipReplace.DNEAobj)
+setReplaceMethod("subnetworkMembership", signature(x="DNEA"),
+                 subnetworkMembershipReplace.DNEA)
 
-netGSAresults.DNEAobj <- function(x){
+netGSAresults.DNEA <- function(x){
 
   x@netGSA
 }
-#' Access the netGSA slot of a DNEAobj object
+#' Access the netGSA slot of a DNEA object
 #'
-#' The function takes as input a \code{\link{DNEAobj}}
+#' The function takes as input a \code{\link{DNEA}}
 #' object and returns a summary of the enrichment
 #' analysis results stored in the netGSA slot.
 #'
-#' @param x A \code{\link{DNEAobj}} object.
+#' @param x A \code{\link{DNEA}} object.
 #'
 #' @author Christopher Patsalis
 #' @seealso
@@ -1283,20 +1288,21 @@ netGSAresults.DNEAobj <- function(x){
 #' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}}
 #' @returns A data frame of the results from \code{\link{runNetGSA}}.
 #' @examples
-#' #dnw is a DNEAobj with the results generated for the example data
-#' #accessed by running data(TEDDY) in the console. The workflow
-#' #for this data can be found in the vignette accessed by
-#' #running browseVignettes("DNEA") in the console.
+#' #dnw is a \code{\link{DNEA}} object with the results
+#' #generated for the example data accessed by running
+#' #data(TEDDY) in the console. The workflow for this data
+#' #can be found in the vignette accessed by running
+#' #browseVignettes("DNEA") in the console.
 #' data(dnw)
 #'
 #' netGSAresults(dnw)
 #' @rdname netGSAresults-methods
 #' @aliases netGSAresults
 #' @export
-setMethod("netGSAresults", signature(x="DNEAobj"),
-          netGSAresults.DNEAobj)
+setMethod("netGSAresults", signature(x="DNEA"),
+          netGSAresults.DNEA)
 
-netGSAresultsReplace.DNEAobj <- function(x, value){
+netGSAresultsReplace.DNEA <- function(x, value){
 
   x@netGSA <- value
   validObject(x)
@@ -1304,5 +1310,5 @@ netGSAresultsReplace.DNEAobj <- function(x, value){
 }
 #' @keywords internal
 #' @noRd
-setReplaceMethod("netGSAresults", signature(x="DNEAobj"),
-                 netGSAresultsReplace.DNEAobj)
+setReplaceMethod("netGSAresults", signature(x="DNEA"),
+                 netGSAresultsReplace.DNEA)

@@ -2,12 +2,12 @@
 % Please edit documentation in R/utilities-exported.R
 \name{addExpressionData}
 \alias{addExpressionData}
-\title{Include custom normalized data in the DNEAobj object}
+\title{Include custom normalized data in the DNEA object}
 \usage{
 addExpressionData(object, dat, assay_name)
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{dat}{A list of \emph{m x n} numeric matrices of
 custom-normalized expression data, one matrix for each
@@ -18,15 +18,15 @@ match the labels returned by
 
 \item{assay_name}{A character string corresponding
 to the name the new data will be stored under in the
-assays slot of the \code{\link{DNEAobj}}.}
+assays slot of the \code{\link{DNEA}}.}
 }
 \value{
-A \code{\link{DNEAobj}} object with the added
+A \code{\link{DNEA}} object with the added
 expression data in the @assays slot
 }
 \description{
 This function allows the user to input custom-normalized data into the
-\code{\link{DNEAobj}} object for use in DNEA analysis.
+\code{\link{DNEA}} object for use in DNEA analysis.
 }
 \examples{
 #load example data
@@ -41,7 +41,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                         group_labels = group_labels)
 
@@ -87,7 +87,7 @@ dnw <- addExpressionData(object=dnw,
 
 }
 \seealso{
-\code{\link{createDNEAobject}},\code{\link{DNEAobj}},
+\code{\link{createDNEAobject}},\code{\link{DNEA}},
 }
 \author{
 Christopher Patsalis

@@ -13,7 +13,7 @@ aggregateFeatures(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{method}{A character string that dictates the collapsing method
 to use. The available methods are:
@@ -34,10 +34,10 @@ is stored as the"input_data" assay. It is highly recommended that
 this setting is used.}
 }
 \value{
-A \code{collapsed_DNEAobj} object.
+A \code{collapsed_DNEA} object.
 }
 \description{
-This function takes as input a \code{\link{DNEAobj}} object
+This function takes as input a \code{\link{DNEA}} object
 and aggregates highly correlated features within the
 non-normalized, non-transformed data using one of three methods:
 
@@ -125,7 +125,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

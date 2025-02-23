@@ -1,20 +1,20 @@
 #' @include all-methods.R
 NULL
 
-#' Initialize a DNEAobj object
+#' Initialize a DNEA object
 #'
 #' @description
 #' This function takes as input a matrix of non-normalized, non-transformed
 #' expression data and the case/control group labels in order to initiate a
-#' DNEAobj object. Differential expression analysis is performed using a
+#' DNEA object. Differential expression analysis is performed using a
 #' student's T-test and Benjamini-Hochberg for multiple-testing corrections.
 #' Diagnostic testing is done on the input data by checking the minimum
 #' eigen value and condition number of the expression data for each
-#' experimental condition. To initialize a *DNEAobj* from a
+#' experimental condition. To initialize a *DNEA* from a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}},
 #' or a mass_dataset-class from the massdataset package,
-#' please see the \code{\link{sumExp2DNEAobj}} and
-#' \code{\link{massDataset2DNEAobj}} documentation, respectively.
+#' please see the \code{\link{sumExp2DNEA}} and
+#' \code{\link{massDataset2DNEA}} documentation, respectively.
 #'
 #' ## IMPORTANT:
 #' Special attention should be given to the diagnostic criteria that is
@@ -49,7 +49,7 @@ NULL
 #'
 #' @seealso
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
-#' \code{\link{sumExp2DNEAobj}}, \code{\link{massDataset2DNEAobj}}
+#' \code{\link{sumExp2DNEA}}, \code{\link{massDataset2DNEA}}
 #'
 #' @details
 #' ## Diagnostics Motivation
@@ -84,7 +84,7 @@ NULL
 #' are highly correlated and will therefore have similar
 #' feature-feature associations.
 #'
-#' @returns A \code{\link{DNEAobj}} object.
+#' @returns A \code{\link{DNEA}} object.
 #'
 #' @examples
 #' #import example data
@@ -97,7 +97,7 @@ NULL
 #' names(group_labels) <- rownames(T1Dmeta)
 #'
 #'
-#' #initiate DNEAobj object
+#' #initiate DNEA object
 #' DNEA <- createDNEAobject(expression_data=TEDDY,
 #'                          project_name="TEDDYmetabolomics",
 #'                          group_labels=group_labels)
@@ -194,7 +194,7 @@ createDNEAobject <- function(project_name,
                      conditions=network_group_IDs[colnames(de_input)])
 
   ##initiate DNEA object
-  object <- new("DNEAobj",
+  object <- new("DNEA",
                 project_name=project_name,
                 assays= restructured_data[["assays"]],
                 metadata=list(samples=restructured_data[["metadata"]]$samples,
@@ -214,13 +214,13 @@ createDNEAobject <- function(project_name,
   return(object)
 }
 
-#' Initialize a DNEAobj from SummarizedExperiment
+#' Initialize a DNEA from SummarizedExperiment
 #'
 #' @description
 #' This function takes as input a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
 #'  object non-transformed in order to initiate a
-#' \code{\link{DNEAobj}} object. Differential expression analysis
+#' \code{\link{DNEA}} object. Differential expression analysis
 #' is performed using a student's T-test and Benjamini-Hochberg
 #' for multiple-testing corrections. Diagnostic testing is done
 #' on the input data by checking the minimum eigen value and
@@ -255,7 +255,7 @@ createDNEAobject <- function(project_name,
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 #' \code{\link{createDNEAobject}}
 #'
-#' @returns A \code{\link{DNEAobj}} object.
+#' @returns A \code{\link{DNEA}} object.
 #'
 #' @examples
 #' #load example data from airway package
@@ -264,17 +264,17 @@ createDNEAobject <- function(project_name,
 #'
 #' airway <- airway[1:50,]
 #' airway <- airway[rowSums(SummarizedExperiment::assays(airway)$counts) > 5, ]
-#' DNEA <- sumExp2DNEAobj(project_name = "airway",
+#' DNEA <- sumExp2DNEA(project_name = "airway",
 #'                        object = airway,
 #'                        group_label_col = "dex")
 #'
 #' @importFrom SummarizedExperiment assays colData rowData
 #' @importFrom janitor make_clean_names
 #' @export
-sumExp2DNEAobj <- function(project_name,
-                           object,
-                           scaled_expression_assay,
-                           group_label_col){
+sumExp2DNEA <- function(project_name,
+                        object,
+                        scaled_expression_assay,
+                        group_label_col){
   ##checks
   if(!is.character(project_name)) stop("project_name should be a string!")
   if(!inherits(object, "SummarizedExperiment")){
@@ -354,12 +354,12 @@ sumExp2DNEAobj <- function(project_name,
 
   return(output)
 }
-#' Initialize a DNEAobj from a mass_dataset object
+#' Initialize a DNEA object from a mass_dataset object
 #'
 #' @description
 #' This function takes as input a
 #' mass_dataset-class object from the massdataset package to
-#' initiate a \code{\link{DNEAobj}} object. Differential
+#' initiate a \code{\link{DNEA}} object. Differential
 #' expression analysis is performed using a student's T-test
 #' and Benjamini-Hochberg for multiple-testing corrections.
 #' Diagnostic testing is done on the input data by checking
@@ -397,7 +397,7 @@ sumExp2DNEAobj <- function(project_name,
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 #' \code{\link{createDNEAobject}}
 #'
-#' @returns A \code{\link{DNEAobj}} object.
+#' @returns A \code{\link{DNEA}} object.
 #'
 #' @examples
 #' #load data
@@ -424,20 +424,20 @@ sumExp2DNEAobj <- function(project_name,
 #'                                            sample_info_note = sample_info_note,
 #'                                            variable_info_note = variable_info_note)
 #'
-#' DNEA <- massDataset2DNEAobj(project_name = "mass_dataset",
+#' DNEA <- massDataset2DNEA(project_name = "mass_dataset",
 #'                              object = object,
 #'                              group_label_col = "group")
 #' }
 #'
 #' @export
-massDataset2DNEAobj <- function(project_name,
-                                object,
-                                group_label_col,
-                                scaled_input=FALSE){
+massDataset2DNEA <- function(project_name,
+                             object,
+                             group_label_col,
+                             scaled_input=FALSE){
   ##checks
   if (!requireNamespace("massdataset", quietly=TRUE))
     stop("Could not load package massdataset. Is it installed?\n  ",
-         "Note that massDataset2DNEAobj requires the tidymass package.\n  ",
+         "Note that massDataset2DNEA requires the tidymass package.\n  ",
          "Please install it with 'BiocManager::install(\"massdataset\")'.")
   if(!inherits(object, "mass_dataset")){
     stop("object should inherit of class mass_dataset from the",
@@ -502,11 +502,11 @@ massDataset2DNEAobj <- function(project_name,
   return(output)
 }
 ################################################################################
-#' Restructure input data for initiation of DNEAobj object
+#' Restructure input data for initiation of DNEA object
 #'
 #' This function takes as input a matrix of expression data and the
 #' experimental group labels in order to restructure the input as to prepare
-#' it for initiation of a DNEAobj object.
+#' it for initiation of a \code{\link{DNEA}} object.
 #'
 #' @param expression_data A matrix or data frame of expression data.
 #' The sample names should be column names and the feature names
@@ -579,11 +579,11 @@ restructure_input_data <- function(expression_data,
   return(list(assays=assays, metadata=metadata))
 }
 ################################################################################
-#' Restructure scaled input data for initiation of DNEAobj object
+#' Restructure scaled input data for initiation of DNEA object
 #'
 #' This function takes as input a list of matrices representing scaled
 #' expression data and the experimental group labels in order to restructure
-#' the input for initiation of a DNEAobj object.
+#' the input for initiation of a DNEA object.
 #'
 #' @param expression_data A list of matrices or data frames of expression
 #' data. The sample names should be column names and the feature names
@@ -652,7 +652,7 @@ restructure_scaled_input_data <- function(scaled_expression_data,
 
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
-#' This function takes as input a \code{\link{DNEAobj}} object and
+#' This function takes as input a \code{\link{DNEA}} object and
 #' calculates the minimum eigen value and condition number for the
 #' whole data set as well as for each condition using the normalized
 #' data. This is done to determine mathematic stability of the data
@@ -708,7 +708,7 @@ restructure_scaled_input_data <- function(scaled_expression_data,
 #' are highly correlated and will therefore have similar
 #' feature-feature associations.
 #'
-#' @returns A \code{\link{DNEAobj}} object containing an
+#' @returns A \code{\link{DNEA}} object containing an
 #' initialized node_list. Differential expression is performed on the
 #' features if un-scaled data is provided. The diagnostic criteria are
 #' returned to the console.

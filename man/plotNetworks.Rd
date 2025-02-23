@@ -17,7 +17,7 @@ plotNetworks(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEAobj}} object.}
+\item{object}{A \code{\link{DNEA}} object.}
 
 \item{type}{There are two possible arguments to \strong{type}:
 \emph{"group_networks"} specifies the whole network or condition networks.
@@ -65,10 +65,11 @@ features, green indicates edges specific to group 1, and red indicates
 edges specific to group 2.
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 #plot the networks

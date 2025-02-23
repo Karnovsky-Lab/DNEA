@@ -178,16 +178,16 @@ group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 
 # STEP 1: Data pre-processing and feature aggregation
 ## Data pre-processing
-DNEA is an object-oriented workflow built around a custom s4 object, `DNEAobj`. We provide a helper function that encompasses several necessary steps to begin DNEA. Additionally, the `sumExp2DNEAobj` and `massDataset2DNEAobj` helper functions are provided to enable creation of a `DNEAobj` from a `SummarizedExperiment` and `mass_dataset` object, respectively. First, the data is restructured for input into a `DNEAobj` object, and differential expression (DE) analysis is performed on the log-transformed input data. The data is then split by experimental condition and auto-scaled. An eigen decomposition is performed to check the minimum eigenvalue and the condition number of the correlation matrix for the whole data set, as well as each experimental group individually.
+DNEA is an object-oriented workflow built around a custom s4 object, `DNEA`. We provide a helper function that encompasses several necessary steps to begin DNEA. Additionally, the `sumExp2DNEA` and `massDataset2DNEA` helper functions are provided to enable creation of a `DNEA` from a `SummarizedExperiment` and `mass_dataset` object, respectively. First, the data is restructured for input into a `DNEA` object, and differential expression (DE) analysis is performed on the log-transformed input data. The data is then split by experimental condition and auto-scaled. An eigen decomposition is performed to check the minimum eigenvalue and the condition number of the correlation matrix for the whole data set, as well as each experimental group individually.
 ```{r, start DNEA, eval=TRUE}
-#initiate DNEAobj object
+#initiate DNEA object
 TEDDYdat <- createDNEAobject(project_name = "TEDDYmetabolomics",
                              expression_data = TEDDY,
                              group_labels = group_labels)
 ```
 Eigenvalues close to or below zero, or similarly extremely large condition numbers, represent instability in the data set and triggers a warning that recommends highly correlated metabolites be aggregated into single features prior to analysis. As you can see above, the TEDDY data set has a negative eigenvalue for the "DM:case" experimental group, triggering a warning.
 
-*NOTE: To initiate a `DNEAobj` from a `summarizedExperiment-class` or `mass_dataset-class` object, the `sumExp2DNEAobj()` and `massDataset2DNEAobj()` functions can be used, respectively.*
+*NOTE: To initiate a `DNEA-class` object from a `summarizedExperiment-class` or `mass_dataset-class` object, the `sumExp2DNEA()` and `massDataset2DNEA()` functions can be used, respectively.*
 
 **WHAT CAUSED THIS WARNING?**  
 
@@ -197,7 +197,7 @@ There are a number of reasons that instability may occur within a data set; High
 library(pheatmap)
 library(Hmisc)
 
-#grab the DM:case data from the DNEAobj object
+#grab the DM:case data from the DNEA object
 expr_dat <- expressionData(TEDDYdat, assay = "log-scaled_data")[["DM:case"]]
 
 #create a pearson correlation matrix - data should be transposed first so features are in columns
@@ -221,7 +221,7 @@ There are pockets of red and blue indicating highly correlated metabolites in th
 
 Finally, we can view information about our analysis using the built in show function. We can access the differential expression results in the node list using the `nodeList()` function.
 ```{r, DNEA summary, eval=TRUE, echo=TRUE}
-#show summary of DNEAobj object
+#show summary of DNEA object
 TEDDYdat
 ```
 ```{r, node list examine echo, eval=FALSE, echo=TRUE}
@@ -243,7 +243,7 @@ rm(nodelist_table)
 
 
 ## Feature Aggregation
-We have implemented an updated node aggregating algorithm similar to the one described in @Filigree2021. The `aggregateFeatures()` function makes available the **correlation-based**, **knowledge-based**, and **hybrid** collapsing methods from Filigree. The main difference being that the user now specifies a pearson correlation threshold by which to collapse features with an absolute correlation above said value. The function then re-runs `createDNEAobject()` to create a `collapsed_DNEAobj` object with the new data.  
+We have implemented an updated node aggregating algorithm similar to the one described in @Filigree2021. The `aggregateFeatures()` function makes available the **correlation-based**, **knowledge-based**, and **hybrid** collapsing methods from Filigree. The main difference being that the user now specifies a pearson correlation threshold by which to collapse features with an absolute correlation above said value. The function then re-runs `createDNEAobject()` to create a `collapsed_DNEA` object with the new data.  
 
 **WHY SHOULD WE AGGREGATE?**  
 
@@ -252,7 +252,7 @@ The regularization steps employed in DNEA will correct instability without addit
 GGM's require considerable computational power. Adding additional samples to your data set will have marginal effects on the memory and processing time required for analysis, however, as the number of features grows in your data set the run time will increase dramatically. The ability to parallelize tasks on a high-performance machine (cluster or cloud resource) to perform stability selection helps tremendously with this issue. Even so, a user may still find themselves constrained by the resources available to them. Moreover, the data set may contain many compounds of the same class that are highly correlated, and/or network resolution at the individual molecule level is not needed (i.e. fatty acids that vary by only a few bonds in a lipidomics study). Aggregating highly correlated features retains signal from all of the metabolites, as opposed to regularization arbitrarily choosing one as representation and removing some or all of the correlates. This decreases the complexity of the analysis without losing critical network information. Less compute resources are required for the analysis and the resulting networks are more interpretable.
 
 
-To perform feature aggregation, we need to provide `aggregateFeatures()` the `DNEAobj` object and a character string corresponding to the desired aggregation method. If the "correlation" or "hybrid" method is chosen, we specify the `correlation_threshold` parameter wherein metabolites with correlations stronger than this threshold are aggregated into a single node. If the "knowledge" or "hybrid" method is chosen, we need to provide a data frame for `feature_groups` to specify the class of each metabolite in our data set. Metabolite aggregation is then performed within each class. More information about the three methods as well as best use cases can be found in the function documentation and in @Filigree2021.  
+To perform feature aggregation, we need to provide `aggregateFeatures()` the `DNEA` object and a character string corresponding to the desired aggregation method. If the "correlation" or "hybrid" method is chosen, we specify the `correlation_threshold` parameter wherein metabolites with correlations stronger than this threshold are aggregated into a single node. If the "knowledge" or "hybrid" method is chosen, we need to provide a data frame for `feature_groups` to specify the class of each metabolite in our data set. Metabolite aggregation is then performed within each class. More information about the three methods as well as best use cases can be found in the function documentation and in @Filigree2021.  
 
 
 For demonstration purposes, we are going to use the "hybrid" approach for feature aggregation. The `feature_groups` input should be a data frame with the original metabolite names as the first column and as the row names. The class labels should be in the second column. Independent metabolites can retain their name as its class label. Let's create the `feature_groups` data frame, and group the branched chain amino acids into one class and all other acids into another.
@@ -437,7 +437,7 @@ TEDDYdat <- stabilitySelection(TEDDYdat,
                                BPOPTIONS = bpoptions(progressbar=FALSE))
 ```
 ```{r, stabsel message, eval=TRUE, echo=FALSE, strip.white=TRUE}
-message('The lambda value stored in the DNEAobj will be used for analysis (this can be ',
+message('The lambda value stored in the DNEA will be used for analysis (this can be ',
             'accessed via the optimizedLambda() function')
 message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat), "!\n",
           "stabilitySelection will be performed with 1000 replicates!")
@@ -492,7 +492,7 @@ We aproximated lambda, which increases regularization in the model, so we alread
 ## Consensus Clustering
 The consensus clustering algorithm described in @DNEA2019 and employed here utilizes 7 network clustering algorithms implemented in the [igraph R package](https://r.igraph.org/) (For more information, please see the documentation for `clusterNet()`). It works by clustering the data to identify sub networks of highly inter-connected metabolites within the networks. Consensus clustering is performed iteratively until agreement among the clustering algorithms on sub network membership is reached. This enables the implementation of data-driven pathway enrichment analysis downstream to identify sub networks that are differentially enriched across the two experimental conditions.  
 
-Consensus clustering is performed by passing the `DNEAobj` object to `clusterNet()`. You may opt to specify the `tau` parameter, which corresponds to the percent agreement threshold (i.e. *tau%* of the clustering algorithms must agree on the metabolite membership within a sub network). `tau` can range from 0.5-1. The default value is 0.5, or 4 of the 7 algorithms must be in agreement. Increasing the value of tau will increase the specificity of the analysis, and therefore increase the number and decrease the size of the resulting sub networks.   
+Consensus clustering is performed by passing the `DNEA` object to `clusterNet()`. You may opt to specify the `tau` parameter, which corresponds to the percent agreement threshold (i.e. *tau%* of the clustering algorithms must agree on the metabolite membership within a sub network). `tau` can range from 0.5-1. The default value is 0.5, or 4 of the 7 algorithms must be in agreement. Increasing the value of tau will increase the specificity of the analysis, and therefore increase the number and decrease the size of the resulting sub networks.   
 
 
 Several of the clustering methods utilize random number generation. Since `clusterNet()` does not use the BiocParallel framework, we need to set the seed in native R to ensure reproducibility of our results.
@@ -554,7 +554,7 @@ DNEA provides functionality that makes using all three easy.
 The igraph R package is commonly used to visualize networks due to its customization. DNEA contains a function, `plotNetworks()` that is built on igraph. This function provides the user an easy way to visualize the constructed networks and utilize the features available in the igraph package. Edges specific to group 1, in our case "DM:control", are colored <font color = green>**green**</font> and edges specific to group 2, or "DM:case", are colored <font color = red>**red**</font>. Common edges are **black**, and DE nodes are colored <font color = purple>**purple**</font>.  
 
 
-There are two parameters that are required in addition to the `DNEAobj` object: the `type`, and the `subtype`. When the `type` parameter is set to "group_networks" we can plot the networks for either of the experimental groups. We do so by providing its label (i.e. "DM:control" or "DM:case") to the `subtype` parameter, or "All" to plot both networks. 
+There are two parameters that are required in addition to the `DNEA` object: the `type`, and the `subtype`. When the `type` parameter is set to "group_networks" we can plot the networks for either of the experimental groups. We do so by providing its label (i.e. "DM:control" or "DM:case") to the `subtype` parameter, or "All" to plot both networks. 
 ```{r, plotNetworks biological networks}
 #names of our experimental conditions
 networkGroups(TEDDYdat)

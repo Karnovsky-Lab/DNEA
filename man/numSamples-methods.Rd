@@ -2,18 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{numSamples}
 \alias{numSamples}
-\alias{numSamples,DNEAobj-method}
+\alias{numSamples,DNEA-method}
 \alias{numSamples,DNEAinputSummary-method}
 \title{Retrieves the total number of samples in the dataset}
 \usage{
 numSamples(x)
 
-\S4method{numSamples}{DNEAobj}(x)
+\S4method{numSamples}{DNEA}(x)
 
 \S4method{numSamples}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 The number of samples in the data set.
@@ -34,7 +34,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

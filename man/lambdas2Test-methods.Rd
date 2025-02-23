@@ -2,23 +2,23 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{lambdas2Test}
 \alias{lambdas2Test}
-\alias{lambdas2Test,DNEAobj-method}
+\alias{lambdas2Test,DNEA-method}
 \title{Access the lambda values tested during
 hyper parameter optimization}
 \usage{
 lambdas2Test(x)
 
-\S4method{lambdas2Test}{DNEAobj}(x)
+\S4method{lambdas2Test}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} or
-\code{\link{collapsed_DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} or
+\code{\link{collapsed_DNEA}} object.}
 }
 \value{
 The lambda values to evaluate in optimization.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}}
+The function takes as input a \code{\link{DNEA}}
 object and returns the lambda values that were testing
 during hyper parameter optimization performed via
 \code{\link{BICtune}}.
@@ -35,7 +35,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

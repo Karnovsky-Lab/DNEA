@@ -19,13 +19,13 @@ A summary of the input data to \code{\link{createDNEAobject}}.
 }
 \description{
 An s4 class to represent the results from diagnostic testing
-on the input data to a \code{\link{DNEAobj}}.
+on the input data to a \code{\link{DNEA}}.
 }
 \section{Functions}{
 \itemize{
 \item \code{show(DNEAinputSummary)}: This function will display the number of samples, number of features,
 and diagnostics values of the input data set to a
-\code{\link{DNEAobj}} object.
+\code{\link{DNEA}} object.
 
 }}
 \section{Slots}{
@@ -53,7 +53,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

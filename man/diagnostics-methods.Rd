@@ -2,18 +2,18 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{diagnostics}
 \alias{diagnostics}
-\alias{diagnostics,DNEAobj-method}
+\alias{diagnostics,DNEA-method}
 \alias{diagnostics,DNEAinputSummary-method}
 \title{Retrieve the diagnostic values for the input expression data}
 \usage{
 diagnostics(x)
 
-\S4method{diagnostics}{DNEAobj}(x)
+\S4method{diagnostics}{DNEA}(x)
 
 \S4method{diagnostics}{DNEAinputSummary}(x)
 }
 \arguments{
-\item{x}{\code{\link{DNEAobj}} or
+\item{x}{\code{\link{DNEA}} or
 \code{DNEAinputSummary} object.}
 }
 \value{
@@ -37,7 +37,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

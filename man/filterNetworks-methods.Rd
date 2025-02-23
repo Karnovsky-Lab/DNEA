@@ -2,19 +2,19 @@
 % Please edit documentation in R/all-generics.R, R/utilities-exported.R
 \name{filterNetworks}
 \alias{filterNetworks}
-\alias{filterNetworks,DNEAobj-method}
+\alias{filterNetworks,DNEA-method}
 \alias{filterNetworks,list-method}
 \title{Filter the adjacency matrices to only the edges that meet the
 filter conditions}
 \usage{
 filterNetworks(data, pcor, top_percent_edges)
 
-\S4method{filterNetworks}{DNEAobj}(data, pcor, top_percent_edges)
+\S4method{filterNetworks}{DNEA}(data, pcor, top_percent_edges)
 
 \S4method{filterNetworks}{list}(data, pcor, top_percent_edges)
 }
 \arguments{
-\item{data}{A \code{\link{DNEAobj}} object.}
+\item{data}{A \code{\link{DNEA}} object.}
 
 \item{pcor}{A partial correlation value of which to threshold
 the adjacency matrices. Edges with pcor values <= to this
@@ -30,7 +30,7 @@ The input object after filtering the egdes in the
 network according to the specified parameters.
 }
 \description{
-This function takes as input a \code{\link{DNEAobj}} object and
+This function takes as input a \code{\link{DNEA}} object and
 allows the user to filter the network edges by one of two methods:
 
 \enumerate{
@@ -45,10 +45,11 @@ Filtering is performed on the case and control adjacency matrices
 separately. \cr
 }
 \examples{
-#dnw is a DNEAobj with the results generated for the example data
-#accessed by running data(TEDDY) in the console. The workflow
-#for this data can be found in the vignette accessed by
-#running browseVignettes("DNEA") in the console.
+#dnw is a \code{\link{DNEA}} object with the results
+#generated for the example data accessed by running
+#data(TEDDY) in the console. The workflow for this data
+#can be found in the vignette accessed by running
+#browseVignettes("DNEA") in the console.
 data(dnw)
 
 #filter the networks by a correlation threshold of 0.166

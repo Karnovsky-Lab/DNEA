@@ -3,20 +3,20 @@
 \name{optimizedLambda}
 \alias{optimizedLambda}
 \alias{optimizedLambda<-}
-\alias{optimizedLambda,DNEAobj-method}
-\alias{optimizedLambda<-,DNEAobj-method}
+\alias{optimizedLambda,DNEA-method}
+\alias{optimizedLambda<-,DNEA-method}
 \title{Access the lambda value used in analysis}
 \usage{
 optimizedLambda(x)
 
 optimizedLambda(x) <- value
 
-\S4method{optimizedLambda}{DNEAobj}(x)
+\S4method{optimizedLambda}{DNEA}(x)
 
-\S4method{optimizedLambda}{DNEAobj}(x) <- value
+\S4method{optimizedLambda}{DNEA}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 
 \item{value}{a single-value numeric vector corresponding to the lambda
 value to use in analysis.}
@@ -25,7 +25,7 @@ value to use in analysis.}
 The optimized lambda hyperparameter.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object and returns
+The function takes as input a \code{\link{DNEA}} object and returns
 the hyper parameter (lambda) that is currently being used for the analysis.
 The user may also provide a single-value numeric vector to change the
 lambda value for analysis.
@@ -42,7 +42,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

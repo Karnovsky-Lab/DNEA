@@ -2,15 +2,15 @@
 % Please edit documentation in R/all-generics.R, R/all-methods.R
 \name{projectName}
 \alias{projectName}
-\alias{projectName,DNEAobj-method}
+\alias{projectName,DNEA-method}
 \title{Return the name of the current experiment}
 \usage{
 projectName(x)
 
-\S4method{projectName}{DNEAobj}(x)
+\S4method{projectName}{DNEA}(x)
 }
 \arguments{
-\item{x}{A \code{\link{DNEAobj}} object.}
+\item{x}{A \code{\link{DNEA}} object.}
 }
 \value{
 The name of the DNEA experiment.
@@ -30,7 +30,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 

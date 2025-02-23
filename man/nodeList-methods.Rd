@@ -3,20 +3,20 @@
 \name{nodeList}
 \alias{nodeList}
 \alias{nodeList<-}
-\alias{nodeList,DNEAobj-method}
-\alias{nodeList<-,DNEAobj-method}
+\alias{nodeList,DNEA-method}
+\alias{nodeList<-,DNEA-method}
 \title{Access the node list}
 \usage{
 nodeList(x)
 
 nodeList(x) <- value
 
-\S4method{nodeList}{DNEAobj}(x)
+\S4method{nodeList}{DNEA}(x)
 
-\S4method{nodeList}{DNEAobj}(x) <- value
+\S4method{nodeList}{DNEA}(x) <- value
 }
 \arguments{
-\item{x}{a \code{\link{DNEAobj}} object.}
+\item{x}{a \code{\link{DNEA}} object.}
 
 \item{value}{a data frame of nodes in the network.}
 }
@@ -25,7 +25,7 @@ A data frame corresponding to the node
 list determined by DNEA.
 }
 \description{
-The function takes as input a \code{\link{DNEAobj}} object
+The function takes as input a \code{\link{DNEA}} object
 and returns the node list created from the
 \code{\link{createDNEAobject}} function.
 }
@@ -41,7 +41,7 @@ T1Dmeta <- T1Dmeta[colnames(TEDDY),]
 group_labels <- T1Dmeta$group
 names(group_labels) <- rownames(T1Dmeta)
 
-#initiate DNEAobj
+#initiate DNEA object
 dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
                             group_labels = group_labels)
 
