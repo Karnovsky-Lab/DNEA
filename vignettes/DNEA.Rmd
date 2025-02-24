@@ -43,18 +43,22 @@ BiocManager::install("DNEA")
 This package is the most customizable implementation of DNEA to date, allowing the user to create the best analysis for their data. This vignette aims to walk you through a typical DNEA workflow, and describe the parameters that may be modified in common use cases.  
 
 ## Example Data 
-We will use the metabolomics expression data derived from The Environmental Determinants of Type I Diabetes in the Young (TEDDY) clinical trial (@TEDDY) to demonstrate DNEA. TEDDY is a prospective case-control study that seeks to better understand environmental causes of Type I diabetes. High-risk infants, as defined by the presence of HLA-DR and HLA-DQ genotypes, were visited every 6 months and blood samples were collected until development of type I diabetes or their 15 birthday, whichever occurred first. The study consisted of two conditions, Islet auto-antibody (IA) case vs. control and Type I Diabetes (T1D) case vs. control, but we will focus on the latter here. The data was originally accessed from Metaboolomics Workbench under Project ID: [PR000950](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950). The T1D arm contains 3525 samples from 440 subjects, 50 of which developed Type I Diabetes. The example data contains the samples from those 50 subjects on the date of diagnosis as well as samples from the 322 paired control subjects (3 control to 1 case) closest to that day. This data is stored in the package, and instructions on how to access the data are below. Please visit the Metabolomics Workbench for more information about the data set.
+We will use the metabolomics expression data derived from The Environmental Determinants of Type I Diabetes in the Young (TEDDY) clinical trial (@TEDDY) to demonstrate DNEA. TEDDY is a prospective case-control study that seeks to better understand environmental causes of Type I diabetes. High-risk infants, as defined by the presence of HLA-DR and HLA-DQ genotypes, were visited every 6 months and blood samples were collected until development of type I diabetes or their 15 birthday, whichever occurred first. The study consisted of two conditions, Islet auto-antibody (IA) case vs. control and Type I Diabetes (T1D) case vs. control, but we will focus on the latter here. The data was originally accessed from Metaboolomics Workbench under Project ID: [PR000950](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000950). The T1D arm contains 3525 samples from 440 subjects, 50 of which developed Type I Diabetes. The example data contains the samples from those 50 subjects on the date of T1D diagnosis as well as samples from the 272 paired control subjects closest to that day. This data is stored in the package, and instructions on how to access the data are below. Please visit the [Metabolomics Workbench](https://www.metabolomicsworkbench.org/) for more information about the data set.
 
 ## Quick Start
 The following code chunk represents a typical DNEA workflow for the example data.
-```{r, Quick Start, eval=FALSE, echo = TRUE}
+```{r, Quick Start, eval=TRUE, echo = TRUE}
 #Load packages
 library(DNEA)
 library(BiocParallel)
 #load the example data
 data("TEDDY")
 data("T1Dmeta")
-
+aminos <- c("alanine", "arginine", "asparagine", "aspartic_acid", "cysteine", "glutamine", 
+            "glutamic_acid", "glycine", "histidine", "isoleucine", "leucine", "lysine", "methionine",
+            "phenylalanine","proline", "serine", "threonine", "tryptophan", "tyrosine", "valine")
+keep <- rownames(TEDDY) %in% aminos
+TEDDY <- TEDDY[keep,]
 #initiate BiocParallel 
 BP_plan <- MulticoreParam(workers = 4, RNGseed = 417, progressbar = TRUE)
 
@@ -81,15 +85,6 @@ TEDDYdat <- getNetworks(object = TEDDYdat, aprox = TRUE, informed = TRUE, interv
 TEDDYdat <- clusterNet(object = TEDDYdat, tau = 0.5)
 
 TEDDYdat <- runNetGSA(TEDDYdat)
-
-#visualize networks in R
-plotNetworks(TEDDYdat, type = "group_networks", subtype = "DM:case", layout_func = layout_nicely,
-             label_font = 2, label_size = 0.5, node_size = 7)
-plotNetworks(TEDDYdat, type = "subnetworks", subtype = 1, layout_func = layout_nicely,
-             label_font = 2, label_size = 0.5, node_size = 7)
-
-#save files for visualization in Cytoscape
-getNetworkFiles(TEDDYdat, file_path = getwd())
 
 ```
 
