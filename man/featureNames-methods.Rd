@@ -5,7 +5,7 @@
 \alias{featureNames,DNEA-method}
 \title{Retrieve the feature names from the metadata slot.}
 \usage{
-featureNames(x, original = TRUE)
+featureNames(x, original = FALSE)
 
 \S4method{featureNames}{DNEA}(x, original = FALSE)
 }

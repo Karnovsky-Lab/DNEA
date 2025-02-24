@@ -5,12 +5,17 @@
 \alias{sampleNames,DNEA-method}
 \title{Retrieve the sample names from the metadata slot.}
 \usage{
-sampleNames(x)
+sampleNames(x, original = FALSE)
 
-\S4method{sampleNames}{DNEA}(x)
+\S4method{sampleNames}{DNEA}(x, original = FALSE)
 }
 \arguments{
 \item{x}{A \code{\link{DNEA}} object.}
+
+\item{original}{"TRUE" returns the original sample names
+and "FALSE" returns the sample names that have been
+modified to avoid errors as a result of special characters
+using \code{\link[janitor:make_clean_names]{make_clean_names}}.}
 }
 \value{
 A character vector of sample names.
