@@ -112,10 +112,11 @@ createDNEAobject <- function(project_name,
   if(!missing(assay)){
     if(!is.character(assay)){
       stop("assay should be a string!")}}
+
   if(!missing(expression_data)){
-    sample_names <- colnames(expression_data)
     feature_names <- rownames(expression_data)
   }
+
   if(!is.factor(group_labels)){
     group_labels <- factor(group_labels)
     message("Condition for expression_data should be of class factor. ",
@@ -129,7 +130,6 @@ createDNEAobject <- function(project_name,
       stop("scaled_expression_data should be a named list containing",
            "a named list of expression data split by condition")
     }
-    sample_names <- colnames(scaled_expression_data[[1]][[1]])
     feature_names <- rownames(scaled_expression_data[[1]][[1]])
 
     for(i in seq(length(scaled_expression_data))){
@@ -178,7 +178,7 @@ createDNEAobject <- function(project_name,
 
   ##gather network information for use later
   network_group_IDs <- structure(restructured_data[["metadata"]]$samples$conditions,
-                                 names=restructured_data[["metadata"]]$samples$samples)
+                                 names=restructured_data[["metadata"]]$samples$clean_sample_names)
   network_groups <- levels(restructured_data[["metadata"]]$samples$conditions)
 
   ##perform diagnostic testing on dataset
@@ -328,13 +328,14 @@ sumExp2DNEA <- function(project_name,
   }
 
   #add sample metadata
+  rownames(sample_info) <- make_clean_names(rownames(sample_info))
   sample_info <- sample_info[rownames(metaData(output, type = "samples")),]
-
   output <- includeMetadata(object = output,
                             type = "samples",
                             metadata = sample_info)
 
   #add feature metadata
+  rownames(variable_info) <- make_clean_names(rownames(variable_info))
   variable_info <- variable_info[rownames(metaData(output, type = "features")),]
   output <- includeMetadata(object = output,
                             type = "features",
@@ -346,6 +347,7 @@ sumExp2DNEA <- function(project_name,
   for(i in new_assays){
     for(y in seq(length(tmp_dat))){
       rownames(tmp_dat[[i]][[y]]) <- make_clean_names(rownames(tmp_dat[[i]][[y]]))
+      colnames(tmp_dat[[i]][[y]]) <- make_clean_names(colnames(tmp_dat[[i]][[y]]))
     }
     output <- addExpressionData(object = output,
                                 dat = tmp_dat[[i]],
@@ -541,14 +543,22 @@ restructure_input_data <- function(expression_data,
   assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
+  #feature names
   feature_names <- rownames(expression_data)
   clean_feature_names <- make_clean_names(feature_names)
+
+  #sample names
   sample_names <- colnames(expression_data)
+  clean_sample_names <- make_clean_names(sample_names)
+
+  #match clean sample names
+  names(condition_values) <- make_clean_names(names(condition_values))
 
   ##convert expression data to matrix
   expression_data <- as.matrix(expression_data)
 
   ##clean column names to avoid R conflicts
+  colnames(expression_data) <- clean_sample_names
   rownames(expression_data) <- clean_feature_names
 
   #add to assays list
@@ -569,12 +579,13 @@ restructure_input_data <- function(expression_data,
 
   ##concatenate output
   assays[['log-scaled_data']] <- scaled_expression_data
-  metadata[["samples"]] <- data.frame(samples=sample_names,
+  metadata[["samples"]] <- data.frame(sample_names=sample_names,
+                                      clean_sample_names=clean_sample_names,
                                       conditions=condition_values,
-                                      row.names=sample_names)
+                                      row.names=clean_sample_names)
   metadata[["features"]] <- data.frame(feature_names=feature_names,
                                        clean_feature_names=clean_feature_names,
-                                       row.names=feature_names)
+                                       row.names=clean_feature_names)
 
   return(list(assays=assays, metadata=metadata))
 }
@@ -622,28 +633,59 @@ restructure_scaled_input_data <- function(scaled_expression_data,
   condition_values <- condition_values[sample_names]
   conditions_key <- levels(condition_values)
 
+  #feature names
   feature_names <- rownames(scaled_expression_data[[assays_key[1]]][[conditions_key[1]]])
   clean_feature_names <- make_clean_names(feature_names)
 
+  #sample names
+  sample_names <- lapply(seq(length(conditions_key)),
+                         function(x) colnames(scaled_expression_data[[assays_key[1]]][[conditions_key[x]]]))
+  sample_names <- unlist(sample_names)
+  clean_sample_names <- make_clean_names(sample_names)
+
+  #match clean sample names
+  names(condition_values) <- make_clean_names(names(condition_values))
 
   for(i in seq(length(scaled_expression_data))){
-    ##convert expression data to matrix
-    scaled_expression_data[[i]][[conditions_key[1]]] <- as.matrix(scaled_expression_data[[i]][[conditions_key[1]]])
-    scaled_expression_data[[i]][[conditions_key[2]]] <- as.matrix(scaled_expression_data[[i]][[conditions_key[2]]])
+    for(y in seq(length(levels(condition_values)))){
+      ##clean feature names to avoid R conflicts
+      tmp_feats <- make_clean_names(rownames(scaled_expression_data[[i]][[conditions_key[1]]]))
+      rownames(scaled_expression_data[[i]][[conditions_key[[y]]]]) <- tmp_feats
+
+      #clean sample names to avoid R conflicts
+      tmp_sampls <- make_clean_names(colnames(scaled_expression_data[[i]][[conditions_key[y]]]))
+      colnames(scaled_expression_data[[i]][[conditions_key[y]]]) <- tmp_sampls
+
+      ##convert expression data to matrix
+      scaled_expression_data[[i]][[conditions_key[y]]] <- as.matrix(scaled_expression_data[[i]][[conditions_key[y]]])
+
+      rm(tmp_feats, tmp_sampls)
+    }
+
+    #scaled_expression_data[[i]][[conditions_key[1]]] <- as.matrix(scaled_expression_data[[i]][[conditions_key[1]]])
+    #scaled_expression_data[[i]][[conditions_key[2]]] <- as.matrix(scaled_expression_data[[i]][[conditions_key[2]]])
+
     ##clean feature names to avoid R conflicts
-    rownames(scaled_expression_data[[i]][[conditions_key[1]]]) <- clean_feature_names
-    rownames(scaled_expression_data[[i]][[conditions_key[2]]]) <- clean_feature_names
+    # clean_feature_names <- make_clean_names(rownames(scaled_expression_data[[i]][[conditions_key[1]]]))
+    # rownames(scaled_expression_data[[i]][[conditions_key[1]]]) <- clean_feature_names
+    # rownames(scaled_expression_data[[i]][[conditions_key[2]]]) <- clean_feature_names
+
+    #clean sample names to avoid R conflicts
+    # colnames(scaled_expression_data[[i]][[conditions_key[1]]]) <- clean_sample_names
+    # colnames(scaled_expression_data[[i]][[conditions_key[2]]]) <- clean_sample_names
+
     ##add to output
-    assays[[assays_key[i]]] <- scaled_expression_data[[assays_key[i]]]
+    assays[[assays_key[[i]]]] <- scaled_expression_data[[assays_key[[i]]]]
   }
 
   ##concatenate output
-  metadata[["samples"]] <- data.frame(samples=sample_names,
+  metadata[["samples"]] <- data.frame(sample_names=sample_names,
+                                      clean_sample_names=clean_sample_names,
                                       conditions=condition_values,
-                                      row.names=sample_names)
+                                      row.names=clean_sample_names)
   metadata[["features"]] <- data.frame(feature_names=feature_names,
                                        clean_feature_names=clean_feature_names,
-                                       row.names=feature_names)
+                                       row.names=clean_feature_names)
 
   return(list(assays=assays, metadata=metadata))
 }
