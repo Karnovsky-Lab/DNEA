@@ -137,7 +137,7 @@ setClass(Class="DNEAinputSummary",
 #' @import methods
 #' @name DNEA-class
 #' @rdname DNEA-class
-#' @aliases DNEA-class DNEA
+#' @aliases DNEA-class
 setClass(Class="DNEA",
          slots=c(
            project_name='character',

@@ -40,7 +40,6 @@
 #' @docType package
 #' @name DNEA-package
 #' @rdname DNEA-package
-#' @aliases DNEA-package DNEA
 #' @section Primary Components:
 #'
 #' The main workflow contains the following functions:

@@ -3,7 +3,6 @@
 \docType{class}
 \name{DNEA-class}
 \alias{DNEA-class}
-\alias{DNEA}
 \alias{show,DNEA-method}
 \title{DNEA object}
 \usage{
