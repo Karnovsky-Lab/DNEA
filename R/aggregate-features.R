@@ -162,9 +162,11 @@ aggregateFeatures <- function(object,
     stop("AGGREGATION MUST BE DONE ON RAW PEAK INTENSITIES/CONCENTRATIONS!")
   }
 
-  if(!vector_compare(rownames(expressionData(x=object, assay=assay)),
-                     rownames(feature_groups))){
-    stop("feature_groups order does not match expression data order!")
+  if(!is.null(feature_groups)){
+    if(!vector_compare(rownames(expressionData(x=object, assay=assay)),
+                       rownames(feature_groups))){
+      stop("feature_groups order does not match expression data order!")
+    }
   }
 
   if(method == "knowledge" & !is.null(correlation_threshold)){
