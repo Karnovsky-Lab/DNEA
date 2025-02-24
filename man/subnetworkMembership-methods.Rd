@@ -30,7 +30,7 @@ determined via \code{\link{clusterNet}}.
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running
 #browseVignettes("DNEA") in the console.
-data(dnw)
+data("dnw")
 
 subnetworkMembership(dnw)
 }

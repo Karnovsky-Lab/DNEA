@@ -27,7 +27,7 @@ edge calculated during \code{\link{stabilitySelection}}.
 #console. The workflow for this data can be found in the
 #vignette accessed by running browseVignettes("DNEA")
 #in the console.
-data(dnw)
+data("dnw")
 
 selectionProbabilities(dnw)
 }

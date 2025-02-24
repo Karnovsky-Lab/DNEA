@@ -765,7 +765,7 @@ selectionProbabilities.DNEA <- function(x){
 #' #console. The workflow for this data can be found in the
 #' #vignette accessed by running browseVignettes("DNEA")
 #' #in the console.
-#' data(dnw)
+#' data("dnw")
 #'
 #' selectionProbabilities(dnw)
 #' @rdname selectionProbabilities-methods
@@ -812,7 +812,7 @@ edgeList.DNEA <- function(x){
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
 #' #browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' data("dnw")
 #'
 #' edgeList(dnw)
 #' @rdname edgeList-methods
@@ -1046,6 +1046,7 @@ adjacencyMatrix.DNEA <- function(x, weighted=FALSE){
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
 #' #browseVignettes("DNEA") in the console.
+#' data("dnw")
 #'
 #' adjacencyMatrix(dnw, weighted=TRUE)
 #' @rdname adjacencyMatrix-methods
@@ -1198,7 +1199,7 @@ CCsummary.DNEA <- function(x){
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
 #' #browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' data("dnw")
 #'
 #' CCsummary(dnw)
 #' @rdname CCsummary-methods
@@ -1240,7 +1241,7 @@ subnetworkMembership.DNEA <- function(x){
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
 #' #browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' data("dnw")
 #'
 #' subnetworkMembership(dnw)
 #' @rdname subnetworkMembership-methods
@@ -1292,7 +1293,7 @@ netGSAresults.DNEA <- function(x){
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
 #' #browseVignettes("DNEA") in the console.
-#' data(dnw)
+#' data("dnw")
 #'
 #' netGSAresults(dnw)
 #' @rdname netGSAresults-methods

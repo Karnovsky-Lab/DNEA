@@ -32,6 +32,7 @@ each group network constructed via the
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running
 #browseVignettes("DNEA") in the console.
+data("dnw")
 
 adjacencyMatrix(dnw, weighted=TRUE)
 }
