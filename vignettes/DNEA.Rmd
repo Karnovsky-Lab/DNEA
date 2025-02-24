@@ -54,16 +54,18 @@ library(BiocParallel)
 #load the example data
 data("TEDDY")
 data("T1Dmeta")
-aminos <- c("alanine", "arginine", "asparagine", "aspartic_acid", "cysteine", "glutamine", 
-            "glutamic_acid", "glycine", "histidine", "isoleucine", "leucine", "lysine", "methionine",
-            "phenylalanine","proline", "serine", "threonine", "tryptophan", "tyrosine", "valine")
+aminos <- c("alanine", "arginine", "asparagine", "aspartic_acid", 
+            "cysteine", "glutamine", "glutamic_acid", "glycine", 
+            "histidine", "isoleucine", "leucine", "lysine", 
+            "methionine", "phenylalanine", "proline", "serine", 
+            "threonine", "tryptophan", "tyrosine", "valine")
 keep <- rownames(TEDDY) %in% aminos
-TEDDY <- TEDDY[keep,]
+TEDDYreduced <- TEDDY[keep,]
 #initiate BiocParallel 
-BP_plan <- MulticoreParam(workers = 2, RNGseed = 417, progressbar = TRUE)
+BP_plan <- MulticoreParam(workers = 2, RNGseed = 417, progressbar = FALSE)
 
 #re-order the metadata to match the sample order of expression_data
-T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+T1Dmeta <- T1Dmeta[colnames(TEDDYreduced),]
 
 #save the group column to be used as group_labels
 group_labels <- T1Dmeta$group
@@ -76,12 +78,15 @@ group_labels <- factor(group_labels, levels = c("DM:control", "DM:case"))
 
 #Run DNEA
 TEDDYdat <- createDNEAobject(project_name = "TEDDYmetabolomics",
-                             expression_data = TEDDY,
+                             expression_data = TEDDYreduced,
                              group_labels = group_labels)
-TEDDYdat <- BICtune(object = TEDDYdat, informed = TRUE, interval = 1e-3, BPPARAM = BP_plan)
-TEDDYdat <- stabilitySelection(object = TEDDYdat, subSample = TRUE, nreps = 1000, BPPARAM = BP_plan,
+TEDDYdat <- BICtune(object = TEDDYdat, informed = TRUE, 
+                    interval = 1e-3, BPPARAM = BP_plan)
+TEDDYdat <- stabilitySelection(object = TEDDYdat, subSample = TRUE, 
+                               nreps = 1000, BPPARAM = BP_plan,
                                BPOPTIONS=bpoptions(tasks = 8))
-TEDDYdat <- getNetworks(object = TEDDYdat, aprox = TRUE, informed = TRUE, interval = 1e-3, BPPARAM = BP_plan)
+TEDDYdat <- getNetworks(object = TEDDYdat, aprox = TRUE, informed = TRUE, 
+                        interval = 1e-3, BPPARAM = BP_plan)
 TEDDYdat <- clusterNet(object = TEDDYdat, tau = 0.5)
 
 TEDDYdat <- runNetGSA(TEDDYdat)
