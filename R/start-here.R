@@ -72,8 +72,8 @@ NULL
 #' @keywords datasets
 #' @name TEDDY
 #' @usage data("TEDDY")
-#' @format A data frame with 100 rows and 144 columns. Each row corresponds
-#' to a sample, and each column corresponds to a metabolite.
+#' @format A data frame with 134 rows and 322 columns. Each row corresponds
+#' to a unique metabolite, and each column corresponds to a sample
 #' @references Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K,
 #' Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B,
 #' Ziegler AG, Krischer JP; TEDDY study group. Biomarker discovery study
@@ -108,7 +108,7 @@ NULL
 #' @keywords datasets
 #' @name T1Dmeta
 #' @usage data("T1Dmeta")
-#' @format A data frame with 322 rows and 9 columns. Each row corresponds
+#' @format A data frame with 322 rows and 7 columns. Each row corresponds
 #' to a sample, and each column corresponds to:
 #' \describe{
 #' \item{subject}{The individual patient}
