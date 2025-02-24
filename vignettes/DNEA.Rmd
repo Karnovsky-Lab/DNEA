@@ -60,7 +60,7 @@ aminos <- c("alanine", "arginine", "asparagine", "aspartic_acid", "cysteine", "g
 keep <- rownames(TEDDY) %in% aminos
 TEDDY <- TEDDY[keep,]
 #initiate BiocParallel 
-BP_plan <- MulticoreParam(workers = 4, RNGseed = 417, progressbar = TRUE)
+BP_plan <- MulticoreParam(workers = 2, RNGseed = 417, progressbar = TRUE)
 
 #re-order the metadata to match the sample order of expression_data
 T1Dmeta <- T1Dmeta[colnames(TEDDY),]
