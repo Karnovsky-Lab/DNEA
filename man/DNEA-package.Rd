@@ -33,7 +33,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Christopher Patsalis \email{chrispatsalis@gmail.com} (\href{https://orcid.org/0009-0003-4585-0017}{ORCID})
+\strong{Maintainer}: Christopher Patsalis \email{patsalis@umich.edu} (\href{https://orcid.org/0009-0003-4585-0017}{ORCID})
 
 Authors:
 \itemize{
