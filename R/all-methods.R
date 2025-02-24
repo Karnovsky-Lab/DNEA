@@ -59,8 +59,7 @@ setMethod("show", "DNEA", function(object) {
                                      "Enrichment analysis not performed",
                                      paste0(sum(netGSAresults(object)$NetGSA_pFDR <= 0.05),
                                             " enriched modules\n")),
-      sep=""
-  )
+      "\n", sep="")
 })
 
 #' Retrieve information about a DNEAinputSummary object
@@ -98,9 +97,9 @@ setMethod("show", "DNEA", function(object) {
 #' @export
 setMethod("show", "DNEAinputSummary", function(object){
   cat(is(object)[[1]],
-             "\n  Number of Samples  -  ", numSamples(object),
-             "\n  Number of Features  -  ", numFeatures(object),"\n",
-      sep="")
+      "\n  Number of Samples  -  ", numSamples(object),
+      "\n  Number of Features  -  ", numFeatures(object),
+      "\n", sep="")
   print(as.matrix(diagnostics(object)))
 })
 
