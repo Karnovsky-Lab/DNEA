@@ -37,6 +37,10 @@
 # clustering-internals.R...........contains the internal functions necessary   #
 #                                  for consensus clustering                    #
 ################################################################################
+#' @docType package
+#' @name DNEA-package
+#' @rdname DNEA-package
+#' @aliases DNEA-package DNEA
 #' @section Primary Components:
 #'
 #' The main workflow contains the following functions:
@@ -185,8 +189,8 @@ NULL
 #' \deqn{\lambda = \sqrt{ \ln (num. features) / num. samples}}{ lambda = sqrt(ln(num. features) / num. samples)}
 #'
 #'
-#' @returns A \code{\link{DNEA}} object containing the results of a
-#' DNEA experiment.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object
+#' containing the results of a DNEA experiment.
 #' @docType data
 #' @keywords datasets
 #' @name dnw
