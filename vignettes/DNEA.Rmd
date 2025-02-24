@@ -87,7 +87,7 @@ TEDDYdat <- stabilitySelection(object = TEDDYdat, subSample = TRUE,
                                BPOPTIONS=bpoptions(tasks = 8))
 TEDDYdat <- getNetworks(object = TEDDYdat, aprox = TRUE, informed = TRUE, 
                         interval = 1e-3, BPPARAM = BP_plan)
-TEDDYdat <- clusterNet(object = TEDDYdat, tau = 0.5)
+TEDDYdat <- clusterNet(object = TEDDYdat, tau = 0.5, verbose = FALSE)
 
 TEDDYdat <- runNetGSA(TEDDYdat)
 
