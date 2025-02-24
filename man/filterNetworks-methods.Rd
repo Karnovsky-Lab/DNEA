@@ -14,7 +14,7 @@ filterNetworks(data, pcor, top_percent_edges)
 \S4method{filterNetworks}{list}(data, pcor, top_percent_edges)
 }
 \arguments{
-\item{data}{A \code{\link{DNEA}} object.}
+\item{data}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{pcor}{A partial correlation value of which to threshold
 the adjacency matrices. Edges with pcor values <= to this
@@ -30,7 +30,7 @@ The input object after filtering the egdes in the
 network according to the specified parameters.
 }
 \description{
-This function takes as input a \code{\link{DNEA}} object and
+This function takes as input a \code{\link[=DNEA-class]{DNEA}} object and
 allows the user to filter the network edges by one of two methods:
 
 \enumerate{
@@ -45,7 +45,7 @@ Filtering is performed on the case and control adjacency matrices
 separately. \cr
 }
 \examples{
-#dnw is a \code{\link{DNEA}} object with the results
+#dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #generated for the example data accessed by running
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running

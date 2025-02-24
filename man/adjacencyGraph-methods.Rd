@@ -36,6 +36,7 @@ consensus clustering using \code{\link{clusterNet}}.
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running
 #browseVignettes("DNEA") in the console.
+data("dnw")
 
 adjacencyGraph(dnw, graph="DM:case")
 }

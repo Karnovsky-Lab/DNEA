@@ -8,7 +8,7 @@ consensus clustering approach}
 clusterNet(object, tau = 0.5, max_iterations = 5, verbose = TRUE)
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{tau}{The \% agreement among the clustering algorithms
 for a node to be included in a sub network.}
@@ -21,7 +21,7 @@ reached.}
 displayed in the console.}
 }
 \value{
-A \code{\link{DNEA}} object containing sub network
+A \code{\link[=DNEA-class]{DNEA}} object containing sub network
 determinations for the nodes within the input network. A summary of the
 consensus clustering results can be viewed using \code{\link{CCsummary}}.
 Sub network membership for each node can be found in the "membership"
@@ -57,7 +57,7 @@ until consensus on is reached stable sub networks or the specified
 \emph{(Please see references for more details)}.
 }
 \examples{
-#dnw is a \code{\link{DNEA}} object with the results
+#dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #generated for the example data accessed by running
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running

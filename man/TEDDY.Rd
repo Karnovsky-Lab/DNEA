@@ -6,8 +6,8 @@
 \title{Example expresion data set from The Environmental Determinants
 of Diabetes in the Young (TEDDY) clinical trial}
 \format{
-A data frame with 100 rows and 144 columns. Each row corresponds
-to a sample, and each column corresponds to a metabolite.
+A data frame with 134 rows and 322 columns. Each row corresponds
+to a unique metabolite, and each column corresponds to a sample
 }
 \source{
 This data is available at the NIH Common Fund's National

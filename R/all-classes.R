@@ -35,7 +35,7 @@ setClass(Class="consensusClusteringResults",
 #' DNEAinputSummary
 #'
 #' An s4 class to represent the results from diagnostic testing
-#' on the input data to a \code{\link{DNEA}}.
+#' on the input data to a \code{\link[=DNEA-class]{DNEA}}.
 #'
 #' @slot num_samples a single-value numeric vector corresponding
 #' to the number of samples in the data set.
@@ -132,10 +132,12 @@ setClass(Class="DNEAinputSummary",
 #' \code{\link{selectionResults}},\code{\link{createDNEAobject}},
 #'
 #' @returns A DNEA object
+#' @inherit createDNEAobject return examples
+#'
 #' @import methods
 #' @name DNEA-class
 #' @rdname DNEA-class
-#' @aliases DNEA
+#' @aliases DNEA-class DNEA
 setClass(Class="DNEA",
          slots=c(
            project_name='character',
@@ -155,9 +157,9 @@ setClass(Class="DNEA",
 #'
 #' An s4 class to represent the DNEA workflow, including collapsing
 #' features. This class inherits from the
-#' \code{\link{DNEA}} class.
+#' \code{\link[=DNEA-class]{DNEA}} class.
 #'
-#' @slot original_experiment The \code{\link{DNEA}} object input
+#' @slot original_experiment The \code{\link[=DNEA-class]{DNEA}} object input
 #' to \code{\link{aggregateFeatures}}.
 #'
 #' @slot feature_membership A data frame containing all of the
@@ -171,6 +173,8 @@ setClass(Class="DNEA",
 #' \code{\link{createDNEAobject}}
 #'
 #' @returns A collapsed_DNEA object
+#' @inherit aggregateFeatures return examples
+#'
 #' @docType class
 #' @import methods
 #' @rdname collapsed_DNEA-class

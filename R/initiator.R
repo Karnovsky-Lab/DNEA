@@ -84,7 +84,7 @@ NULL
 #' are highly correlated and will therefore have similar
 #' feature-feature associations.
 #'
-#' @returns A \code{\link{DNEA}} object.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @examples
 #' #import example data
@@ -220,7 +220,7 @@ createDNEAobject <- function(project_name,
 #' This function takes as input a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
 #'  object non-transformed in order to initiate a
-#' \code{\link{DNEA}} object. Differential expression analysis
+#' \code{\link[=DNEA-class]{DNEA}} object. Differential expression analysis
 #' is performed using a student's T-test and Benjamini-Hochberg
 #' for multiple-testing corrections. Diagnostic testing is done
 #' on the input data by checking the minimum eigen value and
@@ -255,7 +255,7 @@ createDNEAobject <- function(project_name,
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 #' \code{\link{createDNEAobject}}
 #'
-#' @returns A \code{\link{DNEA}} object.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @examples
 #' #load example data from airway package
@@ -359,7 +359,7 @@ sumExp2DNEA <- function(project_name,
 #' @description
 #' This function takes as input a
 #' mass_dataset-class object from the massdataset package to
-#' initiate a \code{\link{DNEA}} object. Differential
+#' initiate a \code{\link[=DNEA-class]{DNEA}} object. Differential
 #' expression analysis is performed using a student's T-test
 #' and Benjamini-Hochberg for multiple-testing corrections.
 #' Diagnostic testing is done on the input data by checking
@@ -397,7 +397,7 @@ sumExp2DNEA <- function(project_name,
 #' \code{\link{BICtune}}, \code{\link{stabilitySelection}},
 #' \code{\link{createDNEAobject}}
 #'
-#' @returns A \code{\link{DNEA}} object.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @examples
 #' #load data
@@ -506,7 +506,7 @@ massDataset2DNEA <- function(project_name,
 #'
 #' This function takes as input a matrix of expression data and the
 #' experimental group labels in order to restructure the input as to prepare
-#' it for initiation of a \code{\link{DNEA}} object.
+#' it for initiation of a \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param expression_data A matrix or data frame of expression data.
 #' The sample names should be column names and the feature names
@@ -652,7 +652,7 @@ restructure_scaled_input_data <- function(scaled_expression_data,
 
 #' Calculate diagnostic criteria to determine stability of dataset
 #'
-#' This function takes as input a \code{\link{DNEA}} object and
+#' This function takes as input a \code{\link[=DNEA-class]{DNEA}} object and
 #' calculates the minimum eigen value and condition number for the
 #' whole data set as well as for each condition using the normalized
 #' data. This is done to determine mathematic stability of the data
@@ -708,7 +708,7 @@ restructure_scaled_input_data <- function(scaled_expression_data,
 #' are highly correlated and will therefore have similar
 #' feature-feature associations.
 #'
-#' @returns A \code{\link{DNEA}} object containing an
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object containing an
 #' initialized node_list. Differential expression is performed on the
 #' features if un-scaled data is provided. The diagnostic criteria are
 #' returned to the console.

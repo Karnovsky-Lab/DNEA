@@ -34,7 +34,7 @@ function always defaults to using log transformed data for
 differential expression analysis if provided.}
 }
 \value{
-A \code{\link{DNEA}} object.
+A \code{\link[=DNEA-class]{DNEA}} object.
 }
 \description{
 This function takes as input a matrix of non-normalized, non-transformed

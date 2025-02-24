@@ -7,7 +7,7 @@
 addExpressionData(object, dat, assay_name)
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{dat}{A list of \emph{m x n} numeric matrices of
 custom-normalized expression data, one matrix for each
@@ -18,15 +18,15 @@ match the labels returned by
 
 \item{assay_name}{A character string corresponding
 to the name the new data will be stored under in the
-assays slot of the \code{\link{DNEA}}.}
+assays slot of the \code{\link[=DNEA-class]{DNEA}}.}
 }
 \value{
-A \code{\link{DNEA}} object with the added
+A \code{\link[=DNEA-class]{DNEA}} object with the added
 expression data in the @assays slot
 }
 \description{
 This function allows the user to input custom-normalized data into the
-\code{\link{DNEA}} object for use in DNEA analysis.
+\code{\link[=DNEA-class]{DNEA}} object for use in DNEA analysis.
 }
 \examples{
 #load example data
@@ -87,7 +87,7 @@ dnw <- addExpressionData(object=dnw,
 
 }
 \seealso{
-\code{\link{createDNEAobject}},\code{\link{DNEA}},
+\code{\link{createDNEAobject}},\code{\link[=DNEA-class]{DNEA}},
 }
 \author{
 Christopher Patsalis

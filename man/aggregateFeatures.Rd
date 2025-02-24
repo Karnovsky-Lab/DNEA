@@ -13,7 +13,7 @@ aggregateFeatures(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{method}{A character string that dictates the collapsing method
 to use. The available methods are:
@@ -37,7 +37,7 @@ this setting is used.}
 A \code{collapsed_DNEA} object.
 }
 \description{
-This function takes as input a \code{\link{DNEA}} object
+This function takes as input a \code{\link[=DNEA-class]{DNEA}} object
 and aggregates highly correlated features within the
 non-normalized, non-transformed data using one of three methods:
 

@@ -8,7 +8,7 @@ experimental conditions using NetGSA}
 runNetGSA(object, min_size = 5, assay, pathways)
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}}.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}}.}
 
 \item{min_size}{The minimum size of a given metabolic
 module for to be tested for enrichment across the
@@ -26,9 +26,9 @@ it is not. Please see \code{\link[netgsa:NetGSA]{NetGSA}} for more
 information.}
 }
 \value{
-A \code{\link{DNEA}} object after populating the @netGSA
-slot. A summary of the NetGSA results can be viewed
-using \code{\link{netGSAresults}}.
+A \code{\link[=DNEA-class]{DNEA}} object after
+populating the @netGSA slot. A summary of the NetGSA
+results can be viewed using \code{\link{netGSAresults}}.
 }
 \description{
 This function performs pathway enrichment analysis on the metabolic
@@ -36,7 +36,7 @@ modules identified via \code{\link{clusterNet}} using the
 \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 }
 \examples{
-#dnw is a \code{\link{DNEA}} object with the results
+#dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #generated for the example data accessed by running
 #data(TEDDY) in the console. The workflow for this data
 #can be found in the vignette accessed by running

@@ -7,7 +7,7 @@
 includeMetadata(object, type = c("samples", "features"), metadata)
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{type}{A character string corresponding to the type of metadata
 being included. Can be either "samples" or "features"}
@@ -16,7 +16,7 @@ being included. Can be either "samples" or "features"}
 names should be either the sample names or feature names, respectively}
 }
 \value{
-A \code{\link{DNEA}} object with the specified additions.
+A \code{\link[=DNEA-class]{DNEA}} object with the specified additions.
 }
 \description{
 This function will take additional metadata and add it to the specified

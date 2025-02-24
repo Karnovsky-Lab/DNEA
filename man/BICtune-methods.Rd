@@ -43,7 +43,8 @@ BICtune(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object. See \code{\link{createDNEAobject}}}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.
+See \code{\link{createDNEAobject}}}
 
 \item{lambda_values}{\emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 the lambda parameter. If not provided, a set of lambda values are chosen
@@ -76,9 +77,9 @@ calculate its inverse. The default value is 0.01.}
 the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
-A \code{\link{DNEA}} object containing the BIC and likelihood
-scores for every lambda value tested, as well as the
-optimized lambda value
+A \code{\link[=DNEA-class]{DNEA}} object containing
+the BIC and likelihood scores for every lambda value tested,
+as well as the optimized lambda value
 }
 \description{
 This function will calculate the Bayesian information criterion (BIC)

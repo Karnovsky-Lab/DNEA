@@ -19,12 +19,12 @@ to use as the group labels.}
 is already normalized}
 }
 \value{
-A \code{\link{DNEA}} object.
+A \code{\link[=DNEA-class]{DNEA}} object.
 }
 \description{
 This function takes as input a
 mass_dataset-class object from the massdataset package to
-initiate a \code{\link{DNEA}} object. Differential
+initiate a \code{\link[=DNEA-class]{DNEA}} object. Differential
 expression analysis is performed using a student's T-test
 and Benjamini-Hochberg for multiple-testing corrections.
 Diagnostic testing is done on the input data by checking

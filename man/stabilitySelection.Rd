@@ -16,7 +16,7 @@ stabilitySelection(
 )
 }
 \arguments{
-\item{object}{A \code{\link{DNEA}} object.}
+\item{object}{A \code{\link[=DNEA-class]{DNEA}} object.}
 
 \item{subSample}{TRUE/FALSE indicating whether the number of samples
 are unevenly split by condition and subsampling should be performed
@@ -39,7 +39,7 @@ created during \code{\link{createDNEAobject}}.}
 the \code{\link[BiocParallel:bpoptions]{bpoptions}} function.}
 }
 \value{
-A \code{\link{DNEA}} object after populating the
+A \code{\link[=DNEA-class]{DNEA}} object after populating the
 stable_networks slot of the object. It contains the selection
 results from stability selection as well as the calculated
 selection probabilities.

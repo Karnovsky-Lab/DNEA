@@ -1,7 +1,7 @@
 #' Aggregate correlated features into a single feature class
 #'
 #' @description
-#' This function takes as input a \code{\link{DNEA}} object
+#' This function takes as input a \code{\link[=DNEA-class]{DNEA}} object
 #' and aggregates highly correlated features within the
 #' non-normalized, non-transformed data using one of three methods:
 #'
@@ -20,7 +20,7 @@
 #' each group, normalized data may alter erroneously alter the
 #' aggregated expression values
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param method A character string that dictates the collapsing method
 #' to use. The available methods are:

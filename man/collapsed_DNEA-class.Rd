@@ -11,12 +11,12 @@ A collapsed_DNEA object
 \description{
 An s4 class to represent the DNEA workflow, including collapsing
 features. This class inherits from the
-\code{\link{DNEA}} class.
+\code{\link[=DNEA-class]{DNEA}} class.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{original_experiment}}{The \code{\link{DNEA}} object input
+\item{\code{original_experiment}}{The \code{\link[=DNEA-class]{DNEA}} object input
 to \code{\link{aggregateFeatures}}.}
 
 \item{\code{feature_membership}}{A data frame containing all of the
@@ -24,6 +24,42 @@ features from the original input data and their corresponding
 group membership in the new aggregated data.}
 }}
 
+\examples{
+#load example data
+data(TEDDY)
+data(T1Dmeta)
+
+#make sure metadata and expression data are in same order
+T1Dmeta <- T1Dmeta[colnames(TEDDY),]
+
+#create group labels
+group_labels <- T1Dmeta$group
+names(group_labels) <- rownames(T1Dmeta)
+
+#initiate DNEA object
+dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
+                            group_labels = group_labels)
+
+#simulate group labels
+TEDDY_groups <- data.frame(features=rownames(expressionData(x=dnw,
+                           assay="input_data")),
+                           groups=rownames(expressionData(x=dnw,
+                                           assay="input_data")),
+                           row.names=rownames(expressionData(x=dnw,
+                                              assay="input_data")))
+
+TEDDY_groups$groups[TEDDY_groups$groups \%in\% c("isoleucine",
+                                               "leucine",
+                                               "valine")] <- "BCAAs"
+TEDDY_groups$groups[grep("acid", TEDDY_groups$groups)] <- "fatty_acids"
+
+
+collapsed_TEDDY <- aggregateFeatures(object=dnw,
+                                  method="hybrid",
+                                  correlation_threshold=0.7,
+                                  feature_groups=TEDDY_groups)
+
+}
 \seealso{
 \code{\link{aggregateFeatures}},
 \code{\link{createDNEAobject}}

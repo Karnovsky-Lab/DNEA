@@ -15,8 +15,8 @@ the \code{\link{TEDDY}} example data, as described above.
 data("dnw")
 }
 \value{
-A \code{\link{DNEA}} object containing the results of a
-DNEA experiment.
+A \code{\link[=DNEA-class]{DNEA}} object
+containing the results of a DNEA experiment.
 }
 \description{
 "dnw" is a DNEA object containing the results for the full

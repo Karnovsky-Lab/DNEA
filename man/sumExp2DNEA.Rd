@@ -21,13 +21,13 @@ column in the sample metadata stored in the SummarizedExperiment object
 to use as the group labels.}
 }
 \value{
-A \code{\link{DNEA}} object.
+A \code{\link[=DNEA-class]{DNEA}} object.
 }
 \description{
 This function takes as input a
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment-class}}
 object non-transformed in order to initiate a
-\code{\link{DNEA}} object. Differential expression analysis
+\code{\link[=DNEA-class]{DNEA}} object. Differential expression analysis
 is performed using a student's T-test and Benjamini-Hochberg
 for multiple-testing corrections. Diagnostic testing is done
 on the input data by checking the minimum eigen value and

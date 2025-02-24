@@ -6,7 +6,7 @@
 \title{Sample meta data for the The Environmental Determinants
 of Diabetes in the Young (TEDDY) clinical trial}
 \format{
-A data frame with 322 rows and 9 columns. Each row corresponds
+A data frame with 322 rows and 7 columns. Each row corresponds
 to a sample, and each column corresponds to:
 \describe{
 \item{subject}{The individual patient}

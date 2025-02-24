@@ -19,7 +19,7 @@ A summary of the input data to \code{\link{createDNEAobject}}.
 }
 \description{
 An s4 class to represent the results from diagnostic testing
-on the input data to a \code{\link{DNEA}}.
+on the input data to a \code{\link[=DNEA-class]{DNEA}}.
 }
 \section{Functions}{
 \itemize{

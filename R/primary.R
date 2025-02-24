@@ -189,7 +189,8 @@ BICtune.matrix <- function(object,
 #' lambda value for the data set and is stored in the DNEA object for use in
 #' stability selection using \code{\link{stabilitySelection}}.
 #'
-#' @param object A \code{\link{DNEA}} object. See \code{\link{createDNEAobject}}
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
+#' See \code{\link{createDNEAobject}}
 #' @param lambda_values \emph{\strong{OPTIONAL -}} A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
 #' based on the theoretical value for the asymptotically valid lambda. More
@@ -256,9 +257,9 @@ BICtune.matrix <- function(object,
 #' deployed here can be found in the Guo et al. (2011)
 #' paper referenced below.
 #'
-#' @returns A \code{\link{DNEA}} object containing the BIC and likelihood
-#' scores for every lambda value tested, as well as the
-#' optimized lambda value
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object containing
+#' the BIC and likelihood scores for every lambda value tested,
+#' as well as the optimized lambda value
 #'
 #' @examples
 #' #import BiocParallel package
@@ -310,7 +311,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' performed. More information can be found in the
 #' \strong{\emph{Details}} section.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param subSample TRUE/FALSE indicating whether the number of samples
 #' are unevenly split by condition and subsampling should be performed
@@ -398,7 +399,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' found in Ma et al. (2019) referenced below.
 #'
 #'
-#' @returns A \code{\link{DNEA}} object after populating the
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object after populating the
 #' stable_networks slot of the object. It contains the selection
 #' results from stability selection as well as the calculated
 #' selection probabilities.
@@ -569,7 +570,7 @@ stabilitySelection <- function(object,
 #' section of \code{\link{stabilitySelection}} for more information).
 #'
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param lambda_values **OPTIONAL** A list of values to test while optimizing
 #' the lambda parameter. If not provided, a set of lambda values are chosen
@@ -635,12 +636,13 @@ stabilitySelection <- function(object,
 #' 2020 Nov 24;10(12):479. doi: 10.3390/metabo10120479. PMID: 33255384;
 #' PMCID: PMC7761243. \url{https://pubmed.ncbi.nlm.nih.gov/33255384/}
 #'
-#' @returns A \code{\link{DNEA}} object after populating the adjaceny_matrix
-#' and edge_list slots with the corresponding adjacency_matrix for each
-#' sample condition as well as the network edge list.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object after populating
+#' the adjaceny_matrix and edge_list slots with the corresponding
+#' adjacency_matrix for each sample condition as well as the network
+#' edge list.
 #'
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
@@ -812,7 +814,7 @@ getNetworks <- function(object,
 #' Only sub networks with consensus that meets or exceeds tau are
 #' identified as real.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param tau The % agreement among the clustering algorithms
 #' for a node to be included in a sub network.
@@ -857,14 +859,14 @@ getNetworks <- function(object,
 #' "max_iterations" is reached
 #' \emph{(Please see references for more details)}.
 #'
-#' @returns A \code{\link{DNEA}} object containing sub network
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object containing sub network
 #' determinations for the nodes within the input network. A summary of the
 #' consensus clustering results can be viewed using \code{\link{CCsummary}}.
 #' Sub network membership for each node can be found in the "membership"
 #' column of the node list, which can be accessed using \code{\link{nodeList}}.
 #'
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
@@ -1003,7 +1005,7 @@ clusterNet <- function(object,
 #' modules identified via \code{\link{clusterNet}} using the
 #' \code{\link[netgsa:NetGSA]{netgsa::NetGSA()}} algorithm.
 #'
-#' @param object A \code{\link{DNEA}}.
+#' @param object A \code{\link[=DNEA-class]{DNEA}}.
 #'
 #' @param min_size The minimum size of a given metabolic
 #' module for to be tested for enrichment across the
@@ -1037,12 +1039,12 @@ clusterNet <- function(object,
 #' \url{https://pubmed.ncbi.nlm.nih.gov/34115744/}
 #'
 #'
-#' @returns A \code{\link{DNEA}} object after populating the @@netGSA
-#' slot. A summary of the NetGSA results can be viewed
-#' using \code{\link{netGSAresults}}.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object after
+#' populating the @@netGSA slot. A summary of the NetGSA
+#' results can be viewed using \code{\link{netGSAresults}}.
 #'
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running

@@ -6,7 +6,7 @@
 #' of the new metadata must match the order of the input sample names
 #' or feature names, respectively.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param type A character string corresponding to the type of metadata
 #' being included. Can be either "samples" or "features"
@@ -20,7 +20,7 @@
 #' \code{\link{featureNames}},\code{\link{sampleNames}},
 #' \code{\link{metaData}}
 #'
-#' @returns A \code{\link{DNEA}} object with the specified additions.
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object with the specified additions.
 #'
 #' @examples
 #' #load example data
@@ -73,9 +73,9 @@ includeMetadata <- function(object,
 #' Include custom normalized data in the DNEA object
 #'
 #' This function allows the user to input custom-normalized data into the
-#' \code{\link{DNEA}} object for use in DNEA analysis.
+#' \code{\link[=DNEA-class]{DNEA}} object for use in DNEA analysis.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #' @param dat A list of \emph{m x n} numeric matrices of
 #' custom-normalized expression data, one matrix for each
 #' experimental condition. The list elements should be
@@ -85,14 +85,14 @@ includeMetadata <- function(object,
 #'
 #' @param assay_name A character string corresponding
 #' to the name the new data will be stored under in the
-#' assays slot of the \code{\link{DNEA}}.
+#' assays slot of the \code{\link[=DNEA-class]{DNEA}}.
 #'
 #' @author Christopher Patsalis
 #'
 #' @seealso
-#' \code{\link{createDNEAobject}},\code{\link{DNEA}},
+#' \code{\link{createDNEAobject}},\code{\link[=DNEA-class]{DNEA}},
 #'
-#' @returns A \code{\link{DNEA}} object with the added
+#' @returns A \code{\link[=DNEA-class]{DNEA}} object with the added
 #' expression data in the @@assays slot
 #'
 #' @examples
@@ -180,7 +180,7 @@ addExpressionData <- function(object,
 #' to the specified directory. The files are already formatted for
 #' input into Cytoscape.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #' @param file_path The file path to save the node and edge lists
 #' to. If **NULL**, the files will be saved to the working directory.
 #'
@@ -192,7 +192,7 @@ addExpressionData <- function(object,
 #' @returns Two .csv files, one for the node list and one for
 #' the edge list, saved to the specified file path
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
@@ -234,7 +234,7 @@ getNetworkFiles <- function(object,
 #' features, green indicates edges specific to group 1, and red indicates
 #' edges specific to group 2.
 #'
-#' @param object A \code{\link{DNEA}} object.
+#' @param object A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param type There are two possible arguments to \strong{type}:
 #' \emph{"group_networks"} specifies the whole network or condition networks.
@@ -282,7 +282,7 @@ getNetworkFiles <- function(object,
 #' @returns A plot of the specified network
 #'
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
@@ -462,7 +462,7 @@ filterNetworks.DNEA <- function(data,
 #' filter conditions
 #'
 #' @description
-#' This function takes as input a \code{\link{DNEA}} object and
+#' This function takes as input a \code{\link[=DNEA-class]{DNEA}} object and
 #' allows the user to filter the network edges by one of two methods:
 #'
 #' \enumerate{
@@ -476,7 +476,7 @@ filterNetworks.DNEA <- function(data,
 #' Filtering is performed on the case and control adjacency matrices
 #' separately. \cr
 #'
-#' @param data A \code{\link{DNEA}} object.
+#' @param data A \code{\link[=DNEA-class]{DNEA}} object.
 #'
 #' @param pcor A partial correlation value of which to threshold
 #' the adjacency matrices. Edges with pcor values <= to this
@@ -494,7 +494,7 @@ filterNetworks.DNEA <- function(data,
 #' network according to the specified parameters.
 #'
 #' @examples
-#' #dnw is a \code{\link{DNEA}} object with the results
+#' #dnw is a \code{\link[=DNEA-class]{DNEA}} object with the results
 #' #generated for the example data accessed by running
 #' #data(TEDDY) in the console. The workflow for this data
 #' #can be found in the vignette accessed by running
