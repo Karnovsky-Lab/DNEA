@@ -491,12 +491,14 @@ massDataset2DNEA <- function(project_name,
                                group_labels = group_labels)
   }
   #add sample metadata
+  rownames(sample_info) <- make_clean_names(rownames(sample_info))
   sample_info <- sample_info[rownames(metaData(output, type = "samples")),]
   output <- includeMetadata(object = output,
                             type = "samples",
                             metadata = sample_info)
 
   #add feature metadata
+  rownames(variable_info) <- make_clean_names(rownames(variable_info))
   variable_info <- variable_info[rownames(metaData(output, type = "features")),]
   output <- includeMetadata(object = output,
                             type = "features",
