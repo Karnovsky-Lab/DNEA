@@ -360,9 +360,13 @@ metaDataReplace.DNEA <- function(x,
 setReplaceMethod("metaData", signature(x="DNEA"),
                  metaDataReplace.DNEA)
 
-sampleNames.DNEA <- function(x){
+sampleNames.DNEA <- function(x, original=FALSE){
 
-  x@metadata[["samples"]]$samples
+  if(original){
+    x@metadata[["samples"]]$sample_names
+  }else{
+    x@metadata[["samples"]]$clean_sample_names
+  }
 }
 #' Retrieve the sample names from the metadata slot.
 #'
@@ -370,7 +374,10 @@ sampleNames.DNEA <- function(x){
 #' metadata slot of the \code{\link{DNEA}} object.
 #'
 #' @param x A \code{\link{DNEA}} object.
-#'
+#' @param original "TRUE" returns the original sample names
+#' and "FALSE" returns the sample names that have been
+#' modified to avoid errors as a result of special characters
+#' using \code{\link[janitor:make_clean_names]{make_clean_names}}.
 #' @author Christopher Patsalis
 #' @seealso
 #' \code{\link{createDNEAobject}}
@@ -400,9 +407,9 @@ setMethod("sampleNames", signature(x="DNEA"),
 
 featureNames.DNEA <- function(x, original=FALSE){
 
-  if(isTRUE(original)){
+  if(original){
     x@metadata[["features"]]$feature_names
-  }else if(isFALSE(original)){
+  }else{
     x@metadata[["features"]]$clean_feature_names
   }
 }

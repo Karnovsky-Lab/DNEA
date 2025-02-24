@@ -73,13 +73,13 @@ setGeneric("metaData<-", function(x, type, value)
 #' @rdname sampleNames-methods
 #' @aliases sampleNames
 #' @export
-setGeneric("sampleNames", function(x)
+setGeneric("sampleNames", function(x, original=FALSE)
   standardGeneric("sampleNames"))
 
 #' @rdname featureNames-methods
 #' @aliases featureNames
 #' @export
-setGeneric("featureNames", function(x, original=TRUE)
+setGeneric("featureNames", function(x, original=FALSE)
   standardGeneric("featureNames"))
 
 #' @rdname numFeatures-methods
