@@ -1,0 +1,13 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "DNEA: an R package for fast and versatile data-driven network analysis of metabolomics data",
+  author   = c(person("Christopher", "Patsalis"), person("Gayatri", "Iyer"),
+               person("Marci", "Brandenburg"), person("Alla", "Karnovsky"),
+               person("George", "Michailidis")),
+  journal  = "BMC Bioinformatics",
+  year     = "2024",
+  volume   = "25",
+  number   = "1",
+  pages    = "383",
+  doi      = "10.1186/s12859-024-05994-1"
+)
