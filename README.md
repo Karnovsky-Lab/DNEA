@@ -11,6 +11,11 @@ if (!require("BiocManager", quietly=TRUE))
 BiocManager::install("DNEA")
 ```
 
+## Citation
+The DNEA R package is accompanied by a peer-reviewed manuscript published in ***BMC Bioinformatics***. If using this software in your work, please cite:
+
+Patsalis C, Iyer G, Brandenburg M, Karnovsky A, Michailidis G. DNEA: an R package for fast and versatile data-driven network analysis of metabolomics data. BMC Bioinformatics 25, 383 (2024). DOI:10.1186/s12859-024-05994-1.
+
 ## Motivation for DNEA
 
  Advancements in analytical methods, such as Liquid Chromatography-Mass Spectrometry (LC-MS), have enabled the high-throughput identification of hundreds to thousands of metabolites in biological samples, creating larger, more complex data sets that need to be analyzed. Pathway enrichment analysis is commonly used to identify the metabolic mechanism(s) underlying a disease state. However, there are several challenges present in analyzing metabolomics and lipidomics data sets using traditional bioinformatics tools. These conventional methods rely on well annotated pathway databases, which has proven to be a difficult task in metabolomics and lipidomics due to de novo identification of the metabolome. Further, metabolomics studies often identify exogenous compounds that cannot be mapped to a human pathway. 
