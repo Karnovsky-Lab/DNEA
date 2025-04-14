@@ -1,12 +1,19 @@
 Package: DNEA
 Title: Differential Network Enrichment Analysis for Biological Data
-Version: 0.99.9
+Version: 0.99.10
 Authors@R: c(
       person(given = "Christopher", family = "Patsalis", 
-             email = "patsalis@umich.edu", role = c("cre", "aut"),
+             email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
              comment = c(ORCID = "0009-0003-4585-0017")),
       person(given = "Gayatri", family = "Iyer", 
-             email = "griyer@umich.edu", role = c("aut")))
+             email = "griyer@umich.edu", role = c("aut")),
+             person(given = "Alla", family = "Karnovsky", 
+             email = "akarnovs@med.umich.edu", role = c("fnd"),
+             comment = c(NIH_GRANT = "1U01CA235487")),
+             person(given = "George", family = "Michailidis", 
+             email = "gmichail@ufl.edu", role = c("fnd"),
+             comment = c(NIH_GRANT = "1U01CA235487")))
+Maintainer: Christopher Patsalis <chrispatsalis@gmail.com>
 Description: The DNEA R package is the latest implementation of the 
              Differential Network Enrichment Analysis algorithm and 
              is the successor to the Filigree Java-application 
@@ -58,7 +65,7 @@ Collate:
     'utilities-exported.R'
     'primary.R'
 Depends: 
-    R (>= 4.4.0)
+    R (>= 4.5.0)
 LazyData: false
 Suggests: 
     BiocStyle,
