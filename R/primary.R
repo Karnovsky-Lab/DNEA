@@ -24,8 +24,8 @@ BICtune.DNEA <- function(object,
   if(!is.logical(informed)) stop('"informed" parameter should be TRUE or FALSE!')
   if(interval < 0 | interval > 0.01) stop('"interval" should be between 0 and 0.1!')
   if(missing(assay)){
-    if("log-scaled_data" %in% names(assays(object))){
-      assay <- "log-scaled_data"
+    if("log_scaled_data" %in% names(assays(object))){
+      assay <- "log_scaled_data"
     }else if(length(names(assays(object))) == 1){
       assay <- names(assay(object))
     }else{
@@ -205,7 +205,7 @@ BICtune.matrix <- function(object,
 #' This reduces the necessary number of computations for optimization.
 #'
 #' @param assay A character string indicating which expression assay to
-#' use for analysis. The default is the "log-scaled_data" assay that is
+#' use for analysis. The default is the "log_scaled_data" assay that is
 #' created during \code{\link{createDNEAobject}}.
 #' @param eps_threshold A significance cut-off for thresholding network
 #' edges. The default value is 1e-06.
@@ -325,7 +325,7 @@ setMethod("BICtune", signature(object="matrix"), BICtune.matrix)
 #' \code{\link{BICtune}} is not performed prior.
 #'
 #' @param assay A character string indicating which expression assay to
-#' use for analysis. The default is the "log-scaled_data" assay that is
+#' use for analysis. The default is the "log_scaled_data" assay that is
 #' created during \code{\link{createDNEAobject}}.
 #'
 #' @param BPPARAM a BiocParallel object.
@@ -458,8 +458,8 @@ stabilitySelection <- function(object,
     stop('"subSample" parameter should be TRUE or FALSE!')
   }
   if(missing(assay)){
-    if("log-scaled_data" %in% names(assays(object))){
-      assay <- "log-scaled_data"
+    if("log_scaled_data" %in% names(assays(object))){
+      assay <- "log_scaled_data"
     }else if(length(names(assays(object))) == 1){
       assay <- names(assay(object))
     }else{
@@ -596,7 +596,7 @@ stabilitySelection <- function(object,
 #' be optimized to 3 decimal places. The value should be between 0 and 0.1.
 #'
 #' @param assay A character string indicating which expression assay to
-#' use for analysis. The default is the "log-scaled_data" assay that is
+#' use for analysis. The default is the "log_scaled_data" assay that is
 #' created during \code{\link{createDNEAobject}}.
 #'
 #' @param eps_threshold A significance cut-off for thresholding network edges.
@@ -679,8 +679,8 @@ getNetworks <- function(object,
     stop("eps_threshold should be between 0 and 1 only!")
   }
   if(missing(assay)){
-    if("log-scaled_data" %in% names(assays(object))){
-      assay <- "log-scaled_data"
+    if("log_scaled_data" %in% names(assays(object))){
+      assay <- "log_scaled_data"
     }else if(length(names(assays(object))) == 1){
       assay <- names(assay(object))
     }else{

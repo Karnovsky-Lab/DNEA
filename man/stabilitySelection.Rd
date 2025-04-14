@@ -30,7 +30,7 @@ used in the model. This parameter is only necessary if
 \code{\link{BICtune}} is not performed prior.}
 
 \item{assay}{A character string indicating which expression assay to
-use for analysis. The default is the "log-scaled_data" assay that is
+use for analysis. The default is the "log_scaled_data" assay that is
 created during \code{\link{createDNEAobject}}.}
 
 \item{BPPARAM}{a BiocParallel object.}

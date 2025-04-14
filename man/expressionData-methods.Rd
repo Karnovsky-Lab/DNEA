@@ -15,7 +15,7 @@ expressionData(x, assay)
 \item{assay}{A character string corresponding to the
 data to retrieve: "input_data" retrieves the data as
 it was input, "log_input_data" retrieves the input data
-after log transforming, and "log-scaled_data"
+after log transforming, and "log_scaled_data"
 retrieves a list of matrices corresponding to the
 log-scaled data for each experimental condition,
 respectively. Any other externally transformed
@@ -49,7 +49,7 @@ dnw <- createDNEAobject(project_name = "test", expression_data = TEDDY,
 
 expressionData(x=dnw, assay="input_data")
 expressionData(x=dnw, assay="log_input_data")
-expressionData(x=dnw, assay="log-scaled_data")
+expressionData(x=dnw, assay="log_scaled_data")
 }
 \seealso{
 \code{\link{createDNEAobject}},\code{\link{aggregateFeatures}}

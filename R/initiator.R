@@ -153,7 +153,7 @@ createDNEAobject <- function(project_name,
         assay <- names(scaled_assays)[length(scaled_assays)]
       }
     }
-    if(missing(assay)){assay <- "log-scaled_data"}
+    if(missing(assay)){assay <- "log_scaled_data"}
     ds_input <- restructured_data[["assays"]][[assay]]
   }else{
     scaled_assays <- object_data_check(dat=scaled_expression_data,
@@ -541,7 +541,7 @@ restructure_input_data <- function(expression_data,
   metadata <- vector(mode='list', length=length(meta_key))
   names(metadata) <- meta_key
 
-  assays_key <- c('input_data', 'log_input_data', 'log-scaled_data')
+  assays_key <- c('input_data', 'log_input_data', 'log_scaled_data')
   assays <- vector(mode='list', length=length(assays_key))
   names(assays) <- assays_key
 
@@ -577,10 +577,10 @@ restructure_input_data <- function(expression_data,
   condition_values <- condition_values[colnames(expression_data)]
 
   message("Data has been normalized for further analysis.",
-  " New data can be found in the log-scaled_data assay!")
+  " New data can be found in the log_scaled_data assay!")
 
   ##concatenate output
-  assays[['log-scaled_data']] <- scaled_expression_data
+  assays[['log_scaled_data']] <- scaled_expression_data
   metadata[["samples"]] <- data.frame(sample_names=sample_names,
                                       clean_sample_names=clean_sample_names,
                                       conditions=condition_values,

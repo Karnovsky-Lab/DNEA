@@ -41,7 +41,7 @@ optimize lambda. The default value is 1e-3, which indicates lambda will
 be optimized to 3 decimal places. The value should be between 0 and 0.1.}
 
 \item{assay}{A character string indicating which expression assay to
-use for analysis. The default is the "log-scaled_data" assay that is
+use for analysis. The default is the "log_scaled_data" assay that is
 created during \code{\link{createDNEAobject}}.}
 
 \item{eps_threshold}{A numeric value between 0 and 1 by which to

@@ -179,7 +179,7 @@ library(pheatmap)
 library(Hmisc)
 
 #grab the DM:case data from the DNEA object
-expr_dat <- expressionData(TEDDYdat, assay = "log-scaled_data")[["DM:case"]]
+expr_dat <- expressionData(TEDDYdat, assay = "log_scaled_data")[["DM:case"]]
 
 #create a pearson correlation matrix - data should be transposed first so features are in columns
 cor_dat <- Hmisc::rcorr(t(expr_dat), type = "pearson")$r
@@ -373,7 +373,7 @@ message("Optimizing the lambda hyperparameter using Bayesian-Information ",
         "Criterion outlined in Guo et al. (2011)")
 message("A Link to this reference can be found in the function documentation ",
         "by running ?BICtune() in the console")
-message("The log-scaled_data expression data will be used for analysis.\n")
+message("The log_scaled_data expression data will be used for analysis.\n")
 message("Estimating optimal c constant range for asymptotic lambda...\n")
 message("Fine-tuning Lambda...\n")
 message("The optimal Lambda hyper-parameter has been set to: 0.05072355!")
@@ -422,7 +422,7 @@ message('The lambda value stored in the DNEA will be used for analysis (this can
             'accessed via the optimizedLambda() function')
 message("Using Lambda hyper-parameter: ", optimizedLambda(TEDDYdat), "!\n",
           "stabilitySelection will be performed with 1000 replicates!")
-message("The log-scaled_data expression data will be used for analysis.\n")
+message("The log_scaled_data expression data will be used for analysis.\n")
 message("Additional sub-sampling will be performed on uneven groups\n")
 message("Calculating selection probabilities WITH subsampling for...DM:case...\n")
 message("Calculating selection probabilities WITH subsampling for...DM:control...")
