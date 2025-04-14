@@ -590,27 +590,31 @@ We made network visualization in third-party software easy by formatting the nod
 getNetworkFiles(TEDDYdat)
 ```
 
-Once the files are saved, open the Cytoscape software and read in the edge list. Go to file in the top left corner of Cytoscape, go down to import, and select Network From File. Select our edge list file from its directory <font color = red>*(1)*</font>.
-```{r, import network, echo=FALSE}
-knitr::include_graphics("./images/Cytoscape-importnetwork.jpg")
-```
-Next, click on the drop-down menu next to Metabolite A <font color = red>*(2)*</font> and select the green circle <font color = red>*(3)*</font>, making this the source node.
-```{r, metabA image, echo=FALSE}
-knitr::include_graphics("./images/Cytoscape-metabA.jpg")
-```
-Then click on the drop-down menu next to Metabolite B <font color = red>*(4)*</font> and select the red target <font color = red>*(5)*</font>, making this the target node. Hit the **OK** button in the bottom right corner of the pop-up <font color = red>*(6)*</font> to finish importing the network.
-```{r, metabB image, echo=FALSE}
-knitr::include_graphics("./images/Cytoscape-metabB.jpg")
-```
-Now that the edge list is imported, the node list can be imported by clicking import table <font color = red>*(7)*</font> and selecting our node list file from its directory. 
-```{r, nodetable, echo=FALSE}
-knitr::include_graphics("./images/Cytoscape-nodetable.jpg")
-```
-Make sure the ***Import Data as*** drop-down says "Node Table Columns" <font color = red>*(8)*</font> and select **OK** in the bottom right corner of the pop-up <font color = red>*(9)*</font>.
-```{r, nodetable confirm, echo=FALSE}
-knitr::include_graphics("./images/cytoscape-nodetableconfirm.jpg")
-```
+Once the files are saved, the data can be read into Cytyoscape for visualization:
+
+<font face="Times New Roman" color="red" style="font-weight:bold; font-style:italic;">Importing the edge list </font>
+
+<font face="Times New Roman" style="font-weight:bold;">1A: Open Cytoscape and, in the top left corner, select ***file --->Import --->Network From File***. </font>
+
+<font face="Times New Roman" style="font-weight:bold;">1B: In the pop-up, click on the drop-down menu next to Metabolite A and select the green circle, making this the source node. </font>
+
+<font face="Times New Roman" style="font-weight:bold;">1C: Click on the drop-down menu next to Metabolite B and select the red target, making this the target node. </font>
+
+<font face="Times New Roman" style="font-weight:bold;">1D: Then, hit the **OK** button in the bottom right corner of the pop-up to finish importing the edge list. </font>
+
+<font face="Times New Roman" color="red" style="font-weight:bold; font-style:italic;">Importing the node list </font>
+
+<font face="Times New Roman" style="font-weight:bold;">2A: To import the node list, select ***Import Table From File*** from the task bar just above the edge list in the bottom right panel and select the node list file from its directory. </font>
+
+<font face="Times New Roman" style="font-weight:bold;">2B: Make sure the ***Import Data as*** drop-down says "Node Table Columns", and select **OK** in the bottom right corner of the pop-up. </font>
+
+
 Metscape is an app within Cytoscape that provides additional functionality for the visualization of metabolomics and lipidomics data. More information about these tools can be found on their respective websites linked at the top of [Network Visualization].
+
+# Citation
+The DNEA R package is accompanied by a peer-reviewed manuscript published in ***BMC Bioinformatics***. If using this software in your work, please cite:
+
+Patsalis C, Iyer G, Brandenburg M, Karnovsky A, Michailidis G. DNEA: an R package for fast and versatile data-driven network analysis of metabolomics data. BMC Bioinformatics 25, 383 (2024). DOI:10.1186/s12859-024-05994-1.
 
 # Session info
 
