@@ -13,7 +13,6 @@ Authors@R: c(
              person(given = "George", family = "Michailidis", 
              email = "gmichail@ufl.edu", role = c("fnd"),
              comment = c(NIH_GRANT = "1U01CA235487")))
-Maintainer: Christopher Patsalis <chrispatsalis@gmail.com>
 Description: The DNEA R package is the latest implementation of the 
              Differential Network Enrichment Analysis algorithm and 
              is the successor to the Filigree Java-application 
