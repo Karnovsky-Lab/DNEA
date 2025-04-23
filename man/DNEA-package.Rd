@@ -33,11 +33,17 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Christopher Patsalis \email{patsalis@umich.edu} (\href{https://orcid.org/0009-0003-4585-0017}{ORCID})
+\strong{Maintainer}: Christopher Patsalis \email{chrispatsalis@gmail.com} (\href{https://orcid.org/0009-0003-4585-0017}{ORCID})
 
 Authors:
 \itemize{
   \item Gayatri Iyer \email{griyer@umich.edu}
+}
+
+Other contributors:
+\itemize{
+  \item Alla Karnovsky \email{akarnovs@med.umich.edu} (1U01CA235487) [funder]
+  \item George Michailidis \email{gmichail@ufl.edu} (1U01CA235487) [funder]
 }
 
 }
