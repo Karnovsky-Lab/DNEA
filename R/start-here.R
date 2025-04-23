@@ -75,7 +75,7 @@ NULL
 #' @keywords datasets
 #' @name TEDDY
 #' @usage data("TEDDY")
-#' @format A data frame with 134 rows and 322 columns. Each row corresponds
+#' @format A matrix with 134 rows and 322 columns. Each row corresponds
 #' to a unique metabolite, and each column corresponds to a sample
 #' @references Lee HS, Burkhardt BR, McLeod W, Smith S, Eberhard C, Lynch K,
 #' Hadley D, Rewers M, Simell O, She JX, Hagopian B, Lernmark A, Akolkar B,
