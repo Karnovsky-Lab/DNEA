@@ -24,7 +24,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  prompt = TRUE
+  prompt = FALSE
 )
 
 library(dplyr)
