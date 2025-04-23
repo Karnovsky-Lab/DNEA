@@ -439,7 +439,7 @@ massDataset2DNEA <- function(project_name,
   ##checks
   if (!requireNamespace("massdataset", quietly=TRUE))
     stop("Could not load package massdataset. Is it installed?\n  ",
-         "Note that massDataset2DNEA requires the tidymass package.\n  ",
+         "Note that massDataset2DNEA requires the massdataset package.\n  ",
          "Please install it with 'BiocManager::install(\"massdataset\")'.")
   if(!inherits(object, "mass_dataset")){
     stop("object should inherit of class mass_dataset from the",
