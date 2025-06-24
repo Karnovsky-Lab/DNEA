@@ -1,6 +1,6 @@
 Package: DNEA
 Title: Differential Network Enrichment Analysis for Biological Data
-Version: 0.99.12
+Version: 0.99.13
 Authors@R: c(
       person(given = "Christopher", family = "Patsalis", 
              email = "chrispatsalis@gmail.com", role = c("cre", "aut"),
@@ -64,7 +64,7 @@ Collate:
     'utilities-exported.R'
     'primary.R'
 Depends: 
-    R (>= 4.5.0)
+    R (>= 4.2)
 LazyData: false
 Suggests: 
     BiocStyle,
